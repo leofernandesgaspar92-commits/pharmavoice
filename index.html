@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PharmaVoice</title>
+  <style>
+    :root {
+      --bg:     #02253B;
+      --bg2:    #03344F;
+      --bg3:    #04455F;
+      --teal:   #02C39A;
+      --teal-d: #01A082;
+      --white:  #FFFFFF;
+      --gray:   #7A92A8;
+      --gray2:  #4A6278;
+      --red:    #FF5252;
+      --gold:   #FFB800;
+      --r:      14px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--white);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh; max-width: 480px; margin: 0 auto;
+      position: relative; overflow-x: hidden;
+    }
+    .screen { display: none; padding: 28px 20px 110px; min-height: 100vh; animation: fadeUp .25s ease; }
+    .screen.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; background: var(--bg2);
+      border-top: 1px solid rgba(2,195,154,.18);
+      display: flex; padding: 10px 0 env(safe-area-inset-bottom, 14px); z-index: 200;
+    }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+    .nav-item svg  { width: 24px; height: 24px; fill: var(--gray); transition: fill .2s; }
+    .nav-item span { font-size: 11px; color: var(--gray); transition: color .2s; }
+    .nav-item.active svg  { fill: var(--teal); }
+    .nav-item.active span { color: var(--teal); }
+
+    /* ── HOME ── */
+    .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-pill { background: var(--teal); border-radius: 10px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .logo-name { font-size: 20px; font-weight: 800; }
+    .logo-name span { color: var(--teal); }
+    .xp-pill { background: var(--bg2); border: 1.5px solid var(--teal); color: var(--teal); font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; }
+    .greeting-sub  { font-size: 13px; color: var(--gray); }
+    .greeting-main { font-size: 22px; font-weight: 800; margin-bottom: 24px; margin-top: 2px; }
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+    .stat-card { background: var(--bg2); border-radius: var(--r); padding: 16px 10px; text-align: center; }
+    .stat-val  { font-size: 26px; font-weight: 800; color: var(--teal); line-height: 1; }
+    .stat-lbl  { font-size: 11px; color: var(--gray); margin-top: 5px; }
+    .section-title { font-size: 13px; font-weight: 700; color: var(--gray); letter-spacing: .6px; text-transform: uppercase; margin-bottom: 14px; }
+    .level-cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .level-card { background: var(--bg2); border-radius: var(--r); padding: 18px 20px; display: flex; align-items: center; gap: 16px; border: 1.5px solid transparent; cursor: pointer; transition: .2s; }
+    .level-card.open { cursor: pointer; }
+    .level-card.open:hover { border-color: var(--teal); transform: translateY(-1px); }
+    .level-card.open:active { transform: scale(.98); }
+    .level-card.locked { opacity: .5; cursor: default; }
+    .level-card.current { border-color: var(--teal); }
+    .lvl-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+    .lvl-icon.g { background: rgba(2,195,154,.18); }
+    .lvl-icon.o { background: rgba(255,184,0,.18); }
+    .lvl-icon.r { background: rgba(255,82,82,.18); }
+    .lvl-info { flex: 1; }
+    .lvl-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+    .lvl-sub  { font-size: 12px; color: var(--gray); }
+    .lvl-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; white-space: nowrap; flex-shrink: 0; }
+    .lvl-badge.on  { background: rgba(2,195,154,.2);  color: var(--teal); }
+    .lvl-badge.off { background: rgba(74,98,120,.3);  color: var(--gray); }
+    .btn-start { width: 100%; padding: 18px; background: var(--teal); color: var(--bg); border: none; border-radius: var(--r); font-size: 17px; font-weight: 800; cursor: pointer; transition: .2s; }
+    .btn-start:hover { background: var(--teal-d); }
+    .btn-start:active { transform: scale(.98); }
+
+    /* ── LEVEL SELECT MODAL ── */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(2,14,24,.75); z-index: 300; align-items: flex-end; justify-content: center; }
+    .modal-bg.open { display: flex; }
+    .modal { background: var(--bg2); border-radius: 20px 20px 0 0; padding: 28px 20px 40px; width: 100%; max-width: 480px; animation: slideUp .25s ease; }
+    @keyframes slideUp { from { transform: translateY(60px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .modal-sub   { font-size: 13px; color: var(--gray); margin-bottom: 22px; }
+    .modal-lvl-btn { width: 100%; background: var(--bg3); border: 1.5px solid transparent; border-radius: var(--r); padding: 16px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; cursor: pointer; transition: .2s; }
+    .modal-lvl-btn:hover { border-color: var(--teal); }
+    .modal-lvl-btn.locked { opacity: .45; cursor: default; }
+    .modal-lvl-btn .mlbl { font-size: 15px; font-weight: 700; }
+    .modal-lvl-btn .msub { font-size: 12px; color: var(--gray); margin-top: 2px; }
+    .modal-cancel { width: 100%; margin-top: 8px; padding: 14px; background: transparent; border: 1.5px solid var(--gray2); border-radius: var(--r); color: var(--gray); font-size: 15px; cursor: pointer; }
+
+    /* ── LEARN ── */
+    .back-btn { background: none; border: none; color: var(--gray); font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 16px; padding: 0; }
+    .back-btn:hover { color: var(--white); }
+    .prog-row   { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray); margin-bottom: 8px; }
+    .prog-track { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+    .prog-fill  { height: 100%; background: var(--teal); border-radius: 3px; transition: width .5s ease; }
+    .level-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(2,195,154,.12); color: var(--teal); font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; margin-bottom: 18px; }
+    .med-card   { background: var(--bg2); border-radius: var(--r); padding: 28px 22px 22px; text-align: center; margin-bottom: 20px; }
+    .med-cat    { display: inline-block; background: rgba(2,195,154,.15); color: var(--teal); font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+    .med-name-big { font-size: 34px; font-weight: 900; letter-spacing: .3px; margin-bottom: 10px; line-height: 1.15; transition: font-size .1s; }
+    .phonetic   { font-size: 14px; color: var(--gray); font-style: italic; margin-bottom: 18px; }
+    .syl-row    { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 1px; }
+    .syl-sep    { color: var(--gray2); font-size: 20px; margin: 0 1px; }
+    .syl-item   { font-size: 20px; font-weight: 600; color: var(--white); line-height: 1; }
+    .syl-item.stressed { font-size: 27px; font-weight: 900; color: var(--teal); }
+    .q-label { font-size: 13px; color: var(--gray); text-align: center; margin-bottom: 14px; font-weight: 500; }
+    .feedback-box { background: rgba(2,195,154,.12); border: 1px solid var(--teal); border-radius: 12px; padding: 12px 16px; font-size: 13px; color: var(--teal); text-align: center; margin-bottom: 16px; display: none; line-height: 1.6; }
+    .feedback-box.bad  { background: rgba(255,82,82,.12); border-color: var(--red); color: var(--red); }
+    .feedback-box.show { display: block; }
+    .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+    .opt { background: var(--bg2); border: 2px solid transparent; border-radius: var(--r); padding: 14px 10px; color: var(--white); font-size: 12px; font-weight: 700; cursor: pointer; transition: .2s; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center; letter-spacing: .5px; line-height: 1.5; word-break: break-word; }
+    .opt:hover:not(:disabled) { border-color: rgba(2,195,154,.5); }
+    .opt.good { background: rgba(2,195,154,.18); border-color: var(--teal); color: var(--teal); }
+    .opt.bad  { background: rgba(255,82,82,.18); border-color: var(--red); color: var(--red); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    .shake { animation: shake .35s ease; }
+    .mic-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px; }
+    .mic-btn  { width: 62px; height: 62px; border-radius: 50%; background: var(--bg2); border: 2px solid var(--gray2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: .2s; }
+    .mic-btn:hover { border-color: var(--teal); }
+    .mic-btn svg { width: 28px; height: 28px; fill: var(--gray); }
+    .mic-lbl  { font-size: 11px; color: var(--gray); transition: color .2s; }
+    .mic-btn.active { border-color: var(--teal); background: rgba(2,195,154,.12); animation: micPulse 1.2s ease-in-out infinite; }
+    .mic-btn.active svg { fill: var(--teal); }
+    .mic-btn.active ~ .mic-lbl { color: var(--teal); }
+    @keyframes micPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(2,195,154,.45); } 55%{ box-shadow:0 0 0 10px rgba(2,195,154,0); } }
+    .mic-result { min-height: 20px; font-size: 14px; color: var(--white); text-align: center; font-style: italic; opacity: .8; padding: 0 8px; line-height: 1.4; }
+    .btn-next { width: 100%; padding: 16px; background: var(--teal); color: var(--bg); border: none; border-radius: var(--r); font-size: 16px; font-weight: 800; cursor: pointer; display: none; transition: .2s; }
+    .btn-next.show { display: block; }
+    .btn-next:hover { background: var(--teal-d); }
+
+    /* ── XP POP ── */
+    .xp-pop { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); background: var(--teal); color: var(--bg); font-size: 28px; font-weight: 900; padding: 16px 34px; border-radius: 18px; z-index: 999; pointer-events: none; opacity: 0; }
+    @keyframes xpAnim { 0%{transform:translate(-50%,-50%) scale(0);opacity:0} 25%{transform:translate(-50%,-50%) scale(1.1);opacity:1} 70%{transform:translate(-50%,-50%) scale(1);opacity:1} 100%{transform:translate(-50%,-75%) scale(1);opacity:0} }
+    .xp-pop.go { animation: xpAnim .9s ease forwards; }
+
+    /* ── RESULT ── */
+    #screenResult { text-align: center; }
+    .res-emoji { font-size: 76px; margin-bottom: 12px; line-height: 1; }
+    .res-title { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+    .res-sub   { color: var(--gray); font-size: 14px; margin-bottom: 28px; }
+    .res-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
+    .res-stat  { background: var(--bg2); border-radius: var(--r); padding: 20px 14px; }
+    .res-val   { font-size: 34px; font-weight: 900; color: var(--teal); line-height: 1; }
+    .res-lbl   { font-size: 12px; color: var(--gray); margin-top: 6px; }
+    .btn-ghost { width: 100%; padding: 16px; background: var(--bg2); color: var(--white); border: none; border-radius: var(--r); font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 12px; transition: .2s; }
+    .btn-ghost:hover { background: var(--bg3); }
+
+    /* ── ACHIEVEMENTS ── */
+    .screen-h { font-size: 24px; font-weight: 900; margin-bottom: 24px; }
+    .ach-list  { display: flex; flex-direction: column; gap: 12px; }
+    .ach-item  { background: var(--bg2); border-radius: var(--r); padding: 16px 18px; display: flex; align-items: center; gap: 16px; }
+    .ach-item.locked { opacity: .45; }
+    .ach-icon  { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+    .ach-icon.on  { background: rgba(2,195,154,.2); }
+    .ach-icon.off { background: rgba(74,98,120,.2); }
+    .ach-info  { flex: 1; }
+    .ach-name  { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+    .ach-desc  { font-size: 12px; color: var(--gray); }
+    .ach-state { font-size: 20px; }
+
+    /* ── PROFILE ── */
+    .prof-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--teal); color: var(--bg); font-size: 30px; font-weight: 900; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+    .prof-name { text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .prof-role { text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 28px; }
+    .prof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .prof-stat { background: var(--bg2); border-radius: var(--r); padding: 20px; text-align: center; }
+    .prof-val  { font-size: 28px; font-weight: 900; color: var(--teal); line-height: 1; }
+    .prof-lbl  { font-size: 11px; color: var(--gray); margin-top: 5px; }
+    .lvl-prog-card { background: var(--bg2); border-radius: var(--r); padding: 20px; }
+    .lvl-prog-head { font-size: 13px; color: var(--gray); margin-bottom: 6px; }
+    .lvl-prog-txt  { font-size: 14px; margin-bottom: 12px; }
+    .lvl-prog-txt strong { color: var(--teal); }
+    .lvl-xp-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--gray); margin-top: 8px; }
+
+    @media (max-width: 360px) {
+      .med-name-big { font-size: 26px; }
+      .syl-item { font-size: 17px; }
+      .syl-item.stressed { font-size: 23px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="xp-pop" id="xpPop">+10 Shekel 🪙</div>
+
+<!-- ══ LEVEL SELECT MODAL ══ -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title">Level auswählen</div>
+    <div class="modal-sub">Welchen Bereich möchtest du üben?</div>
+    <div id="modalLevels"></div>
+    <button class="modal-cancel" onclick="closeModal()">Abbrechen</button>
+  </div>
+</div>
+
+<!-- ══ HOME ══ -->
+<div class="screen active" id="screenHome">
+  <div class="home-header">
+    <div class="logo">
+      <div class="logo-pill">💊</div>
+      <div class="logo-name">Pharma<span>Voice</span></div>
+    </div>
+    <div class="xp-pill" id="homeXpPill">🪙 0 Shekel</div>
+  </div>
+  <div class="greeting-sub">Willkommen zurück,</div>
+  <div class="greeting-main">Lernender 👋</div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="homeXpVal">0</div><div class="stat-lbl">🪙 Shekel</div></div>
+    <div class="stat-card"><div class="stat-val" id="homeStreakVal">0 🔥</div><div class="stat-lbl">Streak</div></div>
+    <div class="stat-card"><div class="stat-val" id="homeLearnedVal">0</div><div class="stat-lbl">Begriffe</div></div>
+  </div>
+  <div class="section-title">Lernebenen</div>
+  <div class="level-cards" id="levelCardsHome"></div>
+  <button class="btn-start" onclick="openModal()">🎯 &nbsp;Jetzt lernen starten</button>
+</div>
+
+<!-- ══ LEARN ══ -->
+<div class="screen" id="screenLearn">
+  <div>
+    <button class="back-btn" onclick="goHome()">← Zurück</button>
+    <div class="prog-row">
+      <span id="progText">Frage 1 von 10</span>
+      <span id="progXp" style="color:var(--teal);font-weight:700;">0 Shekel</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  </div>
+  <div style="margin-top:18px;">
+    <div class="level-chip" id="learnChip">📗 &nbsp;Basics Level</div>
+  </div>
+  <div class="med-card">
+    <div class="med-cat" id="medCat">Kategorie</div>
+    <div class="med-name-big" id="medName">Medikament</div>
+    <div class="phonetic" id="medPhonetic">/phonetik/</div>
+    <div class="syl-row" id="sylRow"></div>
+  </div>
+  <div class="q-label">Welche Silbe wird betont?</div>
+  <div class="feedback-box" id="feedbackBox"></div>
+  <div class="options" id="optGrid"></div>
+  <div class="mic-wrap">
+    <div class="mic-btn" id="micBtn" onclick="toggleMic()">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08C16.39 17.43 19 14.53 19 11h-2z"/>
+      </svg>
+    </div>
+    <div class="mic-lbl" id="micLbl">Aussprache üben</div>
+    <div class="mic-result" id="micResult"></div>
+  </div>
+  <button class="btn-next" id="btnNext" onclick="nextQ()">Weiter →</button>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div class="screen" id="screenResult">
+  <div class="res-emoji" id="resEmoji">🎉</div>
+  <div class="res-title" id="resTitle">Gut gemacht!</div>
+  <div class="res-sub"   id="resSub">Du hast alle 10 Fragen beantwortet</div>
+  <div class="res-grid">
+    <div class="res-stat"><div class="res-val" id="resScore">0/10</div><div class="res-lbl">Richtige Antworten</div></div>
+    <div class="res-stat"><div class="res-val" id="resXP">+0</div><div class="res-lbl">Shekel verdient 🪙</div></div>
+    <div class="res-stat"><div class="res-val" id="resStreak">0 🔥</div><div class="res-lbl">Tage Streak</div></div>
+    <div class="res-stat"><div class="res-val" id="resTotal">0</div><div class="res-lbl">Gesamt Shekel</div></div>
+  </div>
+  <button class="btn-start" onclick="openModal()">🔄 &nbsp;Nochmal spielen</button>
+  <button class="btn-ghost" onclick="goHome()">🏠 &nbsp;Zur Startseite</button>
+</div>
+
+<!-- ══ ACHIEVEMENTS ══ -->
+<div class="screen" id="screenAchievements">
+  <div class="screen-h">🏆 Erfolge</div>
+  <div class="ach-list">
+    <div class="ach-item"><div class="ach-icon on">🎤</div><div class="ach-info"><div class="ach-name">Erste Stimme</div><div class="ach-desc">Erste Lerneinheit abgeschlossen</div></div><div class="ach-state">✅</div></div>
+    <div class="ach-item"><div class="ach-icon on">🔥</div><div class="ach-info"><div class="ach-name">7-Tage-Streak</div><div class="ach-desc">7 Tage in Folge gelernt</div></div><div class="ach-state">✅</div></div>
+    <div class="ach-item"><div class="ach-icon on">📗</div><div class="ach-info"><div class="ach-name">Basics Meister</div><div class="ach-desc">Alle Basis-Medikamente gemeistert</div></div><div class="ach-state">✅</div></div>
+    <div class="ach-item locked"><div class="ach-icon off">💊</div><div class="ach-info"><div class="ach-name">50 Begriffe</div><div class="ach-desc">50 verschiedene Begriffe gelernt</div></div><div class="ach-state">🔒</div></div>
+    <div class="ach-item locked"><div class="ach-icon off">🧬</div><div class="ach-info"><div class="ach-name">Fortgeschrittener</div><div class="ach-desc">Level 2 vollständig abgeschlossen</div></div><div class="ach-state">🔒</div></div>
+    <div class="ach-item locked"><div class="ach-icon off">🏅</div><div class="ach-info"><div class="ach-name">Profi-Aussprecher</div><div class="ach-desc">Alle Level erfolgreich abgeschlossen</div></div><div class="ach-state">🔒</div></div>
+    <div class="ach-item locked"><div class="ach-icon off">🔬</div><div class="ach-info"><div class="ach-name">Onkologe</div><div class="ach-desc">Alle Onkologie-Begriffe gelernt</div></div><div class="ach-state">🔒</div></div>
+  </div>
+</div>
+
+<!-- ══ PROFILE ══ -->
+<div class="screen" id="screenProfile">
+  <div class="prof-avatar">PV</div>
+  <div class="prof-name">Lernender</div>
+  <div class="prof-role">Apotheker-Lehrling 💊</div>
+  <div class="prof-grid">
+    <div class="prof-stat"><div class="prof-val" id="profXp">0</div><div class="prof-lbl">🪙 Shekel</div></div>
+    <div class="prof-stat"><div class="prof-val" id="profStreak">0 🔥</div><div class="prof-lbl">Tage Streak</div></div>
+    <div class="prof-stat"><div class="prof-val" id="profLearned">0</div><div class="prof-lbl">Begriffe gelernt</div></div>
+    <div class="prof-stat"><div class="prof-val" id="profLevel">1</div><div class="prof-lbl">Aktuelles Level</div></div>
+  </div>
+  <div class="lvl-prog-card">
+    <div class="lvl-prog-head">Nächstes Level</div>
+    <div class="lvl-prog-txt" id="profProgLabel">Level 2 benötigt <strong>200 Shekel</strong></div>
+    <div class="prog-track"><div class="prog-fill" id="profProgFill" style="width:0%"></div></div>
+    <div class="lvl-xp-row"><span id="profProgTxt">0 / 200 Shekel</span><span id="profProgPct">0%</span></div>
+  </div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav class="nav">
+  <div class="nav-item active" id="navHome" onclick="showScreen('Home')">
+    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Home</span>
+  </div>
+  <div class="nav-item" id="navLearn" onclick="openModal()">
+    <svg viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg><span>Lernen</span>
+  </div>
+  <div class="nav-item" id="navAch" onclick="showScreen('Achievements')">
+    <svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1a5.01 5.01 0 003.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg><span>Erfolge</span>
+  </div>
+  <div class="nav-item" id="navProf" onclick="showScreen('Profile')">
+    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Profil</span>
+  </div>
+</nav>
+
+<script>
+// ═══════════════════════════════════════════════
+//  LEVEL CONFIG
+// ═══════════════════════════════════════════════
+const LEVELS = [
+  { id:1, name:"Basics",         icon:"📗", color:"g", xpReq:0,    desc:"Grundlegende Wirkstoffe & Produkte" },
+  { id:2, name:"Fortgeschritten",icon:"📙", color:"o", xpReq:200,  desc:"Herz, Antibiotika & Magen" },
+  { id:3, name:"Profi",          icon:"📕", color:"r", xpReq:1000, desc:"Atemwege, Neurologie & Onkologie" }
+];
+
+// ═══════════════════════════════════════════════
+//  MEDICATIONS  (95 terms, levels 1–3)
+// ═══════════════════════════════════════════════
+const MEDS = [
+  // ── LEVEL 1: BASICS (40) ──────────────────────
+  // Original 10
+  { lv:1, name:"Ibuprofen",      phonetic:"/iː·bjuː·ˈproː·fɛn/",       syllables:["I","bu","PRO","fen"],           si:2, category:"Analgetikum",      tip:'Dritte Silbe "PRO" betonen.',         wrong:["I·BU·pro·fen","i·bu·pro·FEN","IB·u·pro·fen"] },
+  { lv:1, name:"Amoxicillin",    phonetic:"/æm·ɒk·sɪ·ˈsɪl·ɪn/",        syllables:["A","mox","i","CIL","lin"],      si:3, category:"Antibiotikum",     tip:'Vierte Silbe "CIL" betonen.',         wrong:["A·MOX·i·cil·lin","a·mox·I·cil·lin","a·mox·i·cil·LIN"] },
+  { lv:1, name:"Pantoprazol",    phonetic:"/pan·to·ˈpraː·zol/",         syllables:["Pan","to","PRA","zol"],         si:2, category:"Magenschutz",      tip:'Dritte Silbe "PRA" betonen.',         wrong:["PAN·to·pra·zol","pan·TO·pra·zol","pan·to·pra·ZOL"] },
+  { lv:1, name:"Metronidazol",   phonetic:"/mɛt·ro·ˈniː·da·zol/",      syllables:["Met","ro","NI","da","zol"],     si:2, category:"Antibiotikum",     tip:'Dritte Silbe "NI" betonen.',          wrong:["MET·ro·ni·da·zol","met·RO·ni·da·zol","met·ro·ni·da·ZOL"] },
+  { lv:1, name:"Simvastatin",    phonetic:"/sɪm·va·ˈstaː·tɪn/",        syllables:["Sim","va","STA","tin"],         si:2, category:"Cholesterin",      tip:'Dritte Silbe "STA" betonen.',         wrong:["SIM·va·sta·tin","sim·VA·sta·tin","sim·va·sta·TIN"] },
+  { lv:1, name:"Acetylcystein",  phonetic:"/a·tseː·tyl·ˈtsys·teɪn/",   syllables:["A","ce","tyl","CYST","ein"],    si:3, category:"Schleimlöser",     tip:'Vierte Silbe "CYST" betonen.',        wrong:["A·CE·tyl·cyst·ein","a·ce·TYL·cyst·ein","a·ce·tyl·cyst·EIN"] },
+  { lv:1, name:"Omeprazol",      phonetic:"/oː·me·ˈpraː·zol/",         syllables:["O","me","PRA","zol"],           si:2, category:"Magenschutz",      tip:'Dritte Silbe "PRA" betonen.',         wrong:["O·ME·pra·zol","OM·e·pra·zol","o·me·pra·ZOL"] },
+  { lv:1, name:"Lisinopril",     phonetic:"/lɪ·ˈzɪn·o·prɪl/",          syllables:["Li","SI","no","pril"],          si:1, category:"Blutdruck",        tip:'Zweite Silbe "SI" betonen.',          wrong:["LI·si·no·pril","li·si·NO·pril","li·si·no·PRIL"] },
+  { lv:1, name:"Metformin",      phonetic:"/mɛt·ˈfɔr·mɪn/",            syllables:["Met","FOR","min"],              si:1, category:"Diabetes",         tip:'Zweite Silbe "FOR" betonen.',         wrong:["MET·for·min","met·for·MIN","MET·FOR·min"] },
+  { lv:1, name:"Atorvastatin",   phonetic:"/a·tor·va·ˈstaː·tɪn/",      syllables:["A","tor","va","STA","tin"],     si:3, category:"Cholesterin",      tip:'Vierte Silbe "STA" betonen.',         wrong:["A·TOR·va·sta·tin","a·tor·VA·sta·tin","a·tor·va·sta·TIN"] },
+  // Schmerz & Entzündung
+  { lv:1, name:"Diclofenac",     phonetic:"/dɪ·ˈkloː·fɛ·nak/",         syllables:["Di","CLO","fe","nac"],          si:1, category:"Schmerzmittel",    tip:'Zweite Silbe "CLO" betonen.',         wrong:["DI·clo·fe·nac","di·clo·FE·nac","di·clo·fe·NAC"] },
+  { lv:1, name:"Naproxen",       phonetic:"/na·ˈprɔk·sɛn/",            syllables:["Na","PROX","en"],               si:1, category:"Schmerzmittel",    tip:'Zweite Silbe "PROX" betonen.',        wrong:["NA·prox·en","na·prox·EN","NAP·rox·en"] },
+  { lv:1, name:"Celecoxib",      phonetic:"/tseː·lɛ·ˈkoː·ksɪb/",       syllables:["Ce","le","CO","xib"],           si:2, category:"Entzündungshemmer",tip:'Dritte Silbe "CO" betonen.',          wrong:["CE·le·co·xib","ce·LE·co·xib","ce·le·co·XIB"] },
+  { lv:1, name:"Tramadol",       phonetic:"/ˈtraː·ma·dɔl/",            syllables:["TRA","ma","dol"],               si:0, category:"Schmerzmittel",    tip:'Erste Silbe "TRA" betonen.',          wrong:["tra·MA·dol","tra·ma·DOL","TRAM·a·dol"] },
+  { lv:1, name:"Metamizol",      phonetic:"/mɛ·ta·ˈmiː·zol/",          syllables:["Me","ta","MI","zol"],           si:2, category:"Schmerzmittel",    tip:'Dritte Silbe "MI" betonen.',          wrong:["ME·ta·mi·zol","me·TA·mi·zol","me·ta·mi·ZOL"] },
+  { lv:1, name:"Piroxicam",      phonetic:"/pɪ·ˈrɔk·sɪ·kam/",          syllables:["Pi","ROX","i","cam"],           si:1, category:"Entzündungshemmer",tip:'Zweite Silbe "ROX" betonen.',         wrong:["PI·rox·i·cam","pi·rox·I·cam","pi·rox·i·CAM"] },
+  { lv:1, name:"Indometacin",    phonetic:"/ɪn·do·ˈmɛ·ta·tsɪn/",      syllables:["In","do","ME","ta","cin"],      si:2, category:"Entzündungshemmer",tip:'Dritte Silbe "ME" betonen.',          wrong:["IN·do·me·ta·cin","in·DO·me·ta·cin","in·do·me·ta·CIN"] },
+  // Diabetes & Stoffwechsel
+  { lv:1, name:"Glibenclamid",   phonetic:"/glɪ·bɛn·ˈklaː·mɪt/",      syllables:["Gli","ben","CLA","mid"],        si:2, category:"Diabetes",         tip:'Dritte Silbe "CLA" betonen.',         wrong:["GLI·ben·cla·mid","gli·BEN·cla·mid","gli·ben·cla·MID"] },
+  { lv:1, name:"Sitagliptin",    phonetic:"/sɪ·ta·ˈglɪp·tɪn/",         syllables:["Si","ta","GLIP","tin"],         si:2, category:"Diabetes",         tip:'Dritte Silbe "GLIP" betonen.',        wrong:["SI·ta·glip·tin","si·TA·glip·tin","si·ta·glip·TIN"] },
+  { lv:1, name:"Empagliflozin",  phonetic:"/ɛm·pa·glɪ·ˈfloː·tsɪn/",   syllables:["Em","pa","gli","FLO","zin"],    si:3, category:"Diabetes",         tip:'Vierte Silbe "FLO" betonen.',         wrong:["EM·pa·gli·flo·zin","em·PA·gli·flo·zin","em·pa·gli·flo·ZIN"] },
+  { lv:1, name:"Dapagliflozin",  phonetic:"/da·pa·glɪ·ˈfloː·tsɪn/",   syllables:["Da","pa","gli","FLO","zin"],    si:3, category:"Diabetes",         tip:'Vierte Silbe "FLO" betonen.',         wrong:["DA·pa·gli·flo·zin","da·PA·gli·flo·zin","da·pa·gli·flo·ZIN"] },
+  { lv:1, name:"Insulin",        phonetic:"/ˈɪn·zu·lɪn/",              syllables:["IN","su","lin"],                si:0, category:"Diabetes",         tip:'Erste Silbe "IN" betonen.',           wrong:["in·SU·lin","in·su·LIN","INS·u·lin"] },
+  { lv:1, name:"Liraglutid",     phonetic:"/lɪ·ra·ˈgluː·tɪt/",         syllables:["Li","ra","GLU","tid"],          si:2, category:"Diabetes",         tip:'Dritte Silbe "GLU" betonen.',         wrong:["LI·ra·glu·tid","li·RA·glu·tid","li·ra·glu·TID"] },
+  { lv:1, name:"Semaglutid",     phonetic:"/seː·ma·ˈgluː·tɪt/",        syllables:["Se","ma","GLU","tid"],          si:2, category:"Diabetes",         tip:'Dritte Silbe "GLU" betonen.',         wrong:["SE·ma·glu·tid","se·MA·glu·tid","se·ma·glu·TID"] },
+  // Schilddrüse & Hormone
+  { lv:1, name:"Levothyroxin",   phonetic:"/leː·vo·ty·ˈrɔk·sɪn/",     syllables:["Le","vo","thy","ROX","in"],     si:3, category:"Schilddrüse",      tip:'Vierte Silbe "ROX" betonen.',         wrong:["LE·vo·thy·rox·in","le·VO·thy·rox·in","le·vo·thy·rox·IN"] },
+  { lv:1, name:"Thiamazol",      phonetic:"/tɪ·a·ˈmaː·zol/",           syllables:["Thi","a","MA","zol"],           si:2, category:"Schilddrüse",      tip:'Dritte Silbe "MA" betonen.',          wrong:["THI·a·ma·zol","thi·A·ma·zol","thi·a·ma·ZOL"] },
+  { lv:1, name:"Prednisolon",    phonetic:"/prɛd·nɪ·ˈzoː·lon/",        syllables:["Pred","ni","SO","lon"],         si:2, category:"Kortikoid",        tip:'Dritte Silbe "SO" betonen.',          wrong:["PRED·ni·so·lon","pred·NI·so·lon","pred·ni·so·LON"] },
+  { lv:1, name:"Dexamethason",   phonetic:"/dɛk·sa·mɛ·ˈta·zon/",      syllables:["Dex","a","me","THA","son"],     si:3, category:"Kortikoid",        tip:'Vierte Silbe "THA" betonen.',         wrong:["DEX·a·me·tha·son","dex·A·me·tha·son","dex·a·me·tha·SON"] },
+  { lv:1, name:"Hydrocortison",  phonetic:"/hy·dro·kor·ˈtiː·zon/",     syllables:["Hy","dro","cor","TI","son"],    si:3, category:"Kortikoid",        tip:'Vierte Silbe "TI" betonen.',          wrong:["HY·dro·cor·ti·son","hy·DRO·cor·ti·son","hy·dro·cor·ti·SON"] },
+  // Medizinprodukte & Darreichungsformen
+  { lv:1, name:"Blutdruckmessgerät",     phonetic:"/bluːt·druk·ˈmɛs·gɛ·rɛːt/",   syllables:["Blut","druck","MESS","ge","rät"],      si:2, category:"Medizinprodukt",  tip:'Dritte Silbe "MESS" betonen.',        wrong:["BLUT·druck·mess·ge·rät","blut·DRUCK·mess·ge·rät","blut·druck·mess·ge·RÄT"] },
+  { lv:1, name:"Inhalationsgerät",       phonetic:"/ɪn·ha·la·tsi·ˈoːns·gɛ·rɛːt/",syllables:["In","ha","la","ti","ONS","ge","rät"],  si:4, category:"Medizinprodukt",  tip:'Fünfte Silbe "ONS" betonen.',         wrong:["IN·ha·la·ti·ons·ge·rät","in·HA·la·ti·ons·ge·rät","in·ha·la·ti·ons·ge·RÄT"] },
+  { lv:1, name:"Blutzuckermessgerät",    phonetic:"/bluːt·tsuk·ɐ·ˈmɛs·gɛ·rɛːt/", syllables:["Blut","zu","cker","MESS","ge","rät"],  si:3, category:"Medizinprodukt",  tip:'Vierte Silbe "MESS" betonen.',        wrong:["BLUT·zu·cker·mess·ge·rät","blut·ZU·cker·mess·ge·rät","blut·zu·cker·mess·ge·RÄT"] },
+  { lv:1, name:"Kompressionsstrumpf",    phonetic:"/kom·prɛ·si·ˈoːns·ʃtrumpf/",  syllables:["Kom","pres","si","ONS","strumpf"],     si:3, category:"Medizinprodukt",  tip:'Vierte Silbe "ONS" betonen.',         wrong:["KOM·pres·si·ons·strumpf","kom·PRES·si·ons·strumpf","kom·pres·si·ons·STRUMPF"] },
+  { lv:1, name:"Suppositorium",          phonetic:"/zu·po·zɪ·ˈtoː·rɪ·um/",       syllables:["Sup","po","si","TO","ri","um"],        si:3, category:"Darreichungsform", tip:'Vierte Silbe "TO" betonen.',          wrong:["SUP·po·si·to·ri·um","sup·PO·si·to·ri·um","sup·po·si·to·ri·UM"] },
+  { lv:1, name:"Injektionslösung",       phonetic:"/ɪn·jɛk·tsi·ˈoːns·løː·zung/", syllables:["In","jek","ti","ONS","lö","sung"],     si:3, category:"Darreichungsform", tip:'Vierte Silbe "ONS" betonen.',         wrong:["IN·jek·ti·ons·lö·sung","in·JEK·ti·ons·lö·sung","in·jek·ti·ons·lö·SUNG"] },
+  { lv:1, name:"Infusionslösung",        phonetic:"/ɪn·fuː·zi·ˈoːns·løː·zung/",  syllables:["In","fu","si","ONS","lö","sung"],      si:3, category:"Darreichungsform", tip:'Vierte Silbe "ONS" betonen.',         wrong:["IN·fu·si·ons·lö·sung","in·FU·si·ons·lö·sung","in·fu·si·ons·lö·SUNG"] },
+  { lv:1, name:"Retardtablette",         phonetic:"/rɛ·ˈtart·ta·blɛ·tɛ/",        syllables:["Re","TARD","tab","let","te"],          si:1, category:"Darreichungsform", tip:'Zweite Silbe "TARD" betonen.',        wrong:["RE·tard·tab·let·te","re·tard·TAB·let·te","re·tard·tab·let·TE"] },
+  { lv:1, name:"Sublingualtablette",     phonetic:"/zup·lɪn·ˈgvaːl·ta·blɛ·tɛ/",  syllables:["Sub","lin","GUAL","tab","let","te"],   si:2, category:"Darreichungsform", tip:'Dritte Silbe "GUAL" betonen.',        wrong:["SUB·lin·gual·tab·let·te","sub·LIN·gual·tab·let·te","sub·lin·gual·tab·let·TE"] },
+  { lv:1, name:"Zäpfchen",              phonetic:"/ˈtsɛpf·çɛn/",                syllables:["ZÄPF","chen"],                         si:0, category:"Darreichungsform", tip:'Erste Silbe "ZÄPF" betonen.',         wrong:["zäpf·CHEN","ZÄPF·CHEN","ZäPF·chen"] },
+
+  // ── LEVEL 2: FORTGESCHRITTEN (32) ─────────────
+  // Herz & Blutdruck
+  { lv:2, name:"Ramipril",       phonetic:"/ˈraː·mɪ·prɪl/",            syllables:["RA","mi","pril"],               si:0, category:"ACE-Hemmer",       tip:'Erste Silbe "RA" betonen.',           wrong:["ra·MI·pril","ra·mi·PRIL","RAM·i·pril"] },
+  { lv:2, name:"Bisoprolol",     phonetic:"/bɪ·zo·ˈproː·lɔl/",         syllables:["Bi","so","PRO","lol"],          si:2, category:"Betablocker",      tip:'Dritte Silbe "PRO" betonen.',         wrong:["BI·so·pro·lol","bi·SO·pro·lol","bi·so·pro·LOL"] },
+  { lv:2, name:"Amlodipine",     phonetic:"/am·ˈloː·dɪ·piːn/",         syllables:["Am","LO","di","pine"],          si:1, category:"Kalziumantagonist",tip:'Zweite Silbe "LO" betonen.',          wrong:["AM·lo·di·pine","am·lo·DI·pine","am·lo·di·PINE"] },
+  { lv:2, name:"Valsartan",      phonetic:"/val·ˈzar·tan/",             syllables:["Val","ZAR","tan"],              si:1, category:"Blutdruck",        tip:'Zweite Silbe "ZAR" betonen.',         wrong:["VAL·zar·tan","val·zar·TAN","VALS·ar·tan"] },
+  { lv:2, name:"Candesartan",    phonetic:"/kan·dɛ·ˈzar·tan/",         syllables:["Can","de","ZAR","tan"],         si:2, category:"Blutdruck",        tip:'Dritte Silbe "ZAR" betonen.',         wrong:["CAN·de·zar·tan","can·DE·zar·tan","can·de·zar·TAN"] },
+  { lv:2, name:"Furosemid",      phonetic:"/fu·ro·ˈzeː·mɪt/",          syllables:["Fu","ro","SE","mid"],           si:2, category:"Diuretikum",       tip:'Dritte Silbe "SE" betonen.',          wrong:["FU·ro·se·mid","fu·RO·se·mid","fu·ro·se·MID"] },
+  { lv:2, name:"Spironolacton",  phonetic:"/spɪ·ro·no·ˈlak·ton/",      syllables:["Spi","ro","no","LAC","ton"],    si:3, category:"Diuretikum",       tip:'Vierte Silbe "LAC" betonen.',         wrong:["SPI·ro·no·lac·ton","spi·RO·no·lac·ton","spi·ro·no·lac·TON"] },
+  { lv:2, name:"Digitoxin",      phonetic:"/dɪ·gɪ·ˈtɔk·sɪn/",         syllables:["Di","gi","TOX","in"],           si:2, category:"Herzglykosid",     tip:'Dritte Silbe "TOX" betonen.',         wrong:["DI·gi·tox·in","di·GI·tox·in","di·gi·tox·IN"] },
+  { lv:2, name:"Clopidogrel",    phonetic:"/klo·ˈpɪ·do·grɛl/",         syllables:["Clo","PI","do","grel"],         si:1, category:"Thrombozytenhemmer",tip:'Zweite Silbe "PI" betonen.',          wrong:["CLO·pi·do·grel","clo·pi·DO·grel","clo·pi·do·GREL"] },
+  { lv:2, name:"Rivaroxaban",    phonetic:"/rɪ·va·ˈrɔk·sa·ban/",       syllables:["Ri","va","ROX","a","ban"],      si:2, category:"Antikoagulans",    tip:'Dritte Silbe "ROX" betonen.',         wrong:["RI·va·rox·a·ban","ri·VA·rox·a·ban","ri·va·rox·a·BAN"] },
+  { lv:2, name:"Apixaban",       phonetic:"/a·ˈpɪk·sa·ban/",           syllables:["A","PIX","a","ban"],            si:1, category:"Antikoagulans",    tip:'Zweite Silbe "PIX" betonen.',         wrong:["AP·ix·a·ban","a·pix·A·ban","a·pix·a·BAN"] },
+  // Antibiotika
+  { lv:2, name:"Ciprofloxacin",  phonetic:"/tsɪ·pro·ˈflɔk·sa·tsɪn/",  syllables:["Ci","pro","FLOX","a","cin"],    si:2, category:"Antibiotikum",     tip:'Dritte Silbe "FLOX" betonen.',        wrong:["CI·pro·flox·a·cin","ci·PRO·flox·a·cin","ci·pro·flox·a·CIN"] },
+  { lv:2, name:"Clarithromycin", phonetic:"/kla·rɪ·tro·ˈmaɪ·sɪn/",    syllables:["Cla","ri","tro","MY","cin"],    si:3, category:"Antibiotikum",     tip:'Vierte Silbe "MY" betonen.',          wrong:["CLA·ri·tro·my·cin","cla·RI·tro·my·cin","cla·ri·tro·my·CIN"] },
+  { lv:2, name:"Azithromycin",   phonetic:"/a·zɪ·tro·ˈmaɪ·sɪn/",      syllables:["A","zi","tro","MY","cin"],      si:3, category:"Antibiotikum",     tip:'Vierte Silbe "MY" betonen.',          wrong:["AZ·i·tro·my·cin","a·zi·TRO·my·cin","a·zi·tro·my·CIN"] },
+  { lv:2, name:"Doxycyclin",     phonetic:"/dɔk·sɪ·ˈtsyː·klɪn/",      syllables:["Dox","y","CY","clin"],          si:2, category:"Antibiotikum",     tip:'Dritte Silbe "CY" betonen.',          wrong:["DOX·y·cy·clin","dox·Y·cy·clin","dox·y·cy·CLIN"] },
+  { lv:2, name:"Cotrimoxazol",   phonetic:"/ko·trɪ·ˈmɔk·sa·zol/",     syllables:["Co","tri","MOX","a","zol"],     si:2, category:"Antibiotikum",     tip:'Dritte Silbe "MOX" betonen.',         wrong:["CO·tri·mox·a·zol","co·TRI·mox·a·zol","co·tri·mox·a·ZOL"] },
+  { lv:2, name:"Levofloxacin",   phonetic:"/leː·vo·ˈflɔk·sa·tsɪn/",   syllables:["Le","vo","FLOX","a","cin"],     si:2, category:"Antibiotikum",     tip:'Dritte Silbe "FLOX" betonen.',        wrong:["LE·vo·flox·a·cin","le·VO·flox·a·cin","le·vo·flox·a·CIN"] },
+  { lv:2, name:"Nitrofurantoin", phonetic:"/nɪ·tro·fu·ˈran·to·ɪn/",   syllables:["Ni","tro","fu","RAN","to","in"],si:3, category:"Antibiotikum",     tip:'Vierte Silbe "RAN" betonen.',         wrong:["NI·tro·fu·ran·to·in","ni·TRO·fu·ran·to·in","ni·tro·fu·ran·to·IN"] },
+  { lv:2, name:"Vancomycin",     phonetic:"/van·ko·ˈmaɪ·sɪn/",         syllables:["Van","co","MY","cin"],          si:2, category:"Antibiotikum",     tip:'Dritte Silbe "MY" betonen.',          wrong:["VAN·co·my·cin","van·CO·my·cin","van·co·my·CIN"] },
+  // Magen & Darm
+  { lv:2, name:"Lansoprazol",    phonetic:"/lan·so·ˈpraː·zol/",        syllables:["Lan","so","PRA","zol"],         si:2, category:"Magenschutz",      tip:'Dritte Silbe "PRA" betonen.',         wrong:["LAN·so·pra·zol","lan·SO·pra·zol","lan·so·pra·ZOL"] },
+  { lv:2, name:"Esomeprazol",    phonetic:"/eː·zo·meː·ˈpraː·zol/",    syllables:["E","so","me","PRA","zol"],      si:3, category:"Magenschutz",      tip:'Vierte Silbe "PRA" betonen.',         wrong:["ES·o·me·pra·zol","e·SO·me·pra·zol","e·so·me·pra·ZOL"] },
+  { lv:2, name:"Rabeprazol",     phonetic:"/raː·bɛ·ˈpraː·zol/",       syllables:["Ra","be","PRA","zol"],          si:2, category:"Magenschutz",      tip:'Dritte Silbe "PRA" betonen.',         wrong:["RA·be·pra·zol","ra·BE·pra·zol","ra·be·pra·ZOL"] },
+  { lv:2, name:"Domperidon",     phonetic:"/dom·pɛ·rɪ·ˈdoːn/",        syllables:["Dom","pe","ri","DON"],          si:3, category:"Antiemetikum",     tip:'Vierte Silbe "DON" betonen.',         wrong:["DOM·pe·ri·don","dom·PE·ri·don","dom·pe·RI·don"] },
+  { lv:2, name:"Ondansetron",    phonetic:"/on·ˈdan·sɛ·tron/",         syllables:["On","DAN","se","tron"],         si:1, category:"Antiemetikum",     tip:'Zweite Silbe "DAN" betonen.',         wrong:["ON·dan·se·tron","on·dan·SE·tron","on·dan·se·TRON"] },
+  { lv:2, name:"Metoclopramid",  phonetic:"/meː·to·klo·ˈpraː·mɪt/",   syllables:["Me","to","clo","PRA","mid"],    si:3, category:"Antiemetikum",     tip:'Vierte Silbe "PRA" betonen.',         wrong:["ME·to·clo·pra·mid","me·TO·clo·pra·mid","me·to·clo·pra·MID"] },
+  { lv:2, name:"Loperamid",      phonetic:"/lo·ˈpɛː·ra·mɪt/",          syllables:["Lo","PE","ra","mid"],           si:1, category:"Antidiarrhoikum",  tip:'Zweite Silbe "PE" betonen.',          wrong:["LO·pe·ra·mid","lo·pe·RA·mid","lo·pe·ra·MID"] },
+  { lv:2, name:"Mesalazin",      phonetic:"/meː·za·ˈlaː·tsɪn/",        syllables:["Me","sa","LA","zin"],           si:2, category:"Darmentzündung",   tip:'Dritte Silbe "LA" betonen.',          wrong:["ME·sa·la·zin","me·SA·la·zin","me·sa·la·ZIN"] },
+  { lv:2, name:"Budesonid",      phonetic:"/buː·dɛ·ˈzoː·nɪt/",         syllables:["Bu","de","SO","nid"],           si:2, category:"Kortikoid",        tip:'Dritte Silbe "SO" betonen.',          wrong:["BU·de·so·nid","bu·DE·so·nid","bu·de·so·NID"] },
+  // Weitere Darreichungsformen
+  { lv:2, name:"Ampulle",                phonetic:"/am·ˈpu·lɛ/",                  syllables:["Am","PUL","le"],                       si:1, category:"Darreichungsform", tip:'Zweite Silbe "PUL" betonen.',         wrong:["AM·pul·le","am·pul·LE","AMP·ul·le"] },
+  { lv:2, name:"Durchstechflasche",      phonetic:"/durç·ˈʃtɛç·fla·ʃɛ/",          syllables:["Durch","STECH","fla","sche"],          si:1, category:"Medizinprodukt",  tip:'Zweite Silbe "STECH" betonen.',       wrong:["DURCH·stech·fla·sche","durch·stech·FLA·sche","durch·stech·fla·SCHE"] },
+  { lv:2, name:"Fertigspritze",          phonetic:"/ˈfɛr·tɪç·ʃprɪ·tsɛ/",          syllables:["FER","tig","sprit","ze"],              si:0, category:"Medizinprodukt",  tip:'Erste Silbe "FER" betonen.',          wrong:["fer·TIG·sprit·ze","fer·tig·SPRIT·ze","fer·tig·sprit·ZE"] },
+  { lv:2, name:"Transdermales Pflaster", phonetic:"/trans·dɛr·ˈmaː·lɛs/",          syllables:["Trans","der","MA","les"],              si:2, category:"Darreichungsform", tip:'Dritte Silbe "MA" betonen.',          wrong:["TRANS·der·ma·les","trans·DER·ma·les","trans·der·ma·LES"] },
+
+  // ── LEVEL 3: PROFI (23) ───────────────────────
+  // Atemwege
+  { lv:3, name:"Salbutamol",     phonetic:"/zal·ˈbuː·ta·mol/",         syllables:["Sal","BU","ta","mol"],          si:1, category:"Bronchodilatator", tip:'Zweite Silbe "BU" betonen.',          wrong:["SAL·bu·ta·mol","sal·bu·TA·mol","sal·bu·ta·MOL"] },
+  { lv:3, name:"Formoterol",     phonetic:"/for·ˈmoː·tɛ·rol/",         syllables:["For","MO","te","rol"],          si:1, category:"Bronchodilatator", tip:'Zweite Silbe "MO" betonen.',          wrong:["FOR·mo·te·rol","for·mo·TE·rol","for·mo·te·ROL"] },
+  { lv:3, name:"Tiotropium",     phonetic:"/tɪ·o·ˈtroː·pɪ·um/",       syllables:["Ti","o","TRO","pi","um"],       si:2, category:"Bronchodilatator", tip:'Dritte Silbe "TRO" betonen.',         wrong:["TI·o·tro·pi·um","ti·O·tro·pi·um","ti·o·tro·pi·UM"] },
+  { lv:3, name:"Montelukast",    phonetic:"/mon·tɛ·ˈluː·kast/",        syllables:["Mon","te","LU","kast"],         si:2, category:"Asthma",           tip:'Dritte Silbe "LU" betonen.',          wrong:["MON·te·lu·kast","mon·TE·lu·kast","mon·te·lu·KAST"] },
+  { lv:3, name:"Fluticason",     phonetic:"/fluː·tɪ·ˈkaː·zon/",        syllables:["Flu","ti","CA","son"],          si:2, category:"Kortikosteroid",   tip:'Dritte Silbe "CA" betonen.',          wrong:["FLU·ti·ca·son","flu·TI·ca·son","flu·ti·ca·SON"] },
+  { lv:3, name:"Beclometason",   phonetic:"/bɛ·klo·ˈmɛ·ta·zon/",      syllables:["Be","clo","ME","ta","son"],     si:2, category:"Kortikosteroid",   tip:'Dritte Silbe "ME" betonen.',          wrong:["BE·clo·me·ta·son","be·CLO·me·ta·son","be·clo·me·ta·SON"] },
+  { lv:3, name:"Ipratropium",    phonetic:"/ɪ·pra·ˈtroː·pɪ·um/",      syllables:["I","pra","TRO","pi","um"],      si:2, category:"Bronchodilatator", tip:'Dritte Silbe "TRO" betonen.',         wrong:["IP·ra·tro·pi·um","i·PRA·tro·pi·um","i·pra·tro·pi·UM"] },
+  // Neurologie & Psyche
+  { lv:3, name:"Sertralin",      phonetic:"/zɛr·ˈtraː·lɪn/",           syllables:["Ser","TRA","lin"],              si:1, category:"Antidepressivum",  tip:'Zweite Silbe "TRA" betonen.',         wrong:["SER·tra·lin","ser·tra·LIN","SERT·ra·lin"] },
+  { lv:3, name:"Escitalopram",   phonetic:"/ɛs·tsɪ·ˈta·lo·pram/",     syllables:["Es","ci","TA","lo","pram"],     si:2, category:"Antidepressivum",  tip:'Dritte Silbe "TA" betonen.',          wrong:["ES·ci·ta·lo·pram","es·CI·ta·lo·pram","es·ci·ta·lo·PRAM"] },
+  { lv:3, name:"Venlafaxin",     phonetic:"/vɛn·la·ˈfak·sɪn/",        syllables:["Ven","la","FAX","in"],          si:2, category:"Antidepressivum",  tip:'Dritte Silbe "FAX" betonen.',         wrong:["VEN·la·fax·in","ven·LA·fax·in","ven·la·fax·IN"] },
+  { lv:3, name:"Duloxetin",      phonetic:"/du·lɔk·ˈseː·tɪn/",        syllables:["Du","lox","E","tin"],           si:2, category:"Antidepressivum",  tip:'Dritte Silbe "E" betonen.',           wrong:["DU·lox·e·tin","du·LOX·e·tin","du·lox·e·TIN"] },
+  { lv:3, name:"Quetiapine",     phonetic:"/kvɛ·tɪ·ˈaː·pɪn/",         syllables:["Que","ti","A","pine"],          si:2, category:"Antipsychotikum",  tip:'Dritte Silbe "A" betonen.',           wrong:["QUE·ti·a·pine","que·TI·a·pine","que·ti·a·PINE"] },
+  { lv:3, name:"Risperidon",     phonetic:"/rɪs·pɛ·rɪ·ˈdoːn/",        syllables:["Ris","pe","ri","DON"],          si:3, category:"Antipsychotikum",  tip:'Vierte Silbe "DON" betonen.',         wrong:["RIS·pe·ri·don","ris·PE·ri·don","ris·pe·RI·don"] },
+  { lv:3, name:"Levetiracetam",  phonetic:"/leː·vɛ·tɪ·ˈra·tsɛ·tam/",  syllables:["Le","ve","ti","RA","ce","tam"], si:3, category:"Antiepileptikum",  tip:'Vierte Silbe "RA" betonen.',          wrong:["LE·ve·ti·ra·ce·tam","le·VE·ti·ra·ce·tam","le·ve·ti·ra·ce·TAM"] },
+  { lv:3, name:"Pregabalin",     phonetic:"/preː·ˈga·ba·lɪn/",         syllables:["Pre","GA","ba","lin"],          si:1, category:"Antiepileptikum",  tip:'Zweite Silbe "GA" betonen.',          wrong:["PRE·ga·ba·lin","pre·ga·BA·lin","pre·ga·ba·LIN"] },
+  { lv:3, name:"Gabapentin",     phonetic:"/ga·ba·ˈpɛn·tɪn/",         syllables:["Ga","ba","PEN","tin"],          si:2, category:"Antiepileptikum",  tip:'Dritte Silbe "PEN" betonen.',         wrong:["GA·ba·pen·tin","ga·BA·pen·tin","ga·ba·pen·TIN"] },
+  // Onkologie
+  { lv:3, name:"Trastuzumab",    phonetic:"/tras·tu·ˈzuː·mab/",        syllables:["Tras","tu","ZU","mab"],         si:2, category:"Onkologie",        tip:'Dritte Silbe "ZU" betonen.',          wrong:["TRAS·tu·zu·mab","tras·TU·zu·mab","tras·tu·zu·MAB"] },
+  { lv:3, name:"Bevacizumab",    phonetic:"/bɛ·va·tsɪ·ˈzuː·mab/",     syllables:["Be","va","ci","ZU","mab"],      si:3, category:"Onkologie",        tip:'Vierte Silbe "ZU" betonen.',          wrong:["BE·va·ci·zu·mab","be·VA·ci·zu·mab","be·va·ci·zu·MAB"] },
+  { lv:3, name:"Rituximab",      phonetic:"/rɪ·ˈtuk·sɪ·mab/",         syllables:["Ri","TUX","i","mab"],           si:1, category:"Onkologie",        tip:'Zweite Silbe "TUX" betonen.',         wrong:["RI·tux·i·mab","ri·tux·I·mab","ri·tux·i·MAB"] },
+  { lv:3, name:"Imatinib",       phonetic:"/ɪ·ˈmaː·tɪ·nɪb/",           syllables:["I","MA","ti","nib"],            si:1, category:"Onkologie",        tip:'Zweite Silbe "MA" betonen.',          wrong:["IM·a·ti·nib","i·ma·TI·nib","i·ma·ti·NIB"] },
+  { lv:3, name:"Capecitabin",    phonetic:"/ka·pɛ·ˈziː·ta·bɪn/",      syllables:["Ca","pe","CI","ta","bin"],      si:2, category:"Onkologie",        tip:'Dritte Silbe "CI" betonen.',          wrong:["CA·pe·ci·ta·bin","ca·PE·ci·ta·bin","ca·pe·ci·ta·BIN"] },
+  { lv:3, name:"Tamoxifen",      phonetic:"/ta·ˈmɔk·sɪ·fɛn/",         syllables:["Ta","MOX","i","fen"],           si:1, category:"Onkologie",        tip:'Zweite Silbe "MOX" betonen.',         wrong:["TA·mox·i·fen","ta·mox·I·fen","ta·mox·i·FEN"] },
+  { lv:3, name:"Anastrozol",     phonetic:"/a·ˈnas·tro·zol/",          syllables:["A","NAS","tro","zol"],          si:1, category:"Onkologie",        tip:'Zweite Silbe "NAS" betonen.',         wrong:["AN·as·tro·zol","a·nas·TRO·zol","a·nas·tro·ZOL"] }
+];
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let S = { xp:0, streak:0, lastPlayed:null, learned:0 };
+let Q = { meds:[], idx:0, correct:0, sessionXP:0, answered:false, lvId:1 };
+let recognition      = null;
+let micActive        = false;
+let micFeedbackTimer = null;
+
+function save() { localStorage.setItem('pv2', JSON.stringify(S)); }
+function load() {
+  const raw = localStorage.getItem('pv2');
+  if (raw) S = { ...S, ...JSON.parse(raw) };
+  // migrate old key
+  const old = localStorage.getItem('pv');
+  if (old && !raw) { S = { ...S, ...JSON.parse(old) }; save(); }
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  if (S.lastPlayed && S.lastPlayed !== today && S.lastPlayed !== yesterday) { S.streak = 0; save(); }
+  renderLevelCards();
+  refreshUI();
+}
+
+// ═══════════════════════════════════════════════
+//  UI
+// ═══════════════════════════════════════════════
+function el(id) { return document.getElementById(id); }
+function set(id, v) { el(id).textContent = v; }
+
+function refreshUI() {
+  const xpPerLevel = 200;
+  const lvl = Math.floor(S.xp / xpPerLevel) + 1;
+  const inLvl = S.xp % xpPerLevel;
+  const pct = Math.min(Math.round(inLvl / xpPerLevel * 100), 100);
+  set('homeXpPill', `🪙 ${S.xp} Shekel`);
+  set('homeXpVal',  S.xp);
+  set('homeStreakVal', `${S.streak} 🔥`);
+  set('homeLearnedVal', S.learned);
+  set('profXp',      S.xp);
+  set('profStreak',  `${S.streak} 🔥`);
+  set('profLearned', S.learned);
+  set('profLevel',   lvl);
+  el('profProgFill').style.width = pct + '%';
+  set('profProgTxt', `${inLvl} / ${xpPerLevel} Shekel`);
+  set('profProgPct', pct + '%');
+  renderLevelCards();
+}
+
+function canPlay(lvId) {
+  const lv = LEVELS.find(l => l.id === lvId);
+  return S.xp >= lv.xpReq;
+}
+
+function renderLevelCards() {
+  const c = el('levelCardsHome');
+  if (!c) return;
+  c.innerHTML = '';
+  LEVELS.forEach(lv => {
+    const unlocked = canPlay(lv.id);
+    const count = MEDS.filter(m => m.lv === lv.id).length;
+    const div = document.createElement('div');
+    div.className = `level-card ${unlocked ? 'open' : 'locked'}`;
+    div.innerHTML = `
+      <div class="lvl-icon ${lv.color}">${lv.icon}</div>
+      <div class="lvl-info">
+        <div class="lvl-name">${lv.name}</div>
+        <div class="lvl-sub">${count} Begriffe &nbsp;·&nbsp; ${lv.desc}</div>
+      </div>
+      <div class="lvl-badge ${unlocked ? 'on' : 'off'}">${unlocked ? 'Aktiv' : `🔒 ${lv.xpReq} Shekel`}</div>`;
+    if (unlocked) div.onclick = () => startLearn(lv.id);
+    c.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el('screen' + name).classList.add('active');
+  const map = { Home:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navLearn', Result:'navLearn' };
+  if (map[name]) el(map[name]).classList.add('active');
+  refreshUI();
+  window.scrollTo(0, 0);
+}
+function goHome() { stopMic(); closeModal(); showScreen('Home'); }
+
+// ═══════════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════════
+function openModal() {
+  const c = el('modalLevels');
+  c.innerHTML = '';
+  LEVELS.forEach(lv => {
+    const unlocked = canPlay(lv.id);
+    const count = MEDS.filter(m => m.lv === lv.id).length;
+    const btn = document.createElement('div');
+    btn.className = `modal-lvl-btn ${unlocked ? '' : 'locked'}`;
+    btn.innerHTML = `
+      <span style="font-size:28px;">${lv.icon}</span>
+      <div>
+        <div class="mlbl">${lv.name} <span style="font-size:12px;color:var(--teal);font-weight:600;">${unlocked ? '' : '🔒'}</span></div>
+        <div class="msub">${count} Begriffe &nbsp;·&nbsp; ${unlocked ? 'Freigeschaltet' : lv.xpReq + ' Shekel benötigt'}</div>
+      </div>`;
+    if (unlocked) btn.onclick = () => { closeModal(); startLearn(lv.id); };
+    c.appendChild(btn);
+  });
+  el('modalBg').classList.add('open');
+}
+function closeModal(e) {
+  if (!e || e.target === el('modalBg')) el('modalBg').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════════════
+function shuffle(a) {
+  const b = [...a];
+  for (let i = b.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
+
+function startLearn(lvId = 1) {
+  if (!canPlay(lvId)) return;
+  const pool = MEDS.filter(m => m.lv === lvId);
+  const lv   = LEVELS.find(l => l.id === lvId);
+  Q = { meds: shuffle(pool).slice(0, 10), idx: 0, correct: 0, sessionXP: 0, answered: false, lvId };
+  // Update learn chip
+  el('learnChip').textContent = `${lv.icon}  ${lv.name} Level`;
+  showScreen('Learn');
+  el('navLearn').classList.add('active');
+  renderQ();
+}
+
+function renderQ() {
+  stopMic();
+  if (micFeedbackTimer) { clearTimeout(micFeedbackTimer); micFeedbackTimer = null; }
+  el('micResult').textContent = '';
+  const med = Q.meds[Q.idx];
+  Q.answered = false;
+  const total = Q.meds.length;
+  const cur   = Q.idx + 1;
+  set('progText', `Frage ${cur} von ${total}`);
+  set('progXp',   `${Q.sessionXP} Shekel`);
+  el('progFill').style.width = ((cur - 1) / total * 100) + '%';
+  set('medCat', med.category);
+  // Dynamic font size
+  const nameEl = el('medName');
+  nameEl.textContent = med.name;
+  nameEl.style.fontSize = med.name.length > 22 ? '18px' : med.name.length > 15 ? '24px' : '';
+  set('medPhonetic', med.phonetic);
+  // Syllables
+  const sylRow = el('sylRow');
+  sylRow.innerHTML = '';
+  med.syllables.forEach((s, i) => {
+    if (i > 0) { const d = document.createElement('span'); d.className='syl-sep'; d.textContent='·'; sylRow.appendChild(d); }
+    const sp = document.createElement('span');
+    sp.className = 'syl-item' + (i === med.si ? ' stressed' : '');
+    sp.textContent = s;
+    sylRow.appendChild(sp);
+  });
+  // Feedback reset
+  const fb = el('feedbackBox');
+  fb.className = 'feedback-box';
+  fb.innerHTML = '';
+  // Options
+  const correct = med.syllables.join('·');
+  const opts = shuffle([correct, ...med.wrong]);
+  const grid = el('optGrid');
+  grid.innerHTML = '';
+  opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = opt;
+    b.dataset.correct = String(opt === correct);
+    b.onclick = () => pick(b, correct, med);
+    grid.appendChild(b);
+  });
+  el('btnNext').classList.remove('show');
+}
+
+function pick(btn, correct, med) {
+  if (Q.answered) return;
+  Q.answered = true;
+  document.querySelectorAll('.opt').forEach(b => b.disabled = true);
+  const good = btn.dataset.correct === 'true';
+  if (good) {
+    btn.classList.add('good');
+    Q.correct++; Q.sessionXP += 10; S.xp += 10;
+    popXP();
+    showFeedback(true, `✅ &nbsp;Richtig! &nbsp;${med.tip}`);
+  } else {
+    btn.classList.add('bad');
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 380);
+    document.querySelectorAll('.opt').forEach(b => { if (b.dataset.correct === 'true') b.classList.add('good'); });
+    showFeedback(false, `❌ &nbsp;Fast! Richtige Antwort: <strong>${correct}</strong><br>${med.tip}`);
+  }
+  S.learned = Math.min(S.learned + 1, 9999);
+  set('progXp', `${Q.sessionXP} Shekel`);
+  save();
+  refreshUI();
+  el('btnNext').classList.add('show');
+}
+
+function showFeedback(ok, html) {
+  const fb = el('feedbackBox');
+  fb.innerHTML = html;
+  fb.className = 'feedback-box show' + (ok ? '' : ' bad');
+}
+
+function nextQ() {
+  Q.idx++;
+  if (Q.idx >= Q.meds.length) showResult();
+  else renderQ();
+}
+
+function popXP() {
+  const p = el('xpPop');
+  p.className = 'xp-pop';
+  void p.offsetWidth;
+  p.className = 'xp-pop go';
+  setTimeout(() => { p.className = 'xp-pop'; }, 960);
+}
+
+// ═══════════════════════════════════════════════
+//  RESULT
+// ═══════════════════════════════════════════════
+function showResult() {
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  if (S.lastPlayed !== today) {
+    S.streak = (S.lastPlayed === yesterday) ? S.streak + 1 : 1;
+    S.lastPlayed = today;
+  }
+  save();
+  const s = Q.correct, t = Q.meds.length;
+  let emoji, title;
+  if (s === t)   { emoji='🏆'; title='Perfekt! Ausgezeichnet!'; }
+  else if(s>=8)  { emoji='🎉'; title='Sehr gut gemacht!'; }
+  else if(s>=6)  { emoji='👍'; title='Gut gemacht!'; }
+  else if(s>=4)  { emoji='📚'; title='Weiter üben!'; }
+  else           { emoji='💪'; title='Nicht aufgeben!'; }
+  set('resEmoji',  emoji);
+  set('resTitle',  title);
+  set('resSub',    `${s} von ${t} richtig — Level: ${LEVELS.find(l=>l.id===Q.lvId).name}`);
+  set('resScore',  `${s}/${t}`);
+  set('resXP',     `+${Q.sessionXP}`);
+  set('resStreak', `${S.streak} 🔥`);
+  set('resTotal',  S.xp);
+  showScreen('Result');
+}
+
+function toggleMic() {
+  if (micActive) { stopMic(); return; }
+  startMic();
+}
+
+function startMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    el('micResult').textContent = '⚠️ Spracherkennung wird von diesem Browser nicht unterstützt.';
+    return;
+  }
+  recognition = new SR();
+  recognition.lang = 'de-DE';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    micActive = true;
+    el('micBtn').classList.add('active');
+    el('micLbl').textContent = 'Höre zu …';
+    el('micResult').textContent = '';
+  };
+
+  recognition.onresult = (event) => {
+    let interim = '', final = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const t = event.results[i][0].transcript;
+      if (event.results[i].isFinal) final += t;
+      else interim += t;
+    }
+    el('micResult').textContent = final || interim;
+    if (final) checkPronunciation(final.trim());
+  };
+
+  recognition.onend = () => {
+    micActive = false;
+    if (el('micBtn')) el('micBtn').classList.remove('active');
+    if (el('micLbl')) el('micLbl').textContent = 'Aussprache üben';
+    recognition = null;
+  };
+
+  recognition.onerror = (event) => {
+    micActive = false;
+    if (el('micBtn')) el('micBtn').classList.remove('active');
+    if (el('micLbl')) el('micLbl').textContent = 'Aussprache üben';
+    recognition = null;
+    if (event.error !== 'no-speech') {
+      el('micResult').textContent = '⚠️ Fehler: ' + event.error;
+    }
+  };
+
+  recognition.start();
+}
+
+function stopMic() {
+  if (recognition) { try { recognition.stop(); } catch(_) {} recognition = null; }
+  micActive = false;
+  if (el('micBtn')) el('micBtn').classList.remove('active');
+  if (el('micLbl')) el('micLbl').textContent = 'Aussprache üben';
+}
+
+// ═══════════════════════════════════════════════
+//  PRONUNCIATION CHECK
+// ═══════════════════════════════════════════════
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = [];
+  for (let i = 0; i <= m; i++) { dp[i] = [i]; for (let j = 1; j <= n; j++) dp[i][j] = 0; }
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]);
+  return dp[m][n];
+}
+
+function normalize(s) {
+  return s.toLowerCase().replace(/[\s\-\.\,\/\(\)]/g, '');
+}
+
+function checkPronunciation(spoken) {
+  if (Q.answered) return;
+  const med = Q.meds[Q.idx];
+  if (!med) return;
+
+  const target = normalize(med.name);
+  const said   = normalize(spoken);
+  const maxLen = Math.max(target.length, said.length);
+  const sim    = maxLen === 0 ? 1 : 1 - levenshtein(target, said) / maxLen;
+
+  if (micFeedbackTimer) { clearTimeout(micFeedbackTimer); micFeedbackTimer = null; }
+
+  const fb = el('feedbackBox');
+  if (sim >= 0.8) {
+    fb.innerHTML = `✅ &nbsp;Richtig ausgesprochen! &nbsp;<strong style="color:var(--teal)">${spoken}</strong>`;
+    fb.className = 'feedback-box show';
+  } else {
+    fb.innerHTML = `🎤 &nbsp;Du hast <strong>"${spoken}"</strong> gesagt — versuch's nochmal mit <strong>"${med.name}"</strong>`;
+    fb.className = 'feedback-box show bad';
+  }
+
+  micFeedbackTimer = setTimeout(() => {
+    if (!Q.answered) { fb.className = 'feedback-box'; fb.innerHTML = ''; }
+    micFeedbackTimer = null;
+  }, 3000);
+}
+
+// ── BOOT ──
+load();
+</script>
+</body>
+</html>
