@@ -4,184 +4,194 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PharmaVoice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:     #02253B;
-      --bg2:    #03344F;
-      --bg3:    #04455F;
-      --teal:   #02C39A;
-      --teal-d: #01A082;
-      --white:  #FFFFFF;
-      --gray:   #7A92A8;
-      --gray2:  #4A6278;
-      --red:    #FF5252;
-      --gold:   #FFB800;
-      --r:      14px;
+      --bg:      #FFFFFF;
+      --bg2:     #F8F9FA;
+      --bg3:     #E8F5F0;
+      --green:   #00A86B;
+      --green-d: #008A58;
+      --text:    #2C3E50;
+      --gray:    #6B7280;
+      --gray2:   #9CA3AF;
+      --border:  #E5E7EB;
+      --red:     #E53E3E;
+      --gold:    #F59E0B;
+      --shadow:  0 2px 8px rgba(44,62,80,.07);
+      --shadow2: 0 6px 20px rgba(44,62,80,.13);
+      --r:       14px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: var(--bg); color: var(--white);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg); color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       min-height: 100vh; max-width: 480px; margin: 0 auto;
       position: relative; overflow-x: hidden;
     }
-    .screen { display: none; padding: 28px 20px 110px; min-height: 100vh; animation: fadeUp .25s ease; }
+    .screen { display: none; padding: 32px 20px 116px; min-height: 100vh; animation: fadeUp .25s ease; }
     .screen.active { display: block; }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
-    /* ── NAV ── */
+    /* NAV */
     .nav {
       position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-      width: 100%; max-width: 480px; background: var(--bg2);
-      border-top: 1px solid rgba(2,195,154,.18);
-      display: flex; padding: 10px 0 env(safe-area-inset-bottom, 14px); z-index: 200;
+      width: 100%; max-width: 480px; background: var(--bg);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -2px 12px rgba(0,0,0,.06);
+      display: flex; padding: 10px 0 env(safe-area-inset-bottom,14px); z-index: 200;
     }
-    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-    .nav-item svg  { width: 24px; height: 24px; fill: var(--gray); transition: fill .2s; }
-    .nav-item span { font-size: 11px; color: var(--gray); transition: color .2s; }
-    .nav-item.active svg  { fill: var(--teal); }
-    .nav-item.active span { color: var(--teal); }
+    .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; }
+    .nav-item svg  { width:24px; height:24px; fill:var(--gray2); transition:fill .2s; }
+    .nav-item span { font-size:11px; color:var(--gray2); transition:color .2s; font-weight:500; }
+    .nav-item.active svg  { fill:var(--green); }
+    .nav-item.active span { color:var(--green); font-weight:700; }
 
-    /* ── HOME ── */
-    .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-pill { background: var(--teal); border-radius: 10px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-    .logo-name { font-size: 20px; font-weight: 800; }
-    .logo-name span { color: var(--teal); }
-    .xp-pill { background: var(--bg2); border: 1.5px solid var(--teal); color: var(--teal); font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; }
-    .greeting-sub  { font-size: 13px; color: var(--gray); }
-    .greeting-main { font-size: 22px; font-weight: 800; margin-bottom: 24px; margin-top: 2px; }
-    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 28px; }
-    .stat-card { background: var(--bg2); border-radius: var(--r); padding: 16px 10px; text-align: center; }
-    .stat-val  { font-size: 26px; font-weight: 800; color: var(--teal); line-height: 1; }
-    .stat-lbl  { font-size: 11px; color: var(--gray); margin-top: 5px; }
-    .section-title { font-size: 13px; font-weight: 700; color: var(--gray); letter-spacing: .6px; text-transform: uppercase; margin-bottom: 14px; }
-    .level-cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
-    .level-card { background: var(--bg2); border-radius: var(--r); padding: 18px 20px; display: flex; align-items: center; gap: 16px; border: 1.5px solid transparent; cursor: pointer; transition: .2s; }
-    .level-card.open { cursor: pointer; }
-    .level-card.open:hover { border-color: var(--teal); transform: translateY(-1px); }
-    .level-card.open:active { transform: scale(.98); }
-    .level-card.locked { opacity: .5; cursor: default; }
-    .level-card.current { border-color: var(--teal); }
-    .lvl-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
-    .lvl-icon.g { background: rgba(2,195,154,.18); }
-    .lvl-icon.o { background: rgba(255,184,0,.18); }
-    .lvl-icon.r { background: rgba(255,82,82,.18); }
-    .lvl-info { flex: 1; }
-    .lvl-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
-    .lvl-sub  { font-size: 12px; color: var(--gray); }
-    .lvl-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; white-space: nowrap; flex-shrink: 0; }
-    .lvl-badge.on  { background: rgba(2,195,154,.2);  color: var(--teal); }
-    .lvl-badge.off { background: rgba(74,98,120,.3);  color: var(--gray); }
-    .btn-start { width: 100%; padding: 18px; background: var(--teal); color: var(--bg); border: none; border-radius: var(--r); font-size: 17px; font-weight: 800; cursor: pointer; transition: .2s; }
-    .btn-start:hover { background: var(--teal-d); }
-    .btn-start:active { transform: scale(.98); }
+    /* HOME */
+    .home-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+    .logo { display:flex; align-items:center; gap:10px; }
+    .logo-pill { background:var(--green); border-radius:12px; width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 4px 14px rgba(0,168,107,.28); }
+    .logo-name { font-size:20px; font-weight:800; color:var(--text); }
+    .logo-name span { color:var(--green); }
+    .xp-pill { background:var(--bg3); border:1.5px solid var(--green); color:var(--green); font-size:13px; font-weight:700; padding:6px 14px; border-radius:20px; }
+    .greeting-sub  { font-size:13px; color:var(--gray); margin-bottom:4px; }
+    .greeting-main { font-size:24px; font-weight:800; margin-bottom:28px; color:var(--text); }
+    .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:32px; }
+    .stat-card { background:var(--bg2); border-radius:var(--r); padding:18px 10px; text-align:center; box-shadow:var(--shadow); border:1px solid var(--border); }
+    .stat-val  { font-size:26px; font-weight:800; color:var(--green); line-height:1; }
+    .stat-lbl  { font-size:11px; color:var(--gray); margin-top:5px; font-weight:500; }
+    .section-title { font-size:11px; font-weight:700; color:var(--gray2); letter-spacing:.9px; text-transform:uppercase; margin-bottom:16px; }
+    .level-cards { display:flex; flex-direction:column; gap:12px; margin-bottom:32px; }
+    .level-card { background:var(--bg2); border-radius:var(--r); padding:18px 20px; display:flex; align-items:center; gap:16px; border:1.5px solid var(--border); cursor:pointer; transition:.2s; box-shadow:var(--shadow); }
+    .level-card.open:hover { border-color:var(--green); transform:translateY(-2px); box-shadow:var(--shadow2); }
+    .level-card.open:active { transform:scale(.98); }
+    .level-card.locked { opacity:.5; cursor:default; }
+    .level-card.current { border-color:var(--green); }
+    .lvl-icon { width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; }
+    .lvl-icon.g { background:rgba(0,168,107,.12); }
+    .lvl-icon.o { background:rgba(245,158,11,.12); }
+    .lvl-icon.r { background:rgba(229,62,62,.12); }
+    .lvl-info { flex:1; }
+    .lvl-name { font-size:16px; font-weight:700; color:var(--text); margin-bottom:2px; }
+    .lvl-sub  { font-size:12px; color:var(--gray); }
+    .lvl-badge { font-size:11px; font-weight:700; padding:4px 10px; border-radius:12px; white-space:nowrap; flex-shrink:0; }
+    .lvl-badge.on  { background:rgba(0,168,107,.12); color:var(--green); }
+    .lvl-badge.off { background:var(--border); color:var(--gray); }
+    .btn-start { width:100%; padding:18px; background:var(--green); color:#fff; border:none; border-radius:var(--r); font-size:17px; font-weight:800; cursor:pointer; transition:.2s; box-shadow:0 4px 14px rgba(0,168,107,.28); font-family:inherit; }
+    .btn-start:hover  { background:var(--green-d); box-shadow:0 6px 18px rgba(0,168,107,.38); }
+    .btn-start:active { transform:scale(.98); }
 
-    /* ── LEVEL SELECT MODAL ── */
-    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(2,14,24,.75); z-index: 300; align-items: flex-end; justify-content: center; }
-    .modal-bg.open { display: flex; }
-    .modal { background: var(--bg2); border-radius: 20px 20px 0 0; padding: 28px 20px 40px; width: 100%; max-width: 480px; animation: slideUp .25s ease; }
-    @keyframes slideUp { from { transform: translateY(60px); opacity:0; } to { transform: translateY(0); opacity:1; } }
-    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
-    .modal-sub   { font-size: 13px; color: var(--gray); margin-bottom: 22px; }
-    .modal-lvl-btn { width: 100%; background: var(--bg3); border: 1.5px solid transparent; border-radius: var(--r); padding: 16px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; cursor: pointer; transition: .2s; }
-    .modal-lvl-btn:hover { border-color: var(--teal); }
-    .modal-lvl-btn.locked { opacity: .45; cursor: default; }
-    .modal-lvl-btn .mlbl { font-size: 15px; font-weight: 700; }
-    .modal-lvl-btn .msub { font-size: 12px; color: var(--gray); margin-top: 2px; }
-    .modal-cancel { width: 100%; margin-top: 8px; padding: 14px; background: transparent; border: 1.5px solid var(--gray2); border-radius: var(--r); color: var(--gray); font-size: 15px; cursor: pointer; }
+    /* MODAL */
+    .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.28); z-index:300; align-items:flex-end; justify-content:center; backdrop-filter:blur(4px); }
+    .modal-bg.open { display:flex; }
+    .modal { background:var(--bg); border-radius:20px 20px 0 0; padding:28px 20px 40px; width:100%; max-width:480px; animation:slideUp .25s ease; box-shadow:0 -8px 32px rgba(0,0,0,.1); }
+    @keyframes slideUp { from { transform:translateY(60px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    .modal-title { font-size:18px; font-weight:800; margin-bottom:6px; color:var(--text); }
+    .modal-sub   { font-size:13px; color:var(--gray); margin-bottom:22px; }
+    .modal-lvl-btn { width:100%; background:var(--bg2); border:1.5px solid var(--border); border-radius:var(--r); padding:16px 18px; display:flex; align-items:center; gap:14px; margin-bottom:10px; cursor:pointer; transition:.2s; box-shadow:var(--shadow); }
+    .modal-lvl-btn:hover { border-color:var(--green); box-shadow:var(--shadow2); }
+    .modal-lvl-btn.locked { opacity:.45; cursor:default; }
+    .modal-lvl-btn .mlbl { font-size:15px; font-weight:700; color:var(--text); }
+    .modal-lvl-btn .msub { font-size:12px; color:var(--gray); margin-top:2px; }
+    .modal-cancel { width:100%; margin-top:8px; padding:14px; background:transparent; border:1.5px solid var(--border); border-radius:var(--r); color:var(--gray); font-size:15px; cursor:pointer; font-family:inherit; }
 
-    /* ── LEARN ── */
-    .back-btn { background: none; border: none; color: var(--gray); font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: 16px; padding: 0; }
-    .back-btn:hover { color: var(--white); }
-    .prog-row   { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray); margin-bottom: 8px; }
-    .prog-track { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
-    .prog-fill  { height: 100%; background: var(--teal); border-radius: 3px; transition: width .5s ease; }
-    .level-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(2,195,154,.12); color: var(--teal); font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; margin-bottom: 18px; }
-    .med-card   { background: var(--bg2); border-radius: var(--r); padding: 28px 22px 22px; text-align: center; margin-bottom: 20px; }
-    .med-cat    { display: inline-block; background: rgba(2,195,154,.15); color: var(--teal); font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
-    .med-name-big { font-size: 34px; font-weight: 900; letter-spacing: .3px; margin-bottom: 10px; line-height: 1.15; transition: font-size .1s; }
-    .phonetic   { font-size: 14px; color: var(--gray); font-style: italic; margin-bottom: 18px; }
-    .syl-row    { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 1px; }
-    .syl-sep    { color: var(--gray2); font-size: 20px; margin: 0 1px; }
-    .syl-item   { font-size: 20px; font-weight: 600; color: var(--white); line-height: 1; }
-    .syl-item.stressed { font-size: 27px; font-weight: 900; color: var(--teal); }
-    .q-label { font-size: 13px; color: var(--gray); text-align: center; margin-bottom: 14px; font-weight: 500; }
-    .feedback-box { background: rgba(2,195,154,.12); border: 1px solid var(--teal); border-radius: 12px; padding: 12px 16px; font-size: 13px; color: var(--teal); text-align: center; margin-bottom: 16px; display: none; line-height: 1.6; }
-    .feedback-box.bad  { background: rgba(255,82,82,.12); border-color: var(--red); color: var(--red); }
-    .feedback-box.show { display: block; }
-    .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
-    .opt { background: var(--bg2); border: 2px solid transparent; border-radius: var(--r); padding: 14px 10px; color: var(--white); font-size: 12px; font-weight: 700; cursor: pointer; transition: .2s; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center; letter-spacing: .5px; line-height: 1.5; word-break: break-word; }
-    .opt:hover:not(:disabled) { border-color: rgba(2,195,154,.5); }
-    .opt.good { background: rgba(2,195,154,.18); border-color: var(--teal); color: var(--teal); }
-    .opt.bad  { background: rgba(255,82,82,.18); border-color: var(--red); color: var(--red); }
+    /* LEARN */
+    .back-btn { background:none; border:none; color:var(--gray); font-size:14px; cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:20px; padding:0; font-family:inherit; }
+    .back-btn:hover { color:var(--text); }
+    .prog-row   { display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:8px; font-weight:500; }
+    .prog-track { height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+    .prog-fill  { height:100%; background:var(--green); border-radius:3px; transition:width .5s ease; }
+    .level-chip { display:inline-flex; align-items:center; gap:6px; background:var(--bg3); color:var(--green); font-size:12px; font-weight:600; padding:5px 12px; border-radius:20px; margin-bottom:20px; border:1px solid rgba(0,168,107,.2); }
+    .med-card   { background:var(--bg2); border-radius:16px; padding:28px 22px 22px; text-align:center; margin-bottom:20px; box-shadow:var(--shadow); border:1px solid var(--border); }
+    .med-cat    { display:inline-block; background:var(--bg3); color:var(--green); font-size:12px; font-weight:600; padding:4px 14px; border-radius:20px; margin-bottom:16px; border:1px solid rgba(0,168,107,.2); }
+    .med-name-big { font-size:34px; font-weight:900; letter-spacing:.3px; margin-bottom:10px; line-height:1.15; transition:font-size .1s; color:var(--text); }
+    .phonetic   { font-size:14px; color:var(--gray); font-style:italic; margin-bottom:18px; }
+    .syl-row    { display:flex; align-items:baseline; justify-content:center; flex-wrap:wrap; gap:1px; }
+    .syl-sep    { color:var(--gray2); font-size:20px; margin:0 1px; }
+    .syl-item   { font-size:20px; font-weight:600; color:var(--text); line-height:1; }
+    .syl-item.stressed { font-size:27px; font-weight:900; color:var(--green); }
+    .q-label { font-size:13px; color:var(--gray); text-align:center; margin-bottom:14px; font-weight:500; }
+    .feedback-box { background:rgba(0,168,107,.08); border:1.5px solid rgba(0,168,107,.3); border-radius:12px; padding:12px 16px; font-size:13px; color:#006644; text-align:center; margin-bottom:16px; display:none; line-height:1.6; }
+    .feedback-box.bad  { background:rgba(229,62,62,.07); border-color:rgba(229,62,62,.3); color:#C0392B; }
+    .feedback-box.show { display:block; }
+    .options { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:22px; }
+    .opt { background:var(--bg); border:2px solid var(--border); border-radius:var(--r); padding:14px 10px; color:var(--text); font-size:12px; font-weight:700; cursor:pointer; transition:.2s; min-height:60px; display:flex; align-items:center; justify-content:center; text-align:center; letter-spacing:.5px; line-height:1.5; word-break:break-word; box-shadow:var(--shadow); font-family:inherit; }
+    .opt:hover:not(:disabled) { border-color:var(--green); background:var(--bg3); }
+    .opt.good { background:rgba(0,168,107,.1); border-color:var(--green); color:var(--green); }
+    .opt.bad  { background:rgba(229,62,62,.08); border-color:var(--red); color:#C0392B; }
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
-    .shake { animation: shake .35s ease; }
-    .mic-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px; }
-    .mic-btn  { width: 62px; height: 62px; border-radius: 50%; background: var(--bg2); border: 2px solid var(--gray2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: .2s; }
-    .mic-btn:hover { border-color: var(--teal); }
-    .mic-btn svg { width: 28px; height: 28px; fill: var(--gray); }
-    .mic-lbl  { font-size: 11px; color: var(--gray); transition: color .2s; }
-    .mic-btn.active { border-color: var(--teal); background: rgba(2,195,154,.12); animation: micPulse 1.2s ease-in-out infinite; }
-    .mic-btn.active svg { fill: var(--teal); }
-    .mic-btn.active ~ .mic-lbl { color: var(--teal); }
-    @keyframes micPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(2,195,154,.45); } 55%{ box-shadow:0 0 0 10px rgba(2,195,154,0); } }
-    .mic-result { min-height: 20px; font-size: 14px; color: var(--white); text-align: center; font-style: italic; opacity: .8; padding: 0 8px; line-height: 1.4; }
-    .btn-next { width: 100%; padding: 16px; background: var(--teal); color: var(--bg); border: none; border-radius: var(--r); font-size: 16px; font-weight: 800; cursor: pointer; display: none; transition: .2s; }
-    .btn-next.show { display: block; }
-    .btn-next:hover { background: var(--teal-d); }
+    .shake { animation:shake .35s ease; }
 
-    /* ── XP POP ── */
-    .xp-pop { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); background: var(--teal); color: var(--bg); font-size: 28px; font-weight: 900; padding: 16px 34px; border-radius: 18px; z-index: 999; pointer-events: none; opacity: 0; }
+    /* MED EXTRA INFO */
+    .med-extra       { margin-top:16px; text-align:left; border-top:1px solid var(--border); padding-top:14px; display:flex; flex-direction:column; gap:10px; }
+    .med-extra-row   { display:flex; flex-direction:column; gap:2px; }
+    .med-extra-label { font-size:10px; font-weight:700; color:var(--gray2); text-transform:uppercase; letter-spacing:.7px; }
+    .med-extra-text  { font-size:12px; color:var(--text); line-height:1.5; }
+
+    /* MIC */
+    .mic-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:20px; }
+    .mic-btn  { width:64px; height:64px; border-radius:50%; background:var(--bg2); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.2s; box-shadow:var(--shadow); }
+    .mic-btn:hover { border-color:var(--green); background:var(--bg3); }
+    .mic-btn svg { width:28px; height:28px; fill:var(--gray); }
+    .mic-lbl  { font-size:11px; color:var(--gray); transition:color .2s; font-weight:500; }
+    .mic-btn.active { border-color:var(--green); background:var(--bg3); animation:micPulse 1.2s ease-in-out infinite; }
+    .mic-btn.active svg { fill:var(--green); }
+    .mic-btn.active ~ .mic-lbl { color:var(--green); font-weight:700; }
+    @keyframes micPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(0,168,107,.4); } 55%{ box-shadow:0 0 0 10px rgba(0,168,107,0); } }
+    .mic-result { min-height:20px; font-size:14px; color:var(--text); text-align:center; font-style:italic; opacity:.7; padding:0 8px; line-height:1.4; }
+    .btn-next { width:100%; padding:16px; background:var(--green); color:#fff; border:none; border-radius:var(--r); font-size:16px; font-weight:800; cursor:pointer; display:none; transition:.2s; box-shadow:0 4px 14px rgba(0,168,107,.28); font-family:inherit; }
+    .btn-next.show { display:block; }
+    .btn-next:hover { background:var(--green-d); }
+
+    /* XP POP */
+    .xp-pop { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); background:var(--green); color:#fff; font-size:28px; font-weight:900; padding:16px 34px; border-radius:18px; z-index:999; pointer-events:none; opacity:0; box-shadow:0 8px 24px rgba(0,168,107,.4); }
     @keyframes xpAnim { 0%{transform:translate(-50%,-50%) scale(0);opacity:0} 25%{transform:translate(-50%,-50%) scale(1.1);opacity:1} 70%{transform:translate(-50%,-50%) scale(1);opacity:1} 100%{transform:translate(-50%,-75%) scale(1);opacity:0} }
-    .xp-pop.go { animation: xpAnim .9s ease forwards; }
+    .xp-pop.go { animation:xpAnim .9s ease forwards; }
 
-    /* ── RESULT ── */
-    #screenResult { text-align: center; }
-    .res-emoji { font-size: 76px; margin-bottom: 12px; line-height: 1; }
-    .res-title { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
-    .res-sub   { color: var(--gray); font-size: 14px; margin-bottom: 28px; }
-    .res-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
-    .res-stat  { background: var(--bg2); border-radius: var(--r); padding: 20px 14px; }
-    .res-val   { font-size: 34px; font-weight: 900; color: var(--teal); line-height: 1; }
-    .res-lbl   { font-size: 12px; color: var(--gray); margin-top: 6px; }
-    .btn-ghost { width: 100%; padding: 16px; background: var(--bg2); color: var(--white); border: none; border-radius: var(--r); font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 12px; transition: .2s; }
-    .btn-ghost:hover { background: var(--bg3); }
+    /* RESULT */
+    #screenResult { text-align:center; }
+    .res-emoji { font-size:76px; margin-bottom:12px; line-height:1; }
+    .res-title { font-size:26px; font-weight:900; margin-bottom:6px; color:var(--text); }
+    .res-sub   { color:var(--gray); font-size:14px; margin-bottom:28px; }
+    .res-grid  { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:28px; }
+    .res-stat  { background:var(--bg2); border-radius:var(--r); padding:20px 14px; box-shadow:var(--shadow); border:1px solid var(--border); }
+    .res-val   { font-size:34px; font-weight:900; color:var(--green); line-height:1; }
+    .res-lbl   { font-size:12px; color:var(--gray); margin-top:6px; font-weight:500; }
+    .btn-ghost { width:100%; padding:16px; background:var(--bg2); color:var(--text); border:1.5px solid var(--border); border-radius:var(--r); font-size:16px; font-weight:700; cursor:pointer; margin-top:12px; transition:.2s; font-family:inherit; }
+    .btn-ghost:hover { background:var(--border); }
 
-    /* ── ACHIEVEMENTS ── */
-    .screen-h { font-size: 24px; font-weight: 900; margin-bottom: 24px; }
-    .ach-list  { display: flex; flex-direction: column; gap: 12px; }
-    .ach-item  { background: var(--bg2); border-radius: var(--r); padding: 16px 18px; display: flex; align-items: center; gap: 16px; }
-    .ach-item.locked { opacity: .45; }
-    .ach-icon  { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
-    .ach-icon.on  { background: rgba(2,195,154,.2); }
-    .ach-icon.off { background: rgba(74,98,120,.2); }
-    .ach-info  { flex: 1; }
-    .ach-name  { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
-    .ach-desc  { font-size: 12px; color: var(--gray); }
-    .ach-state { font-size: 20px; }
+    /* ACHIEVEMENTS */
+    .screen-h { font-size:24px; font-weight:900; margin-bottom:24px; color:var(--text); }
+    .ach-list  { display:flex; flex-direction:column; gap:12px; }
+    .ach-item  { background:var(--bg2); border-radius:var(--r); padding:16px 18px; display:flex; align-items:center; gap:16px; box-shadow:var(--shadow); border:1px solid var(--border); }
+    .ach-item.locked { opacity:.45; }
+    .ach-icon  { width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; }
+    .ach-icon.on  { background:rgba(0,168,107,.12); }
+    .ach-icon.off { background:var(--border); }
+    .ach-info  { flex:1; }
+    .ach-name  { font-size:15px; font-weight:700; color:var(--text); margin-bottom:3px; }
+    .ach-desc  { font-size:12px; color:var(--gray); }
+    .ach-state { font-size:20px; }
 
-    /* ── PROFILE ── */
-    .prof-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--teal); color: var(--bg); font-size: 30px; font-weight: 900; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
-    .prof-name { text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-    .prof-role { text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 28px; }
-    .prof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .prof-stat { background: var(--bg2); border-radius: var(--r); padding: 20px; text-align: center; }
-    .prof-val  { font-size: 28px; font-weight: 900; color: var(--teal); line-height: 1; }
-    .prof-lbl  { font-size: 11px; color: var(--gray); margin-top: 5px; }
-    .lvl-prog-card { background: var(--bg2); border-radius: var(--r); padding: 20px; }
-    .lvl-prog-head { font-size: 13px; color: var(--gray); margin-bottom: 6px; }
-    .lvl-prog-txt  { font-size: 14px; margin-bottom: 12px; }
-    .lvl-prog-txt strong { color: var(--teal); }
-    .lvl-xp-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--gray); margin-top: 8px; }
+    /* PROFILE */
+    .prof-avatar { width:82px; height:82px; border-radius:50%; background:var(--green); color:#fff; font-size:30px; font-weight:900; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; box-shadow:0 4px 16px rgba(0,168,107,.3); }
+    .prof-name { text-align:center; font-size:22px; font-weight:800; margin-bottom:4px; color:var(--text); }
+    .prof-role { text-align:center; color:var(--gray); font-size:13px; margin-bottom:28px; }
+    .prof-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+    .prof-stat { background:var(--bg2); border-radius:var(--r); padding:20px; text-align:center; box-shadow:var(--shadow); border:1px solid var(--border); }
+    .prof-val  { font-size:28px; font-weight:900; color:var(--green); line-height:1; }
+    .prof-lbl  { font-size:11px; color:var(--gray); margin-top:5px; font-weight:500; }
+    .lvl-prog-card { background:var(--bg2); border-radius:var(--r); padding:20px; box-shadow:var(--shadow); border:1px solid var(--border); }
+    .lvl-prog-head { font-size:13px; color:var(--gray); margin-bottom:6px; font-weight:500; }
+    .lvl-prog-txt  { font-size:14px; margin-bottom:12px; color:var(--text); }
+    .lvl-prog-txt strong { color:var(--green); }
+    .lvl-xp-row { display:flex; justify-content:space-between; font-size:12px; color:var(--gray); margin-top:8px; }
 
-    @media (max-width: 360px) {
-      .med-name-big { font-size: 26px; }
-      .syl-item { font-size: 17px; }
-      .syl-item.stressed { font-size: 23px; }
+    @media (max-width:360px) {
+      .med-name-big { font-size:26px; }
+      .syl-item { font-size:17px; }
+      .syl-item.stressed { font-size:23px; }
     }
   </style>
 </head>
@@ -238,6 +248,7 @@
     <div class="med-name-big" id="medName">Medikament</div>
     <div class="phonetic" id="medPhonetic">/phonetik/</div>
     <div class="syl-row" id="sylRow"></div>
+    <div class="med-extra" id="medExtra"></div>
   </div>
   <div class="q-label">Welche Silbe wird betont?</div>
   <div class="feedback-box" id="feedbackBox"></div>
@@ -447,6 +458,109 @@ const MEDS = [
 ];
 
 // ═══════════════════════════════════════════════
+//  MEDICATION INFO  (Anwendung + Chemie)
+// ═══════════════════════════════════════════════
+const MED_INFO = {
+  // ── LEVEL 1: BASICS ──────────────────────────
+  "Ibuprofen":              { indication:"Schmerzmittel und entzündungshemmend. Eingesetzt bei Kopfschmerzen, Fieber sowie Gelenk- und Muskelschmerzen.",                               drugClass:"NSAR – Nichtsteroidales Antirheumatikum",               formula:"C₁₃H₁₈O₂",              atcCode:"M01AE01" },
+  "Amoxicillin":            { indication:"Breitspektrum-Antibiotikum gegen bakterielle Infektionen. Eingesetzt bei Atemwegs-, Harnwegs- und HNO-Infektionen.",                          drugClass:"Aminopenicillin (Beta-Lactam-Antibiotikum)",             formula:"C₁₆H₁₉N₃O₅S",          atcCode:"J01CA04" },
+  "Pantoprazol":            { indication:"Hemmt die Magensäureproduktion. Eingesetzt bei Magengeschwüren, Sodbrennen und gastroösophagealer Refluxkrankheit.",                          drugClass:"Protonenpumpenhemmer (PPI)",                             formula:"C₁₆H₁₅F₂N₃O₄S",        atcCode:"A02BC02" },
+  "Metronidazol":           { indication:"Antibiotikum gegen anaerobe Bakterien und Parasiten. Eingesetzt bei H. pylori-Infektionen, Trichomoniasis und Darminfektionen.",              drugClass:"Nitroimidazol-Antibiotikum",                             formula:"C₆H₉N₃O₃",              atcCode:"P01AB01" },
+  "Simvastatin":            { indication:"Senkt den LDL-Cholesterinspiegel im Blut. Vorbeugung von Herzinfarkt und Schlaganfall bei erhöhten Cholesterinwerten.",                      drugClass:"HMG-CoA-Reduktasehemmer (Statin)",                       formula:"C₂₅H₃₈O₅",              atcCode:"C10AA01" },
+  "Acetylcystein":          { indication:"Verflüssigt zähes Sekret in den Atemwegen. Auch als Antidot bei Paracetamol-Überdosierung eingesetzt.",                                      drugClass:"Mukolytikum / N-Acetylcystein (NAC)",                    formula:"C₅H₉NO₃S",              atcCode:"R05CB01" },
+  "Omeprazol":              { indication:"Reduziert die Magensäureproduktion. Eingesetzt bei Magengeschwüren, Refluxkrankheit und H. pylori-Therapie.",                                drugClass:"Protonenpumpenhemmer (PPI)",                             formula:"C₁₇H₁₉N₃O₃S",          atcCode:"A02BC01" },
+  "Lisinopril":             { indication:"Senkt den Blutdruck und schützt Herz und Nieren. Eingesetzt bei Bluthochdruck und Herzinsuffizienz.",                                        drugClass:"ACE-Hemmer",                                             formula:"C₂₁H₃₁N₃O₅",           atcCode:"C09AA03" },
+  "Metformin":              { indication:"Senkt den Blutzucker bei Typ-2-Diabetes. Verbessert die Insulinempfindlichkeit und reduziert die Glukoseproduktion in der Leber.",           drugClass:"Biguanid (orales Antidiabetikum)",                       formula:"C₄H₁₁N₅",               atcCode:"A10BA02" },
+  "Atorvastatin":           { indication:"Senkt erhöhte Cholesterin- und Triglyzeridwerte im Blut. Vorbeugung von Herzinfarkt und Schlaganfall.",                                      drugClass:"HMG-CoA-Reduktasehemmer (Statin)",                       formula:"C₃₃H₃₅FN₂O₅",          atcCode:"C10AA05" },
+  "Diclofenac":             { indication:"Entzündungshemmend und schmerzlindernd. Eingesetzt bei Arthritis, Sportverletzungen und Rückenschmerzen.",                                   drugClass:"NSAR – Phenylessigsäurederivat",                         formula:"C₁₄H₁₁Cl₂NO₂",         atcCode:"M01AB05" },
+  "Naproxen":               { indication:"Langwirksames Schmerzmittel und Entzündungshemmer. Eingesetzt bei Arthritis, Menstruationsbeschwerden und akuten Schmerzen.",                drugClass:"NSAR – Propionsäurederivat",                             formula:"C₁₄H₁₄O₃",              atcCode:"M01AE02" },
+  "Celecoxib":              { indication:"Gezielter Entzündungshemmer mit geringerer Magenbelastung als klassische NSAR. Eingesetzt bei Arthrose und rheumatoider Arthritis.",         drugClass:"COX-2-selektiver Hemmer (Coxib)",                        formula:"C₁₇H₁₄F₃N₃O₂S",        atcCode:"M01AH01" },
+  "Tramadol":               { indication:"Stark wirksames Schmerzmittel für mittlere bis starke Schmerzen. Eingesetzt nach Operationen und bei chronischen Schmerzzuständen.",         drugClass:"Opioid-Analgetikum",                                     formula:"C₁₆H₂₅NO₂",             atcCode:"N02AX02" },
+  "Metamizol":              { indication:"Stark schmerzstillendes und fiebersenkendes Mittel. Eingesetzt bei starken Schmerzen (z.B. Koliken) und hohem Fieber.",                      drugClass:"Pyrazolonderivat (Nicht-Opioid-Analgetikum)",            formula:"C₁₃H₁₆N₃NaO₄S",        atcCode:"N02BB02" }, // TODO: prüfen (Natriumsalz-Formel)
+  "Piroxicam":              { indication:"Langwirkender Entzündungshemmer für einmal tägliche Einnahme. Eingesetzt bei rheumatoider Arthritis und Arthrose.",                          drugClass:"NSAR – Oxicam-Derivat",                                 formula:"C₁₅H₁₃N₃O₄S",          atcCode:"M01AC01" },
+  "Indometacin":            { indication:"Stark entzündungshemmend. Eingesetzt bei Gicht, rheumatoider Arthritis, Morbus Bechterew und Perikarditis.",                                 drugClass:"NSAR – Indolessigsäurederivat",                          formula:"C₁₉H₁₆ClNO₄",           atcCode:"M01AB01" },
+  "Glibenclamid":           { indication:"Regt die Insulinfreisetzung aus der Bauchspeicheldrüse an. Eingesetzt bei Typ-2-Diabetes wenn Diät und Metformin nicht ausreichen.",         drugClass:"Sulfonylharnstoff (orales Antidiabetikum)",              formula:"C₂₃H₂₈ClN₃O₅S",        atcCode:"A10BB01" },
+  "Sitagliptin":            { indication:"Erhöht die körpereigene Insulinproduktion nach dem Essen. Eingesetzt bei Typ-2-Diabetes als Mono- oder Kombinationstherapie.",              drugClass:"DPP-4-Hemmer (Gliptin)",                                formula:"C₁₆H₁₅F₆N₅O",          atcCode:"A10BH01" },
+  "Empagliflozin":          { indication:"Fördert die Zuckerausscheidung über die Nieren. Eingesetzt bei Typ-2-Diabetes und zum Schutz von Herz und Nieren.",                         drugClass:"SGLT-2-Hemmer (Gliflozin)",                             formula:"C₂₃H₂₇ClO₇",           atcCode:"A10BK03" },
+  "Dapagliflozin":          { indication:"Senkt den Blutzucker durch Glukoseausscheidung im Urin. Eingesetzt bei Typ-2-Diabetes und Herzinsuffizienz.",                                drugClass:"SGLT-2-Hemmer (Gliflozin)",                             formula:"C₂₁H₂₅ClO₆",           atcCode:"A10BK01" },
+  "Insulin":                { indication:"Reguliert den Blutzucker durch Förderung der Glukoseaufnahme in die Körperzellen. Unverzichtbar bei Typ-1-Diabetes.",                        drugClass:"Pankreashormon (Peptidhormon)",                          formula:"Komplex (Peptid)",        atcCode:"A10A"    },
+  "Liraglutid":             { indication:"Senkt den Blutzucker und fördert das Sättigungsgefühl. Eingesetzt bei Typ-2-Diabetes und Adipositas.",                                       drugClass:"GLP-1-Rezeptoragonist",                                 formula:"Komplex (Peptid)",        atcCode:"A10BJ02" },
+  "Semaglutid":             { indication:"Reguliert den Blutzucker und reduziert den Appetit. Eingesetzt bei Typ-2-Diabetes und zur Gewichtsreduktion (Ozempic / Wegovy).",           drugClass:"GLP-1-Rezeptoragonist",                                 formula:"Komplex (Peptid)",        atcCode:"A10BJ06" },
+  "Levothyroxin":           { indication:"Ersetzt fehlendes Schilddrüsenhormon (T4). Eingesetzt bei Schilddrüsenunterfunktion und nach Schilddrüsenentfernung.",                       drugClass:"Synthetisches Schilddrüsenhormon",                       formula:"C₁₅H₁₁I₄NO₄",           atcCode:"H03AA01" },
+  "Thiamazol":              { indication:"Hemmt die Schilddrüsenhormonproduktion. Eingesetzt bei Schilddrüsenüberfunktion und zur Vorbereitung auf Schilddrüsenoperationen.",          drugClass:"Thyreostatikum (Imidazolderivat)",                       formula:"C₄H₆N₂S",               atcCode:"H03BB01" },
+  "Prednisolon":            { indication:"Entzündungshemmend und immunsuppressiv. Eingesetzt bei Allergien, Asthma, Autoimmunerkrankungen und als Hormonersatztherapie.",              drugClass:"Glukokortikoid",                                         formula:"C₂₁H₂₈O₅",              atcCode:"H02AB06" },
+  "Dexamethason":           { indication:"Stark entzündungshemmend und immunsuppressiv. Eingesetzt bei Hirnödemen, schweren Allergien, Schock und COVID-19.",                          drugClass:"Glukokortikoid (fluoriertes Kortikosteroid)",            formula:"C₂₂H₂₉FO₅",             atcCode:"H02AB02" },
+  "Hydrocortison":          { indication:"Entspricht dem körpereigenen Kortisol. Eingesetzt bei Nebennierenrindeninsuffizienz (Addison-Krankheit) und entzündlichen Erkrankungen.",    drugClass:"Glukokortikoid (natürliches Kortisol)",                  formula:"C₂₁H₃₀O₅",              atcCode:"H02AB09" },
+  "Blutdruckmessgerät":     { indication:"Gerät zur nicht-invasiven Messung des arteriellen Blutdrucks. Unverzichtbar zur Verlaufskontrolle bei Bluthochdruck.",                       drugClass:"Medizinprodukt (Klasse IIa)",                            formula:"—",                      atcCode:"—"       },
+  "Inhalationsgerät":       { indication:"Ermöglicht die gezielte Inhalation von Medikamenten direkt in die Atemwege. Eingesetzt bei Asthma und COPD.",                               drugClass:"Medizinprodukt",                                         formula:"—",                      atcCode:"—"       },
+  "Blutzuckermessgerät":    { indication:"Gerät zur Selbstmessung des Blutzuckerspiegels aus einem Blutstropfen. Unverzichtbar für die tägliche Diabeteskontrolle.",                   drugClass:"Medizinprodukt (In-vitro-Diagnostikum)",                 formula:"—",                      atcCode:"—"       },
+  "Kompressionsstrumpf":    { indication:"Verbessert den Blutfluss in den Beinvenen durch graduierten Druck. Eingesetzt bei Venenschwäche, nach Thrombosen und auf Flugreisen.",       drugClass:"Medizinprodukt (Kompressionstherapie)",                  formula:"—",                      atcCode:"—"       },
+  "Suppositorium":          { indication:"Feste Darreichungsform zur rektalen Anwendung. Geeignet wenn orale Einnahme nicht möglich ist (z.B. bei Erbrechen oder bei Kindern).",       drugClass:"Darreichungsform (rektal)",                              formula:"—",                      atcCode:"—"       },
+  "Injektionslösung":       { indication:"Sterile Flüssigkeit zur direkten Injektion in Vene, Muskel oder Unterhaut. Ermöglicht schnelle und vollständige Wirkstoffaufnahme.",         drugClass:"Darreichungsform (parenteral)",                          formula:"—",                      atcCode:"—"       },
+  "Infusionslösung":        { indication:"Sterile Flüssigkeit zur langsamen intravenösen Dauerzufuhr. Eingesetzt zur Rehydrierung, Ernährung und Dauermedikation.",                   drugClass:"Darreichungsform (parenteral)",                          formula:"—",                      atcCode:"—"       },
+  "Retardtablette":         { indication:"Tablette mit verzögerter und gleichmäßiger Wirkstofffreisetzung. Ermöglicht längere Wirkdauer mit weniger häufiger Einnahme.",               drugClass:"Darreichungsform (retardiert)",                          formula:"—",                      atcCode:"—"       },
+  "Sublingualtablette":     { indication:"Tablette zur Auflösung unter der Zunge. Ermöglicht schnelle Wirkstoffaufnahme über die gut durchblutete Mundschleimhaut.",                  drugClass:"Darreichungsform (sublingual)",                          formula:"—",                      atcCode:"—"       },
+  "Zäpfchen":              { indication:"Feste, schmelzende Darreichungsform zur rektalen oder vaginalen Anwendung. Geeignet für lokale oder systemische Wirkung.",                   drugClass:"Darreichungsform (Suppositorium)",                       formula:"—",                      atcCode:"—"       },
+  // ── LEVEL 2: FORTGESCHRITTEN ─────────────────
+  "Ramipril":               { indication:"Senkt den Blutdruck und schützt Herz und Nieren. Eingesetzt bei Bluthochdruck, Herzinsuffizienz und nach Herzinfarkt.",                     drugClass:"ACE-Hemmer",                                             formula:"C₂₃H₃₂N₂O₅",           atcCode:"C09AA05" },
+  "Bisoprolol":             { indication:"Senkt Herzfrequenz und Blutdruck. Eingesetzt bei Bluthochdruck, Herzinsuffizienz und Herzrhythmusstörungen.",                                drugClass:"β₁-selektiver Betablocker",                             formula:"C₁₈H₃₁NO₄",             atcCode:"C07AB07" },
+  "Amlodipine":             { indication:"Erweitert die Blutgefäße und senkt den Blutdruck. Eingesetzt bei Bluthochdruck und Angina pectoris (Brustenge).",                           drugClass:"Kalziumkanalblocker (Dihydropyridin)",                   formula:"C₂₀H₂₅ClN₂O₅",         atcCode:"C08CA01" },
+  "Valsartan":              { indication:"Blockiert die blutdrucksteigernde Wirkung von Angiotensin II. Eingesetzt bei Bluthochdruck, Herzinsuffizienz und nach Herzinfarkt.",         drugClass:"Angiotensin-II-Rezeptorblocker (Sartan)",                formula:"C₂₄H₂₉N₅O₃",           atcCode:"C09CA03" },
+  "Candesartan":            { indication:"Senkt den Blutdruck durch Blockade von Angiotensin-II-Rezeptoren. Eingesetzt bei Bluthochdruck und Herzinsuffizienz.",                       drugClass:"Angiotensin-II-Rezeptorblocker (Sartan)",                formula:"C₂₄H₂₀N₆O₃",           atcCode:"C09CA06" }, // TODO: prüfen (Prodrug Cilexetil hat andere Formel)
+  "Furosemid":              { indication:"Starkes harntreibendes Mittel. Eingesetzt bei Wassereinlagerungen (Ödemen), Bluthochdruck und akuter Herzinsuffizienz.",                     drugClass:"Schleifendiuretikum",                                    formula:"C₁₂H₁₁ClN₂O₅S",        atcCode:"C03CA01" },
+  "Spironolacton":          { indication:"Fördert die Wasserausscheidung ohne Kaliumverlust. Eingesetzt bei Herzinsuffizienz, Leberzirrhose und als Antiandrogenikum.",                drugClass:"Aldosteronantagonist (kaliumsparendes Diuretikum)",      formula:"C₂₄H₃₂O₄S",            atcCode:"C03DA01" },
+  "Digitoxin":              { indication:"Stärkt die Herzmuskelkraft und verlangsamt die Herzfrequenz. Eingesetzt bei Herzinsuffizienz und Vorhofflimmern.",                           drugClass:"Herzglykosid (Digitalisglykosid)",                       formula:"C₄₁H₆₄O₁₃",            atcCode:"C01AA04" },
+  "Clopidogrel":            { indication:"Verhindert das Verklumpen von Blutplättchen. Eingesetzt nach Herzinfarkt, Schlaganfall und bei koronarer Herzerkrankung.",                   drugClass:"Thrombozytenaggregationshemmer (ADP-Antagonist)",        formula:"C₁₆H₁₆ClNO₂S",         atcCode:"B01AC04" },
+  "Rivaroxaban":            { indication:"Modernes Blutverdünnungsmittel. Eingesetzt zur Vorbeugung von Schlaganfall bei Vorhofflimmern und bei tiefen Beinvenenthrombosen.",          drugClass:"Direkter Faktor-Xa-Hemmer (DOAK)",                       formula:"C₁₉H₁₈ClN₃O₅S",        atcCode:"B01AF01" },
+  "Apixaban":               { indication:"Hemmt gezielt den Gerinnungsfaktor Xa. Eingesetzt bei Vorhofflimmern, Thrombosen und nach Hüft- oder Kniegelenkersatz.",                    drugClass:"Direkter Faktor-Xa-Hemmer (DOAK)",                       formula:"C₂₅H₂₅N₅O₄",           atcCode:"B01AF02" },
+  "Ciprofloxacin":          { indication:"Breitspektrum-Antibiotikum der zweiten Generation. Eingesetzt bei Harnwegs-, Atemwegs- und Magen-Darm-Infektionen sowie bei Milzbrand.",    drugClass:"Fluorchinolon-Antibiotikum (Gyrasehemmer)",              formula:"C₁₇H₁₈FN₃O₃",          atcCode:"J01MA02" },
+  "Clarithromycin":         { indication:"Antibiotikum gegen grampositive Bakterien und atypische Erreger. Eingesetzt bei Atemwegsinfektionen und H. pylori-Eradikation.",             drugClass:"Makrolid-Antibiotikum",                                  formula:"C₃₈H₆₉NO₁₃",           atcCode:"J01FA09" },
+  "Azithromycin":           { indication:"Langwirksames Antibiotikum mit kurzer Therapiedauer (3–5 Tage). Eingesetzt bei Atemwegs-, Haut- und Geschlechtskrankheitsinfektionen.",     drugClass:"Azalid (Makrolid-Antibiotikum)",                         formula:"C₃₈H₇₂N₂O₁₂",          atcCode:"J01FA10" },
+  "Doxycyclin":             { indication:"Breitspektrum-Antibiotikum. Eingesetzt bei Atemwegsinfektionen, Chlamydien, Lyme-Borreliose und als Malaria-Prophylaxe.",                   drugClass:"Tetracyclin-Antibiotikum",                               formula:"C₂₂H₂₄N₂O₈",           atcCode:"J01AA02" },
+  "Cotrimoxazol":           { indication:"Kombinationsantibiotikum aus Trimethoprim und Sulfamethoxazol. Eingesetzt bei Harnwegsinfektionen und Pneumocystis-Pneumonie (PCP).",        drugClass:"Sulfonamid + Trimethoprim-Kombination",                  formula:"SMX C₁₀H₁₁N₃O₃S + TMP C₁₄H₁₈N₄O₃", atcCode:"J01EE01" },
+  "Levofloxacin":           { indication:"Hochwirksames Fluorchinolon. Eingesetzt bei Atemwegs-, Harnwegs- und Sinusinfektionen sowie atypischer Pneumonie.",                         drugClass:"Fluorchinolon-Antibiotikum (Gyrasehemmer)",              formula:"C₁₈H₂₀FN₃O₄",          atcCode:"J01MA12" },
+  "Nitrofurantoin":         { indication:"Antibiotikum speziell gegen Harnwegsinfektionen. Wirkt gezielt in Blase und Harnwegen, kaum systemische Wirkung.",                          drugClass:"Nitrofuran-Antibiotikum",                                formula:"C₈H₆N₄O₅",              atcCode:"J01XE01" },
+  "Vancomycin":             { indication:"Reserve-Antibiotikum gegen multiresistente Keime (MRSA). Eingesetzt bei schweren Krankenhausinfektionen wenn andere Antibiotika versagen.",  drugClass:"Glykopeptid-Antibiotikum",                               formula:"C₆₆H₇₅Cl₂N₉O₂₄",       atcCode:"J01XA01" },
+  "Lansoprazol":            { indication:"Hemmt die Magensäureproduktion. Eingesetzt bei Magengeschwüren, Refluxkrankheit und H. pylori-Eradikationstherapie.",                       drugClass:"Protonenpumpenhemmer (PPI)",                             formula:"C₁₆H₁₄F₃N₃O₂S",        atcCode:"A02BC03" },
+  "Esomeprazol":            { indication:"S-Enantiomer von Omeprazol mit verbesserter Wirksamkeit. Eingesetzt bei Refluxkrankheit, Magengeschwüren und Zollinger-Ellison-Syndrom.",   drugClass:"Protonenpumpenhemmer (PPI)",                             formula:"C₁₇H₁₉N₃O₃S",          atcCode:"A02BC05" },
+  "Rabeprazol":             { indication:"Hemmt irreversibel die H⁺/K⁺-ATPase in den Belegzellen des Magens. Eingesetzt bei Refluxkrankheit und peptischen Ulzera.",                 drugClass:"Protonenpumpenhemmer (PPI)",                             formula:"C₁₈H₂₁N₃O₃S",          atcCode:"A02BC04" },
+  "Domperidon":             { indication:"Fördert die Magenentleerung und wirkt gegen Übelkeit. Eingesetzt bei Übelkeit, Erbrechen und diabetischer Gastroparese.",                   drugClass:"Dopaminantagonist (Prokinetikum)",                       formula:"C₂₂H₂₄ClN₅O₂",         atcCode:"A03FA03" },
+  "Ondansetron":            { indication:"Stark wirksames Antiemetikum. Eingesetzt besonders bei chemotherapie- und strahlentherapiebedingter Übelkeit und Erbrechen.",               drugClass:"5-HT₃-Rezeptorantagonist (Antiemetikum)",               formula:"C₁₈H₁₉N₃O",             atcCode:"A04AA01" },
+  "Metoclopramid":          { indication:"Fördert die Magen-Darm-Beweglichkeit und wirkt gegen Übelkeit. Eingesetzt bei Übelkeit, Erbrechen und Magenentleerungsstörungen.",          drugClass:"Dopaminantagonist (Prokinetikum / Antiemetikum)",        formula:"C₁₄H₂₂ClN₃O₂",         atcCode:"A03FA01" },
+  "Loperamid":              { indication:"Verlangsamt die Darmbewegungen und reduziert den Flüssigkeitsverlust. Eingesetzt bei akutem und chronischem Durchfall.",                    drugClass:"Peripheres Opioid (Antidiarrhoikum)",                    formula:"C₂₉H₃₃ClN₂O₂",         atcCode:"A07DA03" },
+  "Mesalazin":              { indication:"Entzündungshemmend direkt im Darm. Eingesetzt bei Colitis ulcerosa und zur Remissionserhaltung bei Morbus Crohn.",                           drugClass:"Aminosalicylat (5-ASA)",                                 formula:"C₇H₇NO₃",               atcCode:"A07EC02" },
+  "Budesonid":              { indication:"Lokales Kortikosteroid mit geringer systemischer Wirkung. Eingesetzt bei Morbus Crohn, Colitis ulcerosa und als Inhalat bei Asthma.",       drugClass:"Glukokortikoid (lokal wirksam)",                         formula:"C₂₅H₃₄O₆",              atcCode:"A07EA06" },
+  "Ampulle":                { indication:"Versiegelter Glasbehälter für sterile Injektionslösungen zum Einmalgebrauch. Schützt empfindliche Wirkstoffe vor Kontamination.",           drugClass:"Primärverpackung (Medizinprodukt)",                      formula:"—",                      atcCode:"—"       },
+  "Durchstechflasche":      { indication:"Mehrfach verwendbarer Glasbehälter mit Gummistopfen für parenterale Lösungen. Ermöglicht sterile Entnahme mehrerer Dosen.",                 drugClass:"Primärverpackung (Medizinprodukt)",                      formula:"—",                      atcCode:"—"       },
+  "Fertigspritze":          { indication:"Vorgefüllte Einwegspritze mit abgemessener Wirkstoffdosis. Erhöht die Dosiergenauigkeit und Anwendungssicherheit.",                         drugClass:"Medizinprodukt (Applikationssystem)",                    formula:"—",                      atcCode:"—"       },
+  "Transdermales Pflaster": { indication:"Wirkstoffhaltiges Pflaster zur Aufnahme durch die Haut. Ermöglicht gleichmäßige Wirkstoffabgabe über Stunden bis Tage.",                   drugClass:"Darreichungsform (transdermal)",                         formula:"—",                      atcCode:"—"       },
+  // ── LEVEL 3: PROFI ───────────────────────────
+  "Salbutamol":             { indication:"Schnell wirkender Bronchodilatator. Eingesetzt als Notfallmedikament bei akuten Asthmaanfällen und COPD-Exazerbationen.",                   drugClass:"Kurzwirksames β₂-Sympathomimetikum (SABA)",             formula:"C₁₃H₂₁NO₃",            atcCode:"R03AC02" },
+  "Formoterol":             { indication:"Langwirkender Bronchodilatator. Eingesetzt zur Dauertherapie bei Asthma bronchiale und COPD.",                                               drugClass:"Langwirksames β₂-Sympathomimetikum (LABA)",             formula:"C₁₉H₂₄N₂O₄",           atcCode:"R03AC13" },
+  "Tiotropium":             { indication:"Langwirkender Bronchodilatator für COPD. Eingesetzt zur täglichen Dauerbehandlung bei COPD, einmal täglich inhaliert.",                     drugClass:"Langwirksames Anticholinergikum (LAMA)",                 formula:"C₁₉H₂₂NO₄S₂⁺",         atcCode:"R03BB04" }, // TODO: prüfen (Kation, Bromidsalz in Handelsform)
+  "Montelukast":            { indication:"Blockiert entzündungsfördernde Leukotriene in den Atemwegen. Eingesetzt bei Asthma bronchiale und allergischer Rhinitis.",                  drugClass:"Leukotrienrezeptorantagonist (LTRA)",                    formula:"C₃₅H₃₆ClNO₃S",         atcCode:"R03DC03" },
+  "Fluticason":             { indication:"Entzündungshemmendes Inhalationskortikosteroid. Eingesetzt zur Dauertherapie bei Asthma und COPD, nicht als Notfallmedikament.",            drugClass:"Inhalatives Glukokortikoid (ICS)",                       formula:"C₂₅H₃₁F₃O₅S",          atcCode:"R03BA05" }, // TODO: prüfen (Propionat-Form; Furoat-Form hat andere Formel)
+  "Beclometason":           { indication:"Lokales Kortikosteroid für die Atemwege. Eingesetzt zur Langzeittherapie und Vorbeugung von Asthmaanfällen.",                               drugClass:"Inhalatives Glukokortikoid (ICS)",                       formula:"C₂₈H₃₇ClO₇",           atcCode:"R03BA01" },
+  "Ipratropium":            { indication:"Kurzwirksamer anticholinerger Bronchodilatator. Eingesetzt bei COPD und als Ergänzung bei schwerem Asthmaanfall.",                          drugClass:"Kurzwirksames Anticholinergikum (SAMA)",                 formula:"C₂₀H₃₀NO₃⁺",           atcCode:"R03BB01" }, // TODO: prüfen (als Bromidsalz: C20H30BrNO3)
+  "Sertralin":              { indication:"Erhöht den Serotoninspiegel im Gehirn. Eingesetzt bei Depressionen, Panikstörungen, sozialer Phobie und Zwangsstörungen.",                 drugClass:"SSRI – Selektiver Serotonin-Wiederaufnahmehemmer",       formula:"C₁₇H₁₇Cl₂N",           atcCode:"N06AB06" },
+  "Escitalopram":           { indication:"Hochwirksamer SSRI mit guter Verträglichkeit. Eingesetzt bei Depressionen, generalisierten Angststörungen und Panikstörungen.",            drugClass:"SSRI – Selektiver Serotonin-Wiederaufnahmehemmer",       formula:"C₂₀H₂₁FN₂O",           atcCode:"N06AB10" },
+  "Venlafaxin":             { indication:"Hemmt die Wiederaufnahme von Serotonin und Noradrenalin. Eingesetzt bei Depressionen, Angststörungen und neuropathischen Schmerzen.",      drugClass:"SNRI – Serotonin-Noradrenalin-Wiederaufnahmehemmer",    formula:"C₁₇H₂₇NO₂",            atcCode:"N06AX16" },
+  "Duloxetin":              { indication:"Doppelter Wiederaufnahmehemmer. Eingesetzt bei Depressionen, Angststörungen, diabetischer Neuropathie und Stressinkontinenz.",              drugClass:"SNRI – Serotonin-Noradrenalin-Wiederaufnahmehemmer",    formula:"C₁₈H₁₉NOS",             atcCode:"N06AX21" },
+  "Quetiapine":             { indication:"Dämpft überaktive Dopamin- und Serotoninrezeptoren. Eingesetzt bei Schizophrenie, bipolarer Störung und therapieresistenter Depression.",   drugClass:"Atypisches Antipsychotikum",                             formula:"C₂₁H₂₅N₃O₂S",          atcCode:"N05AH04" },
+  "Risperidon":             { indication:"Blockiert Dopamin- und Serotoninrezeptoren im Gehirn. Eingesetzt bei Schizophrenie, bipolarer Störung und Verhaltensstörungen.",            drugClass:"Atypisches Antipsychotikum",                             formula:"C₂₃H₂₇FN₄O₂",          atcCode:"N05AX08" },
+  "Levetiracetam":          { indication:"Hemmt die übermäßige elektrische Aktivität im Gehirn über den SV2A-Mechanismus. Eingesetzt bei verschiedenen Epilepsieformen.",             drugClass:"Antiepileptikum (SV2A-Ligand)",                          formula:"C₈H₁₄N₂O₂",            atcCode:"N03AX14" },
+  "Pregabalin":             { indication:"Dämpft die Überaktivität von Nervenzellen durch Calciumkanalmodulation. Eingesetzt bei Epilepsie, neuropathischen Schmerzen und Angststörungen.", drugClass:"Antiepileptikum / Analgetikum (α₂δ-Ligand)",       formula:"C₈H₁₇NO₂",             atcCode:"N03AX16" },
+  "Gabapentin":             { indication:"Hemmt die Überleitung von Schmerzreizen im Nervensystem. Eingesetzt bei Epilepsie und neuropathischen Schmerzen (z.B. Zosterneuralgie).",  drugClass:"Antiepileptikum / Analgetikum (α₂δ-Ligand)",            formula:"C₉H₁₇NO₂",              atcCode:"N03AX12" },
+  "Trastuzumab":            { indication:"Bindet gezielt an den HER2-Rezeptor auf Tumorzellen und hemmt deren Wachstum. Eingesetzt bei HER2-positivem Brust- und Magenkrebs.",       drugClass:"Monoklonaler Antikörper (HER2-Antagonist)",              formula:"Komplex (Antikörper)",    atcCode:"L01FD01" },
+  "Bevacizumab":            { indication:"Hemmt die Blutgefäßneubildung in Tumoren (Antiangiogenese). Eingesetzt bei Darm-, Lungen-, Brust- und Gebärmutterhalskrebs.",              drugClass:"Monoklonaler Antikörper (VEGF-Hemmer)",                  formula:"Komplex (Antikörper)",    atcCode:"L01FG01" },
+  "Rituximab":              { indication:"Vernichtet B-Lymphozyten durch Bindung an den CD20-Rezeptor. Eingesetzt bei Non-Hodgkin-Lymphom, CLL und rheumatoider Arthritis.",          drugClass:"Monoklonaler Antikörper (Anti-CD20)",                    formula:"Komplex (Antikörper)",    atcCode:"L01FA01" },
+  "Imatinib":               { indication:"Hemmt gezielt das BCR-ABL-Onkoprotein in Leukämiezellen. Eingesetzt bei chronisch-myeloischer Leukämie (CML) und GIST.",                   drugClass:"Tyrosinkinasehemmer (BCR-ABL-Inhibitor)",                formula:"C₂₉H₃₁N₇O",            atcCode:"L01EA01" },
+  "Capecitabin":            { indication:"Orales Prodrug von 5-Fluorouracil, das in Tumorzellen aktiviert wird. Eingesetzt bei Brust- und Darmkrebs.",                                drugClass:"Fluoropyrimidin (orales Zytostatikum)",                  formula:"C₁₅H₂₂FN₃O₆",          atcCode:"L01BC06" },
+  "Tamoxifen":              { indication:"Blockiert Östrogenrezeptoren in Brustkrebszellen und hemmt deren Wachstum. Eingesetzt bei östrogenrezeptorpositivem Brustkrebs.",            drugClass:"Selektiver Östrogenrezeptormodulator (SERM)",            formula:"C₂₆H₂₉NO",              atcCode:"L02BA01" },
+  "Anastrozol":             { indication:"Hemmt die Östrogenproduktion durch Blockade der Aromatase. Eingesetzt bei hormonrezeptorpositivem Brustkrebs bei postmenopausalen Frauen.",  drugClass:"Aromatasehemmer (nicht-steroid)",                        formula:"C₁₇H₁₉N₅",             atcCode:"L02BG03" },
+};
+
+// ═══════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════
 let S = { xp:0, streak:0, lastPlayed:null, learned:0 };
@@ -611,6 +725,15 @@ function renderQ() {
     sp.textContent = s;
     sylRow.appendChild(sp);
   });
+  // Extra info (Anwendung + Chemie)
+  const info  = MED_INFO[med.name] || {};
+  const extra = el('medExtra');
+  let xhtml = '';
+  if (info.indication)                           xhtml += `<div class="med-extra-row"><div class="med-extra-label">Anwendung</div><div class="med-extra-text">${info.indication}</div></div>`;
+  if (info.drugClass && info.drugClass !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">Wirkstoffklasse</div><div class="med-extra-text">${info.drugClass}</div></div>`;
+  if (info.formula   && info.formula   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">Summenformel</div><div class="med-extra-text">${info.formula}</div></div>`;
+  if (info.atcCode   && info.atcCode   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">ATC-Code</div><div class="med-extra-text">${info.atcCode}</div></div>`;
+  extra.innerHTML = xhtml;
   // Feedback reset
   const fb = el('feedbackBox');
   fb.className = 'feedback-box';
