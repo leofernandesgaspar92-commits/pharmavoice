@@ -193,6 +193,69 @@
       .syl-item { font-size:17px; }
       .syl-item.stressed { font-size:23px; }
     }
+
+    /* TIER BADGE */
+    .tier-badge { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:4px 10px; border-radius:12px; }
+    .tier-badge.free    { background:#F3F4F6; color:var(--gray); border:1px solid var(--border); }
+    .tier-badge.normal  { background:rgba(0,168,107,.12); color:var(--green); border:1px solid rgba(0,168,107,.25); }
+    .tier-badge.premium { background:rgba(245,158,11,.12); color:#B45309; border:1px solid rgba(245,158,11,.3); }
+
+    /* UPGRADE BANNER */
+    .upgrade-banner { background:linear-gradient(135deg,#00A86B 0%,#00C97F 100%); border-radius:var(--r); padding:16px 18px; margin-bottom:24px; display:flex; align-items:center; gap:14px; cursor:pointer; box-shadow:0 4px 16px rgba(0,168,107,.28); }
+    .upgrade-banner .ub-icon { font-size:28px; flex-shrink:0; }
+    .upgrade-banner .ub-text { flex:1; }
+    .upgrade-banner .ub-title { color:#fff; font-size:14px; font-weight:800; margin-bottom:2px; }
+    .upgrade-banner .ub-sub   { color:rgba(255,255,255,.8); font-size:12px; }
+    .upgrade-banner .ub-arrow { color:rgba(255,255,255,.8); font-size:20px; }
+
+    /* UPGRADE MODAL */
+    .upgrade-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:400; align-items:flex-end; justify-content:center; backdrop-filter:blur(4px); }
+    .upgrade-modal-bg.open { display:flex; }
+    .upgrade-modal { background:var(--bg); border-radius:24px 24px 0 0; padding:28px 20px 44px; width:100%; max-width:480px; animation:slideUp .25s ease; }
+    .upgrade-modal-header { text-align:center; margin-bottom:24px; }
+    .upgrade-modal-header .um-icon { font-size:44px; margin-bottom:10px; }
+    .upgrade-modal-header h2 { font-size:20px; font-weight:900; color:var(--text); margin-bottom:4px; }
+    .upgrade-modal-header p { font-size:13px; color:var(--gray); }
+    .plan-card { border:2px solid var(--border); border-radius:var(--r); padding:18px; margin-bottom:12px; cursor:pointer; transition:.2s; }
+    .plan-card:hover { border-color:var(--green); box-shadow:var(--shadow2); }
+    .plan-card.recommended { border-color:var(--green); background:rgba(0,168,107,.04); }
+    .plan-card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .plan-name { font-size:16px; font-weight:800; color:var(--text); }
+    .plan-price { font-size:15px; font-weight:700; color:var(--green); }
+    .plan-features { font-size:12px; color:var(--gray); line-height:1.8; }
+    .plan-features span { display:block; }
+    .plan-features span::before { content:"✓ "; color:var(--green); font-weight:700; }
+    .rec-chip { background:var(--green); color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; }
+    .upgrade-close { width:100%; margin-top:8px; padding:14px; background:transparent; border:1.5px solid var(--border); border-radius:var(--r); color:var(--gray); font-size:15px; cursor:pointer; font-family:inherit; }
+
+    /* HOME HERO */
+    .home-hero { background:linear-gradient(135deg,#00A86B 0%,#00C97F 100%); border-radius:20px; padding:24px 20px; margin-bottom:24px; position:relative; overflow:hidden; box-shadow:0 6px 24px rgba(0,168,107,.3); }
+    .home-hero::after { content:''; position:absolute; right:-20px; top:-20px; width:120px; height:120px; background:rgba(255,255,255,.08); border-radius:50%; }
+    .home-hero::before { content:''; position:absolute; right:30px; bottom:-30px; width:80px; height:80px; background:rgba(255,255,255,.06); border-radius:50%; }
+    .hero-label { color:rgba(255,255,255,.8); font-size:12px; font-weight:600; margin-bottom:4px; text-transform:uppercase; letter-spacing:.8px; }
+    .hero-xp { color:#fff; font-size:36px; font-weight:900; line-height:1; margin-bottom:12px; }
+    .hero-xp span { font-size:16px; font-weight:600; opacity:.85; }
+    .hero-stats { display:flex; gap:16px; }
+    .hero-stat { display:flex; align-items:center; gap:6px; color:rgba(255,255,255,.9); font-size:13px; font-weight:600; }
+
+    /* DEV PANEL */
+    .dev-panel { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; overflow-y:auto; padding:20px; }
+    .dev-panel.open { display:block; }
+    .dev-inner { background:var(--bg); border-radius:20px; padding:24px 20px; max-width:480px; margin:0 auto; }
+    .dev-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .dev-title { font-size:18px; font-weight:900; color:var(--text); }
+    .dev-close { background:var(--bg2); border:none; border-radius:50%; width:36px; height:36px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .dev-section { margin-bottom:20px; }
+    .dev-section h3 { font-size:13px; font-weight:700; color:var(--gray2); text-transform:uppercase; letter-spacing:.8px; margin-bottom:12px; }
+    .dev-btn { background:var(--green); color:#fff; border:none; border-radius:var(--r); padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; width:100%; margin-bottom:8px; transition:.2s; }
+    .dev-btn:hover { background:var(--green-d); }
+    .dev-btn.secondary { background:var(--bg2); color:var(--text); border:1.5px solid var(--border); }
+    .dev-btn.danger { background:#FEE2E2; color:#C0392B; border:1.5px solid #FCA5A5; }
+    .research-output { background:var(--bg2); border-radius:var(--r); padding:16px; font-size:12px; color:var(--text); line-height:1.7; max-height:320px; overflow-y:auto; border:1px solid var(--border); white-space:pre-wrap; font-family:monospace; display:none; margin-top:8px; }
+    .research-output.show { display:block; }
+    .tier-select { display:flex; gap:8px; margin-bottom:8px; }
+    .tier-btn { flex:1; padding:10px; border-radius:10px; border:2px solid var(--border); background:var(--bg2); font-size:13px; font-weight:700; cursor:pointer; transition:.2s; font-family:inherit; color:var(--text); }
+    .tier-btn.active { border-color:var(--green); color:var(--green); background:rgba(0,168,107,.08); }
   </style>
 </head>
 <body>
@@ -209,22 +272,102 @@
   </div>
 </div>
 
+<!-- ══ UPGRADE MODAL ══ -->
+<div class="upgrade-modal-bg" id="upgradeBg" onclick="closeUpgrade(event)">
+  <div class="upgrade-modal">
+    <div class="upgrade-modal-header">
+      <div class="um-icon">🚀</div>
+      <h2>PharmaVoice upgraden</h2>
+      <p>Unlock alle 300+ Wirkstoffe & Features</p>
+    </div>
+    <div class="plan-card" onclick="PaymentService.subscribe('free')">
+      <div class="plan-card-head"><span class="plan-name">Free</span><span class="plan-price">Kostenlos</span></div>
+      <div class="plan-features">
+        <span>~50 Wirkstoffe (Basics Level)</span>
+        <span>Aussprachetraining mit KI</span>
+        <span>Session-Streak (kein Cloud-Speicher)</span>
+      </div>
+    </div>
+    <div class="plan-card recommended" onclick="PaymentService.subscribe('normal')">
+      <div class="plan-card-head">
+        <span class="plan-name">Normal</span>
+        <span class="rec-chip">Empfohlen</span>
+        <span class="plan-price">€4,99 / Monat</span>
+      </div>
+      <div class="plan-features">
+        <span>Alle 300+ Wirkstoffe & Level</span>
+        <span>Dauerhafter Streak & Achievements</span>
+        <span>Indikation, ATC-Code & Chemie sichtbar</span>
+      </div>
+    </div>
+    <div class="plan-card" onclick="PaymentService.subscribe('premium')">
+      <div class="plan-card-head"><span class="plan-name">Premium (Apotheke)</span><span class="plan-price">€19 / Monat</span></div>
+      <div class="plan-features">
+        <span>Alle Normal-Features</span>
+        <span>Lehrer-Dashboard & Team-Statistiken</span>
+        <span>API-Zugang für Apotheken-Integration</span>
+      </div>
+    </div>
+    <button class="upgrade-close" onclick="closeUpgrade()">Nicht jetzt</button>
+  </div>
+</div>
+
+<!-- ══ DEV PANEL ══ -->
+<div class="dev-panel" id="devPanel">
+  <div class="dev-inner">
+    <div class="dev-header">
+      <div class="dev-title">🛠️ Dev / Research Panel</div>
+      <button class="dev-close" onclick="toggleDevPanel()">✕</button>
+    </div>
+
+    <div class="dev-section">
+      <h3>Abo-Stufe simulieren</h3>
+      <div class="tier-select" id="tierSelect">
+        <button class="tier-btn" data-tier="free"    onclick="devSetTier('free')">Free</button>
+        <button class="tier-btn" data-tier="normal"  onclick="devSetTier('normal')">Normal</button>
+        <button class="tier-btn" data-tier="premium" onclick="devSetTier('premium')">Premium</button>
+      </div>
+    </div>
+
+    <div class="dev-section">
+      <h3>Research Agent</h3>
+      <button class="dev-btn" onclick="ResearchAgent.run()">🔬 Neue Wirkstoffe vorschlagen</button>
+      <button class="dev-btn secondary" onclick="ResearchAgent.showAustrianTop()">🇦🇹 Top-50 AT verschriebene Wirkstoffe</button>
+      <div class="research-output" id="researchOut"></div>
+    </div>
+
+    <div class="dev-section">
+      <h3>Daten</h3>
+      <button class="dev-btn secondary" onclick="devExportState()">📤 State exportieren</button>
+      <button class="dev-btn danger" onclick="devResetState()">🗑️ State zurücksetzen</button>
+    </div>
+
+    <p style="font-size:11px;color:var(--gray2);text-align:center;margin-top:16px;">Dev-Panel: nur für Entwicklung · nicht für Endnutzer sichtbar</p>
+  </div>
+</div>
+
 <!-- ══ HOME ══ -->
 <div class="screen active" id="screenHome">
   <div class="home-header">
-    <div class="logo">
+    <div class="logo" id="logoLongPress">
       <div class="logo-pill">💊</div>
       <div class="logo-name">Pharma<span>Voice</span></div>
     </div>
-    <div class="xp-pill" id="homeXpPill">🪙 0 Shekel</div>
+    <div id="homeTierBadge" class="tier-badge free">Free</div>
   </div>
-  <div class="greeting-sub">Willkommen zurück,</div>
-  <div class="greeting-main">Lernender 👋</div>
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-val" id="homeXpVal">0</div><div class="stat-lbl">🪙 Shekel</div></div>
-    <div class="stat-card"><div class="stat-val" id="homeStreakVal">0 🔥</div><div class="stat-lbl">Streak</div></div>
-    <div class="stat-card"><div class="stat-val" id="homeLearnedVal">0</div><div class="stat-lbl">Begriffe</div></div>
+
+  <!-- Hero card replacing plain greeting + stats row -->
+  <div class="home-hero">
+    <div class="hero-label">Deine Lernpunkte</div>
+    <div class="hero-xp"><span id="heroXp">0</span> <span>Shekel 🪙</span></div>
+    <div class="hero-stats">
+      <div class="hero-stat">🔥 <span id="heroStreak">0</span> Streak</div>
+      <div class="hero-stat">📚 <span id="heroLearned">0</span> Begriffe</div>
+    </div>
   </div>
+
+  <div id="upgradeBannerHome"></div>
+
   <div class="section-title">Lernebenen</div>
   <div class="level-cards" id="levelCardsHome"></div>
   <button class="btn-start" onclick="openModal()">🎯 &nbsp;Jetzt lernen starten</button>
@@ -300,6 +443,7 @@
   <div class="prof-avatar">PV</div>
   <div class="prof-name">Lernender</div>
   <div class="prof-role">Apotheker-Lehrling 💊</div>
+  <div style="text-align:center;margin-bottom:20px;"><span id="profTierBadge" class="tier-badge free" style="cursor:pointer" onclick="openUpgrade()">Free – Upgrade</span></div>
   <div class="prof-grid">
     <div class="prof-stat"><div class="prof-val" id="profXp">0</div><div class="prof-lbl">🪙 Shekel</div></div>
     <div class="prof-stat"><div class="prof-val" id="profStreak">0 🔥</div><div class="prof-lbl">Tage Streak</div></div>
@@ -594,10 +738,10 @@ function refreshUI() {
   const lvl = Math.floor(S.xp / xpPerLevel) + 1;
   const inLvl = S.xp % xpPerLevel;
   const pct = Math.min(Math.round(inLvl / xpPerLevel * 100), 100);
-  set('homeXpPill', `🪙 ${S.xp} Shekel`);
-  set('homeXpVal',  S.xp);
-  set('homeStreakVal', `${S.streak} 🔥`);
-  set('homeLearnedVal', S.learned);
+  // Hero
+  if (el('heroXp'))      el('heroXp').textContent      = S.xp;
+  if (el('heroStreak'))  el('heroStreak').textContent   = S.streak;
+  if (el('heroLearned')) el('heroLearned').textContent  = S.learned;
   set('profXp',      S.xp);
   set('profStreak',  `${S.streak} 🔥`);
   set('profLearned', S.learned);
@@ -605,12 +749,16 @@ function refreshUI() {
   el('profProgFill').style.width = pct + '%';
   set('profProgTxt', `${inLvl} / ${xpPerLevel} Shekel`);
   set('profProgPct', pct + '%');
+  set('profProgLabel', `Level ${lvl+1} benötigt <strong>${(lvl)*xpPerLevel} Shekel</strong>`);
   renderLevelCards();
 }
 
 function canPlay(lvId) {
   const lv = LEVELS.find(l => l.id === lvId);
-  return S.xp >= lv.xpReq;
+  if (S.xp < lv.xpReq) return false;
+  // Payment gate: levels 2+ require at least 'normal' plan
+  if (lvId >= 2 && !PaymentService.canAccess('level2')) return 'upgrade';
+  return true;
 }
 
 function renderLevelCards() {
@@ -618,18 +766,23 @@ function renderLevelCards() {
   if (!c) return;
   c.innerHTML = '';
   LEVELS.forEach(lv => {
-    const unlocked = canPlay(lv.id);
+    const status = canPlay(lv.id); // true | false | 'upgrade'
     const count = MEDS.filter(m => m.lv === lv.id).length;
     const div = document.createElement('div');
-    div.className = `level-card ${unlocked ? 'open' : 'locked'}`;
+    div.className = `level-card ${status === true ? 'open' : 'locked'}`;
+    let badge;
+    if (status === true)        badge = `<div class="lvl-badge on">Aktiv</div>`;
+    else if (status === 'upgrade') badge = `<div class="lvl-badge off">🚀 Upgrade</div>`;
+    else                        badge = `<div class="lvl-badge off">🔒 ${lv.xpReq} Shekel</div>`;
     div.innerHTML = `
       <div class="lvl-icon ${lv.color}">${lv.icon}</div>
       <div class="lvl-info">
         <div class="lvl-name">${lv.name}</div>
         <div class="lvl-sub">${count} Begriffe &nbsp;·&nbsp; ${lv.desc}</div>
       </div>
-      <div class="lvl-badge ${unlocked ? 'on' : 'off'}">${unlocked ? 'Aktiv' : `🔒 ${lv.xpReq} Shekel`}</div>`;
-    if (unlocked) div.onclick = () => startLearn(lv.id);
+      ${badge}`;
+    if (status === true)        div.onclick = () => startLearn(lv.id);
+    else if (status === 'upgrade') div.onclick = () => openUpgrade();
     c.appendChild(div);
   });
 }
@@ -655,17 +808,22 @@ function openModal() {
   const c = el('modalLevels');
   c.innerHTML = '';
   LEVELS.forEach(lv => {
-    const unlocked = canPlay(lv.id);
+    const status = canPlay(lv.id);
     const count = MEDS.filter(m => m.lv === lv.id).length;
     const btn = document.createElement('div');
-    btn.className = `modal-lvl-btn ${unlocked ? '' : 'locked'}`;
+    btn.className = `modal-lvl-btn ${status === true ? '' : 'locked'}`;
+    let sub;
+    if (status === true)           sub = 'Freigeschaltet';
+    else if (status === 'upgrade') sub = '🚀 Upgrade erforderlich';
+    else                           sub = lv.xpReq + ' Shekel benötigt';
     btn.innerHTML = `
       <span style="font-size:28px;">${lv.icon}</span>
       <div>
-        <div class="mlbl">${lv.name} <span style="font-size:12px;color:var(--teal);font-weight:600;">${unlocked ? '' : '🔒'}</span></div>
-        <div class="msub">${count} Begriffe &nbsp;·&nbsp; ${unlocked ? 'Freigeschaltet' : lv.xpReq + ' Shekel benötigt'}</div>
+        <div class="mlbl">${lv.name}</div>
+        <div class="msub">${count} Begriffe &nbsp;·&nbsp; ${sub}</div>
       </div>`;
-    if (unlocked) btn.onclick = () => { closeModal(); startLearn(lv.id); };
+    if (status === true)           btn.onclick = () => { closeModal(); startLearn(lv.id); };
+    else if (status === 'upgrade') btn.onclick = () => { closeModal(); openUpgrade(); };
     c.appendChild(btn);
   });
   el('modalBg').classList.add('open');
@@ -687,7 +845,9 @@ function shuffle(a) {
 }
 
 function startLearn(lvId = 1) {
-  if (!canPlay(lvId)) return;
+  const status = canPlay(lvId);
+  if (status === 'upgrade') { openUpgrade(); return; }
+  if (!status) return;
   const pool = MEDS.filter(m => m.lv === lvId);
   const lv   = LEVELS.find(l => l.id === lvId);
   Q = { meds: shuffle(pool).slice(0, 10), idx: 0, correct: 0, sessionXP: 0, answered: false, lvId };
@@ -933,8 +1093,223 @@ function checkPronunciation(spoken) {
   }, 3000);
 }
 
+// ═══════════════════════════════════════════════
+//  PAYMENT SERVICE  (mock – bereit für Backend)
+// ═══════════════════════════════════════════════
+const PaymentService = (() => {
+  const PLANS = { free:'Free', normal:'Normal', premium:'Premium' };
+
+  function getPlan() {
+    return localStorage.getItem('pv_plan') || 'free';
+  }
+
+  function setPlan(tier) {
+    localStorage.setItem('pv_plan', tier);
+    refreshTierUI();
+    closeUpgrade();
+    alert(`✅ Abo "${PLANS[tier]}" aktiviert (Demo-Modus).\n\nIn der Produktion würde hier die Zahlung verarbeitet.`);
+  }
+
+  function canAccess(feature) {
+    const plan = getPlan();
+    const gates = {
+      level2:       ['normal','premium'],
+      level3:       ['normal','premium'],
+      streakSave:   ['normal','premium'],
+      achievements: ['normal','premium'],
+      medInfo:      ['normal','premium'],
+      teacherDash:  ['premium'],
+    };
+    if (!gates[feature]) return true;
+    return gates[feature].includes(plan);
+  }
+
+  return { getPlan, subscribe: setPlan, canAccess };
+})();
+
+function refreshTierUI() {
+  const plan = PaymentService.getPlan();
+  const labels = { free:'Free', normal:'✓ Normal', premium:'★ Premium' };
+  const label = labels[plan] || 'Free';
+
+  ['homeTierBadge','profTierBadge'].forEach(id => {
+    const el2 = el(id);
+    if (!el2) return;
+    el2.className = `tier-badge ${plan}`;
+    el2.textContent = id === 'profTierBadge' && plan === 'free'
+      ? 'Free – Upgrade ↗'
+      : label;
+  });
+
+  // Show/hide upgrade banner on home
+  const banner = el('upgradeBannerHome');
+  if (banner) {
+    if (plan === 'free') {
+      banner.innerHTML = `
+        <div class="upgrade-banner" onclick="openUpgrade()">
+          <div class="ub-icon">🚀</div>
+          <div class="ub-text">
+            <div class="ub-title">Auf Normal upgraden</div>
+            <div class="ub-sub">300+ Wirkstoffe · Streak · Achievements</div>
+          </div>
+          <div class="ub-arrow">›</div>
+        </div>`;
+    } else {
+      banner.innerHTML = '';
+    }
+  }
+}
+
+function openUpgrade() { el('upgradeBg').classList.add('open'); }
+function closeUpgrade(e) {
+  if (!e || e.target === el('upgradeBg')) el('upgradeBg').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════
+//  RESEARCH AGENT
+// ═══════════════════════════════════════════════
+const ResearchAgent = (() => {
+  // Wirkstoffe die noch NICHT im Katalog sind aber prioritär wären
+  const SUGGESTIONS = [
+    { drug:"Hydrochlorothiazid", indication:"Bluthochdruck, Ödeme", ipa:"/hy·dro·chlo·ro·thi·a·ˈziːt/", syllables:"Hy·dro·chlo·ro·thi·a·ZID", priority:9, category:"Diuretikum" },
+    { drug:"Amiodaron",          indication:"Herzrhythmusstörungen", ipa:"/a·mi·o·ˈdaː·ron/",            syllables:"A·mi·o·DA·ron",           priority:9, category:"Antiarrhythmikum" },
+    { drug:"Warfarin",           indication:"Antikoagulation",       ipa:"/ˈvar·fa·rɪn/",                syllables:"WAR·fa·rin",               priority:8, category:"Antikoagulans" },
+    { drug:"Allopurinol",        indication:"Gicht-Prophylaxe",      ipa:"/a·lo·ˈpuː·rɪ·nol/",          syllables:"A·lo·PU·ri·nol",           priority:8, category:"Urikostatikum" },
+    { drug:"Citalopram",         indication:"Depression, Angst",     ipa:"/tsɪ·ˈta·lo·pram/",            syllables:"Ci·TA·lo·pram",            priority:8, category:"SSRI" },
+    { drug:"Fluoxetin",          indication:"Depression, Bulimie",   ipa:"/flu·ˈɔk·seː·tɪn/",            syllables:"Flu·OX·e·tin",             priority:8, category:"SSRI" },
+    { drug:"Carvedilol",         indication:"Herzinsuffizienz, Bluthochdruck", ipa:"/kar·ˈveː·dɪ·lol/",  syllables:"Car·VE·di·lol",            priority:7, category:"Betablocker" },
+    { drug:"Pioglitazon",        indication:"Typ-2-Diabetes",        ipa:"/pi·o·ˈglɪ·ta·zon/",          syllables:"Pi·o·GLI·ta·zon",          priority:7, category:"Thiazolidindion" },
+    { drug:"Rosuvastatin",       indication:"Hypercholesterinämie",  ipa:"/ro·zu·ˈva·sta·tɪn/",         syllables:"Ro·zu·VA·sta·tin",         priority:7, category:"Statin" },
+    { drug:"Telmisartan",        indication:"Bluthochdruck",         ipa:"/tɛl·mɪ·ˈzar·tan/",           syllables:"Tel·mi·ZAR·tan",           priority:7, category:"Sartan" },
+    { drug:"Olmesartan",         indication:"Bluthochdruck",         ipa:"/ol·meː·ˈzar·tan/",            syllables:"Ol·me·ZAR·tan",            priority:7, category:"Sartan" },
+    { drug:"Perindopril",        indication:"Bluthochdruck, Herzinsuffizienz", ipa:"/pɛ·ˈrɪn·do·prɪl/", syllables:"Pe·RIN·do·pril",           priority:7, category:"ACE-Hemmer" },
+    { drug:"Ivermectin",         indication:"Parasitosen",           ipa:"/ɪ·vɛr·ˈmɛk·tɪn/",            syllables:"I·ver·MEK·tin",            priority:6, category:"Antiparasitikum" },
+    { drug:"Aciclovir",          indication:"Herpes simplex, Zoster", ipa:"/a·ˈtsɪ·klo·vɪr/",           syllables:"A·CI·clo·vir",             priority:8, category:"Virostatikum" },
+    { drug:"Oseltamivir",        indication:"Influenza",             ipa:"/o·sɛl·ˈta·mɪ·vɪr/",          syllables:"O·sel·TA·mi·vir",          priority:7, category:"Virostatikum" },
+  ];
+
+  const AT_TOP50 = [
+    "Atorvastatin","Omeprazol","Ramipril","Metformin","Bisoprolol",
+    "Pantoprazol","Amlodipin","Levothyroxin","Simvastatin","Metoprolol",
+    "Ibuprofen","Aspirin","Lisinopril","Losartan","Hydrochlorothiazid",
+    "Furosemid","Candesartan","Valsartan","Esomeprazol","Lansoprazol",
+    "Sertralin","Escitalopram","Pregabalin","Gabapentin","Duloxetin",
+    "Allopurinol","Colchicin","Warfarin","Rivaroxaban","Apixaban",
+    "Clopidogrel","Methotrexat","Prednisolon","Budesonid","Salbutamol",
+    "Tiotropium","Formoterol","Fluticason","Montelukast","Insulin",
+    "Empagliflozin","Semaglutid","Sitagliptin","Liraglutid","Metronidazol",
+    "Amoxicillin","Ciprofloxacin","Azithromycin","Aciclovir","Doxycyclin"
+  ];
+
+  function run() {
+    const out = el('researchOut');
+    out.classList.add('show');
+    out.textContent = '⏳ Research Agent läuft…\n\n';
+
+    setTimeout(() => {
+      const existing = new Set(MEDS.map(m => m.name.toLowerCase()));
+      const missing = SUGGESTIONS.filter(s => !existing.has(s.drug.toLowerCase()))
+                                  .sort((a,b) => b.priority - a.priority);
+
+      let text = `🔬 RESEARCH AGENT – Vorschläge für neue Wirkstoffe\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `Datum: ${new Date().toLocaleDateString('de-AT')}\n`;
+      text += `Katalog aktuell: ${MEDS.length} Wirkstoffe\n\n`;
+      text += `PRIORITÄT  WIRKSTOFF            KLASSE\n`;
+      text += `─────────────────────────────────────\n`;
+      missing.forEach(s => {
+        text += `[P${s.priority}]  ${s.drug.padEnd(20)} ${s.category}\n`;
+        text += `       IPA: ${s.ipa}\n`;
+        text += `       Silben: ${s.syllables}\n`;
+        text += `       Indikation: ${s.indication}\n\n`;
+      });
+
+      const inCatalog = SUGGESTIONS.filter(s => existing.has(s.drug.toLowerCase()));
+      if (inCatalog.length) {
+        text += `\n✅ BEREITS IM KATALOG: ${inCatalog.map(s=>s.drug).join(', ')}\n`;
+      }
+
+      text += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `JSON-Format für drugs-data.js:\n\n`;
+      text += JSON.stringify(missing.slice(0,3).map(s=>({
+        lv:2, name:s.drug, phonetic:s.ipa,
+        syllables:s.syllables.split('·'),
+        si: s.syllables.split('·').findIndex(sl=>sl===sl.toUpperCase()),
+        category:s.category, tip:`Betonen: ${s.syllables}`
+      })), null, 2);
+
+      out.textContent = text;
+    }, 600);
+  }
+
+  function showAustrianTop() {
+    const out = el('researchOut');
+    out.classList.add('show');
+    const existing = new Set(MEDS.map(m => m.name.toLowerCase()));
+    let text = `🇦🇹 TOP-50 VERSCHRIEBENE WIRKSTOFFE IN ÖSTERREICH\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    AT_TOP50.forEach((drug, i) => {
+      const status = existing.has(drug.toLowerCase()) ? '✅' : '❌ fehlt';
+      text += `${String(i+1).padStart(2,'0')}. ${drug.padEnd(22)} ${status}\n`;
+    });
+    const covered = AT_TOP50.filter(d => existing.has(d.toLowerCase())).length;
+    text += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `Abdeckung: ${covered}/${AT_TOP50.length} (${Math.round(covered/AT_TOP50.length*100)}%)\n`;
+    out.textContent = text;
+  }
+
+  return { run, showAustrianTop };
+})();
+
+// ═══════════════════════════════════════════════
+//  DEV PANEL CONTROLS
+// ═══════════════════════════════════════════════
+function toggleDevPanel() {
+  el('devPanel').classList.toggle('open');
+  // Sync tier buttons
+  const plan = PaymentService.getPlan();
+  document.querySelectorAll('.tier-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tier === plan);
+  });
+}
+
+function devSetTier(tier) {
+  localStorage.setItem('pv_plan', tier);
+  document.querySelectorAll('.tier-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tier === tier);
+  });
+  refreshTierUI();
+}
+
+function devExportState() {
+  const data = { state: S, plan: PaymentService.getPlan(), meds: MEDS.length };
+  el('researchOut').classList.add('show');
+  el('researchOut').textContent = JSON.stringify(data, null, 2);
+}
+
+function devResetState() {
+  if (!confirm('State komplett zurücksetzen?')) return;
+  localStorage.clear();
+  S = { xp:0, streak:0, lastPlayed:null, learned:0 };
+  save();
+  refreshUI();
+  refreshTierUI();
+  alert('✅ State zurückgesetzt.');
+}
+
+// Long-press on logo (700ms) → open dev panel
+(function initDevTrigger() {
+  let pressTimer;
+  const logo = document.getElementById('logoLongPress');
+  if (!logo) return;
+  logo.addEventListener('pointerdown', () => { pressTimer = setTimeout(toggleDevPanel, 700); });
+  logo.addEventListener('pointerup',   () => clearTimeout(pressTimer));
+  logo.addEventListener('pointerleave',() => clearTimeout(pressTimer));
+})();
+
 // ── BOOT ──
 load();
+refreshTierUI();
 </script>
 </body>
 </html>
