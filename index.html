@@ -449,6 +449,41 @@
     .opt.good  { background:var(--char-primary,#00A86B) !important; border-color:var(--char-primary,#00A86B) !important; }
     #micBtn { border-color:var(--char-primary,var(--teal)) !important; }
     #micBtn.active { box-shadow:0 0 0 8px var(--char-glow,rgba(0,168,107,.25)), 0 0 0 16px var(--char-glow,rgba(0,168,107,.1)) !important; }
+
+    /* Tamagotchi bars */
+    #tamaBars { display:flex; flex-direction:column; gap:3px; margin-bottom:4px; pointer-events:none; }
+    .tama-row { display:flex; align-items:center; gap:4px; }
+    .tama-row span { font-size:10px; }
+    .tama-track { flex:1; height:4px; background:rgba(255,255,255,.15); border-radius:4px; width:60px; }
+    .tama-bar { height:100%; border-radius:4px; transition:width .5s; }
+    #tamaHunger  { background:#FF9500; }
+    #tamaHappiness { background:#FF69B4; }
+    #tamaEnergy  { background:#00E5FF; }
+
+    /* Sleeping animation */
+    #charAvatar.sleeping #charAvatarImg {
+      animation:charSleep 3s ease-in-out infinite !important;
+      filter:brightness(.6);
+    }
+    @keyframes charSleep {
+      0%,100%{transform:translateY(0) rotate(0deg)}
+      30%{transform:translateY(-3px) rotate(-5deg)}
+      60%{transform:translateY(2px) rotate(3deg)}
+    }
+    #charAvatar.sleeping #charBubble:before { content:'💤 '; }
+
+    /* Clickable avatar */
+    #charAvatarImg { cursor:pointer; }
+
+    /* Language switcher */
+    .lang-switch { display:flex; gap:4px; margin-left:auto; }
+    .lang-btn {
+      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+      border-radius:8px; padding:3px 7px; font-size:13px; cursor:pointer;
+      color:#fff; transition:background .2s;
+    }
+    .lang-btn.active { background:rgba(255,255,255,.25); border-color:var(--char-primary,var(--teal)); }
+    .lang-btn:hover  { background:rgba(255,255,255,.18); }
   </style>
 </head>
 <body>
@@ -519,7 +554,12 @@
 <!-- ══ CHARACTER AVATAR (floating) ══ -->
 <div id="charAvatar" class="hidden">
   <div id="charBubble"></div>
-  <img id="charAvatarImg" src="" alt="" onerror="this.style.display='none'">
+  <div id="tamaBars">
+    <div class="tama-row"><span>🍖</span><div class="tama-track"><div class="tama-bar" id="tamaHunger" style="width:80%"></div></div></div>
+    <div class="tama-row"><span>😊</span><div class="tama-track"><div class="tama-bar" id="tamaHappiness" style="width:80%"></div></div></div>
+    <div class="tama-row"><span>⚡</span><div class="tama-track"><div class="tama-bar" id="tamaEnergy" style="width:90%"></div></div></div>
+  </div>
+  <img id="charAvatarImg" src="" alt="" onerror="this.style.display='none'" onclick="CharacterSystem.tapAvatar()">
 </div>
 
 <!-- ══ DEV PANEL ══ -->
@@ -564,6 +604,11 @@
       <div class="logo-name">Pharma<span>Voice</span></div>
     </div>
     <div id="homeTierBadge" class="tier-badge free">Free</div>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="de" onclick="switchLang('de')">🇩🇪</button>
+      <button class="lang-btn" data-lang="en" onclick="switchLang('en')">🇬🇧</button>
+      <button class="lang-btn" data-lang="pt" onclick="switchLang('pt')">🇵🇹</button>
+    </div>
   </div>
 
   <!-- Hero card replacing plain greeting + stats row -->
@@ -999,81 +1044,342 @@ let micFeedbackTimer = null;
 // ═══════════════════════════════════════════════
 //  CHARACTER SYSTEM
 // ═══════════════════════════════════════════════
-const CharacterSystem = (() => {
-  const CHARS = {
+// ══ i18n messages ══
+const I18N = {
+  de: {
     beatrice: {
-      id:'beatrice', name:'Beatrice', role:'Apothekerin', emoji:'👩‍⚕️',
-      img:'img/beatrice.png', color:'#2ECC71', glow:'rgba(46,204,113,.38)',
-      msgs:{
-        correct:['Ausgezeichnet! So macht man das!','Perfekt ausgesprochen! ✨','Sehr gut! Weiter so!'],
-        wrong:  ['Fast! Hör genau hin!','Noch einmal versuchen!','Du schaffst das!'],
-        combo:  ['Unglaublich! Fantastische Serie!','Du bist auf einem guten Weg! 🌟'],
-        start:  ['Bereit zum Lernen? Los geht\'s!','Heute lernen wir gemeinsam!'],
-        over:   ['Gut gemacht! Noch einmal üben!','Jedes Mal wird es besser!'],
-      },
+      correct: ['Ausgezeichnet! Weiter so!','Perfekt ausgesprochen! ✨','Sehr gut! Ich bin stolz auf dich!','Richtig! Du lernst schnell.','Top! So klappt das!','Bravo! Das war makellos!','Wunderbar! Du machst Fortschritte!','Stimmt genau! Sehr schön!','Perfekt! Dein Gehirn arbeitet!','Prima! Nächster Wirkstoff!','Genau! So ist es richtig!','Gut gemacht! ✨','Super! Du wächst!','Klasse! Merke dir das!','Fantastisch! Weiter!'],
+      wrong:   ['Fast! Hör noch einmal hin.','Nicht aufgeben! Versuch es nochmal.','Du schaffst das! Konzentriere dich.','Schade – aber du lernst daraus!','Hm, da war was... nochmal!','Nicht ganz – gleich klappt\'s!','Du bist nah dran! Nochmal!','Fehler sind Lehrer. Weiter!','Fast richtig – versuch nochmal.','Gib nicht auf! Du kannst das.','Nochmal – beim nächsten Mal klappt\'s!','Kopf hoch! Weiter üben.'],
+      questions:['Wie wirkt dieses Medikament?','Welche Nebenwirkungen kennst du?','Wann wird dieser Wirkstoff eingesetzt?','Wie lautet der Wirkungsmechanismus?','Welche Interaktionen sind bekannt?','Was ist die Indikation?','Wie wird es dosiert?'],
+      open:    ['Bereit zum Lernen? Los!','Heute lernen wir gemeinsam!','Ich freue mich auf unsere Sitzung!','Frisch ans Werk – du schaffst das!','Ein neuer Tag, neue Wirkstoffe!','Zusammen sind wir stark! ✨'],
+      levelup: ['Du hast ein neues Level erreicht! 🎉','Wow – Level Up! Weiter so!','Fantastisch – du wächst stetig!','Nächste Stufe! Ich bin begeistert!','Level Up! Dein Fleiß zahlt sich aus!'],
+      streak:  ['Dein Streak brennt! 🔥 Bleib dabei!','Mehrere Tage in Folge – großartig!','Disziplin ist der Schlüssel!','Unglaublich – so einen Streak!','So macht Lernen Spaß! 🔥'],
+      idle:    ['Bist du noch da? Lass uns weitermachen!','Ich warte auf dich... 👀','Psst – du hast noch Wirkstoffe zu lernen!','Bereit für eine neue Runde?','Nicht vergessen: täglich üben!','Hey! Wir hatten so einen guten Rhythmus!'],
+      pet:     ['Danke! Du bist lieb 😊','Oh! Eine Überraschung!','Hehe, das kitzelt!','Ich schätze deine Aufmerksamkeit!'],
+      combo:   ['KOMBO! Du bist unaufhaltbar! 🔥','Serie! Fantastisch! 🌟','Wow – Kombo-Serie! Weiter!','Unglaublich! Fantastische Serie!','Kombo-Meister! Du bist der Beste!'],
     },
     victor: {
-      id:'victor', name:'Victor', role:'PKA-Lehrling', emoji:'👨‍🎓',
-      img:'img/victor.png', color:'#FF9800', glow:'rgba(255,152,0,.38)',
-      msgs:{
-        correct:['Ja! Geschafft! Nächster Wirkstoff!','YES! Voll cool! 🤜','Boom! Voll getroffen!'],
-        wrong:  ['Oh nein... Nochmal bitte?','Ugh... ich auch fast!','Nicht aufgeben!'],
-        combo:  ['WAHNSINN! Du bist so gut!!','Krass krass krass!! 🔥'],
-        start:  ['Auf geht\'s! Wir schaffen das!','Heute wird gelernt! 💪'],
-        over:   ['War super! Morgen noch besser!','Ich bin stolz auf dich! 🎉'],
-      },
+      correct: ['YES! Krass gut! 🤜','Boom! Voll getroffen! 💥','Alter, das war PERFEKT!','Digga, du bist zu gut!','Ja! Nächster bitte!','Haha, leicht gemacht! 😄','Korrekt! Ich dachte schon du schaffst\'s nicht!','Wow du bist besser als ich!','Klar doch! Bam! ⚡','Yeees! Ich wusste es!','Alter Schwede! Richtig!','So geht das! Weiter!','Das saß! 💪','Mega! Nicht schlecht!','Cooooool! Next!'],
+      wrong:   ['Oh nein... Nochmal bitte?','Ugh, ich auch fast falsch!','Nicht aufgeben, echt jetzt!','Hm, da war ich auch unsicher...','Krass – nochmal probieren!','Schade... aber du kannst das!','Fast! Ich zeig dir\'s nochmal!','Ey, nicht aufgeben okay?','Knapp daneben. Nochmal!','Fehler happen! Weiter!','Ne ne ne – nochmal!','Och... aber weiter!'],
+      questions:['Kennst du die Handelsnahmen?','Was ist das für eine Klasse?','Wie spricht man das aus?','Was macht der eigentlich?','Wofür nimmt man das?','Welche Nebenwirkungen?','Interessant – was weißt du noch?'],
+      open:    ['Heute wird gelernt! 💪','Auf geht\'s – keine Ausreden!','Wir können das, ich schwör!','Los los los! Wir starten!','Mega Day – voll motiviert!','Ich bin ready – und du?'],
+      levelup: ['LEVEL UP!! Du bist ein Held! 🚀','Alter, LEVEL UP! Krass!','Bam! Nächste Stufe! 🔥','Digga, du bist zu stark!','Woooah Level Up! Weiter!'],
+      streak:  ['Streak am Brennen! 🔥','Mehrere Tage durch! Stark!','Kein Tag ohne Pharma! 💪','Unaufhaltbar! 🔥','STREAK MONSTER! So geht das!'],
+      idle:    ['Ey, schläfst du?! Komm!','Hallo?? Wir hatten was vor!','Psst – ich langweile mich hier!','Aufwachen! Wirkstoffe warten!','Alter, komm endlich!','Ey! Ich bin hier! Lernen!'],
+      pet:     ['Haha, was soll das?! 😄','Hey!! Das kitzelt!','Ey, ich lern hier gerade!','Hehe okay okay 😄'],
+      combo:   ['KRASSE KOMBO!! 🔥🔥🔥','COMBO! Unaufhaltbar! 💥','WAHNSINN!! Serie!!!','BOOM COMBO!! 🤯','YES YES YES! SERIE!'],
     },
     fin: {
-      id:'fin', name:'Fin', role:'Treuer Begleiter', emoji:'🐕',
-      img:'img/fin.png', color:'#FFC107', glow:'rgba(255,193,7,.38)',
-      msgs:{
-        correct:['Wuff! ★ Perfekt ★','WUFF WUFF! Toll! 🐾','*wedelt* Richtig!'],
-        wrong:  ['Wuff...? Versuch\'s nochmal!','*Kopf schieflegen* Hmm?','Wuff wuff?'],
-        combo:  ['WUFF WUFF WUFF!!! 🐾','*springt und bellt* SUPER!'],
-        start:  ['*wedelt* Ich bin bereit! WUFF!','WUFF! Auf geht\'s! 🐾'],
-        over:   ['*leckt Gesicht* Nochmal? 🐾','Wuff! Du warst super!'],
-      },
+      correct: ['Wuff! ★ Perfekt ★','WUFF WUFF! Toll gemacht! 🐾','*wedelt* Richtig! Genau!','Wuff! Du bist klasse!','*springt* WUFF! JA! 🐾','Grrr-Wuff! Perfekt!','*leckt Nase* Richtig! 🐾','WUFF WUFF WUFF! Super!','Wufffff! Jawohl! 🐾','*läuft im Kreis* Richtig!','Wuff! Ich bin stolz auf dich!','*bellt freudig* ✨','WUF WUF! Toll toll toll!','*wedelt wild* SUPER! 🐾','Wau! Meister! 🐾'],
+      wrong:   ['Wuff...? Versuch\'s nochmal!','*Kopf schieflegen* Hmm?','Wuf wuf? Ich verwirrt...','*trauriger Blick* Nochmal?','Wuff... nicht ganz...','*schnüffelt* Hmm, seltsam!','Wuuu...? Nochmal bitte!','*winselnd* Nicht schlimm! Nochmal!','Wuff? Ich helfe dir!','Nicht aufgeben! Wuff!','Wuf... du schaffst das!','*leckt Gesicht* Tröst dich! Wuff!'],
+      questions:['Wuff? Was ist das? 🐾','*schnüffelt neugierig* Kennst du das?','Wuff wuff – was bedeutet das?','*Ohren hoch* Interessant, oder?','Wuff! Weißt du das?','Kennst du den Geruch? Wuff!','*wedelt* Magst du das lernen?'],
+      open:    ['*wedelt* Ich bin bereit! WUFF!','WUFF! Auf geht\'s! 🐾','*springt* Heute lernen wir!','Wuff wuff! Lass uns starten!','WUFF! Ich freue mich! 🐾','*läuft Kreise* Wufffff!'],
+      levelup: ['WUFF WUFF WUFF!!! 🐾 LEVEL UP!','*spinnt* Neues Level! WUFF!','JAAA! WUFF! Du bist super!','*springt hochhoch* LEVEL UP!','WUFFFFF! Ich bin begeistert!'],
+      streak:  ['WUFF WUFF WUFF! Streak! 🐾','*wedelt wie verrückt* Toll!','Wuff! Jeden Tag! Genau!','*bellt laut* STREAK!! 🔥','WUFF! Meister! Streak!'],
+      idle:    ['Wuff...? Wo bist du? 🐾','*winselnd* Komm zurück!','Wuuuuf? Ich vermisse dich!','*liegt traurig* Wuff...','Wuff wuff? Lernst du bald?','*trauriger Blick* Spielen? Wuff?'],
+      pet:     ['*begeistert wedelt* WUFF!! 🐾','*dreht sich* Mehr! Wuff!','*leckt Hand* Danke! Wuff!','WUFF!! Ich mag das!'],
+      combo:   ['WUFF WUFF WUFF!!! 🐾','*springt und bellt* SUPER KOMBO!','WUFFFFF!! SERIE!! 🐾','*dreht Runden* KOMBO! KOMBO!','WUFF!! Du bist super! 🐾'],
     },
     ari: {
-      id:'ari', name:'Ari', role:'Süße Begleiterin', emoji:'🐶',
-      img:'img/ari.png', color:'#FF69B4', glow:'rgba(255,105,180,.38)',
-      msgs:{
-        correct:['*wedel wedel* Richtig! ✨','♡ Perfekt ♡','*hüpf* Jawohl! 🌸'],
-        wrong:  ['*trauriger Blick* Fast...','*schnüffel* Nochmal bitte!','♡ Du schaffst das!'],
-        combo:  ['♡♡♡ Du bist der Beste!','*begeistert wedelt* WOW! 🌸'],
-        start:  ['♡ Hallo! Ich begleite dich!','*wedelt* Heute wird gelernt! 🌸'],
-        over:   ['*wedelt* Du warst super! ♡','♡ Morgen weiter! 🌸'],
-      },
+      correct: ['*wedel wedel* Richtig! ✨','♡ Perfekt ♡ 🌸','*hüpf* Jawohl! 🌸','♡ Du bist toll! ✨','*wackelt* Super gemacht! 🌸','♡♡ Richtig! So schön!','*dreht sich* Ja! ♡','♡ Perfektamente! 🌸','*glücklich wedelt* Toll! ♡','♡ Bravo! So lieb! 🌸','*springt* Richtig! ♡','♡ Wunderschön! ✨','*strahlt* Jawohl! 🌸','♡ Du lernst so schnell! ✨','*hüpft fröhlich* ♡'],
+      wrong:   ['*trauriger Blick* Fast... ♡','*schnüffel* Nochmal bitte! 🌸','♡ Du schaffst das!','*sanfter Blick* Versuch\'s! ♡','Nicht traurig sein... ♡','*wedelt beruhigend* Nochmal! 🌸','♡ Fast! Ich glaube an dich!','*kuschelt* Mach weiter! ♡','Nicht aufgeben! ♡ 🌸','♡ Gleich klappt\'s! ✨','*stupst sanft* Nochmal! ♡','♡ Es wird besser! 🌸'],
+      questions:['♡ Was weißt du darüber?','*neugierig* Kennst du das? 🌸','♡ Interessante Frage! Was denkst du?','*wedelt* Magst du mir erzählen? ♡','Wie heißt das genau? 🌸','♡ Was ist die Wirkung?','Kannst du mir mehr erzählen? ♡'],
+      open:    ['♡ Hallo! Ich begleite dich!','*wedelt* Heute wird gelernt! 🌸','♡ Ich bin so froh, dass du da bist!','*hüpft* Auf geht\'s zusammen! ♡','🌸 Bereit? Ich bin es! ♡','♡ Lass uns gemeinsam lernen!'],
+      levelup: ['♡♡♡ LEVEL UP! Du bist toll! 🌸','*dreht sich* Neues Level! ♡','🌸 WOW! Level Up! Ich freue mich!','♡ Du bist so fleißig! Level Up!','*begeistert* Oh! OH! Level Up! ♡'],
+      streak:  ['♡ Streak! Du bist konsequent! 🌸','*wedelt begeistert* Streak! ♡','🌸 Jeden Tag! So lieb von dir!','♡ Streeeeak! Ich liebe das!','*strahlend* Streak-Held! ♡ 🌸'],
+      idle:    ['♡ Wo bist du? Ich vermisse dich! 🌸','*trauriger Blick* Komm bitte! ♡','🌸 Psst... lernst du bald?','♡ Ich bin noch hier... warte auf dich!','*schnüffelt* Du fehlst mir! ♡','♡ Hey! Komm zurück! 🌸'],
+      pet:     ['*begeistert wedelt* ♡♡♡ 🌸','*dreht Kreise* Mehr bitte! ♡','♡ Oh! Das mag ich! 🌸','*schnurrt fast* Danke! ♡'],
+      combo:   ['♡♡♡ Du bist der Beste! 🌸','*begeistert wedelt* WOW! 🌸','♡ KOMBO! Wunderschön!','*dreht sich* SERIE! ♡ 🌸','♡♡ Unglaublich! Weiter! ✨'],
     },
+  },
+  en: {
+    beatrice: {
+      correct: ['Excellent! Keep going!','Perfect pronunciation! ✨','Very well done!','Correct! You learn fast.','Top marks! That\'s it!','Bravo! Flawless!','Wonderful progress!','Exactly right! Beautiful!','Perfect! Your brain works!','Great! Next substance!','Spot on! That\'s correct!','Well done! ✨','Super! You\'re growing!','Brilliant! Remember that!','Fantastic! Continue!'],
+      wrong:   ['Almost! Listen again.','Don\'t give up! Try once more.','You can do it! Focus.','Too bad – but you learn from it!','Hmm, something was off... again!','Not quite – you\'ll get it!','You\'re close! Try again.','Mistakes are teachers. Continue!','Almost right – try again.','Don\'t give up! You can do this.','Once more – next time you\'ll nail it!','Chin up! Keep practicing.'],
+      questions:['How does this medication work?','What side effects do you know?','When is this active ingredient used?','What is the mechanism of action?','What interactions are known?','What is the indication?','How is it dosed?'],
+      open:    ['Ready to learn? Let\'s go!','Today we learn together!','I\'m looking forward to our session!','Fresh start – you can do it!','A new day, new substances!','Together we are strong! ✨'],
+      levelup: ['You reached a new level! 🎉','Wow – Level Up! Keep going!','Fantastic – you grow steadily!','Next level! I\'m thrilled!','Level Up! Your effort pays off!'],
+      streak:  ['Your streak is on fire! 🔥 Keep it up!','Several days in a row – great!','Discipline is the key!','Incredible – such a streak!','This is how learning is fun! 🔥'],
+      idle:    ['Are you still there? Let\'s continue!','I\'m waiting for you... 👀','Psst – you still have substances to learn!','Ready for a new round?','Don\'t forget: practice daily!','Hey! We had such a good rhythm!'],
+      pet:     ['Thank you! You\'re sweet 😊','Oh! A surprise!','Hehe, that tickles!','I appreciate your attention!'],
+      combo:   ['COMBO! You\'re unstoppable! 🔥','Series! Fantastic! 🌟','Wow – Combo series! Continue!','Incredible! Fantastic series!','Combo master! You\'re the best!'],
+    },
+    victor: {
+      correct: ['YES! So cool! 🤜','Boom! Right on target! 💥','Dude, that was PERFECT!','Bro, you\'re too good!','Yeah! Next please!','Haha, easy peasy! 😄','Correct! I almost thought you couldn\'t do it!','Wow you\'re better than me!','Of course! Bam! ⚡','Yeees! I knew it!','Holy moly! Correct!','That\'s how it\'s done! Continue!','That landed! 💪','Mega! Not bad!','Cooooool! Next!'],
+      wrong:   ['Oh no... Try again please?','Ugh, I almost got it wrong too!','Don\'t give up, seriously!','Hmm, I was unsure about that too...','Crazy – try again!','Too bad... but you can do it!','Almost! Let me show you again!','Hey, don\'t give up okay?','Just missed. Again!','Mistakes happen! Continue!','No no no – again!','Aw... but keep going!'],
+      questions:['Do you know the trade names?','What class is this?','How do you pronounce it?','What does it actually do?','What is it taken for?','What side effects?','Interesting – what else do you know?'],
+      open:    ['Today we learn! 💪','Let\'s go – no excuses!','We can do this, I swear!','Go go go! We start!','Mega Day – fully motivated!','I\'m ready – are you?'],
+      levelup: ['LEVEL UP!! You\'re a hero! 🚀','Dude, LEVEL UP! Crazy!','Bam! Next level! 🔥','Bro, you\'re too strong!','Woooah Level Up! Continue!'],
+      streak:  ['Streak is burning! 🔥','Several days through! Strong!','No day without Pharma! 💪','Unstoppable! 🔥','STREAK MONSTER! That\'s how!'],
+      idle:    ['Hey, are you sleeping?! Come on!','Hello?? We had plans!','Psst – I\'m bored here!','Wake up! Substances are waiting!','Dude, come on already!','Hey! I\'m here! Learning!'],
+      pet:     ['Haha, what\'s that for?! 😄','Hey!! That tickles!','Hey, I\'m studying here!','Hehe okay okay 😄'],
+      combo:   ['CRAZY COMBO!! 🔥🔥🔥','COMBO! Unstoppable! 💥','INSANE!! Series!!!','BOOM COMBO!! 🤯','YES YES YES! SERIES!'],
+    },
+    fin: {
+      correct: ['Woof! ★ Perfect ★','WOOF WOOF! Well done! 🐾','*wags* Right! Exactly!','Woof! You\'re great!','*jumps* WOOF! YES! 🐾','Grrr-Woof! Perfect!','*licks nose* Correct! 🐾','WOOF WOOF WOOF! Super!','Woooof! Yes! 🐾','*runs in circles* Right!','Woof! I\'m proud of you!','*barks happily* ✨','WOOF WOOF! Great great!','*wags wildly* SUPER! 🐾','Wau! Master! 🐾'],
+      wrong:   ['Woof...? Try again!','*tilts head* Hmm?','Woof woof? Me confused...','*sad look* Again?','Woof... not quite...','*sniffs* Hmm, strange!','Wuuu...? Again please!','*whining* Not bad! Again!','Woof? I\'ll help you!','Don\'t give up! Woof!','Wuf... you can do it!','*licks face* Comfort! Woof!'],
+      questions:['Woof? What\'s that? 🐾','*sniffs curiously* Do you know this?','Woof woof – what does that mean?','*ears up* Interesting, right?','Woof! Do you know that?','Do you know the smell? Woof!','*wags* Do you want to learn this?'],
+      open:    ['*wags* I\'m ready! WOOF!','WOOF! Let\'s go! 🐾','*jumps* Today we learn!','Woof woof! Let\'s start!','WOOF! I\'m excited! 🐾','*runs circles* Woooof!'],
+      levelup: ['WOOF WOOF WOOF!!! 🐾 LEVEL UP!','*spins* New level! WOOF!','YEAH! WOOF! You\'re super!','*jumps high* LEVEL UP!','WOOOOF! I\'m thrilled!'],
+      streak:  ['WOOF WOOF WOOF! Streak! 🐾','*wags like crazy* Great!','Woof! Every day! Exactly!','*barks loud* STREAK!! 🔥','WOOF! Master! Streak!'],
+      idle:    ['Woof...? Where are you? 🐾','*whining* Come back!','Wuuuuf? I miss you!','*lying sadly* Woof...','Woof woof? Will you learn soon?','*sad look* Play? Woof?'],
+      pet:     ['*excited wagging* WOOF!! 🐾','*spins* More! Woof!','*licks hand* Thanks! Woof!','WOOF!! I like this!'],
+      combo:   ['WOOF WOOF WOOF!!! 🐾','*jumps and barks* SUPER COMBO!','WOOOOF!! SERIES!! 🐾','*runs circles* COMBO! COMBO!','WOOF!! You\'re super! 🐾'],
+    },
+    ari: {
+      correct: ['*wag wag* Right! ✨','♡ Perfect ♡ 🌸','*bounces* Yes! 🌸','♡ You\'re great! ✨','*wiggles* Well done! 🌸','♡♡ Right! So lovely!','*spins* Yes! ♡','♡ Perfectly done! 🌸','*wags happily* Great! ♡','♡ Bravo! So sweet! 🌸','*jumps* Correct! ♡','♡ Wonderful! ✨','*beams* Yes! 🌸','♡ You learn so fast! ✨','*hops happily* ♡'],
+      wrong:   ['*sad look* Almost... ♡','*sniff* Try again please! 🌸','♡ You can do it!','*gentle look* Try! ♡','Don\'t be sad... ♡','*wags calmly* Again! 🌸','♡ Almost! I believe in you!','*cuddles* Keep going! ♡','Don\'t give up! ♡ 🌸','♡ You\'ll get it! ✨','*nudges gently* Again! ♡','♡ It gets better! 🌸'],
+      questions:['♡ What do you know about this?','*curious* Do you know this? 🌸','♡ Interesting question! What do you think?','*wags* Would you like to tell me? ♡','What is it exactly called? 🌸','♡ What is the effect?','Can you tell me more? ♡'],
+      open:    ['♡ Hello! I\'ll accompany you!','*wags* Today we learn! 🌸','♡ I\'m so glad you\'re here!','*bounces* Let\'s go together! ♡','🌸 Ready? I am! ♡','♡ Let\'s learn together!'],
+      levelup: ['♡♡♡ LEVEL UP! You\'re great! 🌸','*spins* New level! ♡','🌸 WOW! Level Up! I\'m happy!','♡ You\'re so diligent! Level Up!','*excited* Oh! OH! Level Up! ♡'],
+      streak:  ['♡ Streak! You\'re consistent! 🌸','*wags excited* Streak! ♡','🌸 Every day! So sweet of you!','♡ Streeeeak! I love it!','*glowing* Streak hero! ♡ 🌸'],
+      idle:    ['♡ Where are you? I miss you! 🌸','*sad look* Please come! ♡','🌸 Psst... will you learn soon?','♡ I\'m still here... waiting for you!','*sniffs* I miss you! ♡','♡ Hey! Come back! 🌸'],
+      pet:     ['*excited wagging* ♡♡♡ 🌸','*spins in circles* More please! ♡','♡ Oh! I like that! 🌸','*almost purrs* Thank you! ♡'],
+      combo:   ['♡♡♡ You\'re the best! 🌸','*excited wagging* WOW! 🌸','♡ COMBO! Beautiful!','*spins* SERIES! ♡ 🌸','♡♡ Incredible! Continue! ✨'],
+    },
+  },
+  pt: {
+    beatrice: {
+      correct: ['Excelente! Continue assim!','Perfeito! Muito bem! ✨','Muito bem! Estou orgulhosa de você!','Correto! Você aprende rápido.','Ótimo! É assim que se faz!','Bravo! Impecável!','Maravilhoso progresso!','Exatamente certo! Lindo!','Perfeito! Seu cérebro funciona!','Ótimo! Próxima substância!','Certinho! Muito certo!','Bem feito! ✨','Super! Você está crescendo!','Brilhante! Lembre-se disso!','Fantástico! Continue!'],
+      wrong:   ['Quase! Ouça novamente.','Não desista! Tente mais uma vez.','Você consegue! Foque.','Que pena – mas você aprende com isso!','Hmm, tinha algo errado... de novo!','Não exatamente – você vai conseguir!','Você está perto! Tente de novo.','Erros são professores. Continue!','Quase certo – tente de novo.','Não desista! Você pode.','Mais uma vez – da próxima você acerta!','Cabeça erguida! Continue praticando.'],
+      questions:['Como este medicamento funciona?','Quais efeitos colaterais você conhece?','Quando este ativo é usado?','Qual é o mecanismo de ação?','Quais interações são conhecidas?','Qual é a indicação?','Como é dosado?'],
+      open:    ['Pronto para aprender? Vamos!','Hoje aprendemos juntos!','Estou animada com nossa sessão!','Recomeço – você consegue!','Um novo dia, novas substâncias!','Juntos somos mais fortes! ✨'],
+      levelup: ['Você alcançou um novo nível! 🎉','Uau – Level Up! Continue!','Fantástico – você cresce constantemente!','Próximo nível! Estou animada!','Level Up! Seu esforço valeu a pena!'],
+      streak:  ['Sua sequência está em chamas! 🔥','Vários dias seguidos – ótimo!','Disciplina é a chave!','Incrível – essa sequência!','Assim o aprendizado é divertido! 🔥'],
+      idle:    ['Ainda está aí? Vamos continuar!','Estou esperando por você... 👀','Psst – ainda tem substâncias para aprender!','Pronto para uma nova rodada?','Não esqueça: pratique diariamente!','Ei! Tínhamos um ritmo tão bom!'],
+      pet:     ['Obrigada! Você é gentil 😊','Oh! Uma surpresa!','Hehe, isso faz cócegas!','Agradeço sua atenção!'],
+      combo:   ['COMBO! Você é imparável! 🔥','Série! Fantástico! 🌟','Uau – Série de combo! Continue!','Incrível! Série fantástica!','Mestre do combo! Você é o melhor!'],
+    },
+    victor: {
+      correct: ['SIM! Muito legal! 🤜','Boom! No alvo! 💥','Cara, isso foi PERFEITO!','Mano, você é bom demais!','Sim! Próximo por favor!','Haha, moleza! 😄','Correto! Eu quase achei que não ia!','Uau você é melhor que eu!','Claro! Bam! ⚡','Siiiim! Eu sabia!','Caramba! Correto!','É assim! Continue!','Acertou em cheio! 💪','Mega! Nada mal!','Leeeeegal! Próximo!'],
+      wrong:   ['Ah não... Tente de novo?','Ugh, eu também quase errei!','Não desista, sério!','Hmm, eu também estava inseguro...','Cara – tente de novo!','Que pena... mas você consegue!','Quase! Deixa eu mostrar de novo!','Ei, não desiste tá?','Por pouco. De novo!','Erros acontecem! Continue!','Não não não – de novo!','Ah... mas vai lá!'],
+      questions:['Você sabe os nomes comerciais?','Que classe é essa?','Como se pronuncia?','O que ele faz mesmo?','Para que se toma isso?','Quais efeitos colaterais?','Interessante – o que mais você sabe?'],
+      open:    ['Hoje a gente aprende! 💪','Vamos – sem desculpas!','A gente consegue, juro!','Vai vai vai! Começamos!','Dia mega – super motivado!','Eu tô pronto – e você?'],
+      levelup: ['LEVEL UP!! Você é um herói! 🚀','Cara, LEVEL UP! Incrível!','Bam! Próximo nível! 🔥','Mano, você é forte demais!','Uooou Level Up! Continue!'],
+      streak:  ['Sequência em chamas! 🔥','Vários dias! Forte!','Nenhum dia sem Pharma! 💪','Imparável! 🔥','MONSTRO DA SEQUÊNCIA! Isso aí!'],
+      idle:    ['Ei, tá dormindo?! Vem!','Oi?? A gente tinha planos!','Psst – tô entediado aqui!','Acorda! As substâncias estão esperando!','Cara, vem logo!','Ei! Tô aqui! Aprendendo!'],
+      pet:     ['Haha, que foi isso?! 😄','Ei!! Isso faz cócegas!','Ei, tô estudando aqui!','Hehe tá bom tá bom 😄'],
+      combo:   ['COMBO INSANO!! 🔥🔥🔥','COMBO! Imparável! 💥','LOUCURA!! Série!!!','BOOM COMBO!! 🤯','SIM SIM SIM! SÉRIE!'],
+    },
+    fin: {
+      correct: ['Au! ★ Perfeito ★','AU AU! Muito bem! 🐾','*abana* Certo! Exato!','Au! Você é ótimo!','*pula* AU! SIM! 🐾','Grrr-Au! Perfeito!','*lambe nariz* Certo! 🐾','AU AU AU! Super!','Auuuu! Sim! 🐾','*corre em círculos* Certo!','Au! Tenho orgulho de você!','*late feliz* ✨','AU AU! Ótimo ótimo!','*abana selvagemente* SUPER! 🐾','Uau! Mestre! 🐾'],
+      wrong:   ['Au...? Tente de novo!','*inclina cabeça* Hmm?','Au au? Confuso...','*olhar triste* De novo?','Au... não bem...','*fareja* Hmm, estranho!','Uuu...? De novo por favor!','*gemendo* Não faz mal! De novo!','Au? Vou te ajudar!','Não desiste! Au!','Au... você consegue!','*lambe rosto* Consolo! Au!'],
+      questions:['Au? O que é isso? 🐾','*fareja curioso* Você sabe isso?','Au au – o que significa?','*orelhas levantadas* Interessante, né?','Au! Você sabe isso?','Conhece o cheiro? Au!','*abana* Quer aprender isso?'],
+      open:    ['*abana* Estou pronto! AU!','AU! Vamos! 🐾','*pula* Hoje a gente aprende!','Au au! Vamos começar!','AU! Estou animado! 🐾','*corre círculos* Auuuu!'],
+      levelup: ['AU AU AU!!! 🐾 LEVEL UP!','*gira* Novo nível! AU!','SIM! AU! Você é super!','*pula alto* LEVEL UP!','AUUUU! Estou animado!'],
+      streak:  ['AU AU AU! Sequência! 🐾','*abana feito louco* Ótimo!','Au! Todo dia! Exato!','*late alto* SEQUÊNCIA!! 🔥','AU! Mestre! Sequência!'],
+      idle:    ['Au...? Onde você está? 🐾','*gemendo* Volta!','Uuuuu? Sinto sua falta!','*deitado triste* Au...','Au au? Vai aprender logo?','*olhar triste* Brincar? Au?'],
+      pet:     ['*abana animado* AU!! 🐾','*gira* Mais! Au!','*lambe mão* Obrigado! Au!','AU!! Gostei disso!'],
+      combo:   ['AU AU AU!!! 🐾','*pula e late* SUPER COMBO!','AUUUU!! SÉRIE!! 🐾','*corre círculos* COMBO! COMBO!','AU!! Você é super! 🐾'],
+    },
+    ari: {
+      correct: ['*abana abana* Certo! ✨','♡ Perfeito ♡ 🌸','*pula* Sim! 🌸','♡ Você é ótimo! ✨','*bamboleia* Bem feito! 🌸','♡♡ Certo! Tão lindo!','*gira* Sim! ♡','♡ Perfeitamente! 🌸','*abana feliz* Ótimo! ♡','♡ Bravo! Tão fofo! 🌸','*pula* Certo! ♡','♡ Maravilhoso! ✨','*irradia* Sim! 🌸','♡ Você aprende tão rápido! ✨','*hopla feliz* ♡'],
+      wrong:   ['*olhar triste* Quase... ♡','*fareja* De novo por favor! 🌸','♡ Você consegue!','*olhar gentil* Tente! ♡','Não fique triste... ♡','*abana com calma* De novo! 🌸','♡ Quase! Acredito em você!','*abraça* Continue! ♡','Não desiste! ♡ 🌸','♡ Você vai conseguir! ✨','*empurra gentilmente* De novo! ♡','♡ Vai melhorar! 🌸'],
+      questions:['♡ O que você sabe sobre isso?','*curiosa* Você conhece isso? 🌸','♡ Pergunta interessante! O que você acha?','*abana* Quer me contar? ♡','Como se chama exatamente? 🌸','♡ Qual é o efeito?','Pode me contar mais? ♡'],
+      open:    ['♡ Olá! Vou te acompanhar!','*abana* Hoje a gente aprende! 🌸','♡ Fico tão feliz que você está aqui!','*pula* Vamos juntos! ♡','🌸 Pronto? Eu estou! ♡','♡ Vamos aprender juntos!'],
+      levelup: ['♡♡♡ LEVEL UP! Você é ótimo! 🌸','*gira* Novo nível! ♡','🌸 UAU! Level Up! Estou feliz!','♡ Você é tão dedicado! Level Up!','*animada* Oh! OH! Level Up! ♡'],
+      streak:  ['♡ Sequência! Você é consistente! 🌸','*abana animada* Sequência! ♡','🌸 Todo dia! Tão fofo de sua parte!','♡ Sequênciaaaa! Eu adoro!','*radiante* Herói da sequência! ♡ 🌸'],
+      idle:    ['♡ Onde você está? Sinto sua falta! 🌸','*olhar triste* Por favor venha! ♡','🌸 Psst... vai aprender logo?','♡ Ainda estou aqui... esperando por você!','*fareja* Estou com saudade! ♡','♡ Ei! Volta! 🌸'],
+      pet:     ['*abana animada* ♡♡♡ 🌸','*gira em círculos* Mais por favor! ♡','♡ Oh! Gostei disso! 🌸','*quase ronrona* Obrigada! ♡'],
+      combo:   ['♡♡♡ Você é o melhor! 🌸','*abana animada* UAU! 🌸','♡ COMBO! Lindo!','*gira* SÉRIE! ♡ 🌸','♡♡ Incrível! Continue! ✨'],
+    },
+  },
+};
+
+// ══ Inter-character dialogues ══
+const CONVOS = {
+  de: [
+    { chars:['beatrice','victor'], lines:[
+      {c:'beatrice', t:'Victor, weißt du was Metformin macht?'},
+      {c:'victor',   t:'Klar! Blutzucker senken! Typ-2-Diabetes!'},
+      {c:'beatrice', t:'Perfekt! Du machst Fortschritte! ✨'},
+    ]},
+    { chars:['fin','ari'], lines:[
+      {c:'fin',  t:'WUFF! Ari, spielen? 🐾'},
+      {c:'ari',  t:'♡ Fin! Erst lernen, dann spielen! 🌸'},
+      {c:'fin',  t:'Wuff wuff... okay! *setzt sich brav* 🐾'},
+    ]},
+    { chars:['beatrice','fin'], lines:[
+      {c:'beatrice', t:'Fin, magst du Antibiotika lernen?'},
+      {c:'fin',      t:'WUFF! JA! Amoxicillin! WUFF! 🐾'},
+      {c:'beatrice', t:'Haha! Sehr gut, braver Hund! ✨'},
+    ]},
+    { chars:['victor','ari'], lines:[
+      {c:'victor', t:'Ari, welcher Wirkstoff ist das? 💊'},
+      {c:'ari',    t:'*wedelt* Ich glaube... Ramipril? ♡'},
+      {c:'victor', t:'Ja!! Du bist auch gut!! 💪'},
+    ]},
+    { chars:['beatrice','victor','fin','ari'], lines:[
+      {c:'beatrice', t:'Alle zusammen – Level Up gefeiert! 🎉'},
+      {c:'victor',   t:'YEEES! Wir sind das beste Team!'},
+      {c:'fin',      t:'WUFF WUFF WUFF!!! 🐾'},
+      {c:'ari',      t:'♡♡♡ Ich liebe euch alle! 🌸'},
+    ]},
+  ],
+  en: [
+    { chars:['beatrice','victor'], lines:[
+      {c:'beatrice', t:'Victor, do you know what Metformin does?'},
+      {c:'victor',   t:'Sure! Lowers blood sugar! Type-2 diabetes!'},
+      {c:'beatrice', t:'Perfect! You\'re making progress! ✨'},
+    ]},
+    { chars:['fin','ari'], lines:[
+      {c:'fin',  t:'WOOF! Ari, play? 🐾'},
+      {c:'ari',  t:'♡ Fin! First learn, then play! 🌸'},
+      {c:'fin',  t:'Woof woof... okay! *sits nicely* 🐾'},
+    ]},
+    { chars:['beatrice','fin'], lines:[
+      {c:'beatrice', t:'Fin, do you want to learn antibiotics?'},
+      {c:'fin',      t:'WOOF! YES! Amoxicillin! WOOF! 🐾'},
+      {c:'beatrice', t:'Haha! Very good, good dog! ✨'},
+    ]},
+    { chars:['victor','ari'], lines:[
+      {c:'victor', t:'Ari, what substance is this? 💊'},
+      {c:'ari',    t:'*wags* I think... Ramipril? ♡'},
+      {c:'victor', t:'Yeah!! You\'re good too!! 💪'},
+    ]},
+    { chars:['beatrice','victor','fin','ari'], lines:[
+      {c:'beatrice', t:'All together – Level Up celebrated! 🎉'},
+      {c:'victor',   t:'YEEES! We\'re the best team!'},
+      {c:'fin',      t:'WOOF WOOF WOOF!!! 🐾'},
+      {c:'ari',      t:'♡♡♡ I love you all! 🌸'},
+    ]},
+  ],
+  pt: [
+    { chars:['beatrice','victor'], lines:[
+      {c:'beatrice', t:'Victor, você sabe o que a Metformina faz?'},
+      {c:'victor',   t:'Claro! Abaixa o açúcar no sangue! Diabetes tipo 2!'},
+      {c:'beatrice', t:'Perfeito! Você está progredindo! ✨'},
+    ]},
+    { chars:['fin','ari'], lines:[
+      {c:'fin',  t:'AU! Ari, brincar? 🐾'},
+      {c:'ari',  t:'♡ Fin! Primeiro aprender, depois brincar! 🌸'},
+      {c:'fin',  t:'Au au... tá bem! *senta direitinho* 🐾'},
+    ]},
+    { chars:['beatrice','fin'], lines:[
+      {c:'beatrice', t:'Fin, quer aprender antibióticos?'},
+      {c:'fin',      t:'AU! SIM! Amoxicilina! AU! 🐾'},
+      {c:'beatrice', t:'Haha! Muito bem, cachorro bonzinho! ✨'},
+    ]},
+    { chars:['victor','ari'], lines:[
+      {c:'victor', t:'Ari, qual substância é essa? 💊'},
+      {c:'ari',    t:'*abana* Acho que... Ramipril? ♡'},
+      {c:'victor', t:'Sim!! Você também é boa!! 💪'},
+    ]},
+    { chars:['beatrice','victor','fin','ari'], lines:[
+      {c:'beatrice', t:'Todos juntos – comemorando o Level Up! 🎉'},
+      {c:'victor',   t:'SIMM! Somos o melhor time!'},
+      {c:'fin',      t:'AU AU AU!!! 🐾'},
+      {c:'ari',      t:'♡♡♡ Amo vocês todos! 🌸'},
+    ]},
+  ],
+};
+
+// ══ Tamagotchi System ══
+const TamaSystem = (() => {
+  const KEY = 'pv_tama';
+  let stats = { hunger:80, happiness:80, energy:90, lastSave: Date.now() };
+
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (s) {
+        const elapsed = (Date.now() - s.lastSave) / 3600000; // hours
+        stats.hunger    = Math.max(0, Math.min(100, s.hunger    - elapsed * 2));
+        stats.happiness = Math.max(0, Math.min(100, s.happiness - elapsed * 1.5));
+        stats.energy    = Math.max(0, Math.min(100, s.energy    - elapsed * 3));
+        stats.lastSave  = Date.now();
+      }
+    } catch(e) {}
+  }
+
+  function save() {
+    stats.lastSave = Date.now();
+    localStorage.setItem(KEY, JSON.stringify(stats));
+  }
+
+  function update(evt) {
+    if (evt === 'correct') {
+      stats.hunger    = Math.min(100, stats.hunger    + 12);
+      stats.happiness = Math.min(100, stats.happiness + 8);
+      stats.energy    = Math.min(100, stats.energy    + 3);
+    } else if (evt === 'wrong') {
+      stats.happiness = Math.max(0, stats.happiness - 6);
+      stats.energy    = Math.max(0, stats.energy    - 4);
+    } else if (evt === 'open') {
+      stats.hunger    = Math.min(100, stats.hunger    + 5);
+      stats.happiness = Math.min(100, stats.happiness + 5);
+      stats.energy    = Math.min(100, stats.energy    + 15);
+    }
+    save();
+    renderBars();
+  }
+
+  function renderBars() {
+    const h = document.getElementById('tamaHunger');
+    const hap = document.getElementById('tamaHappiness');
+    const en = document.getElementById('tamaEnergy');
+    if (h)   h.style.width   = stats.hunger    + '%';
+    if (hap) hap.style.width = stats.happiness + '%';
+    if (en)  en.style.width  = stats.energy    + '%';
+  }
+
+  function getState() {
+    if (stats.energy < 20)    return 'sleeping';
+    if (stats.happiness < 25) return 'sad';
+    if (stats.hunger < 25)    return 'hungry';
+    return 'normal';
+  }
+
+  return { load, update, getState, renderBars, getStats: () => ({...stats}) };
+})();
+
+// ══ Character System (Tamagotchi edition) ══
+const CharacterSystem = (() => {
+  const CHARS = {
+    beatrice: { id:'beatrice', name:'Beatrice', role:'Apothekerin',   emoji:'👩‍⚕️', img:'img/beatrice.png', color:'#2ECC71', glow:'rgba(46,204,113,.38)' },
+    victor:   { id:'victor',   name:'Victor',   role:'PKA-Lehrling',  emoji:'👨‍🎓', img:'img/victor.png',   color:'#FF9800', glow:'rgba(255,152,0,.38)'  },
+    fin:      { id:'fin',      name:'Fin',       role:'Treuer Begleiter', emoji:'🐕', img:'img/fin.png',    color:'#FFC107', glow:'rgba(255,193,7,.38)'  },
+    ari:      { id:'ari',      name:'Ari',       role:'Süße Begleiterin', emoji:'🐶', img:'img/ari.png',   color:'#FF69B4', glow:'rgba(255,105,180,.38)' },
   };
 
-  let cur = null;
-  let bubTimer = null;
+  let cur = null, bubTimer = null, idleTimer = null, convoTimer = null;
+  let lang = 'de';
 
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function getLang() { return lang; }
+  function setLang(l) {
+    if (!I18N[l]) return;
+    lang = l;
+    localStorage.setItem('pv_lang', l);
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+  }
+
+  function randFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function msgs(type) {
+    if (!cur || !I18N[lang]) return ['...'];
+    const c = I18N[lang][cur.id];
+    return c && c[type] ? c[type] : I18N['de'][cur.id]?.correct || ['...'];
+  }
 
   function applyTheme(ch) {
     document.documentElement.style.setProperty('--char-primary', ch.color);
     document.documentElement.style.setProperty('--char-glow', ch.glow);
-    // Sync --teal so existing green elements follow the character color
     document.documentElement.style.setProperty('--teal', ch.color);
     document.documentElement.style.setProperty('--green', ch.color);
   }
 
   function updateHeroBtn(ch) {
-    const img  = el('charHeroBtnImg');
-    const emo  = el('charHeroBtnEmoji');
-    const name = el('charHeroBtnName');
+    const img  = document.getElementById('charHeroBtnImg');
+    const emo  = document.getElementById('charHeroBtnEmoji');
+    const name = document.getElementById('charHeroBtnName');
     if (!img) return;
-    img.src = ch.img;
-    img.alt = ch.name;
-    img.style.display = '';
+    img.src = ch.img; img.alt = ch.name; img.style.display = '';
     img.onerror = () => { img.style.display='none'; if(emo){emo.style.display='';emo.textContent=ch.emoji;} };
     if (name) name.textContent = ch.name;
   }
 
   function showBubble(text, dur=2800) {
-    const b = el('charBubble');
+    const b = document.getElementById('charBubble');
     if (!b || !cur) return;
     if (bubTimer) clearTimeout(bubTimer);
     b.textContent = text;
@@ -1081,27 +1387,94 @@ const CharacterSystem = (() => {
     bubTimer = setTimeout(() => b.classList.remove('show'), dur);
   }
 
+  function updateSleepState() {
+    const av = document.getElementById('charAvatar');
+    if (!av) return;
+    const state = TamaSystem.getState();
+    av.classList.toggle('sleeping', state === 'sleeping');
+  }
+
   function react(type) {
     if (!cur) return;
-    const av = el('charAvatar');
+    const av = document.getElementById('charAvatar');
     if (!av) return;
     av.classList.remove('react-correct','react-wrong','react-combo');
     void av.offsetWidth;
-    const msgs = cur.msgs[type] || cur.msgs.correct;
-    showBubble(pick(msgs), type === 'combo' ? 3000 : 2400);
+    const state = TamaSystem.getState();
+    let msgType = type;
+    if (state === 'sleeping' && type === 'correct') msgType = 'correct';
+    showBubble(randFrom(msgs(msgType)), type === 'combo' ? 3000 : 2400);
     if (type === 'correct') av.classList.add('react-correct');
     else if (type === 'wrong') av.classList.add('react-wrong');
     else if (type === 'combo') av.classList.add('react-combo');
-    setTimeout(() => av.classList.remove('react-correct','react-wrong','react-combo'), 750);
+    setTimeout(() => { av.classList.remove('react-correct','react-wrong','react-combo'); updateSleepState(); }, 750);
+    resetIdleTimer();
+  }
+
+  function tapAvatar() {
+    if (!cur) return;
+    TamaSystem.update('open');
+    updateSleepState();
+    const state = TamaSystem.getState();
+    if (state === 'sleeping') {
+      showBubble('💤 Zzz...', 2000);
+    } else {
+      showBubble(randFrom(msgs('pet')), 2200);
+      const av = document.getElementById('charAvatar');
+      if (av) { av.classList.add('react-correct'); setTimeout(() => av.classList.remove('react-correct'), 750); }
+    }
+    resetIdleTimer();
+  }
+
+  function resetIdleTimer() {
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      if (cur) showBubble(randFrom(msgs('idle')), 3500);
+    }, 120000); // 2 minutes
+  }
+
+  function scheduleConvo() {
+    const delay = 45000 + Math.random() * 30000; // 45-75s
+    convoTimer = setTimeout(() => {
+      playConvo();
+      scheduleConvo();
+    }, delay);
+  }
+
+  function playConvo() {
+    const pool = CONVOS[lang] || CONVOS['de'];
+    const convo = randFrom(pool);
+    let delay = 0;
+    convo.lines.forEach(line => {
+      setTimeout(() => {
+        const ch = CHARS[line.c];
+        if (!ch) return;
+        const b = document.getElementById('charBubble');
+        const img = document.getElementById('charAvatarImg');
+        if (b)   { b.textContent = `${ch.emoji} ${line.t}`; b.classList.add('show'); }
+        if (img) { img.src = ch.img; }
+        setTimeout(() => { if (b) b.classList.remove('show'); }, 2600);
+        setTimeout(() => { if (img && cur) img.src = cur.img; }, 2800);
+      }, delay);
+      delay += 3200;
+    });
   }
 
   function showAvatar() {
-    const av = el('charAvatar');
-    if (av && cur) av.classList.remove('hidden');
+    const av = document.getElementById('charAvatar');
+    if (av && cur) { av.classList.remove('hidden'); updateSleepState(); TamaSystem.renderBars(); }
   }
-  function hideAvatar() {
-    const av = el('charAvatar');
-    if (av) av.classList.add('hidden');
+  function hideAvatar() { /* Always show – noop */ }
+
+  function notifyStreak(days) {
+    if (!cur) return;
+    if (days >= 3) showBubble(randFrom(msgs('streak')), 3200);
+  }
+
+  function notifyLevelUp() {
+    if (!cur) return;
+    showBubble(randFrom(msgs('levelup')), 3500);
+    setTimeout(() => playConvo(), 4000);
   }
 
   function select(id) {
@@ -1111,17 +1484,18 @@ const CharacterSystem = (() => {
     localStorage.setItem('pv_char', id);
     applyTheme(ch);
     updateHeroBtn(ch);
-    // Update avatar image
-    const img = el('charAvatarImg');
+    const img = document.getElementById('charAvatarImg');
     if (img) { img.src = ch.img; img.alt = ch.name; }
-    // Mark selected card
     document.querySelectorAll('.char-card').forEach(c => c.classList.toggle('selected', c.dataset.char === id));
-    showBubble(pick(ch.msgs.start));
+    showBubble(randFrom(msgs('open')));
+    TamaSystem.update('open');
+    updateSleepState();
     closeCharModal();
+    resetIdleTimer();
   }
 
   function renderGrid() {
-    const grid = el('charGrid');
+    const grid = document.getElementById('charGrid');
     if (!grid) return;
     grid.innerHTML = '';
     Object.values(CHARS).forEach(ch => {
@@ -1141,16 +1515,29 @@ const CharacterSystem = (() => {
   }
 
   function init() {
+    lang = localStorage.getItem('pv_lang') || 'de';
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    TamaSystem.load();
     const saved = localStorage.getItem('pv_char') || 'beatrice';
     cur = CHARS[saved] || CHARS.beatrice;
     applyTheme(cur);
     updateHeroBtn(cur);
-    const img = el('charAvatarImg');
+    const img = document.getElementById('charAvatarImg');
     if (img) { img.src = cur.img; img.alt = cur.name; }
+    showAvatar();
+    TamaSystem.renderBars();
+    updateSleepState();
+    setTimeout(() => showBubble(randFrom(msgs('open')), 3000), 800);
+    resetIdleTimer();
+    scheduleConvo();
   }
 
-  return { init, select, react, showAvatar, hideAvatar, renderGrid, showBubble, getCurrent:() => cur };
+  return { init, select, react, showAvatar, hideAvatar, renderGrid, showBubble,
+           tapAvatar, notifyStreak, notifyLevelUp, setLang, getLang,
+           getCurrent: () => cur };
 })();
+
+function switchLang(l) { CharacterSystem.setLang(l); }
 
 function openCharModal()  {
   CharacterSystem.renderGrid();
@@ -1343,8 +1730,7 @@ function showScreen(name) {
   el('screen' + name).classList.add('active');
   const map = { Home:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navLearn', Result:'navLearn' };
   if (map[name]) el(map[name]).classList.add('active');
-  if (name === 'Learn') CharacterSystem.showAvatar();
-  else CharacterSystem.hideAvatar();
+  CharacterSystem.showAvatar();
   refreshUI();
   window.scrollTo(0, 0);
 }
@@ -1486,6 +1872,7 @@ function pick(btn, correct, med) {
     showFeedback(false, `❌ &nbsp;Fast! Richtige Antwort: <strong>${correct}</strong><br>${med.tip}`);
   }
   sm2Update(med.name, good);
+  TamaSystem.update(good ? 'correct' : 'wrong');
   const comboType = good && Q.correct > 0 && Q.correct % 5 === 0 ? 'combo' : good ? 'correct' : 'wrong';
   CharacterSystem.react(comboType);
   S.learned = Math.min(S.learned + 1, 9999);
@@ -1541,6 +1928,8 @@ function showResult() {
   set('resXP',     `+${Q.sessionXP}`);
   set('resStreak', `${S.streak} 🔥`);
   set('resTotal',  S.xp);
+  CharacterSystem.notifyStreak(S.streak);
+  if (s === t || Q.sessionXP >= 80) CharacterSystem.notifyLevelUp();
   showScreen('Result');
 }
 
