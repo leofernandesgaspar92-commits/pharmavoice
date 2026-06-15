@@ -570,11 +570,35 @@
       60%    { transform:translateY(0); }
       75%    { transform:translateY(-7px); }
     }
-    #charAvatar.anim-wave    #charAvatarImg { animation:avatarWave   .8s ease; }
-    #charAvatar.anim-jump    #charAvatarImg { animation:avatarJump   .6s ease; }
-    #charAvatar.anim-nod     #charAvatarImg { animation:avatarNod    .5s ease; }
-    #charAvatar.anim-shake   #charAvatarImg { animation:avatarShake  .5s ease; }
-    #charAvatar.anim-bounce3 #charAvatarImg { animation:avatarBounce3 .9s ease; }
+    #charAvatar.anim-wave    #charAvatarImg, #charAvatar.anim-wave    #avatarCanvas { animation:avatarWave   .8s ease; }
+    #charAvatar.anim-jump    #charAvatarImg, #charAvatar.anim-jump    #avatarCanvas { animation:avatarJump   .6s ease; }
+    #charAvatar.anim-nod     #charAvatarImg, #charAvatar.anim-nod     #avatarCanvas { animation:avatarNod    .5s ease; }
+    #charAvatar.anim-shake   #charAvatarImg, #charAvatar.anim-shake   #avatarCanvas { animation:avatarShake  .5s ease; }
+    #charAvatar.anim-bounce3 #charAvatarImg, #charAvatar.anim-bounce3 #avatarCanvas { animation:avatarBounce3 .9s ease; }
+    #avatarCanvas {
+      border:2.5px solid var(--char-primary,var(--teal));
+      box-shadow:0 0 12px var(--char-glow,rgba(0,168,107,.35));
+    }
+
+    /* Avatar Question Box */
+    #avatarQuestionBox {
+      position:fixed; bottom:170px; right:10px; z-index:400;
+      background:rgba(14,14,26,.97); border:1.5px solid var(--char-primary,var(--teal));
+      border-radius:16px; padding:12px 14px; max-width:190px; font-size:12px; color:#fff;
+      box-shadow:0 4px 20px rgba(0,0,0,.5);
+      opacity:0; transform:scale(.85) translateY(6px);
+      transition:all .25s cubic-bezier(.34,1.56,.64,1);
+      pointer-events:none;
+    }
+    #avatarQuestionBox.open { opacity:1; transform:scale(1) translateY(0); pointer-events:auto; }
+    #avatarQuestionText { line-height:1.45; margin-bottom:9px; }
+    #avatarQuestionBtns { display:flex; flex-wrap:wrap; gap:5px; }
+    .avatar-q-btn {
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+      border-radius:10px; padding:5px 8px; font-size:11px; color:#fff;
+      cursor:pointer; transition:background .15s; flex:1; min-width:60px; text-align:center;
+    }
+    .avatar-q-btn:hover { background:var(--char-primary,var(--teal)); color:#000; }
   </style>
 </head>
 <body>
@@ -676,7 +700,14 @@
     <div class="tama-row"><span>😊</span><div class="tama-track"><div class="tama-bar" id="tamaHappiness" style="width:80%"></div></div></div>
     <div class="tama-row"><span>⚡</span><div class="tama-track"><div class="tama-bar" id="tamaEnergy" style="width:90%"></div></div></div>
   </div>
-  <img id="charAvatarImg" src="" alt="" onerror="this.style.display='none'" onclick="CharacterSystem.tapAvatar()">
+  <canvas id="avatarCanvas" width="80" height="90" onclick="CharacterSystem.tapAvatar()" style="cursor:pointer;display:block;border-radius:50%;"></canvas>
+  <img id="charAvatarImg" src="" alt="" onerror="this.style.display='none'" onclick="CharacterSystem.tapAvatar()" style="display:none">
+</div>
+
+<!-- ══ AVATAR QUESTION BOX ══ -->
+<div id="avatarQuestionBox">
+  <div id="avatarQuestionText"></div>
+  <div id="avatarQuestionBtns"></div>
 </div>
 
 <!-- ══ DEV PANEL ══ -->
@@ -1521,9 +1552,9 @@ const CharacterSystem = (() => {
     let msgType = type;
     if (state === 'sleeping' && type === 'correct') msgType = 'correct';
     showBubble(randFrom(msgs(msgType)), type === 'combo' ? 3000 : 2400);
-    if (type === 'correct') av.classList.add('react-correct');
-    else if (type === 'wrong') av.classList.add('react-wrong');
-    else if (type === 'combo') av.classList.add('react-combo');
+    if (type === 'correct') { av.classList.add('react-correct'); AvatarCanvas.setEmotion('happy', 900); }
+    else if (type === 'wrong') { av.classList.add('react-wrong'); AvatarCanvas.setEmotion('sad', 900); }
+    else if (type === 'combo') { av.classList.add('react-combo'); AvatarCanvas.setEmotion('happy', 1200); }
     setTimeout(() => { av.classList.remove('react-correct','react-wrong','react-combo'); updateSleepState(); }, 750);
     resetIdleTimer();
   }
@@ -1605,6 +1636,8 @@ const CharacterSystem = (() => {
     updateHeroBtn(ch);
     const img = document.getElementById('charAvatarImg');
     if (img) { img.src = ch.img; img.alt = ch.name; }
+    AvatarCanvas.setChar(id);
+    AvatarCanvas.setEmotion('happy', 1500);
     document.querySelectorAll('.char-card').forEach(c => c.classList.toggle('selected', c.dataset.char === id));
     showBubble(randFrom(msgs('open')));
     TamaSystem.update('open');
@@ -1643,6 +1676,8 @@ const CharacterSystem = (() => {
     updateHeroBtn(cur);
     const img = document.getElementById('charAvatarImg');
     if (img) { img.src = cur.img; img.alt = cur.name; }
+    AvatarCanvas.setChar(cur.id);
+    AvatarCanvas.init();
     showAvatar();
     TamaSystem.renderBars();
     updateSleepState();
@@ -2067,6 +2102,8 @@ function showResult() {
   set('resTotal',  S.xp);
   CharacterSystem.notifyStreak(S.streak);
   if (s === t || Q.sessionXP >= 80) CharacterSystem.notifyLevelUp();
+  if (S.streak >= 5) setTimeout(() => AvatarQ.ask('streak5'), 5000);
+  else if (Q.correct < 4) setTimeout(() => AvatarQ.ask('tip'), 4000);
   showScreen('Result');
 }
 
@@ -2794,6 +2831,321 @@ function rnToggleMic() {
   if (curWord) rnStartMic(curWord);
 }
 
+// ══ CANVAS 2D AVATARS ══
+const AvatarCanvas = (() => {
+  let cvs, ctx, animId;
+  let S = { char:'beatrice', emotion:'idle', frame:0, blink:0 };
+
+  function cls() { if(cvs) { cvs.width=cvs.width; } }
+
+  function drawBeatrice(cx, cy) {
+    const b = S.blink > 0, e = S.emotion;
+    // Hair back
+    ctx.fillStyle='#D4A017';
+    ctx.beginPath(); ctx.ellipse(cx,cy-8,30,18,0,Math.PI,0); ctx.fill();
+    ctx.fillRect(cx-28,cy-4,12,30); ctx.fillRect(cx+16,cy-4,12,30);
+    // Face
+    ctx.fillStyle='#FDBFA0';
+    ctx.beginPath(); ctx.ellipse(cx,cy+4,25,30,0,0,Math.PI*2); ctx.fill();
+    // Glasses
+    ctx.strokeStyle='#999'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.roundRect(cx-20,cy-3,15,11,4); ctx.stroke();
+    ctx.beginPath(); ctx.roundRect(cx+5,cy-3,15,11,4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-5,cy+2); ctx.lineTo(cx+5,cy+2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-20,cy+2); ctx.lineTo(cx-24,cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx+20,cy+2); ctx.lineTo(cx+24,cy); ctx.stroke();
+    // Eyes
+    if (b) {
+      ctx.strokeStyle='#333'; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.moveTo(cx-18,cy+2); ctx.lineTo(cx-7,cy+2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx+7,cy+2); ctx.lineTo(cx+18,cy+2); ctx.stroke();
+    } else {
+      ctx.fillStyle='#2D1B69';
+      ctx.beginPath(); ctx.arc(cx-12,cy+2,3.5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx+12,cy+2,3.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.arc(cx-11,cy+1,1.2,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx+13,cy+1,1.2,0,Math.PI*2); ctx.fill();
+    }
+    // Nose
+    ctx.fillStyle='#E0908A';
+    ctx.beginPath(); ctx.ellipse(cx,cy+13,3.5,2.5,0,0,Math.PI*2); ctx.fill();
+    // Mouth
+    ctx.strokeStyle='#C05050'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.beginPath();
+    if (e==='sad') { ctx.arc(cx,cy+24,7,0.2*Math.PI,0.8*Math.PI,true); }
+    else if (e==='surprised') { ctx.arc(cx,cy+20,5,0,Math.PI*2); }
+    else { ctx.arc(cx,cy+20,7,0.15*Math.PI,0.85*Math.PI); }
+    ctx.stroke();
+    // White coat
+    ctx.fillStyle='#F2F2F2';
+    ctx.beginPath(); ctx.roundRect(cx-26,cy+32,52,36,9); ctx.fill();
+    // Coat lapels
+    ctx.fillStyle='#E4E4E4';
+    ctx.beginPath(); ctx.moveTo(cx-8,cy+32); ctx.lineTo(cx,cy+48); ctx.lineTo(cx+8,cy+32); ctx.closePath(); ctx.fill();
+    // Stethoscope
+    ctx.strokeStyle='#AAAAAA'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.arc(cx-6,cy+50,5,0,Math.PI); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-11,cy+50); ctx.lineTo(cx-14,cy+40); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-1,cy+50); ctx.lineTo(cx+2,cy+42); ctx.stroke();
+    ctx.fillStyle='#999'; ctx.beginPath(); ctx.arc(cx+2,cy+42,3,0,Math.PI*2); ctx.fill();
+  }
+
+  function drawVictor(cx, cy) {
+    const b = S.blink > 0, e = S.emotion;
+    // Hair (dark, spiky)
+    ctx.fillStyle='#1A0800';
+    ctx.beginPath(); ctx.ellipse(cx,cy-8,28,20,0,Math.PI,0); ctx.fill();
+    for (let i=-2;i<=2;i++) {
+      ctx.beginPath();
+      ctx.moveTo(cx+i*11-5,cy-20);
+      ctx.lineTo(cx+i*11,cy-34-Math.abs(i)*2);
+      ctx.lineTo(cx+i*11+5,cy-20);
+      ctx.closePath(); ctx.fill();
+    }
+    // Face
+    ctx.fillStyle='#FDBCB4';
+    ctx.beginPath(); ctx.ellipse(cx,cy+5,24,28,0,0,Math.PI*2); ctx.fill();
+    // Eyebrows
+    ctx.strokeStyle='#1A0800'; ctx.lineWidth=3; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx-18,e==='sad'?cy-2:cy-8); ctx.lineTo(cx-6,cy-10); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx+18,e==='sad'?cy-2:cy-8); ctx.lineTo(cx+6,cy-10); ctx.stroke();
+    // Eyes
+    if (b) {
+      ctx.strokeStyle='#333'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.arc(cx-11,cy,5,Math.PI,0); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx+11,cy,5,Math.PI,0); ctx.stroke();
+    } else {
+      ctx.fillStyle='#1A0A00';
+      ctx.beginPath(); ctx.arc(cx-11,cy,5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx+11,cy,5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.arc(cx-10,cy-1,1.8,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx+12,cy-1,1.8,0,Math.PI*2); ctx.fill();
+    }
+    // Nose
+    ctx.fillStyle='#E0A095'; ctx.beginPath(); ctx.ellipse(cx,cy+11,3,2.5,0,0,Math.PI*2); ctx.fill();
+    // Mouth
+    ctx.strokeStyle='#C05050'; ctx.lineWidth=2.5; ctx.lineCap='round'; ctx.beginPath();
+    if (e==='happy') { ctx.arc(cx,cy+18,8,0.15*Math.PI,0.85*Math.PI); }
+    else if (e==='sad') { ctx.arc(cx,cy+24,6,0.2*Math.PI,0.8*Math.PI,true); }
+    else { ctx.arc(cx,cy+17,6,0.2*Math.PI,0.8*Math.PI); }
+    ctx.stroke();
+    // Dark hoodie
+    ctx.fillStyle='#1A1A3E';
+    ctx.beginPath(); ctx.roundRect(cx-26,cy+30,52,40,10); ctx.fill();
+    ctx.fillStyle='#0D0D20';
+    ctx.beginPath(); ctx.moveTo(cx-8,cy+30); ctx.lineTo(cx,cy+46); ctx.lineTo(cx+8,cy+30); ctx.closePath(); ctx.fill();
+    // Fist pump on happy
+    if (e==='happy') {
+      ctx.fillStyle='#FDBCB4';
+      ctx.beginPath(); ctx.ellipse(cx+34,cy+14,9,11,0.3,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#FDBCB4';
+      ctx.beginPath(); ctx.roundRect(cx+28,cy+4,14,14,6); ctx.fill();
+    }
+  }
+
+  function drawDog(cx, cy, isFin) {
+    const b = S.blink > 0, e = S.emotion;
+    const mainC  = '#7A4828', earC = '#5A2E10', tanC = '#C48040', blackC = '#1A0800';
+    const bowC   = isFin ? null : '#FF69B4';
+    // Ears (floppy, Rottweiler-brown)
+    ctx.fillStyle = earC;
+    ctx.beginPath(); ctx.ellipse(cx-28,cy+6,11,23,-0.25,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx+28,cy+6,11,23,0.25,0,Math.PI*2); ctx.fill();
+    // Head (dark brown Rottweiler base)
+    ctx.fillStyle = blackC;
+    ctx.beginPath(); ctx.ellipse(cx,cy-4,30,26,0,0,Math.PI*2); ctx.fill();
+    // Brown face area
+    ctx.fillStyle = mainC;
+    ctx.beginPath(); ctx.ellipse(cx,cy+2,26,24,0,0,Math.PI*2); ctx.fill();
+    // Tan muzzle
+    ctx.fillStyle = tanC;
+    ctx.beginPath(); ctx.ellipse(cx,cy+16,16,13,0,0,Math.PI*2); ctx.fill();
+    // Tan dots above eyes (Rottweiler markings)
+    ctx.fillStyle = tanC;
+    ctx.beginPath(); ctx.ellipse(cx-12,cy-4,5,4,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx+12,cy-4,5,4,0,0,Math.PI*2); ctx.fill();
+    // Bow for Ari
+    if (bowC) {
+      ctx.fillStyle = bowC;
+      ctx.beginPath(); ctx.ellipse(cx+24,cy-18,9,5,-.5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx+24,cy-18,5,9,.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#FF9AB0'; ctx.beginPath(); ctx.arc(cx+24,cy-18,4,0,Math.PI*2); ctx.fill();
+    }
+    // Eyes
+    if (b) {
+      ctx.strokeStyle='#1A0800'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.arc(cx-12,cy,5,Math.PI,0); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx+12,cy,5,Math.PI,0); ctx.stroke();
+    } else {
+      ctx.fillStyle='#1A0800';
+      ctx.beginPath(); ctx.arc(cx-12,cy,5.5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx+12,cy,5.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.arc(cx-11,cy-1,2,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx+13,cy-1,2,0,Math.PI*2); ctx.fill();
+      if (e==='sad') {
+        // Sad eyebrows (inner brow raised)
+        ctx.strokeStyle=mainC; ctx.lineWidth=3; ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(cx-16,cy-8); ctx.lineTo(cx-8,cy-4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx+16,cy-8); ctx.lineTo(cx+8,cy-4); ctx.stroke();
+      }
+    }
+    // Nose
+    ctx.fillStyle='#111'; ctx.beginPath(); ctx.ellipse(cx,cy+13,7,5,0,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#444'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(cx,cy+13); ctx.lineTo(cx,cy+18); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,cy+18); ctx.lineTo(cx-5,cy+23); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,cy+18); ctx.lineTo(cx+5,cy+23); ctx.stroke();
+    // Tongue
+    if (e!=='sad' && (isFin || e==='happy')) {
+      ctx.fillStyle='#FF6B8A';
+      ctx.beginPath(); ctx.ellipse(cx,cy+26,6,9,0,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#E0507A'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(cx,cy+17); ctx.lineTo(cx,cy+30); ctx.stroke();
+    }
+    // Body
+    ctx.fillStyle = mainC;
+    ctx.beginPath(); ctx.roundRect(cx-22,cy+26,44,34,10); ctx.fill();
+    ctx.fillStyle = tanC;
+    ctx.beginPath(); ctx.ellipse(cx,cy+40,12,8,0,0,Math.PI*2); ctx.fill();
+    // Paw wave for happy
+    if (e==='happy' && isFin) {
+      ctx.fillStyle=mainC;
+      ctx.beginPath(); ctx.ellipse(cx+32,cy+16,9,11,0.4,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=tanC;
+      ctx.beginPath(); ctx.ellipse(cx+32,cy+22,8,5,0.4,0,Math.PI*2); ctx.fill();
+    }
+  }
+
+  function renderFrame() {
+    if (!cvs || !ctx) return;
+    cls();
+    const f = S.frame;
+    const bob = Math.sin(f * 0.065) * 3;
+    const cx = cvs.width / 2;
+    let cy = cvs.height / 2 + bob - 4;
+
+    // Jump
+    if (S.emotion === 'happy') cy -= Math.max(0, 15 - Math.abs(((f % 26) - 13)));
+    // Shake X
+    let dx = 0;
+    if (S.emotion === 'sad') dx = Math.sin(f * 0.7) * Math.max(0, 8 - (f % 22) * 0.4);
+
+    ctx.save();
+    ctx.translate(dx, 0);
+    if      (S.char === 'beatrice') drawBeatrice(cx, cy);
+    else if (S.char === 'victor')   drawVictor(cx, cy);
+    else if (S.char === 'fin')      drawDog(cx, cy, true);
+    else                            drawDog(cx, cy, false);
+    ctx.restore();
+  }
+
+  function tick() {
+    S.frame++;
+    if (S.frame % 190 === 0) S.blink = 6;
+    if (S.blink > 0) S.blink--;
+    renderFrame();
+    animId = requestAnimationFrame(tick);
+  }
+
+  function setChar(id) { S.char = id; }
+  function setEmotion(emotion, dur = 1200) {
+    S.emotion = emotion;
+    if (emotion !== 'idle') setTimeout(() => { S.emotion = 'idle'; }, dur);
+  }
+  function init() {
+    cvs = document.getElementById('avatarCanvas');
+    if (!cvs) return;
+    ctx = cvs.getContext('2d');
+    if (animId) cancelAnimationFrame(animId);
+    tick();
+  }
+  function stop() { if (animId) cancelAnimationFrame(animId); }
+
+  return { init, stop, setChar, setEmotion };
+})();
+
+// ══ AVATAR QUESTIONS ══
+const AvatarQ = (() => {
+  const QS = {
+    de: [
+      { id:'streak5', text:'Du übst schon mehrere Tage! Wie fühlst du dich dabei?',
+        opts:['Super! 💪','Machbar 😊','Anstrengend 😅'],
+        replies:['Wunderbar! Diese Disziplin macht dich zur echten Fachkraft!','Gut! Schritt für Schritt wird es leichter!','Mach eine kurze Pause – du hast es verdient! 😊'] },
+      { id:'tip', text:'Möchtest du einen Aussprache-Tipp?',
+        opts:['Ja bitte! 📖','Nein danke'],
+        replies:['Tipp: Bei langen Wörtern immer die 2. Silbe betonen. Zum Beispiel: me-TFOR-min!','Okay! Du schaffst das auch so! 💪'] },
+      { id:'mode', text:'Wie lernst du am liebsten?',
+        opts:['👂 Zuhören','🗣️ Sprechen','📝 Lesen'],
+        replies:['Perfekt! Der Runner-Modus ist ideal für dich!','Fantastisch! Spracherkennung ist dein Superpower!','Toll! Die Karten-Methode hilft dir beim Einprägen!'] },
+      { id:'challenge', text:'Willst du dich heute herausfordern?',
+        opts:['Ja! 🔥','Lieber easy'],
+        replies:['Respekt! Versuch Stufe 3 ohne Fehler!','Smart! Qualität vor Geschwindigkeit. 😊'] },
+    ],
+    en: [
+      { id:'streak5', text:'You\'ve been practicing for days! How does it feel?',
+        opts:['Amazing! 💪','Manageable 😊','Tiring 😅'],
+        replies:['Wonderful! This discipline makes you a real pro!','Great! It gets easier step by step!','Take a short break – you\'ve earned it! 😊'] },
+      { id:'tip', text:'Would you like a pronunciation tip?',
+        opts:['Yes please! 📖','No thanks'],
+        replies:['Tip: Stress the 2nd syllable in compound words. Example: me-FOR-min!','Okay! You\'ll do great anyway! 💪'] },
+      { id:'mode', text:'How do you prefer to learn?',
+        opts:['👂 Listening','🗣️ Speaking','📝 Reading'],
+        replies:['Perfect! Runner mode is ideal for you!','Fantastic! Speech recognition is your superpower!','Great! Flashcards help you remember!'] },
+      { id:'challenge', text:'Want to challenge yourself today?',
+        opts:['Yes! 🔥','Easy mode'],
+        replies:['Respect! Try level 3 without mistakes!','Smart! Quality over speed. 😊'] },
+    ],
+    pt: [
+      { id:'streak5', text:'Você pratica há vários dias! Como está se sentindo?',
+        opts:['Super! 💪','Dá pra fazer 😊','Cansativo 😅'],
+        replies:['Maravilhoso! Essa disciplina te faz um profissional!','Ótimo! Fica mais fácil passo a passo!','Faça uma pausa – você merece! 😊'] },
+      { id:'tip', text:'Quer uma dica de pronúncia?',
+        opts:['Sim, por favor! 📖','Não obrigado'],
+        replies:['Dica: Enfatize sempre a 2ª sílaba em palavras compostas. Ex: me-FOR-mi-na!','Ok! Você vai se sair bem assim mesmo! 💪'] },
+      { id:'mode', text:'Como você prefere aprender?',
+        opts:['👂 Ouvindo','🗣️ Falando','📝 Lendo'],
+        replies:['Perfeito! O modo Runner é ideal para você!','Fantástico! O reconhecimento de voz é seu superpoder!','Ótimo! Os cartões te ajudam a memorizar!'] },
+      { id:'challenge', text:'Quer se desafiar hoje?',
+        opts:['Sim! 🔥','Modo fácil'],
+        replies:['Respeito! Tente o nível 3 sem erros!','Esperto! Qualidade antes de velocidade. 😊'] },
+    ],
+  };
+
+  let shown = new Set();
+
+  function ask(triggerId) {
+    const lang = CharacterSystem.getLang();
+    const pool = (QS[lang] || QS['de']);
+    const q = pool.find(x => x.id === triggerId && !shown.has(x.id));
+    if (!q) return;
+    shown.add(q.id);
+    const box  = document.getElementById('avatarQuestionBox');
+    const txt  = document.getElementById('avatarQuestionText');
+    const btns = document.getElementById('avatarQuestionBtns');
+    if (!box) return;
+    txt.textContent = q.text;
+    btns.innerHTML = '';
+    q.opts.forEach((opt, i) => {
+      const b = document.createElement('button');
+      b.className = 'avatar-q-btn';
+      b.textContent = opt;
+      b.onclick = () => {
+        box.classList.remove('open');
+        setTimeout(() => CharacterSystem.showBubble(q.replies[i], 3200), 200);
+        AvatarCanvas.setEmotion('happy', 1400);
+      };
+      btns.appendChild(b);
+    });
+    box.classList.add('open');
+    setTimeout(() => box.classList.remove('open'), 9000);
+  }
+
+  return { ask };
+})();
+
 // ══ ONBOARDING ══
 const ONBOARD_GREET = {
   de: { beatrice:'Hallo! Ich bin Beatrice 👩‍⚕️\nWie heißt du?', victor:'Hey! Ich bin Victor 👨‍🎓\nUnd du?', fin:'Wuff! Ich bin Fin 🐕\nWie heißt du?', ari:'Hi... ich bin Ari 🐶\nWie heißt du?' },
@@ -2842,6 +3194,8 @@ function onboardFinish() {
   const greetMsgs = { de:`Willkommen, ${name}! Schön dich zu sehen 😊`, en:`Welcome, ${name}! Great to see you 😊`, pt:`Bem-vindo, ${name}! Que bom te ver 😊` };
   setTimeout(() => CharacterSystem.showBubble(greetMsgs[_onboardLang] || greetMsgs['de'], 3500), 600);
   avatarAnimate('anim-jump');
+  AvatarCanvas.setEmotion('happy', 1800);
+  setTimeout(() => AvatarQ.ask('mode'), 5000);
 }
 
 // ══ CONFETTI ══
