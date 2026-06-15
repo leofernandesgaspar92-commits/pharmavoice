@@ -484,6 +484,61 @@ const WORDS = [
   {w:'Suppositorium',      ipa:'zupoziˈtoːʁiʊm',              syl:'Sup·po·si·to·ri·um',        ind:'Rektale Darreichungsform',            cat:'Apotheke',      d:3},
   {w:'Substitution',       ipa:'zʊpstituˈtsi̯oːn',             syl:'Sub·sti·tu·ti·on',          ind:'Austausch von Medikamenten',          cat:'Apotheke',      d:2},
   {w:'Rezeptur',           ipa:'ʁeˈtsɛptuːɐ̯',                 syl:'Re·zept·ur',                ind:'Individuelle Herstellung',            cat:'Apotheke',      d:1},
+  {w:'Defektur',           ipa:'defɛkˈtuːɐ̯',                  syl:'De·fek·tur',                ind:'Vorratsherstellung in der Apotheke',  cat:'Apotheke',      d:1},
+  {w:'Retardtablette',     ipa:'ʁeˈtaʁttaˌblɛtə',             syl:'Re·tard·tab·let·te',        ind:'Verzögerte Wirkstofffreisetzung',     cat:'Apotheke',      d:2},
+  {w:'Ampulle',            ipa:'amˈpʊlə',                     syl:'Am·pul·le',                 ind:'Versiegelter Glasbehälter (steril)',  cat:'Apotheke',      d:1},
+  // Cholesterin & Herz
+  {w:'Atorvastatin',       ipa:'atoʁvaˈstaːtɪn',               syl:'A·tor·vas·ta·tin',          ind:'LDL-Cholesterin senken',              cat:'Statin',        d:2},
+  {w:'Simvastatin',        ipa:'zɪmvaˈstaːtɪn',                syl:'Sim·vas·ta·tin',            ind:'Cholesterin & Herzinfarkt-Schutz',   cat:'Statin',        d:1},
+  {w:'Rosuvastatin',       ipa:'ʁozuvaˈstaːtɪn',               syl:'Ro·su·vas·ta·tin',          ind:'Hochwirksames Statin, LDL-Senkung',  cat:'Statin',        d:2},
+  {w:'Apixaban',           ipa:'aˈpɪksaban',                   syl:'A·pix·a·ban',               ind:'DOAK, Thrombose & Vorhofflimmern',   cat:'Antikoagulans', d:2},
+  {w:'Dabigatran',         ipa:'dabiˈɡatʁan',                  syl:'Da·bi·ga·tran',             ind:'Direkter Thrombinhemmer (DOAK)',      cat:'Antikoagulans', d:2},
+  {w:'Phenprocoumon',      ipa:'fɛnpʁoˈkuːmɔn',               syl:'Phen·pro·cou·mon',          ind:'Vitamin-K-Antagonist, Blutverdünner', cat:'Antikoagulans', d:3},
+  {w:'Digitoxin',          ipa:'diɡiˈtɔksɪn',                  syl:'Di·gi·tox·in',              ind:'Herzglykosid, Herzinsuffizienz',      cat:'Herz-Kreislauf',d:2},
+  {w:'Ivabradine',         ipa:'ivaˈbʁaːdiːn',                 syl:'I·va·bra·di·ne',            ind:'Herzfrequenzsenkung bei Angina',      cat:'Herz-Kreislauf',d:3},
+  // Neurologie & Psyche erweitert
+  {w:'Carbamazepin',       ipa:'kaʁbamatseˈpiːn',              syl:'Car·ba·ma·ze·pin',          ind:'Epilepsie, Trigeminusneuralgie',      cat:'Neurologie',    d:2},
+  {w:'Valproinsäure',      ipa:'valpʁoˈɪnˌzɔɪ̯ʁə',             syl:'Val·pro·in·säu·re',         ind:'Epilepsie, bipolare Störung',         cat:'Neurologie',    d:3},
+  {w:'Lamotrigin',         ipa:'lamoˈtʁiːɡɪn',                syl:'La·mo·tri·gin',             ind:'Epilepsie, bipolare Störung',         cat:'Neurologie',    d:2},
+  {w:'Topiramat',          ipa:'topiˈʁaːmat',                  syl:'To·pi·ra·mat',              ind:'Epilepsie, Migräneprophylaxe',        cat:'Neurologie',    d:2},
+  {w:'Quetiapin',          ipa:'kveˈtiaːpɪn',                  syl:'Que·ti·a·pin',              ind:'Schizophrenie, bipolare Störung',     cat:'Neurologie',    d:2},
+  {w:'Risperidon',         ipa:'ʁɪspeʁiˈdoːn',                syl:'Ris·pe·ri·don',             ind:'Schizophrenie, Verhaltensstörungen',  cat:'Neurologie',    d:2},
+  {w:'Venlafaxin',         ipa:'vɛnlaˈfaksiːn',                syl:'Ven·la·fax·in',             ind:'Depression, Angststörungen',          cat:'Neurologie',    d:2},
+  {w:'Mirtazapin',         ipa:'mɪʁˈtazapiːn',                syl:'Mir·ta·za·pin',             ind:'Depression, Schlafstörungen',         cat:'Neurologie',    d:2},
+  // Urologika & Hormone
+  {w:'Tamsulosin',         ipa:'tamzuˈloːzɪn',                 syl:'Tam·su·lo·sin',             ind:'Benigne Prostatahyperplasie (BPH)',   cat:'Urologie',      d:2},
+  {w:'Finasterid',         ipa:'finaˈstɛʁɪt',                  syl:'Fi·nas·te·rid',             ind:'BPH, Haarausfall (Propecia)',         cat:'Urologie',      d:2},
+  {w:'Sildenafil',         ipa:'zɪldeˈnaːfɪl',                syl:'Sil·de·na·fil',             ind:'Erektionsstörungen, pulm. Hypertonie', cat:'Urologie',     d:2},
+  {w:'Oxybutynin',         ipa:'ɔksibuˈtyːnɪn',               syl:'Ox·y·bu·ty·nin',            ind:'Überaktive Blase, Inkontinenz',       cat:'Urologie',      d:2},
+  // Immunologie & Rheuma
+  {w:'Methotrexat',        ipa:'metoˈtʁɛksat',                 syl:'Me·tho·trex·at',            ind:'Rheumatoide Arthritis, Psoriasis',   cat:'Rheuma',        d:2},
+  {w:'Hydroxychloroquin',  ipa:'hyˌdʁɔksykloˈʁoːkɪn',         syl:'Hy·drox·y·chlo·ro·quin',   ind:'Malaria, Lupus, Arthritis',           cat:'Rheuma',        d:3},
+  {w:'Adalimumab',         ipa:'adalɪˈmuːmab',                 syl:'A·da·li·mu·mab',            ind:'Rheumatoide Arthritis (Biologikum)',  cat:'Rheuma',        d:3},
+  {w:'Allopurinol',        ipa:'aloˈpuːʁɪnɔl',                syl:'Al·lo·pu·ri·nol',           ind:'Gicht, Hyperurikämie',               cat:'Rheuma',        d:2},
+  {w:'Colchicin',          ipa:'kɔlˈçiːtsiːn',                syl:'Col·chi·cin',               ind:'Gichtanfall, Perikarditis',           cat:'Rheuma',        d:2},
+  // Onkologie
+  {w:'Tamoxifen',          ipa:'taˈmɔksɪfɛn',                  syl:'Ta·mox·i·fen',              ind:'Östrogenrezeptorpositiver Brustkrebs', cat:'Onkologie',    d:2},
+  {w:'Anastrozol',         ipa:'aˈnastʁoˌtsɔl',               syl:'A·nas·tro·zol',             ind:'Brustkrebs (postmenopausale Frauen)', cat:'Onkologie',     d:2},
+  {w:'Imatinib',           ipa:'iˈmaːtɪnɪb',                   syl:'I·ma·ti·nib',               ind:'CML, GIST (Tyrosinkinasehemmer)',     cat:'Onkologie',     d:2},
+  {w:'Trastuzumab',        ipa:'tʁastuˈzuːmab',               syl:'Tras·tu·zu·mab',            ind:'HER2-positiver Brustkrebs',           cat:'Onkologie',     d:3},
+  {w:'Rituximab',          ipa:'ʁɪˈtʊksɪmab',                 syl:'Ri·tux·i·mab',              ind:'Non-Hodgkin-Lymphom, CLL',            cat:'Onkologie',     d:3},
+  {w:'Bevacizumab',        ipa:'bevatsiˈzuːmab',               syl:'Be·va·ci·zu·mab',           ind:'Antiangiogenese, Darmkrebs',          cat:'Onkologie',     d:3},
+  // Osteoporose & Knochen
+  {w:'Alendronat',         ipa:'aˈlɛndʁoˌnat',                syl:'A·len·dro·nat',             ind:'Osteoporose, Knochenabbau',           cat:'Osteoporose',   d:2},
+  {w:'Denosumab',          ipa:'deˈnoːzumab',                  syl:'De·no·su·mab',              ind:'Osteoporose, Knochenmetastasen',      cat:'Osteoporose',   d:3},
+  {w:'Calcitonin',         ipa:'kaltsɪˈtoːnɪn',               syl:'Cal·ci·to·nin',             ind:'Osteoporose, Hyperkalzämie',          cat:'Osteoporose',   d:2},
+  // Infektionskrankheiten
+  {w:'Aciclovir',          ipa:'aˈtsiːkloviːɐ̯',               syl:'A·ci·clo·vir',              ind:'Herpes simplex, Varizellen',          cat:'Virustatikum',  d:2},
+  {w:'Oseltamivir',        ipa:'oˌzɛltaˈmiːvɪɐ̯',              syl:'Os·el·ta·mi·vir',           ind:'Influenza-Therapie (Tamiflu)',        cat:'Virustatikum',  d:3},
+  {w:'Metronidazol',       ipa:'meˌtʁoniˈdaːtsɔl',            syl:'Me·tro·ni·da·zol',          ind:'Anaerobier, H. pylori, Trichomonas',  cat:'Antibiotikum',  d:2},
+  {w:'Nitrofurantoin',     ipa:'nɪtʁofuˈʁantoɪn',             syl:'Ni·tro·fu·ran·to·in',       ind:'Harnwegsinfekte (Blase)',             cat:'Antibiotikum',  d:3},
+  {w:'Cotrimoxazol',       ipa:'koˌtʁɪmɔˈksaːtsɔl',           syl:'Co·tri·mox·a·zol',          ind:'Harnwege, PCP-Prophylaxe',            cat:'Antibiotikum',  d:3},
+  // Sonstiges
+  {w:'Warfarin',           ipa:'vaʁˈfaːʁɪn',                  syl:'War·fa·rin',                ind:'Vitamin-K-Antagonist (USA/UK)',       cat:'Antikoagulans', d:2},
+  {w:'Prednisolon',        ipa:'pʁɛdnizoˈloːn',               syl:'Pred·ni·so·lon',            ind:'Entzündungen, Immunsuppression',      cat:'Kortikoid',     d:1},
+  {w:'Dexamethason',       ipa:'dɛksameˈtaːzon',              syl:'Dex·a·me·tha·son',          ind:'Schwere Entzündungen, COVID-19',      cat:'Kortikoid',     d:2},
+  {w:'Calciumcarbonat',    ipa:'kalˈtsiːʊmkaʁboˈnaːt',        syl:'Cal·ci·um·car·bo·nat',      ind:'Kalziummangel, Sodbrennen (Antazid)', cat:'Mineral',       d:2},
+  {w:'Magnesiumoxid',      ipa:'maɡˈneːziʊmˈɔksɪt',           syl:'Mag·ne·si·um·ox·id',        ind:'Magnesiummangel, Abführmittel',       cat:'Mineral',       d:2},
 ];
 
 // ── GAME CONFIG ─────────────────────────────────────

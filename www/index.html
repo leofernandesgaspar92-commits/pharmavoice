@@ -477,6 +477,7 @@
     <div class="hero-stats">
       <div class="hero-stat">🔥 <span id="heroStreak">0</span> Streak</div>
       <div class="hero-stat">📚 <span id="heroLearned">0</span> Begriffe</div>
+      <div class="hero-stat" id="heroDue" style="display:none">🧠 <span id="heroDueCount">0</span> fällig</div>
     </div>
   </div>
 
@@ -542,15 +543,7 @@
 <!-- ══ ACHIEVEMENTS ══ -->
 <div class="screen" id="screenAchievements">
   <div class="screen-h">🏆 Erfolge</div>
-  <div class="ach-list">
-    <div class="ach-item"><div class="ach-icon on">🎤</div><div class="ach-info"><div class="ach-name">Erste Stimme</div><div class="ach-desc">Erste Lerneinheit abgeschlossen</div></div><div class="ach-state">✅</div></div>
-    <div class="ach-item"><div class="ach-icon on">🔥</div><div class="ach-info"><div class="ach-name">7-Tage-Streak</div><div class="ach-desc">7 Tage in Folge gelernt</div></div><div class="ach-state">✅</div></div>
-    <div class="ach-item"><div class="ach-icon on">📗</div><div class="ach-info"><div class="ach-name">Basics Meister</div><div class="ach-desc">Alle Basis-Medikamente gemeistert</div></div><div class="ach-state">✅</div></div>
-    <div class="ach-item locked"><div class="ach-icon off">💊</div><div class="ach-info"><div class="ach-name">50 Begriffe</div><div class="ach-desc">50 verschiedene Begriffe gelernt</div></div><div class="ach-state">🔒</div></div>
-    <div class="ach-item locked"><div class="ach-icon off">🧬</div><div class="ach-info"><div class="ach-name">Fortgeschrittener</div><div class="ach-desc">Level 2 vollständig abgeschlossen</div></div><div class="ach-state">🔒</div></div>
-    <div class="ach-item locked"><div class="ach-icon off">🏅</div><div class="ach-info"><div class="ach-name">Profi-Aussprecher</div><div class="ach-desc">Alle Level erfolgreich abgeschlossen</div></div><div class="ach-state">🔒</div></div>
-    <div class="ach-item locked"><div class="ach-icon off">🔬</div><div class="ach-info"><div class="ach-name">Onkologe</div><div class="ach-desc">Alle Onkologie-Begriffe gelernt</div></div><div class="ach-state">🔒</div></div>
-  </div>
+  <div class="ach-list" id="achList"></div>
 </div>
 
 <!-- ══ PROFILE ══ -->
@@ -902,6 +895,102 @@ let recognition      = null;
 let micActive        = false;
 let micFeedbackTimer = null;
 
+// ═══════════════════════════════════════════════
+//  SPACED REPETITION (SM-2)
+// ═══════════════════════════════════════════════
+let SM2 = {};
+
+function sm2Load() {
+  const raw = localStorage.getItem('pv_sm2');
+  SM2 = raw ? JSON.parse(raw) : {};
+}
+
+function sm2Save() {
+  localStorage.setItem('pv_sm2', JSON.stringify(SM2));
+}
+
+function sm2Update(name, correct) {
+  const today = new Date().toISOString().slice(0,10);
+  const d = SM2[name] || { ef:2.5, interval:1, reps:0, nextReview:today };
+  const q = correct ? 5 : 2;
+  if (q >= 3) {
+    if      (d.reps === 0) d.interval = 1;
+    else if (d.reps === 1) d.interval = 6;
+    else                   d.interval = Math.round(d.interval * d.ef);
+    d.reps++;
+  } else {
+    d.reps = 0;
+    d.interval = 1;
+  }
+  d.ef = Math.max(1.3, d.ef + 0.1 - (5-q) * (0.08 + (5-q) * 0.02));
+  const next = new Date();
+  next.setDate(next.getDate() + d.interval);
+  d.nextReview = next.toISOString().slice(0,10);
+  SM2[name] = d;
+  sm2Save();
+}
+
+// Sort meds so overdue/new come first
+function sm2SortMeds(meds) {
+  const today = new Date().toISOString().slice(0,10);
+  return [...meds].sort((a, b) => {
+    const da = SM2[a.name] ? SM2[a.name].nextReview : '2000-01-01';
+    const db = SM2[b.name] ? SM2[b.name].nextReview : '2000-01-01';
+    const dueA = da <= today ? 0 : 1;
+    const dueB = db <= today ? 0 : 1;
+    if (dueA !== dueB) return dueA - dueB;
+    return da.localeCompare(db);
+  });
+}
+
+function sm2DueCount(meds) {
+  const today = new Date().toISOString().slice(0,10);
+  return meds.filter(m => !SM2[m.name] || SM2[m.name].nextReview <= today).length;
+}
+
+// ═══════════════════════════════════════════════
+//  ACHIEVEMENTS
+// ═══════════════════════════════════════════════
+const ACHIEVEMENTS = [
+  { id:'first',     icon:'🎤', name:'Erste Stimme',      desc:'Erste Frage beantwortet',              check: () => S.learned >= 1 },
+  { id:'streak3',   icon:'🔥', name:'3 Tage am Ball',    desc:'3 Tage in Folge gelernt',              check: () => S.streak >= 3 },
+  { id:'streak7',   icon:'🏅', name:'7-Tage-Streak',     desc:'7 Tage in Folge gelernt',              check: () => S.streak >= 7 },
+  { id:'terms20',   icon:'📗', name:'Erste 20',          desc:'20 Fragen beantwortet',                check: () => S.learned >= 20 },
+  { id:'terms50',   icon:'💊', name:'50 Begriffe',       desc:'50 Fragen beantwortet',                check: () => S.learned >= 50 },
+  { id:'terms150',  icon:'📚', name:'Bücherwurm',        desc:'150 Fragen beantwortet',               check: () => S.learned >= 150 },
+  { id:'xp200',     icon:'🧬', name:'Fortgeschrittener', desc:'200 Shekel – Level 2 freigeschaltet',  check: () => S.xp >= 200 },
+  { id:'xp400',     icon:'🔬', name:'Profi-Aussprecher', desc:'400 Shekel – Level 3 freigeschaltet',  check: () => S.xp >= 400 },
+  { id:'xp600',     icon:'🏆', name:'Pharma-Legende',    desc:'600 Shekel – Alle Level abgeschlossen',check: () => S.xp >= 600 },
+  { id:'runner',    icon:'🏃', name:'Auf die Piste!',    desc:'Pharma Runner gespielt',               check: () => parseInt(localStorage.getItem('pv_runner_total')||'0') > 0 },
+  { id:'runner500', icon:'⚡', name:'Speed Freak',       desc:'Highscore 500+ im Runner',             check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 500 },
+  { id:'runner1k',  icon:'👑', name:'Runner Champion',   desc:'Highscore 1000+ im Runner',            check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 1000 },
+  { id:'sm2_10',    icon:'🧠', name:'Gedächtniskünstler',desc:'10 Begriffe mit Spaced Repetition',    check: () => Object.keys(SM2).length >= 10 },
+];
+
+function renderAchievements() {
+  const list = el('achList');
+  if (!list) return;
+  list.innerHTML = '';
+  let unlocked = 0;
+  ACHIEVEMENTS.forEach(a => {
+    const done = a.check();
+    if (done) unlocked++;
+    const div = document.createElement('div');
+    div.className = 'ach-item' + (done ? '' : ' locked');
+    div.innerHTML = `
+      <div class="ach-icon ${done?'on':'off'}">${a.icon}</div>
+      <div class="ach-info">
+        <div class="ach-name">${a.name}</div>
+        <div class="ach-desc">${a.desc}</div>
+      </div>
+      <div class="ach-state">${done ? '✅' : '🔒'}</div>`;
+    list.appendChild(div);
+  });
+  // Show progress header
+  const hdr = document.querySelector('#screenAchievements .screen-h');
+  if (hdr) hdr.textContent = `🏆 Erfolge – ${unlocked}/${ACHIEVEMENTS.length}`;
+}
+
 function save() { localStorage.setItem('pv2', JSON.stringify(S)); }
 function load() {
   const raw = localStorage.getItem('pv2');
@@ -912,8 +1001,10 @@ function load() {
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   if (S.lastPlayed && S.lastPlayed !== today && S.lastPlayed !== yesterday) { S.streak = 0; save(); }
+  sm2Load();
   renderLevelCards();
   refreshUI();
+  renderAchievements();
 }
 
 // ═══════════════════════════════════════════════
@@ -931,6 +1022,9 @@ function refreshUI() {
   if (el('heroXp'))      el('heroXp').textContent      = S.xp;
   if (el('heroStreak'))  el('heroStreak').textContent   = S.streak;
   if (el('heroLearned')) el('heroLearned').textContent  = S.learned;
+  const due = sm2DueCount(MEDS);
+  if (el('heroDue'))      el('heroDue').style.display  = due > 0 ? '' : 'none';
+  if (el('heroDueCount')) el('heroDueCount').textContent = due;
   set('profXp',      S.xp);
   set('profStreak',  `${S.streak} 🔥`);
   set('profLearned', S.learned);
@@ -1039,7 +1133,9 @@ function startLearn(lvId = 1) {
   if (!status) return;
   const pool = MEDS.filter(m => m.lv === lvId);
   const lv   = LEVELS.find(l => l.id === lvId);
-  Q = { meds: shuffle(pool).slice(0, 10), idx: 0, correct: 0, sessionXP: 0, answered: false, lvId };
+  // SM-2: put overdue/new drugs first, then shuffle the rest
+  const sorted = sm2SortMeds(pool);
+  Q = { meds: sorted.slice(0, 10), idx: 0, correct: 0, sessionXP: 0, answered: false, lvId };
   // Update learn chip
   el('learnChip').textContent = `${lv.icon}  ${lv.name} Level`;
   showScreen('Learn');
@@ -1120,10 +1216,12 @@ function pick(btn, correct, med) {
     document.querySelectorAll('.opt').forEach(b => { if (b.dataset.correct === 'true') b.classList.add('good'); });
     showFeedback(false, `❌ &nbsp;Fast! Richtige Antwort: <strong>${correct}</strong><br>${med.tip}`);
   }
+  sm2Update(med.name, good);
   S.learned = Math.min(S.learned + 1, 9999);
   set('progXp', `${Q.sessionXP} Shekel`);
   save();
   refreshUI();
+  renderAchievements();
   el('btnNext').classList.add('show');
 }
 
