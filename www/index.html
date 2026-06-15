@@ -193,6 +193,183 @@
       .syl-item { font-size:17px; }
       .syl-item.stressed { font-size:23px; }
     }
+
+    /* TIER BADGE */
+    .tier-badge { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:4px 10px; border-radius:12px; }
+    .tier-badge.free    { background:#F3F4F6; color:var(--gray); border:1px solid var(--border); }
+    .tier-badge.normal  { background:rgba(0,168,107,.12); color:var(--green); border:1px solid rgba(0,168,107,.25); }
+    .tier-badge.premium { background:rgba(245,158,11,.12); color:#B45309; border:1px solid rgba(245,158,11,.3); }
+
+    /* UPGRADE BANNER */
+    .upgrade-banner { background:linear-gradient(135deg,#00A86B 0%,#00C97F 100%); border-radius:var(--r); padding:16px 18px; margin-bottom:24px; display:flex; align-items:center; gap:14px; cursor:pointer; box-shadow:0 4px 16px rgba(0,168,107,.28); }
+    .upgrade-banner .ub-icon { font-size:28px; flex-shrink:0; }
+    .upgrade-banner .ub-text { flex:1; }
+    .upgrade-banner .ub-title { color:#fff; font-size:14px; font-weight:800; margin-bottom:2px; }
+    .upgrade-banner .ub-sub   { color:rgba(255,255,255,.8); font-size:12px; }
+    .upgrade-banner .ub-arrow { color:rgba(255,255,255,.8); font-size:20px; }
+
+    /* UPGRADE MODAL */
+    .upgrade-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:400; align-items:flex-end; justify-content:center; backdrop-filter:blur(4px); }
+    .upgrade-modal-bg.open { display:flex; }
+    .upgrade-modal { background:var(--bg); border-radius:24px 24px 0 0; padding:28px 20px 44px; width:100%; max-width:480px; animation:slideUp .25s ease; }
+    .upgrade-modal-header { text-align:center; margin-bottom:24px; }
+    .upgrade-modal-header .um-icon { font-size:44px; margin-bottom:10px; }
+    .upgrade-modal-header h2 { font-size:20px; font-weight:900; color:var(--text); margin-bottom:4px; }
+    .upgrade-modal-header p { font-size:13px; color:var(--gray); }
+    .plan-card { border:2px solid var(--border); border-radius:var(--r); padding:18px; margin-bottom:12px; cursor:pointer; transition:.2s; }
+    .plan-card:hover { border-color:var(--green); box-shadow:var(--shadow2); }
+    .plan-card.recommended { border-color:var(--green); background:rgba(0,168,107,.04); }
+    .plan-card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .plan-name { font-size:16px; font-weight:800; color:var(--text); }
+    .plan-price { font-size:15px; font-weight:700; color:var(--green); }
+    .plan-features { font-size:12px; color:var(--gray); line-height:1.8; }
+    .plan-features span { display:block; }
+    .plan-features span::before { content:"✓ "; color:var(--green); font-weight:700; }
+    .rec-chip { background:var(--green); color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; }
+    .upgrade-close { width:100%; margin-top:8px; padding:14px; background:transparent; border:1.5px solid var(--border); border-radius:var(--r); color:var(--gray); font-size:15px; cursor:pointer; font-family:inherit; }
+
+    /* HOME HERO */
+    .home-hero { background:linear-gradient(135deg,#00A86B 0%,#00C97F 100%); border-radius:20px; padding:24px 20px; margin-bottom:24px; position:relative; overflow:hidden; box-shadow:0 6px 24px rgba(0,168,107,.3); }
+    .home-hero::after { content:''; position:absolute; right:-20px; top:-20px; width:120px; height:120px; background:rgba(255,255,255,.08); border-radius:50%; }
+    .home-hero::before { content:''; position:absolute; right:30px; bottom:-30px; width:80px; height:80px; background:rgba(255,255,255,.06); border-radius:50%; }
+    .hero-label { color:rgba(255,255,255,.8); font-size:12px; font-weight:600; margin-bottom:4px; text-transform:uppercase; letter-spacing:.8px; }
+    .hero-xp { color:#fff; font-size:36px; font-weight:900; line-height:1; margin-bottom:12px; }
+    .hero-xp span { font-size:16px; font-weight:600; opacity:.85; }
+    .hero-stats { display:flex; gap:16px; }
+    .hero-stat { display:flex; align-items:center; gap:6px; color:rgba(255,255,255,.9); font-size:13px; font-weight:600; }
+
+    /* DEV PANEL */
+    .dev-panel { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; overflow-y:auto; padding:20px; }
+    .dev-panel.open { display:block; }
+    .dev-inner { background:var(--bg); border-radius:20px; padding:24px 20px; max-width:480px; margin:0 auto; }
+    .dev-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .dev-title { font-size:18px; font-weight:900; color:var(--text); }
+    .dev-close { background:var(--bg2); border:none; border-radius:50%; width:36px; height:36px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .dev-section { margin-bottom:20px; }
+    .dev-section h3 { font-size:13px; font-weight:700; color:var(--gray2); text-transform:uppercase; letter-spacing:.8px; margin-bottom:12px; }
+    .dev-btn { background:var(--green); color:#fff; border:none; border-radius:var(--r); padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; width:100%; margin-bottom:8px; transition:.2s; }
+    .dev-btn:hover { background:var(--green-d); }
+    .dev-btn.secondary { background:var(--bg2); color:var(--text); border:1.5px solid var(--border); }
+    .dev-btn.danger { background:#FEE2E2; color:#C0392B; border:1.5px solid #FCA5A5; }
+    .research-output { background:var(--bg2); border-radius:var(--r); padding:16px; font-size:12px; color:var(--text); line-height:1.7; max-height:320px; overflow-y:auto; border:1px solid var(--border); white-space:pre-wrap; font-family:monospace; display:none; margin-top:8px; }
+    .research-output.show { display:block; }
+    .tier-select { display:flex; gap:8px; margin-bottom:8px; }
+    .tier-btn { flex:1; padding:10px; border-radius:10px; border:2px solid var(--border); background:var(--bg2); font-size:13px; font-weight:700; cursor:pointer; transition:.2s; font-family:inherit; color:var(--text); }
+    .tier-btn.active { border-color:var(--green); color:var(--green); background:rgba(0,168,107,.08); }
+
+    /* ═══ PHARMA RUNNER ═══ */
+    .runner-screen {
+      display:none; position:fixed; inset:0; z-index:600;
+      background:linear-gradient(180deg,#0A0F1A 0%,#1A1A2E 60%,#16213E 100%);
+      font-family:'Inter',system-ui,sans-serif; overflow:hidden;
+    }
+    .runner-screen.active { display:flex; flex-direction:column; }
+
+    /* Road / track */
+    .rn-road { position:absolute; bottom:0; left:0; right:0; height:55%; overflow:hidden; }
+    .rn-road::before {
+      content:''; position:absolute; inset:0;
+      background:repeating-linear-gradient(180deg,
+        transparent 0px, transparent 48px,
+        rgba(15,52,96,.8) 48px, rgba(15,52,96,.8) 56px);
+      animation:roadScroll 0.5s linear infinite;
+    }
+    @keyframes roadScroll { from{background-position:0 0;} to{background-position:0 56px;} }
+    .rn-lane-l,.rn-lane-r {
+      position:absolute; top:0; bottom:0; width:3px;
+      background:linear-gradient(180deg,transparent,#0F3460,#00D4FF,#0F3460,transparent);
+      animation:lanePulse 2s ease-in-out infinite;
+    }
+    .rn-lane-l { left:22%; }
+    .rn-lane-r { right:22%; animation-delay:.3s; }
+    @keyframes lanePulse { 0%,100%{opacity:.5;} 50%{opacity:1;} }
+
+    /* Milestones */
+    .rn-milestone {
+      position:absolute; font-size:28px; animation:milestoneFall 2s linear forwards;
+      filter:drop-shadow(0 0 8px rgba(0,212,255,.6));
+    }
+    @keyframes milestoneFall { from{top:-40px;opacity:1;} to{top:100%;opacity:.3;} }
+
+    /* Header bar */
+    .rn-header { position:relative; z-index:10; padding:14px 20px 0; display:flex; justify-content:space-between; align-items:flex-start; }
+    .rn-score-wrap { display:flex; flex-direction:column; gap:2px; }
+    .rn-score-lbl { font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.8px; }
+    .rn-score-val { font-size:26px; font-weight:900; color:#fff; line-height:1; }
+    .rn-combo-wrap { text-align:center; }
+    .rn-combo { font-size:22px; font-weight:900; color:#FF6B35; line-height:1; transition:transform .15s; }
+    .rn-combo.bump { transform:scale(1.4); }
+    .rn-combo-lbl { font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.8px; }
+    .rn-lives { display:flex; gap:5px; }
+    .rn-heart { font-size:20px; transition:transform .2s; }
+    .rn-heart.lost { opacity:.2; transform:scale(.8); }
+
+    /* Tempo bar */
+    .rn-tempo-bar { position:relative; z-index:10; margin:10px 20px 0; height:4px; background:rgba(255,255,255,.1); border-radius:2px; overflow:hidden; }
+    .rn-tempo-fill { height:100%; background:linear-gradient(90deg,#00FF88,#00D4FF); border-radius:2px; transition:width .1s linear; }
+
+    /* Word card */
+    .rn-card-wrap { position:relative; z-index:10; padding:12px 16px; flex:1; display:flex; flex-direction:column; justify-content:center; }
+    .rn-card {
+      background:rgba(30,41,59,.82); backdrop-filter:blur(12px);
+      border:1px solid rgba(0,212,255,.2); border-radius:24px;
+      padding:22px 20px 18px; text-align:center;
+      box-shadow:0 8px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(0,212,255,.08);
+      transition:box-shadow .2s, border-color .2s;
+    }
+    .rn-card.correct { border-color:#00FF88; box-shadow:0 0 0 3px rgba(0,255,136,.2), 0 8px 32px rgba(0,0,0,.4); animation:cardGlow .5s ease; }
+    .rn-card.wrong   { border-color:#FF3366; box-shadow:0 0 0 3px rgba(255,51,102,.2), 0 8px 32px rgba(0,0,0,.4); animation:cardShake .4s ease; }
+    @keyframes cardGlow  { 0%,100%{} 50%{box-shadow:0 0 0 8px rgba(0,255,136,.3);} }
+    @keyframes cardShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
+
+    .rn-cat-pill { display:inline-block; background:rgba(0,212,255,.12); border:1px solid rgba(0,212,255,.25); color:#00D4FF; font-size:10px; font-weight:700; padding:3px 10px; border-radius:10px; letter-spacing:.6px; text-transform:uppercase; margin-bottom:12px; }
+    .rn-word { font-size:clamp(22px,7vw,34px); font-weight:900; color:#fff; line-height:1.15; margin-bottom:8px; }
+    .rn-ipa  { font-size:12px; color:rgba(255,255,255,.45); font-family:monospace; margin-bottom:6px; }
+    .rn-syl  { font-size:13px; color:rgba(255,255,255,.65); letter-spacing:1px; margin-bottom:10px; }
+    .rn-indication { font-size:11px; color:rgba(255,255,255,.4); font-style:italic; }
+
+    /* Feedback line under card */
+    .rn-feedback { text-align:center; font-size:13px; font-weight:700; min-height:22px; margin-top:8px; transition:color .2s; color:rgba(255,255,255,.4); }
+    .rn-feedback.ok  { color:#00FF88; }
+    .rn-feedback.bad { color:#FF3366; }
+
+    /* Mic area */
+    .rn-mic-area { position:relative; z-index:10; display:flex; flex-direction:column; align-items:center; gap:8px; padding:8px 20px 14px; }
+    .rn-mic {
+      width:72px; height:72px; border-radius:50%;
+      background:rgba(30,41,59,.9); border:2px solid rgba(0,212,255,.3);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:.2s;
+      box-shadow:0 4px 20px rgba(0,0,0,.4);
+    }
+    .rn-mic svg { width:32px; height:32px; fill:rgba(255,255,255,.6); }
+    .rn-mic.listening { border-color:#00FF88; animation:rnMicPulse 1s ease-in-out infinite; }
+    .rn-mic.listening svg { fill:#00FF88; }
+    @keyframes rnMicPulse { 0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,.4);} 50%{box-shadow:0 0 0 14px rgba(0,255,136,0);} }
+    .rn-mic-hint { font-size:11px; color:rgba(255,255,255,.4); }
+    .rn-heard { font-size:13px; color:rgba(255,255,255,.6); font-style:italic; min-height:18px; }
+
+    /* Bottom controls */
+    .rn-controls { position:relative; z-index:10; display:flex; gap:10px; padding:0 16px 20px; }
+    .rn-ctrl-btn { flex:1; padding:12px; border:1.5px solid rgba(255,255,255,.15); border-radius:12px; background:rgba(30,41,59,.7); color:rgba(255,255,255,.7); font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:.2s; }
+    .rn-ctrl-btn:hover { border-color:rgba(255,255,255,.35); }
+
+    /* Overlay: start / gameover */
+    .rn-overlay { position:absolute; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(10,15,26,.88); backdrop-filter:blur(8px); padding:32px 24px; text-align:center; }
+    .rn-overlay.hidden { display:none; }
+    .rn-ov-icon  { font-size:56px; margin-bottom:16px; }
+    .rn-ov-title { font-size:26px; font-weight:900; color:#fff; margin-bottom:8px; }
+    .rn-ov-sub   { font-size:14px; color:rgba(255,255,255,.55); margin-bottom:28px; line-height:1.6; }
+    .rn-ov-score { font-size:48px; font-weight:900; color:#00FF88; line-height:1; margin-bottom:6px; }
+    .rn-ov-hs    { font-size:13px; color:rgba(255,255,255,.4); margin-bottom:28px; }
+    .rn-ov-btn   { width:100%; max-width:300px; padding:16px; border:none; border-radius:16px; background:linear-gradient(135deg,#00FF88,#00D4FF); color:#0A0F1A; font-size:17px; font-weight:900; cursor:pointer; font-family:inherit; transition:.2s; margin-bottom:10px; }
+    .rn-ov-btn:hover { transform:scale(1.03); }
+    .rn-ov-btn.ghost { background:transparent; border:1.5px solid rgba(255,255,255,.2); color:rgba(255,255,255,.7); }
+
+    /* Combo badge pop */
+    .rn-badge-pop { position:absolute; top:40%; left:50%; transform:translateX(-50%) scale(0); pointer-events:none; z-index:30; background:linear-gradient(135deg,#FF6B35,#FF3366); padding:12px 28px; border-radius:16px; font-size:20px; font-weight:900; color:#fff; white-space:nowrap; opacity:0; }
+    @keyframes badgePop { 0%{transform:translateX(-50%) scale(0);opacity:0} 20%{transform:translateX(-50%) scale(1.15);opacity:1} 70%{transform:translateX(-50%) scale(1);opacity:1} 100%{transform:translateX(-50%) scale(1);opacity:0;top:20%;} }
+    .rn-badge-pop.show { animation:badgePop 1.4s ease forwards; }
   </style>
 </head>
 <body>
@@ -209,25 +386,107 @@
   </div>
 </div>
 
+<!-- ══ UPGRADE MODAL ══ -->
+<div class="upgrade-modal-bg" id="upgradeBg" onclick="closeUpgrade(event)">
+  <div class="upgrade-modal">
+    <div class="upgrade-modal-header">
+      <div class="um-icon">🚀</div>
+      <h2>PharmaVoice upgraden</h2>
+      <p>Unlock alle 300+ Wirkstoffe & Features</p>
+    </div>
+    <div class="plan-card" onclick="PaymentService.subscribe('free')">
+      <div class="plan-card-head"><span class="plan-name">Free</span><span class="plan-price">Kostenlos</span></div>
+      <div class="plan-features">
+        <span>~50 Wirkstoffe (Basics Level)</span>
+        <span>Aussprachetraining mit KI</span>
+        <span>Session-Streak (kein Cloud-Speicher)</span>
+      </div>
+    </div>
+    <div class="plan-card recommended" onclick="PaymentService.subscribe('normal')">
+      <div class="plan-card-head">
+        <span class="plan-name">Normal</span>
+        <span class="rec-chip">Empfohlen</span>
+        <span class="plan-price">€4,99 / Monat</span>
+      </div>
+      <div class="plan-features">
+        <span>Alle 300+ Wirkstoffe & Level</span>
+        <span>Dauerhafter Streak & Achievements</span>
+        <span>Indikation, ATC-Code & Chemie sichtbar</span>
+      </div>
+    </div>
+    <div class="plan-card" onclick="PaymentService.subscribe('premium')">
+      <div class="plan-card-head"><span class="plan-name">Premium (Apotheke)</span><span class="plan-price">€19 / Monat</span></div>
+      <div class="plan-features">
+        <span>Alle Normal-Features</span>
+        <span>Lehrer-Dashboard & Team-Statistiken</span>
+        <span>API-Zugang für Apotheken-Integration</span>
+      </div>
+    </div>
+    <button class="upgrade-close" onclick="closeUpgrade()">Nicht jetzt</button>
+  </div>
+</div>
+
+<!-- ══ DEV PANEL ══ -->
+<div class="dev-panel" id="devPanel">
+  <div class="dev-inner">
+    <div class="dev-header">
+      <div class="dev-title">🛠️ Dev / Research Panel</div>
+      <button class="dev-close" onclick="toggleDevPanel()">✕</button>
+    </div>
+
+    <div class="dev-section">
+      <h3>Abo-Stufe simulieren</h3>
+      <div class="tier-select" id="tierSelect">
+        <button class="tier-btn" data-tier="free"    onclick="devSetTier('free')">Free</button>
+        <button class="tier-btn" data-tier="normal"  onclick="devSetTier('normal')">Normal</button>
+        <button class="tier-btn" data-tier="premium" onclick="devSetTier('premium')">Premium</button>
+      </div>
+    </div>
+
+    <div class="dev-section">
+      <h3>Research Agent</h3>
+      <button class="dev-btn" onclick="ResearchAgent.run()">🔬 Neue Wirkstoffe vorschlagen</button>
+      <button class="dev-btn secondary" onclick="ResearchAgent.showAustrianTop()">🇦🇹 Top-50 AT verschriebene Wirkstoffe</button>
+      <div class="research-output" id="researchOut"></div>
+    </div>
+
+    <div class="dev-section">
+      <h3>Daten</h3>
+      <button class="dev-btn secondary" onclick="devExportState()">📤 State exportieren</button>
+      <button class="dev-btn danger" onclick="devResetState()">🗑️ State zurücksetzen</button>
+    </div>
+
+    <p style="font-size:11px;color:var(--gray2);text-align:center;margin-top:16px;">Dev-Panel: nur für Entwicklung · nicht für Endnutzer sichtbar</p>
+  </div>
+</div>
+
 <!-- ══ HOME ══ -->
 <div class="screen active" id="screenHome">
   <div class="home-header">
-    <div class="logo">
+    <div class="logo" id="logoLongPress">
       <div class="logo-pill">💊</div>
       <div class="logo-name">Pharma<span>Voice</span></div>
     </div>
-    <div class="xp-pill" id="homeXpPill">🪙 0 Shekel</div>
+    <div id="homeTierBadge" class="tier-badge free">Free</div>
   </div>
-  <div class="greeting-sub">Willkommen zurück,</div>
-  <div class="greeting-main">Lernender 👋</div>
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-val" id="homeXpVal">0</div><div class="stat-lbl">🪙 Shekel</div></div>
-    <div class="stat-card"><div class="stat-val" id="homeStreakVal">0 🔥</div><div class="stat-lbl">Streak</div></div>
-    <div class="stat-card"><div class="stat-val" id="homeLearnedVal">0</div><div class="stat-lbl">Begriffe</div></div>
+
+  <!-- Hero card replacing plain greeting + stats row -->
+  <div class="home-hero">
+    <div class="hero-label">Deine Lernpunkte</div>
+    <div class="hero-xp"><span id="heroXp">0</span> <span>Shekel 🪙</span></div>
+    <div class="hero-stats">
+      <div class="hero-stat">🔥 <span id="heroStreak">0</span> Streak</div>
+      <div class="hero-stat">📚 <span id="heroLearned">0</span> Begriffe</div>
+      <div class="hero-stat" id="heroDue" style="display:none">🧠 <span id="heroDueCount">0</span> fällig</div>
+    </div>
   </div>
+
+  <div id="upgradeBannerHome"></div>
+
   <div class="section-title">Lernebenen</div>
   <div class="level-cards" id="levelCardsHome"></div>
   <button class="btn-start" onclick="openModal()">🎯 &nbsp;Jetzt lernen starten</button>
+  <button class="btn-start" onclick="startRunner()" style="margin-top:12px;background:linear-gradient(135deg,#1A1A2E,#0F3460);box-shadow:0 4px 14px rgba(0,212,255,.25);">🏃 &nbsp;Pharma Runner starten</button>
 </div>
 
 <!-- ══ LEARN ══ -->
@@ -284,15 +543,7 @@
 <!-- ══ ACHIEVEMENTS ══ -->
 <div class="screen" id="screenAchievements">
   <div class="screen-h">🏆 Erfolge</div>
-  <div class="ach-list">
-    <div class="ach-item"><div class="ach-icon on">🎤</div><div class="ach-info"><div class="ach-name">Erste Stimme</div><div class="ach-desc">Erste Lerneinheit abgeschlossen</div></div><div class="ach-state">✅</div></div>
-    <div class="ach-item"><div class="ach-icon on">🔥</div><div class="ach-info"><div class="ach-name">7-Tage-Streak</div><div class="ach-desc">7 Tage in Folge gelernt</div></div><div class="ach-state">✅</div></div>
-    <div class="ach-item"><div class="ach-icon on">📗</div><div class="ach-info"><div class="ach-name">Basics Meister</div><div class="ach-desc">Alle Basis-Medikamente gemeistert</div></div><div class="ach-state">✅</div></div>
-    <div class="ach-item locked"><div class="ach-icon off">💊</div><div class="ach-info"><div class="ach-name">50 Begriffe</div><div class="ach-desc">50 verschiedene Begriffe gelernt</div></div><div class="ach-state">🔒</div></div>
-    <div class="ach-item locked"><div class="ach-icon off">🧬</div><div class="ach-info"><div class="ach-name">Fortgeschrittener</div><div class="ach-desc">Level 2 vollständig abgeschlossen</div></div><div class="ach-state">🔒</div></div>
-    <div class="ach-item locked"><div class="ach-icon off">🏅</div><div class="ach-info"><div class="ach-name">Profi-Aussprecher</div><div class="ach-desc">Alle Level erfolgreich abgeschlossen</div></div><div class="ach-state">🔒</div></div>
-    <div class="ach-item locked"><div class="ach-icon off">🔬</div><div class="ach-info"><div class="ach-name">Onkologe</div><div class="ach-desc">Alle Onkologie-Begriffe gelernt</div></div><div class="ach-state">🔒</div></div>
-  </div>
+  <div class="ach-list" id="achList"></div>
 </div>
 
 <!-- ══ PROFILE ══ -->
@@ -300,6 +551,7 @@
   <div class="prof-avatar">PV</div>
   <div class="prof-name">Lernender</div>
   <div class="prof-role">Apotheker-Lehrling 💊</div>
+  <div style="text-align:center;margin-bottom:20px;"><span id="profTierBadge" class="tier-badge free" style="cursor:pointer" onclick="openUpgrade()">Free – Upgrade</span></div>
   <div class="prof-grid">
     <div class="prof-stat"><div class="prof-val" id="profXp">0</div><div class="prof-lbl">🪙 Shekel</div></div>
     <div class="prof-stat"><div class="prof-val" id="profStreak">0 🔥</div><div class="prof-lbl">Tage Streak</div></div>
@@ -329,6 +581,80 @@
     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Profil</span>
   </div>
 </nav>
+
+<!-- ══ PHARMA RUNNER ══ -->
+<div class="runner-screen" id="runnerScreen">
+
+  <!-- Animated road -->
+  <div class="rn-road">
+    <div class="rn-lane-l"></div>
+    <div class="rn-lane-r"></div>
+  </div>
+
+  <!-- Header: score / combo / lives -->
+  <div class="rn-header">
+    <div class="rn-score-wrap">
+      <div class="rn-score-lbl">Score</div>
+      <div class="rn-score-val" id="rnScore">0</div>
+    </div>
+    <div class="rn-combo-wrap">
+      <div class="rn-combo" id="rnCombo">🔥 ×0</div>
+      <div class="rn-combo-lbl">Combo</div>
+    </div>
+    <div class="rn-lives" id="rnLives">
+      <span class="rn-heart">❤️</span>
+      <span class="rn-heart">❤️</span>
+      <span class="rn-heart">❤️</span>
+    </div>
+  </div>
+
+  <!-- Timer bar -->
+  <div class="rn-tempo-bar"><div class="rn-tempo-fill" id="rnTempoFill" style="width:100%"></div></div>
+
+  <!-- Word card -->
+  <div class="rn-card-wrap">
+    <div class="rn-card" id="rnCard">
+      <div class="rn-cat-pill" id="rnCat">Kategorie</div>
+      <div class="rn-word" id="rnWord">Wirkstoff</div>
+      <div class="rn-ipa"  id="rnIpa">/phonetik/</div>
+      <div class="rn-syl"  id="rnSyl">Sil·ben</div>
+      <div class="rn-indication" id="rnIndication">💊 Indikation</div>
+    </div>
+    <div class="rn-feedback" id="rnFeedback"></div>
+  </div>
+
+  <!-- Mic -->
+  <div class="rn-mic-area">
+    <div class="rn-mic" id="rnMic" onclick="rnToggleMic()">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08C16.39 17.43 19 14.53 19 11h-2z"/>
+      </svg>
+    </div>
+    <div class="rn-mic-hint" id="rnMicHint">Tippe zum Sprechen</div>
+    <div class="rn-heard" id="rnHeard"></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="rn-controls">
+    <button class="rn-ctrl-btn" onclick="rnPause()">⏸ Pause</button>
+    <button class="rn-ctrl-btn" onclick="stopRunner()">🏠 Beenden</button>
+  </div>
+
+  <!-- Overlay: Start / GameOver / Pause -->
+  <div class="rn-overlay" id="rnOverlay">
+    <div class="rn-ov-icon" id="rnOvIcon">🏃</div>
+    <div class="rn-ov-title" id="rnOvTitle">Pharma Runner</div>
+    <div class="rn-ov-sub" id="rnOvSub">Sprich die Wirkstoffnamen aus bevor die Zeit abläuft!<br>Je länger die Combo, desto schneller wird es.</div>
+    <div class="rn-ov-score" id="rnOvScore" style="display:none">0</div>
+    <div class="rn-ov-hs" id="rnOvHs" style="display:none"></div>
+    <button class="rn-ov-btn" id="rnOvBtn" onclick="rnStartGame()">🎮 &nbsp;Starten</button>
+    <button class="rn-ov-btn ghost" onclick="stopRunner()">← Zurück</button>
+  </div>
+
+  <!-- Combo badge popup -->
+  <div class="rn-badge-pop" id="rnBadge"></div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -569,6 +895,102 @@ let recognition      = null;
 let micActive        = false;
 let micFeedbackTimer = null;
 
+// ═══════════════════════════════════════════════
+//  SPACED REPETITION (SM-2)
+// ═══════════════════════════════════════════════
+let SM2 = {};
+
+function sm2Load() {
+  const raw = localStorage.getItem('pv_sm2');
+  SM2 = raw ? JSON.parse(raw) : {};
+}
+
+function sm2Save() {
+  localStorage.setItem('pv_sm2', JSON.stringify(SM2));
+}
+
+function sm2Update(name, correct) {
+  const today = new Date().toISOString().slice(0,10);
+  const d = SM2[name] || { ef:2.5, interval:1, reps:0, nextReview:today };
+  const q = correct ? 5 : 2;
+  if (q >= 3) {
+    if      (d.reps === 0) d.interval = 1;
+    else if (d.reps === 1) d.interval = 6;
+    else                   d.interval = Math.round(d.interval * d.ef);
+    d.reps++;
+  } else {
+    d.reps = 0;
+    d.interval = 1;
+  }
+  d.ef = Math.max(1.3, d.ef + 0.1 - (5-q) * (0.08 + (5-q) * 0.02));
+  const next = new Date();
+  next.setDate(next.getDate() + d.interval);
+  d.nextReview = next.toISOString().slice(0,10);
+  SM2[name] = d;
+  sm2Save();
+}
+
+// Sort meds so overdue/new come first
+function sm2SortMeds(meds) {
+  const today = new Date().toISOString().slice(0,10);
+  return [...meds].sort((a, b) => {
+    const da = SM2[a.name] ? SM2[a.name].nextReview : '2000-01-01';
+    const db = SM2[b.name] ? SM2[b.name].nextReview : '2000-01-01';
+    const dueA = da <= today ? 0 : 1;
+    const dueB = db <= today ? 0 : 1;
+    if (dueA !== dueB) return dueA - dueB;
+    return da.localeCompare(db);
+  });
+}
+
+function sm2DueCount(meds) {
+  const today = new Date().toISOString().slice(0,10);
+  return meds.filter(m => !SM2[m.name] || SM2[m.name].nextReview <= today).length;
+}
+
+// ═══════════════════════════════════════════════
+//  ACHIEVEMENTS
+// ═══════════════════════════════════════════════
+const ACHIEVEMENTS = [
+  { id:'first',     icon:'🎤', name:'Erste Stimme',      desc:'Erste Frage beantwortet',              check: () => S.learned >= 1 },
+  { id:'streak3',   icon:'🔥', name:'3 Tage am Ball',    desc:'3 Tage in Folge gelernt',              check: () => S.streak >= 3 },
+  { id:'streak7',   icon:'🏅', name:'7-Tage-Streak',     desc:'7 Tage in Folge gelernt',              check: () => S.streak >= 7 },
+  { id:'terms20',   icon:'📗', name:'Erste 20',          desc:'20 Fragen beantwortet',                check: () => S.learned >= 20 },
+  { id:'terms50',   icon:'💊', name:'50 Begriffe',       desc:'50 Fragen beantwortet',                check: () => S.learned >= 50 },
+  { id:'terms150',  icon:'📚', name:'Bücherwurm',        desc:'150 Fragen beantwortet',               check: () => S.learned >= 150 },
+  { id:'xp200',     icon:'🧬', name:'Fortgeschrittener', desc:'200 Shekel – Level 2 freigeschaltet',  check: () => S.xp >= 200 },
+  { id:'xp400',     icon:'🔬', name:'Profi-Aussprecher', desc:'400 Shekel – Level 3 freigeschaltet',  check: () => S.xp >= 400 },
+  { id:'xp600',     icon:'🏆', name:'Pharma-Legende',    desc:'600 Shekel – Alle Level abgeschlossen',check: () => S.xp >= 600 },
+  { id:'runner',    icon:'🏃', name:'Auf die Piste!',    desc:'Pharma Runner gespielt',               check: () => parseInt(localStorage.getItem('pv_runner_total')||'0') > 0 },
+  { id:'runner500', icon:'⚡', name:'Speed Freak',       desc:'Highscore 500+ im Runner',             check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 500 },
+  { id:'runner1k',  icon:'👑', name:'Runner Champion',   desc:'Highscore 1000+ im Runner',            check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 1000 },
+  { id:'sm2_10',    icon:'🧠', name:'Gedächtniskünstler',desc:'10 Begriffe mit Spaced Repetition',    check: () => Object.keys(SM2).length >= 10 },
+];
+
+function renderAchievements() {
+  const list = el('achList');
+  if (!list) return;
+  list.innerHTML = '';
+  let unlocked = 0;
+  ACHIEVEMENTS.forEach(a => {
+    const done = a.check();
+    if (done) unlocked++;
+    const div = document.createElement('div');
+    div.className = 'ach-item' + (done ? '' : ' locked');
+    div.innerHTML = `
+      <div class="ach-icon ${done?'on':'off'}">${a.icon}</div>
+      <div class="ach-info">
+        <div class="ach-name">${a.name}</div>
+        <div class="ach-desc">${a.desc}</div>
+      </div>
+      <div class="ach-state">${done ? '✅' : '🔒'}</div>`;
+    list.appendChild(div);
+  });
+  // Show progress header
+  const hdr = document.querySelector('#screenAchievements .screen-h');
+  if (hdr) hdr.textContent = `🏆 Erfolge – ${unlocked}/${ACHIEVEMENTS.length}`;
+}
+
 function save() { localStorage.setItem('pv2', JSON.stringify(S)); }
 function load() {
   const raw = localStorage.getItem('pv2');
@@ -579,8 +1001,10 @@ function load() {
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   if (S.lastPlayed && S.lastPlayed !== today && S.lastPlayed !== yesterday) { S.streak = 0; save(); }
+  sm2Load();
   renderLevelCards();
   refreshUI();
+  renderAchievements();
 }
 
 // ═══════════════════════════════════════════════
@@ -594,10 +1018,13 @@ function refreshUI() {
   const lvl = Math.floor(S.xp / xpPerLevel) + 1;
   const inLvl = S.xp % xpPerLevel;
   const pct = Math.min(Math.round(inLvl / xpPerLevel * 100), 100);
-  set('homeXpPill', `🪙 ${S.xp} Shekel`);
-  set('homeXpVal',  S.xp);
-  set('homeStreakVal', `${S.streak} 🔥`);
-  set('homeLearnedVal', S.learned);
+  // Hero
+  if (el('heroXp'))      el('heroXp').textContent      = S.xp;
+  if (el('heroStreak'))  el('heroStreak').textContent   = S.streak;
+  if (el('heroLearned')) el('heroLearned').textContent  = S.learned;
+  const due = sm2DueCount(MEDS);
+  if (el('heroDue'))      el('heroDue').style.display  = due > 0 ? '' : 'none';
+  if (el('heroDueCount')) el('heroDueCount').textContent = due;
   set('profXp',      S.xp);
   set('profStreak',  `${S.streak} 🔥`);
   set('profLearned', S.learned);
@@ -605,12 +1032,16 @@ function refreshUI() {
   el('profProgFill').style.width = pct + '%';
   set('profProgTxt', `${inLvl} / ${xpPerLevel} Shekel`);
   set('profProgPct', pct + '%');
+  set('profProgLabel', `Level ${lvl+1} benötigt <strong>${(lvl)*xpPerLevel} Shekel</strong>`);
   renderLevelCards();
 }
 
 function canPlay(lvId) {
   const lv = LEVELS.find(l => l.id === lvId);
-  return S.xp >= lv.xpReq;
+  if (S.xp < lv.xpReq) return false;
+  // Payment gate: levels 2+ require at least 'normal' plan
+  if (lvId >= 2 && !PaymentService.canAccess('level2')) return 'upgrade';
+  return true;
 }
 
 function renderLevelCards() {
@@ -618,18 +1049,23 @@ function renderLevelCards() {
   if (!c) return;
   c.innerHTML = '';
   LEVELS.forEach(lv => {
-    const unlocked = canPlay(lv.id);
+    const status = canPlay(lv.id); // true | false | 'upgrade'
     const count = MEDS.filter(m => m.lv === lv.id).length;
     const div = document.createElement('div');
-    div.className = `level-card ${unlocked ? 'open' : 'locked'}`;
+    div.className = `level-card ${status === true ? 'open' : 'locked'}`;
+    let badge;
+    if (status === true)        badge = `<div class="lvl-badge on">Aktiv</div>`;
+    else if (status === 'upgrade') badge = `<div class="lvl-badge off">🚀 Upgrade</div>`;
+    else                        badge = `<div class="lvl-badge off">🔒 ${lv.xpReq} Shekel</div>`;
     div.innerHTML = `
       <div class="lvl-icon ${lv.color}">${lv.icon}</div>
       <div class="lvl-info">
         <div class="lvl-name">${lv.name}</div>
         <div class="lvl-sub">${count} Begriffe &nbsp;·&nbsp; ${lv.desc}</div>
       </div>
-      <div class="lvl-badge ${unlocked ? 'on' : 'off'}">${unlocked ? 'Aktiv' : `🔒 ${lv.xpReq} Shekel`}</div>`;
-    if (unlocked) div.onclick = () => startLearn(lv.id);
+      ${badge}`;
+    if (status === true)        div.onclick = () => startLearn(lv.id);
+    else if (status === 'upgrade') div.onclick = () => openUpgrade();
     c.appendChild(div);
   });
 }
@@ -655,17 +1091,22 @@ function openModal() {
   const c = el('modalLevels');
   c.innerHTML = '';
   LEVELS.forEach(lv => {
-    const unlocked = canPlay(lv.id);
+    const status = canPlay(lv.id);
     const count = MEDS.filter(m => m.lv === lv.id).length;
     const btn = document.createElement('div');
-    btn.className = `modal-lvl-btn ${unlocked ? '' : 'locked'}`;
+    btn.className = `modal-lvl-btn ${status === true ? '' : 'locked'}`;
+    let sub;
+    if (status === true)           sub = 'Freigeschaltet';
+    else if (status === 'upgrade') sub = '🚀 Upgrade erforderlich';
+    else                           sub = lv.xpReq + ' Shekel benötigt';
     btn.innerHTML = `
       <span style="font-size:28px;">${lv.icon}</span>
       <div>
-        <div class="mlbl">${lv.name} <span style="font-size:12px;color:var(--teal);font-weight:600;">${unlocked ? '' : '🔒'}</span></div>
-        <div class="msub">${count} Begriffe &nbsp;·&nbsp; ${unlocked ? 'Freigeschaltet' : lv.xpReq + ' Shekel benötigt'}</div>
+        <div class="mlbl">${lv.name}</div>
+        <div class="msub">${count} Begriffe &nbsp;·&nbsp; ${sub}</div>
       </div>`;
-    if (unlocked) btn.onclick = () => { closeModal(); startLearn(lv.id); };
+    if (status === true)           btn.onclick = () => { closeModal(); startLearn(lv.id); };
+    else if (status === 'upgrade') btn.onclick = () => { closeModal(); openUpgrade(); };
     c.appendChild(btn);
   });
   el('modalBg').classList.add('open');
@@ -687,10 +1128,14 @@ function shuffle(a) {
 }
 
 function startLearn(lvId = 1) {
-  if (!canPlay(lvId)) return;
+  const status = canPlay(lvId);
+  if (status === 'upgrade') { openUpgrade(); return; }
+  if (!status) return;
   const pool = MEDS.filter(m => m.lv === lvId);
   const lv   = LEVELS.find(l => l.id === lvId);
-  Q = { meds: shuffle(pool).slice(0, 10), idx: 0, correct: 0, sessionXP: 0, answered: false, lvId };
+  // SM-2: put overdue/new drugs first, then shuffle the rest
+  const sorted = sm2SortMeds(pool);
+  Q = { meds: sorted.slice(0, 10), idx: 0, correct: 0, sessionXP: 0, answered: false, lvId };
   // Update learn chip
   el('learnChip').textContent = `${lv.icon}  ${lv.name} Level`;
   showScreen('Learn');
@@ -771,10 +1216,12 @@ function pick(btn, correct, med) {
     document.querySelectorAll('.opt').forEach(b => { if (b.dataset.correct === 'true') b.classList.add('good'); });
     showFeedback(false, `❌ &nbsp;Fast! Richtige Antwort: <strong>${correct}</strong><br>${med.tip}`);
   }
+  sm2Update(med.name, good);
   S.learned = Math.min(S.learned + 1, 9999);
   set('progXp', `${Q.sessionXP} Shekel`);
   save();
   refreshUI();
+  renderAchievements();
   el('btnNext').classList.add('show');
 }
 
@@ -933,8 +1380,626 @@ function checkPronunciation(spoken) {
   }, 3000);
 }
 
+// ═══════════════════════════════════════════════
+//  PAYMENT SERVICE  (mock – bereit für Backend)
+// ═══════════════════════════════════════════════
+const PaymentService = (() => {
+  const PLANS = { free:'Free', normal:'Normal', premium:'Premium' };
+
+  function getPlan() {
+    return localStorage.getItem('pv_plan') || 'free';
+  }
+
+  function setPlan(tier) {
+    localStorage.setItem('pv_plan', tier);
+    refreshTierUI();
+    closeUpgrade();
+    alert(`✅ Abo "${PLANS[tier]}" aktiviert (Demo-Modus).\n\nIn der Produktion würde hier die Zahlung verarbeitet.`);
+  }
+
+  function canAccess(feature) {
+    const plan = getPlan();
+    const gates = {
+      level2:       ['normal','premium'],
+      level3:       ['normal','premium'],
+      streakSave:   ['normal','premium'],
+      achievements: ['normal','premium'],
+      medInfo:      ['normal','premium'],
+      teacherDash:  ['premium'],
+    };
+    if (!gates[feature]) return true;
+    return gates[feature].includes(plan);
+  }
+
+  return { getPlan, subscribe: setPlan, canAccess };
+})();
+
+function refreshTierUI() {
+  const plan = PaymentService.getPlan();
+  const labels = { free:'Free', normal:'✓ Normal', premium:'★ Premium' };
+  const label = labels[plan] || 'Free';
+
+  ['homeTierBadge','profTierBadge'].forEach(id => {
+    const el2 = el(id);
+    if (!el2) return;
+    el2.className = `tier-badge ${plan}`;
+    el2.textContent = id === 'profTierBadge' && plan === 'free'
+      ? 'Free – Upgrade ↗'
+      : label;
+  });
+
+  // Show/hide upgrade banner on home
+  const banner = el('upgradeBannerHome');
+  if (banner) {
+    if (plan === 'free') {
+      banner.innerHTML = `
+        <div class="upgrade-banner" onclick="openUpgrade()">
+          <div class="ub-icon">🚀</div>
+          <div class="ub-text">
+            <div class="ub-title">Auf Normal upgraden</div>
+            <div class="ub-sub">300+ Wirkstoffe · Streak · Achievements</div>
+          </div>
+          <div class="ub-arrow">›</div>
+        </div>`;
+    } else {
+      banner.innerHTML = '';
+    }
+  }
+}
+
+function openUpgrade() { el('upgradeBg').classList.add('open'); }
+function closeUpgrade(e) {
+  if (!e || e.target === el('upgradeBg')) el('upgradeBg').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════
+//  RESEARCH AGENT
+// ═══════════════════════════════════════════════
+const ResearchAgent = (() => {
+  // Wirkstoffe die noch NICHT im Katalog sind aber prioritär wären
+  const SUGGESTIONS = [
+    { drug:"Hydrochlorothiazid", indication:"Bluthochdruck, Ödeme", ipa:"/hy·dro·chlo·ro·thi·a·ˈziːt/", syllables:"Hy·dro·chlo·ro·thi·a·ZID", priority:9, category:"Diuretikum" },
+    { drug:"Amiodaron",          indication:"Herzrhythmusstörungen", ipa:"/a·mi·o·ˈdaː·ron/",            syllables:"A·mi·o·DA·ron",           priority:9, category:"Antiarrhythmikum" },
+    { drug:"Warfarin",           indication:"Antikoagulation",       ipa:"/ˈvar·fa·rɪn/",                syllables:"WAR·fa·rin",               priority:8, category:"Antikoagulans" },
+    { drug:"Allopurinol",        indication:"Gicht-Prophylaxe",      ipa:"/a·lo·ˈpuː·rɪ·nol/",          syllables:"A·lo·PU·ri·nol",           priority:8, category:"Urikostatikum" },
+    { drug:"Citalopram",         indication:"Depression, Angst",     ipa:"/tsɪ·ˈta·lo·pram/",            syllables:"Ci·TA·lo·pram",            priority:8, category:"SSRI" },
+    { drug:"Fluoxetin",          indication:"Depression, Bulimie",   ipa:"/flu·ˈɔk·seː·tɪn/",            syllables:"Flu·OX·e·tin",             priority:8, category:"SSRI" },
+    { drug:"Carvedilol",         indication:"Herzinsuffizienz, Bluthochdruck", ipa:"/kar·ˈveː·dɪ·lol/",  syllables:"Car·VE·di·lol",            priority:7, category:"Betablocker" },
+    { drug:"Pioglitazon",        indication:"Typ-2-Diabetes",        ipa:"/pi·o·ˈglɪ·ta·zon/",          syllables:"Pi·o·GLI·ta·zon",          priority:7, category:"Thiazolidindion" },
+    { drug:"Rosuvastatin",       indication:"Hypercholesterinämie",  ipa:"/ro·zu·ˈva·sta·tɪn/",         syllables:"Ro·zu·VA·sta·tin",         priority:7, category:"Statin" },
+    { drug:"Telmisartan",        indication:"Bluthochdruck",         ipa:"/tɛl·mɪ·ˈzar·tan/",           syllables:"Tel·mi·ZAR·tan",           priority:7, category:"Sartan" },
+    { drug:"Olmesartan",         indication:"Bluthochdruck",         ipa:"/ol·meː·ˈzar·tan/",            syllables:"Ol·me·ZAR·tan",            priority:7, category:"Sartan" },
+    { drug:"Perindopril",        indication:"Bluthochdruck, Herzinsuffizienz", ipa:"/pɛ·ˈrɪn·do·prɪl/", syllables:"Pe·RIN·do·pril",           priority:7, category:"ACE-Hemmer" },
+    { drug:"Ivermectin",         indication:"Parasitosen",           ipa:"/ɪ·vɛr·ˈmɛk·tɪn/",            syllables:"I·ver·MEK·tin",            priority:6, category:"Antiparasitikum" },
+    { drug:"Aciclovir",          indication:"Herpes simplex, Zoster", ipa:"/a·ˈtsɪ·klo·vɪr/",           syllables:"A·CI·clo·vir",             priority:8, category:"Virostatikum" },
+    { drug:"Oseltamivir",        indication:"Influenza",             ipa:"/o·sɛl·ˈta·mɪ·vɪr/",          syllables:"O·sel·TA·mi·vir",          priority:7, category:"Virostatikum" },
+  ];
+
+  const AT_TOP50 = [
+    "Atorvastatin","Omeprazol","Ramipril","Metformin","Bisoprolol",
+    "Pantoprazol","Amlodipin","Levothyroxin","Simvastatin","Metoprolol",
+    "Ibuprofen","Aspirin","Lisinopril","Losartan","Hydrochlorothiazid",
+    "Furosemid","Candesartan","Valsartan","Esomeprazol","Lansoprazol",
+    "Sertralin","Escitalopram","Pregabalin","Gabapentin","Duloxetin",
+    "Allopurinol","Colchicin","Warfarin","Rivaroxaban","Apixaban",
+    "Clopidogrel","Methotrexat","Prednisolon","Budesonid","Salbutamol",
+    "Tiotropium","Formoterol","Fluticason","Montelukast","Insulin",
+    "Empagliflozin","Semaglutid","Sitagliptin","Liraglutid","Metronidazol",
+    "Amoxicillin","Ciprofloxacin","Azithromycin","Aciclovir","Doxycyclin"
+  ];
+
+  function run() {
+    const out = el('researchOut');
+    out.classList.add('show');
+    out.textContent = '⏳ Research Agent läuft…\n\n';
+
+    setTimeout(() => {
+      const existing = new Set(MEDS.map(m => m.name.toLowerCase()));
+      const missing = SUGGESTIONS.filter(s => !existing.has(s.drug.toLowerCase()))
+                                  .sort((a,b) => b.priority - a.priority);
+
+      let text = `🔬 RESEARCH AGENT – Vorschläge für neue Wirkstoffe\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `Datum: ${new Date().toLocaleDateString('de-AT')}\n`;
+      text += `Katalog aktuell: ${MEDS.length} Wirkstoffe\n\n`;
+      text += `PRIORITÄT  WIRKSTOFF            KLASSE\n`;
+      text += `─────────────────────────────────────\n`;
+      missing.forEach(s => {
+        text += `[P${s.priority}]  ${s.drug.padEnd(20)} ${s.category}\n`;
+        text += `       IPA: ${s.ipa}\n`;
+        text += `       Silben: ${s.syllables}\n`;
+        text += `       Indikation: ${s.indication}\n\n`;
+      });
+
+      const inCatalog = SUGGESTIONS.filter(s => existing.has(s.drug.toLowerCase()));
+      if (inCatalog.length) {
+        text += `\n✅ BEREITS IM KATALOG: ${inCatalog.map(s=>s.drug).join(', ')}\n`;
+      }
+
+      text += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `JSON-Format für drugs-data.js:\n\n`;
+      text += JSON.stringify(missing.slice(0,3).map(s=>({
+        lv:2, name:s.drug, phonetic:s.ipa,
+        syllables:s.syllables.split('·'),
+        si: s.syllables.split('·').findIndex(sl=>sl===sl.toUpperCase()),
+        category:s.category, tip:`Betonen: ${s.syllables}`
+      })), null, 2);
+
+      out.textContent = text;
+    }, 600);
+  }
+
+  function showAustrianTop() {
+    const out = el('researchOut');
+    out.classList.add('show');
+    const existing = new Set(MEDS.map(m => m.name.toLowerCase()));
+    let text = `🇦🇹 TOP-50 VERSCHRIEBENE WIRKSTOFFE IN ÖSTERREICH\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    AT_TOP50.forEach((drug, i) => {
+      const status = existing.has(drug.toLowerCase()) ? '✅' : '❌ fehlt';
+      text += `${String(i+1).padStart(2,'0')}. ${drug.padEnd(22)} ${status}\n`;
+    });
+    const covered = AT_TOP50.filter(d => existing.has(d.toLowerCase())).length;
+    text += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `Abdeckung: ${covered}/${AT_TOP50.length} (${Math.round(covered/AT_TOP50.length*100)}%)\n`;
+    out.textContent = text;
+  }
+
+  return { run, showAustrianTop };
+})();
+
+// ═══════════════════════════════════════════════
+//  DEV PANEL CONTROLS
+// ═══════════════════════════════════════════════
+function toggleDevPanel() {
+  el('devPanel').classList.toggle('open');
+  // Sync tier buttons
+  const plan = PaymentService.getPlan();
+  document.querySelectorAll('.tier-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tier === plan);
+  });
+}
+
+function devSetTier(tier) {
+  localStorage.setItem('pv_plan', tier);
+  document.querySelectorAll('.tier-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tier === tier);
+  });
+  refreshTierUI();
+}
+
+function devExportState() {
+  const data = { state: S, plan: PaymentService.getPlan(), meds: MEDS.length };
+  el('researchOut').classList.add('show');
+  el('researchOut').textContent = JSON.stringify(data, null, 2);
+}
+
+function devResetState() {
+  if (!confirm('State komplett zurücksetzen?')) return;
+  localStorage.clear();
+  S = { xp:0, streak:0, lastPlayed:null, learned:0 };
+  save();
+  refreshUI();
+  refreshTierUI();
+  alert('✅ State zurückgesetzt.');
+}
+
+// Long-press on logo (700ms) → open dev panel
+(function initDevTrigger() {
+  let pressTimer;
+  const logo = document.getElementById('logoLongPress');
+  if (!logo) return;
+  logo.addEventListener('pointerdown', () => { pressTimer = setTimeout(toggleDevPanel, 700); });
+  logo.addEventListener('pointerup',   () => clearTimeout(pressTimer));
+  logo.addEventListener('pointerleave',() => clearTimeout(pressTimer));
+})();
+
+// ═══════════════════════════════════════════════
+//  PHARMA RUNNER – WORD DATABASE
+// ═══════════════════════════════════════════════
+const RN_WORDS = [
+  // Schmerzmittel
+  { word:"Acetylsalicylsäure", ipa:"aˌtseːtylzaliˈtsyːlˌzɔɪ̯ʁə", syl:"A·ce·tyl·sa·li·cyl·säu·re", indication:"Schmerzmittel, blutverdünnend",   cat:"Schmerzmittel",  diff:3 },
+  { word:"Ibuprofen",          ipa:"ibuˈproːfɛn",                  syl:"I·bu·pro·fen",              indication:"Schmerzmittel, Entzündungshemmer", cat:"Schmerzmittel",  diff:1 },
+  { word:"Paracetamol",        ipa:"paʁaˈtseːtamɔl",              syl:"Pa·ra·ce·ta·mol",           indication:"Fiebersenker, Schmerzmittel",      cat:"Schmerzmittel",  diff:1 },
+  { word:"Naproxen",           ipa:"naˈprɔksɛn",                  syl:"Na·pro·xen",                indication:"Rheuma, Gelenkschmerzen",          cat:"Schmerzmittel",  diff:1 },
+  { word:"Diclofenac",         ipa:"diˈkloːfenak",                syl:"Di·clo·fe·nac",             indication:"Entzündungshemmer, Schmerzgel",   cat:"Schmerzmittel",  diff:1 },
+  { word:"Metamizol",          ipa:"mɛtaˈmiːzɔl",                 syl:"Me·ta·mi·zol",              indication:"Starke Schmerzen, hohes Fieber",  cat:"Schmerzmittel",  diff:2 },
+  { word:"Tramadol",           ipa:"ˈtʁaːmadɔl",                  syl:"TRA·ma·dol",                indication:"Mittelstarke bis starke Schmerzen", cat:"Schmerzmittel", diff:1 },
+  // Herz-Kreislauf
+  { word:"Ramipril",           ipa:"ˈʁaːmipʁɪl",                  syl:"Ra·mi·pril",                indication:"Bluthochdruck, Herzinsuffizienz", cat:"Herz-Kreislauf", diff:1 },
+  { word:"Metoprolol",         ipa:"metoˈpʁoːlɔl",                syl:"Me·to·pro·lol",             indication:"Bluthochdruck, Herzrhythmus",     cat:"Herz-Kreislauf", diff:2 },
+  { word:"Amlodipin",          ipa:"amloˈdiːpɪn",                 syl:"Am·lo·di·pin",              indication:"Bluthochdruck, Koronare Herzkrankheit", cat:"Herz-Kreislauf", diff:1 },
+  { word:"Bisoprolol",         ipa:"bizoˈpʁoːlɔl",                syl:"Bi·so·pro·lol",             indication:"Bluthochdruck, Herzinsuffizienz", cat:"Herz-Kreislauf", diff:2 },
+  { word:"Valsartan",          ipa:"valˈzaʁtan",                  syl:"Val·sar·tan",               indication:"Bluthochdruck, Herzinfarkt-Prophylaxe", cat:"Herz-Kreislauf", diff:1 },
+  { word:"Rivaroxaban",        ipa:"ʁivaˈʁɔksaban",               syl:"Ri·va·rox·a·ban",           indication:"Blutverdünner, Thromboseschutz",  cat:"Herz-Kreislauf", diff:2 },
+  { word:"Spironolacton",      ipa:"ʃpiʁonoˈlakton",              syl:"Spi·ro·no·lac·ton",         indication:"Entwässerung, Herzinsuffizienz",  cat:"Herz-Kreislauf", diff:2 },
+  { word:"Clopidogrel",        ipa:"kloˈpiːdoɡʁɛl",               syl:"Clo·pi·do·grel",            indication:"Blutplättchenhemmer, Herzinfarkt", cat:"Herz-Kreislauf", diff:2 },
+  // Schilddrüse & Diabetes
+  { word:"Levothyroxin",       ipa:"leːvotyˈʁɔksiːn",             syl:"Le·vo·thy·ro·xin",          indication:"Schilddrüsenunterfunktion",        cat:"Schilddrüse",    diff:2 },
+  { word:"Metformin",          ipa:"mɛtˈfɔʁmɪn",                  syl:"Met·for·min",               indication:"Diabetes Typ 2",                  cat:"Diabetes",       diff:1 },
+  { word:"Liraglutid",         ipa:"liʁaˈɡluːtiːd",               syl:"Li·ra·glu·tid",             indication:"Diabetes, Adipositas",            cat:"Diabetes",       diff:2 },
+  { word:"Empagliflozin",      ipa:"ɛmpaɡliˈfloːtsiːn",           syl:"Em·pa·gli·flo·zin",         indication:"Diabetes Typ 2, Herzschutz",      cat:"Diabetes",       diff:3 },
+  { word:"Semaglutid",         ipa:"seːmaˈɡluːtiːd",              syl:"Se·ma·glu·tid",             indication:"Diabetes, Gewichtsreduktion",     cat:"Diabetes",       diff:2 },
+  { word:"Sitagliptin",        ipa:"sɪtaˈɡlɪptɪn",                syl:"Si·ta·glip·tin",            indication:"Diabetes Typ 2, Blutzucker",      cat:"Diabetes",       diff:2 },
+  // Antibiotika
+  { word:"Amoxicillin",        ipa:"amɔksiˈtsɪliːn",              syl:"A·mo·xi·cil·lin",           indication:"Bakterielle Infektionen",          cat:"Antibiotikum",   diff:2 },
+  { word:"Azithromycin",       ipa:"aːtsitʁoˈmyːtsiːn",           syl:"A·zi·thro·my·cin",          indication:"Atemwegsinfekte",                 cat:"Antibiotikum",   diff:3 },
+  { word:"Ciprofloxacin",      ipa:"tsiːpʁoflɔˈksaːziːn",         syl:"Ci·pro·flo·xa·cin",         indication:"Harnwegsinfekte, Magen-Darm",     cat:"Antibiotikum",   diff:3 },
+  { word:"Clarithromycin",     ipa:"klaːʁitʁoˈmyːtsiːn",          syl:"Cla·ri·thro·my·cin",        indication:"Magen-Darm-Infektionen",          cat:"Antibiotikum",   diff:3 },
+  { word:"Doxycyclin",         ipa:"dɔksitsyˈkliːn",              syl:"Do·xy·cyc·lin",             indication:"Borreliose, Akne, Chlamydien",    cat:"Antibiotikum",   diff:2 },
+  { word:"Levofloxacin",       ipa:"leːvoflɔˈksaːtsiːn",          syl:"Le·vo·flo·xa·cin",          indication:"Pneumonie, Harnwegsinfekte",      cat:"Antibiotikum",   diff:3 },
+  // Magen-Darm
+  { word:"Pantoprazol",        ipa:"pantopʁaˈtsoːl",              syl:"Pan·to·pra·zol",            indication:"Sodbrennen, Magenschutz",         cat:"Magen-Darm",     diff:1 },
+  { word:"Omeprazol",          ipa:"omeˈpʁaːtsɔl",                syl:"O·me·pra·zol",              indication:"Magensäureblocker",               cat:"Magen-Darm",     diff:1 },
+  { word:"Mesalazin",          ipa:"meːzalaˈtsiːn",               syl:"Me·sa·la·zin",              indication:"Morbus Crohn, Colitis ulcerosa",  cat:"Magen-Darm",     diff:2 },
+  { word:"Loperamid",          ipa:"lopeʁaˈmiːt",                 syl:"Lo·pe·ra·mid",              indication:"Durchfall",                       cat:"Magen-Darm",     diff:1 },
+  { word:"Domperidon",         ipa:"dompeʁiˈdoːn",                syl:"Dom·pe·ri·don",             indication:"Übelkeit, Magenentleerung",       cat:"Magen-Darm",     diff:2 },
+  // Lunge & Allergie
+  { word:"Cetirizin",          ipa:"tseːtiˈʁiːtsɪn",              syl:"Ce·ti·ri·zin",              indication:"Allergie, Heuschnupfen",          cat:"Allergie",       diff:1 },
+  { word:"Loratadin",          ipa:"loːʁataˈdiːn",                syl:"Lo·ra·ta·din",              indication:"Allergie, Nesselsucht",           cat:"Allergie",       diff:1 },
+  { word:"Salbutamol",         ipa:"zalbuˈtaːmɔl",                syl:"Sal·bu·ta·mol",             indication:"Asthma, COPD (Notfall)",          cat:"Atemwege",       diff:1 },
+  { word:"Budesonid",          ipa:"budəzoˈniːt",                 syl:"Bu·de·so·nid",              indication:"Asthma, COPD, Morbus Crohn",      cat:"Atemwege",       diff:1 },
+  { word:"Montelukast",        ipa:"monteˈluːkast",               syl:"Mon·te·lu·kast",            indication:"Asthma, Allergische Rhinitis",   cat:"Atemwege",       diff:2 },
+  { word:"Tiotropium",         ipa:"tioˈtʁoːpiʊm",                syl:"Ti·o·tro·pi·um",            indication:"COPD, Dauertherapie",            cat:"Atemwege",       diff:2 },
+  // Extreme / Bonus
+  { word:"Hydrochlorothiazid", ipa:"ˌhyːdʁokloːʁotiˈaːtsiːt",    syl:"Hy·dro·chlo·ro·thi·a·zid", indication:"Bluthochdruck, Entwässerung",     cat:"Diuretikum",     diff:3 },
+  { word:"Cholecalciferol",    ipa:"ˌkoːlekalˈtsiːfeʁɔl",         syl:"Cho·le·cal·ci·fe·rol",      indication:"Vitamin D, Knochengesundheit",    cat:"Vitamin",        diff:3 },
+  { word:"Esomeprazol",        ipa:"ˌeːzomeˈpʁaːtsɔl",            syl:"E·so·me·pra·zol",           indication:"Magenschutz (stärker)",           cat:"Magen-Darm",     diff:2 },
+  { word:"Desloratadin",       ipa:"dɛsloːʁataˈdiːn",             syl:"Des·lo·ra·ta·din",          indication:"Allergie (neuere Generation)",   cat:"Allergie",       diff:2 },
+  { word:"Levetiracetam",      ipa:"leːvɛtɪˈʁaːtsɛtam",           syl:"Le·ve·ti·ra·ce·tam",        indication:"Epilepsie",                       cat:"Neurologie",     diff:3 },
+  { word:"Rivaroxaban",        ipa:"ʁivaˈʁɔksaban",               syl:"Ri·va·rox·a·ban",           indication:"Antikoagulans, DOAK",            cat:"Antikoagulans",  diff:2 },
+  // Apotheken-Alltag
+  { word:"Rezeptur",           ipa:"ʁeˈtsɛptuːɐ̯",                 syl:"Re·zept·ur",                indication:"Individuelle Herstellung",        cat:"Apotheke",       diff:1 },
+  { word:"Substitution",       ipa:"zʊpstituˈtsi̯oːn",             syl:"Sub·sti·tu·ti·on",          indication:"Austausch von Medikamenten",     cat:"Apotheke",       diff:2 },
+  { word:"Defektur",           ipa:"defɛkˈtuːɐ̯",                  syl:"De·fek·tur",                indication:"Vorratsherstellung",             cat:"Apotheke",       diff:1 },
+  { word:"Suppositorium",      ipa:"zupoziˈtoːʁiʊm",              syl:"Sup·po·si·to·ri·um",        indication:"Rektale Darreichungsform",       cat:"Apotheke",       diff:3 },
+];
+
+// ═══════════════════════════════════════════════
+//  PHARMA RUNNER – GAME ENGINE
+// ═══════════════════════════════════════════════
+const RUNNER_SPEEDS = [4000, 3000, 2000, 1500, 1000]; // ms per word (by combo tier)
+const COMBO_TIERS   = [0, 5, 10, 15, 20];
+const COMBO_MULT    = [1.0, 1.2, 1.5, 2.0, 2.5];
+const MILESTONE_ICONS = ['💊','💉','🫀','🧪','📋','🩹','🧬','⚗️'];
+
+let RG = {
+  active:    false,
+  paused:    false,
+  lives:     3,
+  combo:     0,
+  score:     0,
+  wordQueue: [],
+  curIdx:    0,
+  timer:     null,
+  tempoInt:  null,
+  timeLeft:  4000,
+  totalTime: 4000,
+  recog:     null,
+  listening: false,
+  milestoneTimer: null,
+};
+
+function rnEl(id) { return document.getElementById(id); }
+
+function getComboTier(combo) {
+  for (let i = COMBO_TIERS.length - 1; i >= 0; i--) {
+    if (combo >= COMBO_TIERS[i]) return i;
+  }
+  return 0;
+}
+
+function startRunner() {
+  rnEl('runnerScreen').classList.add('active');
+  // Reset overlay to start state
+  rnEl('rnOverlay').classList.remove('hidden');
+  rnEl('rnOvIcon').textContent = '🏃';
+  rnEl('rnOvTitle').textContent = 'Pharma Runner';
+  rnEl('rnOvSub').textContent = 'Sprich die Wirkstoffnamen aus bevor die Zeit abläuft!\nJe länger die Combo, desto schneller wird es.';
+  rnEl('rnOvScore').style.display = 'none';
+  rnEl('rnOvHs').style.display = 'none';
+  rnEl('rnOvBtn').textContent = '🎮  Starten';
+  rnEl('rnOvBtn').onclick = rnStartGame;
+}
+
+function stopRunner() {
+  rnStopMic();
+  clearTimeout(RG.timer);
+  clearInterval(RG.tempoInt);
+  clearTimeout(RG.milestoneTimer);
+  RG.active = false;
+  rnEl('runnerScreen').classList.remove('active');
+}
+
+function rnStartGame() {
+  rnEl('rnOverlay').classList.add('hidden');
+  // Shuffle words, weight by difficulty (harder words less frequent early)
+  RG.wordQueue = [...RN_WORDS].sort(() => Math.random() - 0.5);
+  RG.curIdx   = 0;
+  RG.lives    = 3;
+  RG.combo    = 0;
+  RG.score    = 0;
+  RG.active   = true;
+  RG.paused   = false;
+  rnRenderLives();
+  rnRenderScore();
+  rnNextWord();
+  rnSpawnMilestones();
+}
+
+function rnNextWord() {
+  if (!RG.active || RG.paused) return;
+  rnStopMic();
+  rnEl('rnHeard').textContent = '';
+  rnEl('rnFeedback').className = 'rn-feedback';
+  rnEl('rnFeedback').textContent = '';
+  rnEl('rnCard').className = 'rn-card';
+
+  if (RG.curIdx >= RG.wordQueue.length) RG.curIdx = 0; // loop
+  const w = RG.wordQueue[RG.curIdx++];
+
+  rnEl('rnCat').textContent  = w.cat;
+  rnEl('rnWord').textContent = w.word;
+  rnEl('rnIpa').textContent  = w.ipa;
+  rnEl('rnSyl').textContent  = w.syl;
+  rnEl('rnIndication').textContent = '💊 ' + w.indication;
+
+  // Dynamic font size
+  const wEl = rnEl('rnWord');
+  wEl.style.fontSize = w.word.length > 18 ? '18px' : w.word.length > 12 ? '24px' : '';
+
+  // Start timer
+  const tier = getComboTier(RG.combo);
+  RG.totalTime = RUNNER_SPEEDS[tier];
+  RG.timeLeft  = RG.totalTime;
+
+  clearInterval(RG.tempoInt);
+  clearTimeout(RG.timer);
+
+  const tickMs = 50;
+  RG.tempoInt = setInterval(() => {
+    RG.timeLeft -= tickMs;
+    const pct = Math.max(0, RG.timeLeft / RG.totalTime * 100);
+    rnEl('rnTempoFill').style.width = pct + '%';
+    // Color shift: green → yellow → red
+    const h = Math.round(pct * 1.2); // 0–120 hue
+    rnEl('rnTempoFill').style.background = `hsl(${h},100%,55%)`;
+  }, tickMs);
+
+  RG.timer = setTimeout(() => {
+    clearInterval(RG.tempoInt);
+    rnWrongAnswer(w, null); // time ran out
+  }, RG.totalTime);
+
+  // Auto-start mic
+  rnStartMic(w);
+}
+
+function rnCorrectAnswer(w) {
+  clearTimeout(RG.timer);
+  clearInterval(RG.tempoInt);
+  rnStopMic();
+
+  RG.combo++;
+  const tier = getComboTier(RG.combo);
+  const mult = COMBO_MULT[tier];
+  const pts  = Math.round(100 * mult);
+  RG.score  += pts;
+
+  rnEl('rnCard').classList.add('correct');
+  rnEl('rnFeedback').className = 'rn-feedback ok';
+  rnEl('rnFeedback').textContent = `✅ +${pts} Punkte`;
+  rnRenderCombo();
+  rnRenderScore();
+
+  // Combo badge at key thresholds
+  const badges = { 5:'🔥 COMBO ×5!', 10:'⚡ ON FIRE! ×10', 15:'💥 INSANE! ×15', 20:'👑 PHARMA-LEGENDE!' };
+  if (badges[RG.combo]) rnShowBadge(badges[RG.combo]);
+
+  // Bonus life every 3 correct
+  if (RG.combo % 3 === 0 && RG.lives < 5) {
+    RG.lives++;
+    rnRenderLives();
+    rnShowBadge('❤️ +1 Leben!');
+  }
+
+  setTimeout(rnNextWord, 700);
+}
+
+function rnWrongAnswer(w, spoken) {
+  rnStopMic();
+  RG.combo = 0;
+  RG.lives--;
+  rnRenderLives();
+  rnRenderCombo();
+
+  rnEl('rnCard').classList.add('wrong');
+  rnEl('rnFeedback').className = 'rn-feedback bad';
+  rnEl('rnFeedback').textContent = spoken
+    ? `❌ Erkannt: "${spoken}"`
+    : '⏰ Zeit abgelaufen!';
+
+  if (RG.lives <= 0) {
+    setTimeout(rnGameOver, 900);
+  } else {
+    setTimeout(rnNextWord, 1100);
+  }
+}
+
+function rnGameOver() {
+  RG.active = false;
+  clearTimeout(RG.timer);
+  clearInterval(RG.tempoInt);
+  clearTimeout(RG.milestoneTimer);
+  rnStopMic();
+
+  const hs = Math.max(RG.score, parseInt(localStorage.getItem('pv_runner_hs') || '0'));
+  localStorage.setItem('pv_runner_hs', hs);
+
+  rnEl('rnOverlay').classList.remove('hidden');
+  rnEl('rnOvIcon').textContent  = RG.score >= 1000 ? '🏆' : '💀';
+  rnEl('rnOvTitle').textContent = RG.score >= 1000 ? 'Ausgezeichnet!' : 'Game Over';
+  rnEl('rnOvSub').textContent   = `Du hast ${RG.curIdx} Wirkstoffe geschafft.`;
+  rnEl('rnOvScore').style.display = 'block';
+  rnEl('rnOvScore').textContent   = RG.score;
+  rnEl('rnOvHs').style.display  = 'block';
+  rnEl('rnOvHs').textContent    = `🏅 Highscore: ${hs}`;
+  rnEl('rnOvBtn').textContent   = '🔄  Nochmal';
+  rnEl('rnOvBtn').onclick       = rnStartGame;
+}
+
+function rnPause() {
+  if (!RG.active) return;
+  if (RG.paused) {
+    RG.paused = false;
+    rnEl('rnOverlay').classList.add('hidden');
+    rnNextWord();
+  } else {
+    RG.paused = true;
+    clearTimeout(RG.timer);
+    clearInterval(RG.tempoInt);
+    rnStopMic();
+    rnEl('rnOverlay').classList.remove('hidden');
+    rnEl('rnOvIcon').textContent  = '⏸';
+    rnEl('rnOvTitle').textContent = 'Pause';
+    rnEl('rnOvSub').textContent   = `Score: ${RG.score} · Combo: ${RG.combo}`;
+    rnEl('rnOvScore').style.display = 'none';
+    rnEl('rnOvHs').style.display  = 'none';
+    rnEl('rnOvBtn').textContent   = '▶️  Weiterspielen';
+    rnEl('rnOvBtn').onclick       = rnPause;
+  }
+}
+
+function rnRenderLives() {
+  const container = rnEl('rnLives');
+  container.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    if (i < Math.max(RG.lives, 0)) {
+      container.innerHTML += '<span class="rn-heart">❤️</span>';
+    } else if (i < 3) {
+      container.innerHTML += '<span class="rn-heart lost">🖤</span>';
+    }
+  }
+}
+
+function rnRenderScore() { rnEl('rnScore').textContent = RG.score; }
+
+function rnRenderCombo() {
+  const comboEl = rnEl('rnCombo');
+  const icons = ['','🔥','⚡','💥','👑'];
+  const tier = getComboTier(RG.combo);
+  comboEl.textContent = `${icons[Math.min(tier,4)]} ×${RG.combo}`;
+  comboEl.classList.remove('bump');
+  void comboEl.offsetWidth;
+  comboEl.classList.add('bump');
+  setTimeout(() => comboEl.classList.remove('bump'), 180);
+}
+
+function rnShowBadge(text) {
+  const b = rnEl('rnBadge');
+  b.textContent = text;
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 1500);
+}
+
+function rnSpawnMilestones() {
+  if (!RG.active) return;
+  const icon = MILESTONE_ICONS[Math.floor(Math.random() * MILESTONE_ICONS.length)];
+  const div  = document.createElement('div');
+  div.className = 'rn-milestone';
+  div.textContent = icon;
+  div.style.left = (15 + Math.random() * 70) + '%';
+  rnEl('runnerScreen').appendChild(div);
+  div.addEventListener('animationend', () => div.remove());
+  RG.milestoneTimer = setTimeout(rnSpawnMilestones, 1200 + Math.random() * 1600);
+}
+
+// ── Runner Speech Recognition ──
+function rnStartMic(word) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    rnEl('rnMicHint').textContent = '⚠️ Spracherkennung nicht verfügbar';
+    return;
+  }
+  if (RG.recog) { try { RG.recog.stop(); } catch(_){} }
+
+  const r = new SR();
+  r.lang = 'de-DE';
+  r.continuous = false;
+  r.interimResults = true;
+  r.maxAlternatives = 1;
+  RG.recog = r;
+
+  r.onstart = () => {
+    RG.listening = true;
+    rnEl('rnMic').classList.add('listening');
+    rnEl('rnMicHint').textContent = '🎤 Höre zu …';
+  };
+
+  r.onresult = (evt) => {
+    let interim = '', final = '';
+    for (let i = evt.resultIndex; i < evt.results.length; i++) {
+      const t = evt.results[i][0].transcript;
+      if (evt.results[i].isFinal) final += t; else interim += t;
+    }
+    const heard = final || interim;
+    rnEl('rnHeard').textContent = heard;
+    if (final && RG.active && !RG.paused) {
+      const target = normalize(word.word);
+      const said   = normalize(final.trim());
+      const maxLen = Math.max(target.length, said.length);
+      const sim    = maxLen === 0 ? 1 : 1 - levenshtein(target, said) / maxLen;
+      if (sim >= 0.8) rnCorrectAnswer(word);
+      else            rnWrongAnswer(word, final.trim());
+    }
+  };
+
+  r.onend = () => {
+    RG.listening = false;
+    rnEl('rnMic').classList.remove('listening');
+    rnEl('rnMicHint').textContent = 'Tippe zum Sprechen';
+    RG.recog = null;
+    // Restart if game still active and no answer yet
+    if (RG.active && !RG.paused) {
+      const curWord = RG.wordQueue[RG.curIdx - 1];
+      if (curWord && rnEl('rnCard').className === 'rn-card') {
+        setTimeout(() => { if (RG.active && !RG.paused) rnStartMic(curWord); }, 300);
+      }
+    }
+  };
+
+  r.onerror = (evt) => {
+    RG.listening = false;
+    rnEl('rnMic').classList.remove('listening');
+    RG.recog = null;
+    if (evt.error !== 'no-speech' && evt.error !== 'aborted') {
+      rnEl('rnMicHint').textContent = '⚠️ ' + evt.error;
+    }
+  };
+
+  try { r.start(); } catch(_) {}
+}
+
+function rnStopMic() {
+  if (RG.recog) { try { RG.recog.stop(); } catch(_){} RG.recog = null; }
+  RG.listening = false;
+  if (rnEl('rnMic')) rnEl('rnMic').classList.remove('listening');
+  if (rnEl('rnMicHint')) rnEl('rnMicHint').textContent = 'Tippe zum Sprechen';
+}
+
+function rnToggleMic() {
+  if (!RG.active || RG.paused) return;
+  if (RG.listening) { rnStopMic(); return; }
+  const curWord = RG.wordQueue[RG.curIdx - 1];
+  if (curWord) rnStartMic(curWord);
+}
+
 // ── BOOT ──
 load();
+refreshTierUI();
 </script>
 </body>
 </html>
