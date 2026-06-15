@@ -22,6 +22,9 @@
       --shadow:  0 2px 8px rgba(44,62,80,.07);
       --shadow2: 0 6px 20px rgba(44,62,80,.13);
       --r:       14px;
+      /* Character theming – overridden dynamically by CharacterSystem */
+      --char-primary: #00A86B;
+      --char-glow:    rgba(0,168,107,0.35);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -370,6 +373,82 @@
     .rn-badge-pop { position:absolute; top:40%; left:50%; transform:translateX(-50%) scale(0); pointer-events:none; z-index:30; background:linear-gradient(135deg,#FF6B35,#FF3366); padding:12px 28px; border-radius:16px; font-size:20px; font-weight:900; color:#fff; white-space:nowrap; opacity:0; }
     @keyframes badgePop { 0%{transform:translateX(-50%) scale(0);opacity:0} 20%{transform:translateX(-50%) scale(1.15);opacity:1} 70%{transform:translateX(-50%) scale(1);opacity:1} 100%{transform:translateX(-50%) scale(1);opacity:0;top:20%;} }
     .rn-badge-pop.show { animation:badgePop 1.4s ease forwards; }
+
+    /* ── CHARACTER SYSTEM ──────────────────────────────── */
+    .char-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:8px 0; }
+    .char-card {
+      border-radius:20px; padding:16px 10px; text-align:center; cursor:pointer;
+      border:3px solid transparent; background:rgba(255,255,255,.07);
+      transition:all .25s; position:relative;
+    }
+    .char-card:hover { transform:translateY(-3px); background:rgba(255,255,255,.12); }
+    .char-card.selected {
+      border-color:var(--char-primary,var(--teal));
+      background:rgba(255,255,255,.14);
+      box-shadow:0 0 18px var(--char-glow,rgba(0,168,107,.3));
+    }
+    .char-img { width:80px; height:80px; object-fit:contain; margin:0 auto 8px; display:block; border-radius:50%; background:rgba(255,255,255,.06); }
+    .char-emoji-fb { font-size:48px; line-height:1; margin:0 auto 8px; display:none; text-align:center; }
+    .char-name { font-size:14px; font-weight:800; color:#fff; margin-bottom:2px; }
+    .char-role { font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.7px; }
+    .char-dot { width:12px; height:12px; border-radius:50%; margin:8px auto 0; }
+
+    /* Floating avatar */
+    #charAvatar {
+      position:fixed; bottom:86px; right:10px; z-index:300;
+      display:flex; flex-direction:column-reverse; align-items:flex-end; gap:6px;
+      pointer-events:none; transition:opacity .3s;
+    }
+    #charAvatar.hidden { opacity:0; pointer-events:none; }
+    #charAvatarImg {
+      width:62px; height:62px; object-fit:contain; border-radius:50%;
+      background:rgba(255,255,255,.08); border:2.5px solid var(--char-primary,var(--teal));
+      box-shadow:0 0 12px var(--char-glow,rgba(0,168,107,.35));
+      animation:charIdle 2.6s ease-in-out infinite;
+    }
+    @keyframes charIdle { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    #charAvatar.react-correct #charAvatarImg { animation:charCorrect .55s ease forwards; }
+    @keyframes charCorrect {
+      0%{transform:scale(1)}25%{transform:scale(1.35) rotate(-6deg)}
+      55%{transform:scale(1.15) rotate(4deg)}100%{transform:scale(1)}
+    }
+    #charAvatar.react-wrong #charAvatarImg { animation:charWrong .5s ease forwards; }
+    @keyframes charWrong {
+      0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}
+      40%{transform:rotate(9deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}
+    }
+    #charAvatar.react-combo #charAvatarImg { animation:charCombo .7s ease forwards; }
+    @keyframes charCombo {
+      0%{transform:scale(1) rotate(0)}20%{transform:scale(1.5) rotate(-8deg)}
+      50%{transform:scale(1.3) rotate(5deg)}80%{transform:scale(1.15) rotate(-2deg)}100%{transform:scale(1)}
+    }
+    #charBubble {
+      background:rgba(18,18,32,.95); border:1.5px solid var(--char-primary,var(--teal));
+      border-radius:14px 14px 4px 14px; padding:7px 11px; font-size:11.5px;
+      color:#fff; max-width:140px; text-align:center; line-height:1.45;
+      box-shadow:0 3px 14px rgba(0,0,0,.45);
+      opacity:0; transform:scale(.82) translateY(4px);
+      transition:all .22s cubic-bezier(.34,1.56,.64,1);
+    }
+    #charBubble.show { opacity:1; transform:scale(1) translateY(0); }
+
+    /* Character button in hero */
+    .char-hero-btn {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18);
+      border-radius:20px; padding:5px 12px 5px 6px; cursor:pointer;
+      font-size:12px; font-weight:600; color:#fff; margin-top:10px;
+      transition:background .2s;
+    }
+    .char-hero-btn:hover { background:rgba(255,255,255,.18); }
+    .char-hero-btn img { width:28px; height:28px; border-radius:50%; object-fit:contain; background:rgba(255,255,255,.1); }
+    .char-hero-btn .char-hero-emoji { font-size:22px; }
+
+    /* Themed accent elements */
+    .prog-fill { background:var(--char-primary,var(--teal)) !important; transition:background .4s; }
+    .opt.good  { background:var(--char-primary,#00A86B) !important; border-color:var(--char-primary,#00A86B) !important; }
+    #micBtn { border-color:var(--char-primary,var(--teal)) !important; }
+    #micBtn.active { box-shadow:0 0 0 8px var(--char-glow,rgba(0,168,107,.25)), 0 0 0 16px var(--char-glow,rgba(0,168,107,.1)) !important; }
   </style>
 </head>
 <body>
@@ -426,6 +505,23 @@
   </div>
 </div>
 
+<!-- ══ CHARACTER MODAL ══ -->
+<div class="upgrade-modal-bg" id="charModalBg" onclick="closeCharModal()">
+  <div class="upgrade-modal" onclick="event.stopPropagation()" style="border-radius:24px 24px 0 0;padding:28px 20px 40px">
+    <div style="text-align:center;margin-bottom:6px;font-size:28px">🐾</div>
+    <h2 style="text-align:center;font-size:20px;font-weight:900;color:var(--text);margin-bottom:6px">Dein Begleiter</h2>
+    <p style="text-align:center;font-size:13px;color:var(--gray);margin-bottom:20px">Wähle einen Charakter – er färbt die ganze App ein!</p>
+    <div class="char-grid" id="charGrid"></div>
+    <button class="upgrade-close" onclick="closeCharModal()" style="margin-top:20px">Schließen</button>
+  </div>
+</div>
+
+<!-- ══ CHARACTER AVATAR (floating) ══ -->
+<div id="charAvatar" class="hidden">
+  <div id="charBubble"></div>
+  <img id="charAvatarImg" src="" alt="" onerror="this.style.display='none'">
+</div>
+
 <!-- ══ DEV PANEL ══ -->
 <div class="dev-panel" id="devPanel">
   <div class="dev-inner">
@@ -478,6 +574,11 @@
       <div class="hero-stat">🔥 <span id="heroStreak">0</span> Streak</div>
       <div class="hero-stat">📚 <span id="heroLearned">0</span> Begriffe</div>
       <div class="hero-stat" id="heroDue" style="display:none">🧠 <span id="heroDueCount">0</span> fällig</div>
+    </div>
+    <div class="char-hero-btn" id="charHeroBtn" onclick="openCharModal()">
+      <img id="charHeroBtnImg" src="" alt="" onerror="this.style.display='none'">
+      <span id="charHeroBtnEmoji" class="char-hero-emoji" style="display:none">🐶</span>
+      <span id="charHeroBtnName">Begleiter wählen</span>
     </div>
   </div>
 
@@ -896,6 +997,168 @@ let micActive        = false;
 let micFeedbackTimer = null;
 
 // ═══════════════════════════════════════════════
+//  CHARACTER SYSTEM
+// ═══════════════════════════════════════════════
+const CharacterSystem = (() => {
+  const CHARS = {
+    beatrice: {
+      id:'beatrice', name:'Beatrice', role:'Apothekerin', emoji:'👩‍⚕️',
+      img:'img/beatrice.png', color:'#2ECC71', glow:'rgba(46,204,113,.38)',
+      msgs:{
+        correct:['Ausgezeichnet! So macht man das!','Perfekt ausgesprochen! ✨','Sehr gut! Weiter so!'],
+        wrong:  ['Fast! Hör genau hin!','Noch einmal versuchen!','Du schaffst das!'],
+        combo:  ['Unglaublich! Fantastische Serie!','Du bist auf einem guten Weg! 🌟'],
+        start:  ['Bereit zum Lernen? Los geht\'s!','Heute lernen wir gemeinsam!'],
+        over:   ['Gut gemacht! Noch einmal üben!','Jedes Mal wird es besser!'],
+      },
+    },
+    victor: {
+      id:'victor', name:'Victor', role:'PKA-Lehrling', emoji:'👨‍🎓',
+      img:'img/victor.png', color:'#FF9800', glow:'rgba(255,152,0,.38)',
+      msgs:{
+        correct:['Ja! Geschafft! Nächster Wirkstoff!','YES! Voll cool! 🤜','Boom! Voll getroffen!'],
+        wrong:  ['Oh nein... Nochmal bitte?','Ugh... ich auch fast!','Nicht aufgeben!'],
+        combo:  ['WAHNSINN! Du bist so gut!!','Krass krass krass!! 🔥'],
+        start:  ['Auf geht\'s! Wir schaffen das!','Heute wird gelernt! 💪'],
+        over:   ['War super! Morgen noch besser!','Ich bin stolz auf dich! 🎉'],
+      },
+    },
+    fin: {
+      id:'fin', name:'Fin', role:'Treuer Begleiter', emoji:'🐕',
+      img:'img/fin.png', color:'#FFC107', glow:'rgba(255,193,7,.38)',
+      msgs:{
+        correct:['Wuff! ★ Perfekt ★','WUFF WUFF! Toll! 🐾','*wedelt* Richtig!'],
+        wrong:  ['Wuff...? Versuch\'s nochmal!','*Kopf schieflegen* Hmm?','Wuff wuff?'],
+        combo:  ['WUFF WUFF WUFF!!! 🐾','*springt und bellt* SUPER!'],
+        start:  ['*wedelt* Ich bin bereit! WUFF!','WUFF! Auf geht\'s! 🐾'],
+        over:   ['*leckt Gesicht* Nochmal? 🐾','Wuff! Du warst super!'],
+      },
+    },
+    ari: {
+      id:'ari', name:'Ari', role:'Süße Begleiterin', emoji:'🐶',
+      img:'img/ari.png', color:'#FF69B4', glow:'rgba(255,105,180,.38)',
+      msgs:{
+        correct:['*wedel wedel* Richtig! ✨','♡ Perfekt ♡','*hüpf* Jawohl! 🌸'],
+        wrong:  ['*trauriger Blick* Fast...','*schnüffel* Nochmal bitte!','♡ Du schaffst das!'],
+        combo:  ['♡♡♡ Du bist der Beste!','*begeistert wedelt* WOW! 🌸'],
+        start:  ['♡ Hallo! Ich begleite dich!','*wedelt* Heute wird gelernt! 🌸'],
+        over:   ['*wedelt* Du warst super! ♡','♡ Morgen weiter! 🌸'],
+      },
+    },
+  };
+
+  let cur = null;
+  let bubTimer = null;
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function applyTheme(ch) {
+    document.documentElement.style.setProperty('--char-primary', ch.color);
+    document.documentElement.style.setProperty('--char-glow', ch.glow);
+    // Sync --teal so existing green elements follow the character color
+    document.documentElement.style.setProperty('--teal', ch.color);
+    document.documentElement.style.setProperty('--green', ch.color);
+  }
+
+  function updateHeroBtn(ch) {
+    const img  = el('charHeroBtnImg');
+    const emo  = el('charHeroBtnEmoji');
+    const name = el('charHeroBtnName');
+    if (!img) return;
+    img.src = ch.img;
+    img.alt = ch.name;
+    img.style.display = '';
+    img.onerror = () => { img.style.display='none'; if(emo){emo.style.display='';emo.textContent=ch.emoji;} };
+    if (name) name.textContent = ch.name;
+  }
+
+  function showBubble(text, dur=2800) {
+    const b = el('charBubble');
+    if (!b || !cur) return;
+    if (bubTimer) clearTimeout(bubTimer);
+    b.textContent = text;
+    b.classList.add('show');
+    bubTimer = setTimeout(() => b.classList.remove('show'), dur);
+  }
+
+  function react(type) {
+    if (!cur) return;
+    const av = el('charAvatar');
+    if (!av) return;
+    av.classList.remove('react-correct','react-wrong','react-combo');
+    void av.offsetWidth;
+    const msgs = cur.msgs[type] || cur.msgs.correct;
+    showBubble(pick(msgs), type === 'combo' ? 3000 : 2400);
+    if (type === 'correct') av.classList.add('react-correct');
+    else if (type === 'wrong') av.classList.add('react-wrong');
+    else if (type === 'combo') av.classList.add('react-combo');
+    setTimeout(() => av.classList.remove('react-correct','react-wrong','react-combo'), 750);
+  }
+
+  function showAvatar() {
+    const av = el('charAvatar');
+    if (av && cur) av.classList.remove('hidden');
+  }
+  function hideAvatar() {
+    const av = el('charAvatar');
+    if (av) av.classList.add('hidden');
+  }
+
+  function select(id) {
+    const ch = CHARS[id];
+    if (!ch) return;
+    cur = ch;
+    localStorage.setItem('pv_char', id);
+    applyTheme(ch);
+    updateHeroBtn(ch);
+    // Update avatar image
+    const img = el('charAvatarImg');
+    if (img) { img.src = ch.img; img.alt = ch.name; }
+    // Mark selected card
+    document.querySelectorAll('.char-card').forEach(c => c.classList.toggle('selected', c.dataset.char === id));
+    showBubble(pick(ch.msgs.start));
+    closeCharModal();
+  }
+
+  function renderGrid() {
+    const grid = el('charGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    Object.values(CHARS).forEach(ch => {
+      const card = document.createElement('div');
+      card.className = 'char-card' + (cur?.id === ch.id ? ' selected' : '');
+      card.dataset.char = ch.id;
+      card.innerHTML = `
+        <img class="char-img" src="${ch.img}" alt="${ch.name}"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="char-emoji-fb">${ch.emoji}</span>
+        <div class="char-name">${ch.name}</div>
+        <div class="char-role">${ch.role}</div>
+        <div class="char-dot" style="background:${ch.color}"></div>`;
+      card.onclick = () => select(ch.id);
+      grid.appendChild(card);
+    });
+  }
+
+  function init() {
+    const saved = localStorage.getItem('pv_char') || 'beatrice';
+    cur = CHARS[saved] || CHARS.beatrice;
+    applyTheme(cur);
+    updateHeroBtn(cur);
+    const img = el('charAvatarImg');
+    if (img) { img.src = cur.img; img.alt = cur.name; }
+  }
+
+  return { init, select, react, showAvatar, hideAvatar, renderGrid, showBubble, getCurrent:() => cur };
+})();
+
+function openCharModal()  {
+  CharacterSystem.renderGrid();
+  el('charModalBg').classList.add('open');
+}
+function closeCharModal() { el('charModalBg').classList.remove('open'); }
+
+// ═══════════════════════════════════════════════
 //  SPACED REPETITION (SM-2)
 // ═══════════════════════════════════════════════
 let SM2 = {};
@@ -1002,6 +1265,7 @@ function load() {
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   if (S.lastPlayed && S.lastPlayed !== today && S.lastPlayed !== yesterday) { S.streak = 0; save(); }
   sm2Load();
+  CharacterSystem.init();
   renderLevelCards();
   refreshUI();
   renderAchievements();
@@ -1079,6 +1343,8 @@ function showScreen(name) {
   el('screen' + name).classList.add('active');
   const map = { Home:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navLearn', Result:'navLearn' };
   if (map[name]) el(map[name]).classList.add('active');
+  if (name === 'Learn') CharacterSystem.showAvatar();
+  else CharacterSystem.hideAvatar();
   refreshUI();
   window.scrollTo(0, 0);
 }
@@ -1136,6 +1402,9 @@ function startLearn(lvId = 1) {
   // SM-2: put overdue/new drugs first, then shuffle the rest
   const sorted = sm2SortMeds(pool);
   Q = { meds: sorted.slice(0, 10), idx: 0, correct: 0, sessionXP: 0, answered: false, lvId };
+  setTimeout(() => CharacterSystem.showBubble(
+    (CharacterSystem.getCurrent()?.msgs.start || ['Los geht\'s!'])[Math.floor(Math.random()*2)]
+  ), 400);
   // Update learn chip
   el('learnChip').textContent = `${lv.icon}  ${lv.name} Level`;
   showScreen('Learn');
@@ -1217,6 +1486,8 @@ function pick(btn, correct, med) {
     showFeedback(false, `❌ &nbsp;Fast! Richtige Antwort: <strong>${correct}</strong><br>${med.tip}`);
   }
   sm2Update(med.name, good);
+  const comboType = good && Q.correct > 0 && Q.correct % 5 === 0 ? 'combo' : good ? 'correct' : 'wrong';
+  CharacterSystem.react(comboType);
   S.learned = Math.min(S.learned + 1, 9999);
   set('progXp', `${Q.sessionXP} Shekel`);
   save();
