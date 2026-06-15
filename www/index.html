@@ -484,11 +484,128 @@
     }
     .lang-btn.active { background:rgba(255,255,255,.25); border-color:var(--char-primary,var(--teal)); }
     .lang-btn:hover  { background:rgba(255,255,255,.18); }
+
+    /* ── Onboarding Screen ── */
+    #screenOnboard {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      min-height:100vh; padding:30px 20px; text-align:center; gap:0;
+    }
+    .onboard-avatar {
+      width:110px; height:110px; border-radius:50%; object-fit:contain;
+      border:3px solid var(--char-primary,var(--teal));
+      box-shadow:0 0 24px var(--char-glow,rgba(0,168,107,.4));
+      animation:walkin .7s cubic-bezier(.34,1.56,.64,1) both, charIdle 2.6s 1s ease-in-out infinite;
+      margin-bottom:16px;
+    }
+    @keyframes walkin {
+      0%  { transform:translateX(-140px) scaleX(-1); opacity:0; }
+      60% { transform:translateX(12px)   scaleX(1);  opacity:1; }
+      100%{ transform:translateX(0)      scaleX(1);  opacity:1; }
+    }
+    .onboard-bubble {
+      background:rgba(18,18,32,.95); border:1.5px solid var(--char-primary,var(--teal));
+      border-radius:14px; padding:12px 18px; font-size:14px; color:#fff;
+      max-width:260px; line-height:1.5; margin-bottom:24px;
+    }
+    .onboard-name-input {
+      background:rgba(255,255,255,.08); border:1.5px solid rgba(255,255,255,.2);
+      border-radius:12px; padding:12px 16px; font-size:16px; color:#fff;
+      width:100%; max-width:260px; text-align:center; outline:none;
+      transition:border-color .2s;
+    }
+    .onboard-name-input:focus { border-color:var(--char-primary,var(--teal)); }
+    .onboard-name-input::placeholder { color:rgba(255,255,255,.35); }
+    .onboard-lang-row { display:flex; gap:10px; margin:18px 0 24px; }
+    .onboard-lang-btn {
+      background:rgba(255,255,255,.08); border:2px solid rgba(255,255,255,.15);
+      border-radius:12px; padding:10px 16px; font-size:20px; cursor:pointer;
+      color:#fff; transition:all .2s; flex:1;
+    }
+    .onboard-lang-btn.active { background:rgba(255,255,255,.2); border-color:var(--char-primary,var(--teal)); transform:scale(1.08); }
+    .onboard-continue-btn {
+      background:var(--char-primary,var(--teal)); border:none; border-radius:14px;
+      padding:14px 32px; font-size:16px; font-weight:700; color:#000;
+      cursor:pointer; width:100%; max-width:260px; transition:opacity .2s;
+    }
+    .onboard-continue-btn:disabled { opacity:.4; cursor:not-allowed; }
+    .onboard-step { display:none; flex-direction:column; align-items:center; width:100%; }
+    .onboard-step.active { display:flex; }
+
+    /* ── Confetti Canvas ── */
+    #confettiCanvas {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      pointer-events:none; z-index:9999;
+    }
+
+    /* ── Enhanced avatar animations ── */
+    @keyframes avatarWave {
+      0%,100%{ transform:rotate(0deg) translateY(0); }
+      20%    { transform:rotate(-12deg) translateY(-4px); }
+      40%    { transform:rotate(10deg)  translateY(-6px); }
+      60%    { transform:rotate(-8deg)  translateY(-4px); }
+      80%    { transform:rotate(6deg)   translateY(-2px); }
+    }
+    @keyframes avatarJump {
+      0%,100%{ transform:translateY(0)   scale(1); }
+      30%    { transform:translateY(-18px) scale(1.1); }
+      60%    { transform:translateY(-8px)  scale(1.05); }
+    }
+    @keyframes avatarNod {
+      0%,100%{ transform:rotate(0deg); }
+      25%    { transform:rotate(-5deg); }
+      75%    { transform:rotate(5deg); }
+    }
+    @keyframes avatarShake {
+      0%,100%{ transform:rotate(0deg) translateX(0); }
+      20%    { transform:rotate(-4deg) translateX(-4px); }
+      40%    { transform:rotate(4deg)  translateX(4px); }
+      60%    { transform:rotate(-3deg) translateX(-3px); }
+      80%    { transform:rotate(2deg)  translateX(2px); }
+    }
+    @keyframes avatarBounce3 {
+      0%,100%{ transform:translateY(0); }
+      15%    { transform:translateY(-14px); }
+      30%    { transform:translateY(0); }
+      45%    { transform:translateY(-10px); }
+      60%    { transform:translateY(0); }
+      75%    { transform:translateY(-7px); }
+    }
+    #charAvatar.anim-wave    #charAvatarImg { animation:avatarWave   .8s ease; }
+    #charAvatar.anim-jump    #charAvatarImg { animation:avatarJump   .6s ease; }
+    #charAvatar.anim-nod     #charAvatarImg { animation:avatarNod    .5s ease; }
+    #charAvatar.anim-shake   #charAvatarImg { animation:avatarShake  .5s ease; }
+    #charAvatar.anim-bounce3 #charAvatarImg { animation:avatarBounce3 .9s ease; }
   </style>
 </head>
 <body>
 
+<canvas id="confettiCanvas"></canvas>
 <div class="xp-pop" id="xpPop">+10 Shekel 🪙</div>
+
+<!-- ══ ONBOARDING SCREEN ══ -->
+<div class="screen" id="screenOnboard">
+  <img class="onboard-avatar" id="onboardAvatar" src="img/beatrice.png" alt="Beatrice">
+  <div class="onboard-bubble" id="onboardBubble">Hallo! Ich bin Beatrice 👩‍⚕️<br>Wie heißt du?</div>
+
+  <!-- Step 1: Name -->
+  <div class="onboard-step active" id="onboardStep1">
+    <input class="onboard-name-input" id="onboardNameInput" type="text"
+           placeholder="Dein Name..." maxlength="20"
+           oninput="onboardCheckName()" onkeydown="if(event.key==='Enter')onboardNextStep()">
+    <br><br>
+    <button class="onboard-continue-btn" id="onboardBtn1" onclick="onboardNextStep()" disabled>Weiter →</button>
+  </div>
+
+  <!-- Step 2: Language -->
+  <div class="onboard-step" id="onboardStep2">
+    <div class="onboard-lang-row">
+      <button class="onboard-lang-btn active" data-lang="de" onclick="onboardLangPick(this)">🇩🇪<br><small>Deutsch</small></button>
+      <button class="onboard-lang-btn" data-lang="en" onclick="onboardLangPick(this)">🇬🇧<br><small>English</small></button>
+      <button class="onboard-lang-btn" data-lang="pt" onclick="onboardLangPick(this)">🇵🇹<br><small>Português</small></button>
+    </div>
+    <button class="onboard-continue-btn" onclick="onboardFinish()">Los geht's! 🚀</button>
+  </div>
+</div>
 
 <!-- ══ LEVEL SELECT MODAL ══ -->
 <div class="modal-bg" id="modalBg" onclick="closeModal(event)">
@@ -1474,6 +1591,8 @@ const CharacterSystem = (() => {
   function notifyLevelUp() {
     if (!cur) return;
     showBubble(randFrom(msgs('levelup')), 3500);
+    if (typeof launchConfetti === 'function') launchConfetti(cur.color);
+    if (typeof avatarAnimate === 'function')  avatarAnimate('anim-bounce3');
     setTimeout(() => playConvo(), 4000);
   }
 
@@ -1656,6 +1775,21 @@ function load() {
   renderLevelCards();
   refreshUI();
   renderAchievements();
+  // Personalized welcome back (after CharacterSystem is ready)
+  if (localStorage.getItem('pv_onboard')) {
+    const name = getPlayerName();
+    const lang = CharacterSystem.getLang();
+    if (name) {
+      const greets = {
+        de: [`Schön dich wieder zu sehen, ${name}! 😊`, `Willkommen zurück, ${name}!`, `Hey ${name}! Bereit für heute?`],
+        en: [`Great to see you again, ${name}! 😊`, `Welcome back, ${name}!`, `Hey ${name}! Ready for today?`],
+        pt: [`Que bom te ver de novo, ${name}! 😊`, `Bem-vindo de volta, ${name}!`, `Ei ${name}! Pronto para hoje?`],
+      };
+      const pool = greets[lang] || greets['de'];
+      setTimeout(() => CharacterSystem.showBubble(pool[Math.floor(Math.random()*pool.length)], 3500), 800);
+      setTimeout(() => avatarAnimate('anim-wave'), 900);
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -1873,7 +2007,10 @@ function pick(btn, correct, med) {
   }
   sm2Update(med.name, good);
   TamaSystem.update(good ? 'correct' : 'wrong');
+  trackAnswer(good);
   const comboType = good && Q.correct > 0 && Q.correct % 5 === 0 ? 'combo' : good ? 'correct' : 'wrong';
+  if (good) avatarAnimate(comboType === 'combo' ? 'anim-bounce3' : 'anim-nod');
+  else      avatarAnimate('anim-shake');
   CharacterSystem.react(comboType);
   S.learned = Math.min(S.learned + 1, 9999);
   set('progXp', `${Q.sessionXP} Shekel`);
@@ -2657,9 +2794,145 @@ function rnToggleMic() {
   if (curWord) rnStartMic(curWord);
 }
 
+// ══ ONBOARDING ══
+const ONBOARD_GREET = {
+  de: { beatrice:'Hallo! Ich bin Beatrice 👩‍⚕️\nWie heißt du?', victor:'Hey! Ich bin Victor 👨‍🎓\nUnd du?', fin:'Wuff! Ich bin Fin 🐕\nWie heißt du?', ari:'Hi... ich bin Ari 🐶\nWie heißt du?' },
+  en: { beatrice:'Hello! I\'m Beatrice 👩‍⚕️\nWhat\'s your name?', victor:'Hey! I\'m Victor 👨‍🎓\nAnd you?', fin:'Woof! I\'m Fin 🐕\nWhat\'s your name?', ari:'Hi... I\'m Ari 🐶\nWhat\'s your name?' },
+  pt: { beatrice:'Olá! Sou a Beatrice 👩‍⚕️\nComo você se chama?', victor:'Ei! Sou o Victor 👨‍🎓\nE você?', fin:'Au! Sou o Fin 🐕\nComo você se chama?', ari:'Oi... sou a Ari 🐶\nComo você se chama?' },
+};
+const ONBOARD_STEP2 = {
+  de: (n) => `Schön dich kennenzulernen, ${n}! 😊\nWelche Sprache bevorzugst du?`,
+  en: (n) => `Nice to meet you, ${n}! 😊\nWhich language do you prefer?`,
+  pt: (n) => `Prazer em te conhecer, ${n}! 😊\nQual idioma você prefere?`,
+};
+let _onboardLang = 'de';
+
+function onboardCheckName() {
+  const v = document.getElementById('onboardNameInput').value.trim();
+  document.getElementById('onboardBtn1').disabled = v.length < 1;
+}
+
+function onboardLangPick(btn) {
+  document.querySelectorAll('.onboard-lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  _onboardLang = btn.dataset.lang;
+}
+
+function onboardNextStep() {
+  const name = document.getElementById('onboardNameInput').value.trim();
+  if (!name) return;
+  localStorage.setItem('pv_name', name);
+  // Switch to step 2
+  document.getElementById('onboardStep1').classList.remove('active');
+  document.getElementById('onboardStep2').classList.add('active');
+  const lang = localStorage.getItem('pv_lang') || 'de';
+  document.getElementById('onboardBubble').textContent = ONBOARD_STEP2[lang] ? ONBOARD_STEP2[lang](name) : ONBOARD_STEP2['de'](name);
+  // Wave animation
+  avatarAnimate('anim-wave');
+}
+
+function onboardFinish() {
+  localStorage.setItem('pv_onboard', '1');
+  CharacterSystem.setLang(_onboardLang);
+  document.getElementById('screenOnboard').classList.remove('active');
+  document.getElementById('screenHome').classList.add('active');
+  load();
+  refreshTierUI();
+  const name = localStorage.getItem('pv_name') || '';
+  const greetMsgs = { de:`Willkommen, ${name}! Schön dich zu sehen 😊`, en:`Welcome, ${name}! Great to see you 😊`, pt:`Bem-vindo, ${name}! Que bom te ver 😊` };
+  setTimeout(() => CharacterSystem.showBubble(greetMsgs[_onboardLang] || greetMsgs['de'], 3500), 600);
+  avatarAnimate('anim-jump');
+}
+
+// ══ CONFETTI ══
+function launchConfetti(color = '#2ECC71') {
+  const canvas = document.getElementById('confettiCanvas');
+  if (!canvas) return;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const pieces = Array.from({length:80}, () => ({
+    x: Math.random() * canvas.width,
+    y: -10 - Math.random() * 60,
+    vx: (Math.random() - .5) * 3,
+    vy: 2 + Math.random() * 4,
+    size: 5 + Math.random() * 7,
+    color: [color, '#fff', '#FFD700', '#FF69B4', '#00E5FF'][Math.floor(Math.random()*5)],
+    rot: Math.random() * 360,
+    spin: (Math.random()-.5) * 8,
+  }));
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.spin; p.vy += .05;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*.6);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 120) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  draw();
+}
+
+// ══ AVATAR ANIMATIONS ══
+function avatarAnimate(cls) {
+  const av = document.getElementById('charAvatar');
+  if (!av) return;
+  ['anim-wave','anim-jump','anim-nod','anim-shake','anim-bounce3'].forEach(c => av.classList.remove(c));
+  void av.offsetWidth;
+  av.classList.add(cls);
+  setTimeout(() => av.classList.remove(cls), 1000);
+}
+
+// ══ WRONG STREAK TRACKER ══
+let _wrongStreak = 0;
+function trackAnswer(good) {
+  if (good) { _wrongStreak = 0; }
+  else {
+    _wrongStreak++;
+    if (_wrongStreak >= 3) {
+      _wrongStreak = 0;
+      const motivate = { de:['Du schaffst das! Versuch es nochmal! 💪','Kopf hoch! Gleich klappt\'s!','Nicht aufgeben – jeder Fehler macht dich stärker!'], en:['You can do it! Try again! 💪','Chin up! You\'ll get it!','Don\'t give up – every mistake makes you stronger!'], pt:['Você consegue! Tenta de novo! 💪','Cabeça erguida! Vai conseguir!','Não desiste – cada erro te deixa mais forte!'] };
+      const lang = CharacterSystem.getLang();
+      const msgs = motivate[lang] || motivate['de'];
+      CharacterSystem.showBubble(msgs[Math.floor(Math.random()*msgs.length)], 3500);
+      avatarAnimate('anim-wave');
+    }
+  }
+}
+
+// ══ NAME PERSONALIZATION ══
+function getPlayerName() { return localStorage.getItem('pv_name') || ''; }
+
+// Patch CharacterSystem.showBubble to replace [Name]
+const _origShowBubble = CharacterSystem.showBubble.bind(CharacterSystem);
+CharacterSystem.showBubble = function(text, dur) {
+  const name = getPlayerName();
+  if (name) text = text.replace(/\[Name\]/g, name);
+  _origShowBubble(text, dur);
+};
+
 // ── BOOT ──
-load();
-refreshTierUI();
+if (localStorage.getItem('pv_onboard')) {
+  // Returning user — skip onboarding
+  document.getElementById('screenOnboard').classList.remove('active');
+  document.getElementById('screenHome').classList.add('active');
+  load();
+  refreshTierUI();
+} else {
+  // First time — show onboarding
+  // Pre-select default character visually
+  const savedChar = localStorage.getItem('pv_char') || 'beatrice';
+  const charImgs = { beatrice:'img/beatrice.png', victor:'img/victor.png', fin:'img/fin.png', ari:'img/ari.png' };
+  const ob = document.getElementById('onboardAvatar');
+  if (ob) ob.src = charImgs[savedChar] || charImgs.beatrice;
+}
 </script>
 </body>
 </html>
