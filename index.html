@@ -256,6 +256,120 @@
     .tier-select { display:flex; gap:8px; margin-bottom:8px; }
     .tier-btn { flex:1; padding:10px; border-radius:10px; border:2px solid var(--border); background:var(--bg2); font-size:13px; font-weight:700; cursor:pointer; transition:.2s; font-family:inherit; color:var(--text); }
     .tier-btn.active { border-color:var(--green); color:var(--green); background:rgba(0,168,107,.08); }
+
+    /* ═══ PHARMA RUNNER ═══ */
+    .runner-screen {
+      display:none; position:fixed; inset:0; z-index:600;
+      background:linear-gradient(180deg,#0A0F1A 0%,#1A1A2E 60%,#16213E 100%);
+      font-family:'Inter',system-ui,sans-serif; overflow:hidden;
+    }
+    .runner-screen.active { display:flex; flex-direction:column; }
+
+    /* Road / track */
+    .rn-road { position:absolute; bottom:0; left:0; right:0; height:55%; overflow:hidden; }
+    .rn-road::before {
+      content:''; position:absolute; inset:0;
+      background:repeating-linear-gradient(180deg,
+        transparent 0px, transparent 48px,
+        rgba(15,52,96,.8) 48px, rgba(15,52,96,.8) 56px);
+      animation:roadScroll 0.5s linear infinite;
+    }
+    @keyframes roadScroll { from{background-position:0 0;} to{background-position:0 56px;} }
+    .rn-lane-l,.rn-lane-r {
+      position:absolute; top:0; bottom:0; width:3px;
+      background:linear-gradient(180deg,transparent,#0F3460,#00D4FF,#0F3460,transparent);
+      animation:lanePulse 2s ease-in-out infinite;
+    }
+    .rn-lane-l { left:22%; }
+    .rn-lane-r { right:22%; animation-delay:.3s; }
+    @keyframes lanePulse { 0%,100%{opacity:.5;} 50%{opacity:1;} }
+
+    /* Milestones */
+    .rn-milestone {
+      position:absolute; font-size:28px; animation:milestoneFall 2s linear forwards;
+      filter:drop-shadow(0 0 8px rgba(0,212,255,.6));
+    }
+    @keyframes milestoneFall { from{top:-40px;opacity:1;} to{top:100%;opacity:.3;} }
+
+    /* Header bar */
+    .rn-header { position:relative; z-index:10; padding:14px 20px 0; display:flex; justify-content:space-between; align-items:flex-start; }
+    .rn-score-wrap { display:flex; flex-direction:column; gap:2px; }
+    .rn-score-lbl { font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.8px; }
+    .rn-score-val { font-size:26px; font-weight:900; color:#fff; line-height:1; }
+    .rn-combo-wrap { text-align:center; }
+    .rn-combo { font-size:22px; font-weight:900; color:#FF6B35; line-height:1; transition:transform .15s; }
+    .rn-combo.bump { transform:scale(1.4); }
+    .rn-combo-lbl { font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.8px; }
+    .rn-lives { display:flex; gap:5px; }
+    .rn-heart { font-size:20px; transition:transform .2s; }
+    .rn-heart.lost { opacity:.2; transform:scale(.8); }
+
+    /* Tempo bar */
+    .rn-tempo-bar { position:relative; z-index:10; margin:10px 20px 0; height:4px; background:rgba(255,255,255,.1); border-radius:2px; overflow:hidden; }
+    .rn-tempo-fill { height:100%; background:linear-gradient(90deg,#00FF88,#00D4FF); border-radius:2px; transition:width .1s linear; }
+
+    /* Word card */
+    .rn-card-wrap { position:relative; z-index:10; padding:12px 16px; flex:1; display:flex; flex-direction:column; justify-content:center; }
+    .rn-card {
+      background:rgba(30,41,59,.82); backdrop-filter:blur(12px);
+      border:1px solid rgba(0,212,255,.2); border-radius:24px;
+      padding:22px 20px 18px; text-align:center;
+      box-shadow:0 8px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(0,212,255,.08);
+      transition:box-shadow .2s, border-color .2s;
+    }
+    .rn-card.correct { border-color:#00FF88; box-shadow:0 0 0 3px rgba(0,255,136,.2), 0 8px 32px rgba(0,0,0,.4); animation:cardGlow .5s ease; }
+    .rn-card.wrong   { border-color:#FF3366; box-shadow:0 0 0 3px rgba(255,51,102,.2), 0 8px 32px rgba(0,0,0,.4); animation:cardShake .4s ease; }
+    @keyframes cardGlow  { 0%,100%{} 50%{box-shadow:0 0 0 8px rgba(0,255,136,.3);} }
+    @keyframes cardShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
+
+    .rn-cat-pill { display:inline-block; background:rgba(0,212,255,.12); border:1px solid rgba(0,212,255,.25); color:#00D4FF; font-size:10px; font-weight:700; padding:3px 10px; border-radius:10px; letter-spacing:.6px; text-transform:uppercase; margin-bottom:12px; }
+    .rn-word { font-size:clamp(22px,7vw,34px); font-weight:900; color:#fff; line-height:1.15; margin-bottom:8px; }
+    .rn-ipa  { font-size:12px; color:rgba(255,255,255,.45); font-family:monospace; margin-bottom:6px; }
+    .rn-syl  { font-size:13px; color:rgba(255,255,255,.65); letter-spacing:1px; margin-bottom:10px; }
+    .rn-indication { font-size:11px; color:rgba(255,255,255,.4); font-style:italic; }
+
+    /* Feedback line under card */
+    .rn-feedback { text-align:center; font-size:13px; font-weight:700; min-height:22px; margin-top:8px; transition:color .2s; color:rgba(255,255,255,.4); }
+    .rn-feedback.ok  { color:#00FF88; }
+    .rn-feedback.bad { color:#FF3366; }
+
+    /* Mic area */
+    .rn-mic-area { position:relative; z-index:10; display:flex; flex-direction:column; align-items:center; gap:8px; padding:8px 20px 14px; }
+    .rn-mic {
+      width:72px; height:72px; border-radius:50%;
+      background:rgba(30,41,59,.9); border:2px solid rgba(0,212,255,.3);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:.2s;
+      box-shadow:0 4px 20px rgba(0,0,0,.4);
+    }
+    .rn-mic svg { width:32px; height:32px; fill:rgba(255,255,255,.6); }
+    .rn-mic.listening { border-color:#00FF88; animation:rnMicPulse 1s ease-in-out infinite; }
+    .rn-mic.listening svg { fill:#00FF88; }
+    @keyframes rnMicPulse { 0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,.4);} 50%{box-shadow:0 0 0 14px rgba(0,255,136,0);} }
+    .rn-mic-hint { font-size:11px; color:rgba(255,255,255,.4); }
+    .rn-heard { font-size:13px; color:rgba(255,255,255,.6); font-style:italic; min-height:18px; }
+
+    /* Bottom controls */
+    .rn-controls { position:relative; z-index:10; display:flex; gap:10px; padding:0 16px 20px; }
+    .rn-ctrl-btn { flex:1; padding:12px; border:1.5px solid rgba(255,255,255,.15); border-radius:12px; background:rgba(30,41,59,.7); color:rgba(255,255,255,.7); font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:.2s; }
+    .rn-ctrl-btn:hover { border-color:rgba(255,255,255,.35); }
+
+    /* Overlay: start / gameover */
+    .rn-overlay { position:absolute; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(10,15,26,.88); backdrop-filter:blur(8px); padding:32px 24px; text-align:center; }
+    .rn-overlay.hidden { display:none; }
+    .rn-ov-icon  { font-size:56px; margin-bottom:16px; }
+    .rn-ov-title { font-size:26px; font-weight:900; color:#fff; margin-bottom:8px; }
+    .rn-ov-sub   { font-size:14px; color:rgba(255,255,255,.55); margin-bottom:28px; line-height:1.6; }
+    .rn-ov-score { font-size:48px; font-weight:900; color:#00FF88; line-height:1; margin-bottom:6px; }
+    .rn-ov-hs    { font-size:13px; color:rgba(255,255,255,.4); margin-bottom:28px; }
+    .rn-ov-btn   { width:100%; max-width:300px; padding:16px; border:none; border-radius:16px; background:linear-gradient(135deg,#00FF88,#00D4FF); color:#0A0F1A; font-size:17px; font-weight:900; cursor:pointer; font-family:inherit; transition:.2s; margin-bottom:10px; }
+    .rn-ov-btn:hover { transform:scale(1.03); }
+    .rn-ov-btn.ghost { background:transparent; border:1.5px solid rgba(255,255,255,.2); color:rgba(255,255,255,.7); }
+
+    /* Combo badge pop */
+    .rn-badge-pop { position:absolute; top:40%; left:50%; transform:translateX(-50%) scale(0); pointer-events:none; z-index:30; background:linear-gradient(135deg,#FF6B35,#FF3366); padding:12px 28px; border-radius:16px; font-size:20px; font-weight:900; color:#fff; white-space:nowrap; opacity:0; }
+    @keyframes badgePop { 0%{transform:translateX(-50%) scale(0);opacity:0} 20%{transform:translateX(-50%) scale(1.15);opacity:1} 70%{transform:translateX(-50%) scale(1);opacity:1} 100%{transform:translateX(-50%) scale(1);opacity:0;top:20%;} }
+    .rn-badge-pop.show { animation:badgePop 1.4s ease forwards; }
   </style>
 </head>
 <body>
@@ -371,6 +485,7 @@
   <div class="section-title">Lernebenen</div>
   <div class="level-cards" id="levelCardsHome"></div>
   <button class="btn-start" onclick="openModal()">🎯 &nbsp;Jetzt lernen starten</button>
+  <button class="btn-start" onclick="startRunner()" style="margin-top:12px;background:linear-gradient(135deg,#1A1A2E,#0F3460);box-shadow:0 4px 14px rgba(0,212,255,.25);">🏃 &nbsp;Pharma Runner starten</button>
 </div>
 
 <!-- ══ LEARN ══ -->
@@ -473,6 +588,80 @@
     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Profil</span>
   </div>
 </nav>
+
+<!-- ══ PHARMA RUNNER ══ -->
+<div class="runner-screen" id="runnerScreen">
+
+  <!-- Animated road -->
+  <div class="rn-road">
+    <div class="rn-lane-l"></div>
+    <div class="rn-lane-r"></div>
+  </div>
+
+  <!-- Header: score / combo / lives -->
+  <div class="rn-header">
+    <div class="rn-score-wrap">
+      <div class="rn-score-lbl">Score</div>
+      <div class="rn-score-val" id="rnScore">0</div>
+    </div>
+    <div class="rn-combo-wrap">
+      <div class="rn-combo" id="rnCombo">🔥 ×0</div>
+      <div class="rn-combo-lbl">Combo</div>
+    </div>
+    <div class="rn-lives" id="rnLives">
+      <span class="rn-heart">❤️</span>
+      <span class="rn-heart">❤️</span>
+      <span class="rn-heart">❤️</span>
+    </div>
+  </div>
+
+  <!-- Timer bar -->
+  <div class="rn-tempo-bar"><div class="rn-tempo-fill" id="rnTempoFill" style="width:100%"></div></div>
+
+  <!-- Word card -->
+  <div class="rn-card-wrap">
+    <div class="rn-card" id="rnCard">
+      <div class="rn-cat-pill" id="rnCat">Kategorie</div>
+      <div class="rn-word" id="rnWord">Wirkstoff</div>
+      <div class="rn-ipa"  id="rnIpa">/phonetik/</div>
+      <div class="rn-syl"  id="rnSyl">Sil·ben</div>
+      <div class="rn-indication" id="rnIndication">💊 Indikation</div>
+    </div>
+    <div class="rn-feedback" id="rnFeedback"></div>
+  </div>
+
+  <!-- Mic -->
+  <div class="rn-mic-area">
+    <div class="rn-mic" id="rnMic" onclick="rnToggleMic()">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08C16.39 17.43 19 14.53 19 11h-2z"/>
+      </svg>
+    </div>
+    <div class="rn-mic-hint" id="rnMicHint">Tippe zum Sprechen</div>
+    <div class="rn-heard" id="rnHeard"></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="rn-controls">
+    <button class="rn-ctrl-btn" onclick="rnPause()">⏸ Pause</button>
+    <button class="rn-ctrl-btn" onclick="stopRunner()">🏠 Beenden</button>
+  </div>
+
+  <!-- Overlay: Start / GameOver / Pause -->
+  <div class="rn-overlay" id="rnOverlay">
+    <div class="rn-ov-icon" id="rnOvIcon">🏃</div>
+    <div class="rn-ov-title" id="rnOvTitle">Pharma Runner</div>
+    <div class="rn-ov-sub" id="rnOvSub">Sprich die Wirkstoffnamen aus bevor die Zeit abläuft!<br>Je länger die Combo, desto schneller wird es.</div>
+    <div class="rn-ov-score" id="rnOvScore" style="display:none">0</div>
+    <div class="rn-ov-hs" id="rnOvHs" style="display:none"></div>
+    <button class="rn-ov-btn" id="rnOvBtn" onclick="rnStartGame()">🎮 &nbsp;Starten</button>
+    <button class="rn-ov-btn ghost" onclick="stopRunner()">← Zurück</button>
+  </div>
+
+  <!-- Combo badge popup -->
+  <div class="rn-badge-pop" id="rnBadge"></div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -1306,6 +1495,409 @@ function devResetState() {
   logo.addEventListener('pointerup',   () => clearTimeout(pressTimer));
   logo.addEventListener('pointerleave',() => clearTimeout(pressTimer));
 })();
+
+// ═══════════════════════════════════════════════
+//  PHARMA RUNNER – WORD DATABASE
+// ═══════════════════════════════════════════════
+const RN_WORDS = [
+  // Schmerzmittel
+  { word:"Acetylsalicylsäure", ipa:"aˌtseːtylzaliˈtsyːlˌzɔɪ̯ʁə", syl:"A·ce·tyl·sa·li·cyl·säu·re", indication:"Schmerzmittel, blutverdünnend",   cat:"Schmerzmittel",  diff:3 },
+  { word:"Ibuprofen",          ipa:"ibuˈproːfɛn",                  syl:"I·bu·pro·fen",              indication:"Schmerzmittel, Entzündungshemmer", cat:"Schmerzmittel",  diff:1 },
+  { word:"Paracetamol",        ipa:"paʁaˈtseːtamɔl",              syl:"Pa·ra·ce·ta·mol",           indication:"Fiebersenker, Schmerzmittel",      cat:"Schmerzmittel",  diff:1 },
+  { word:"Naproxen",           ipa:"naˈprɔksɛn",                  syl:"Na·pro·xen",                indication:"Rheuma, Gelenkschmerzen",          cat:"Schmerzmittel",  diff:1 },
+  { word:"Diclofenac",         ipa:"diˈkloːfenak",                syl:"Di·clo·fe·nac",             indication:"Entzündungshemmer, Schmerzgel",   cat:"Schmerzmittel",  diff:1 },
+  { word:"Metamizol",          ipa:"mɛtaˈmiːzɔl",                 syl:"Me·ta·mi·zol",              indication:"Starke Schmerzen, hohes Fieber",  cat:"Schmerzmittel",  diff:2 },
+  { word:"Tramadol",           ipa:"ˈtʁaːmadɔl",                  syl:"TRA·ma·dol",                indication:"Mittelstarke bis starke Schmerzen", cat:"Schmerzmittel", diff:1 },
+  // Herz-Kreislauf
+  { word:"Ramipril",           ipa:"ˈʁaːmipʁɪl",                  syl:"Ra·mi·pril",                indication:"Bluthochdruck, Herzinsuffizienz", cat:"Herz-Kreislauf", diff:1 },
+  { word:"Metoprolol",         ipa:"metoˈpʁoːlɔl",                syl:"Me·to·pro·lol",             indication:"Bluthochdruck, Herzrhythmus",     cat:"Herz-Kreislauf", diff:2 },
+  { word:"Amlodipin",          ipa:"amloˈdiːpɪn",                 syl:"Am·lo·di·pin",              indication:"Bluthochdruck, Koronare Herzkrankheit", cat:"Herz-Kreislauf", diff:1 },
+  { word:"Bisoprolol",         ipa:"bizoˈpʁoːlɔl",                syl:"Bi·so·pro·lol",             indication:"Bluthochdruck, Herzinsuffizienz", cat:"Herz-Kreislauf", diff:2 },
+  { word:"Valsartan",          ipa:"valˈzaʁtan",                  syl:"Val·sar·tan",               indication:"Bluthochdruck, Herzinfarkt-Prophylaxe", cat:"Herz-Kreislauf", diff:1 },
+  { word:"Rivaroxaban",        ipa:"ʁivaˈʁɔksaban",               syl:"Ri·va·rox·a·ban",           indication:"Blutverdünner, Thromboseschutz",  cat:"Herz-Kreislauf", diff:2 },
+  { word:"Spironolacton",      ipa:"ʃpiʁonoˈlakton",              syl:"Spi·ro·no·lac·ton",         indication:"Entwässerung, Herzinsuffizienz",  cat:"Herz-Kreislauf", diff:2 },
+  { word:"Clopidogrel",        ipa:"kloˈpiːdoɡʁɛl",               syl:"Clo·pi·do·grel",            indication:"Blutplättchenhemmer, Herzinfarkt", cat:"Herz-Kreislauf", diff:2 },
+  // Schilddrüse & Diabetes
+  { word:"Levothyroxin",       ipa:"leːvotyˈʁɔksiːn",             syl:"Le·vo·thy·ro·xin",          indication:"Schilddrüsenunterfunktion",        cat:"Schilddrüse",    diff:2 },
+  { word:"Metformin",          ipa:"mɛtˈfɔʁmɪn",                  syl:"Met·for·min",               indication:"Diabetes Typ 2",                  cat:"Diabetes",       diff:1 },
+  { word:"Liraglutid",         ipa:"liʁaˈɡluːtiːd",               syl:"Li·ra·glu·tid",             indication:"Diabetes, Adipositas",            cat:"Diabetes",       diff:2 },
+  { word:"Empagliflozin",      ipa:"ɛmpaɡliˈfloːtsiːn",           syl:"Em·pa·gli·flo·zin",         indication:"Diabetes Typ 2, Herzschutz",      cat:"Diabetes",       diff:3 },
+  { word:"Semaglutid",         ipa:"seːmaˈɡluːtiːd",              syl:"Se·ma·glu·tid",             indication:"Diabetes, Gewichtsreduktion",     cat:"Diabetes",       diff:2 },
+  { word:"Sitagliptin",        ipa:"sɪtaˈɡlɪptɪn",                syl:"Si·ta·glip·tin",            indication:"Diabetes Typ 2, Blutzucker",      cat:"Diabetes",       diff:2 },
+  // Antibiotika
+  { word:"Amoxicillin",        ipa:"amɔksiˈtsɪliːn",              syl:"A·mo·xi·cil·lin",           indication:"Bakterielle Infektionen",          cat:"Antibiotikum",   diff:2 },
+  { word:"Azithromycin",       ipa:"aːtsitʁoˈmyːtsiːn",           syl:"A·zi·thro·my·cin",          indication:"Atemwegsinfekte",                 cat:"Antibiotikum",   diff:3 },
+  { word:"Ciprofloxacin",      ipa:"tsiːpʁoflɔˈksaːziːn",         syl:"Ci·pro·flo·xa·cin",         indication:"Harnwegsinfekte, Magen-Darm",     cat:"Antibiotikum",   diff:3 },
+  { word:"Clarithromycin",     ipa:"klaːʁitʁoˈmyːtsiːn",          syl:"Cla·ri·thro·my·cin",        indication:"Magen-Darm-Infektionen",          cat:"Antibiotikum",   diff:3 },
+  { word:"Doxycyclin",         ipa:"dɔksitsyˈkliːn",              syl:"Do·xy·cyc·lin",             indication:"Borreliose, Akne, Chlamydien",    cat:"Antibiotikum",   diff:2 },
+  { word:"Levofloxacin",       ipa:"leːvoflɔˈksaːtsiːn",          syl:"Le·vo·flo·xa·cin",          indication:"Pneumonie, Harnwegsinfekte",      cat:"Antibiotikum",   diff:3 },
+  // Magen-Darm
+  { word:"Pantoprazol",        ipa:"pantopʁaˈtsoːl",              syl:"Pan·to·pra·zol",            indication:"Sodbrennen, Magenschutz",         cat:"Magen-Darm",     diff:1 },
+  { word:"Omeprazol",          ipa:"omeˈpʁaːtsɔl",                syl:"O·me·pra·zol",              indication:"Magensäureblocker",               cat:"Magen-Darm",     diff:1 },
+  { word:"Mesalazin",          ipa:"meːzalaˈtsiːn",               syl:"Me·sa·la·zin",              indication:"Morbus Crohn, Colitis ulcerosa",  cat:"Magen-Darm",     diff:2 },
+  { word:"Loperamid",          ipa:"lopeʁaˈmiːt",                 syl:"Lo·pe·ra·mid",              indication:"Durchfall",                       cat:"Magen-Darm",     diff:1 },
+  { word:"Domperidon",         ipa:"dompeʁiˈdoːn",                syl:"Dom·pe·ri·don",             indication:"Übelkeit, Magenentleerung",       cat:"Magen-Darm",     diff:2 },
+  // Lunge & Allergie
+  { word:"Cetirizin",          ipa:"tseːtiˈʁiːtsɪn",              syl:"Ce·ti·ri·zin",              indication:"Allergie, Heuschnupfen",          cat:"Allergie",       diff:1 },
+  { word:"Loratadin",          ipa:"loːʁataˈdiːn",                syl:"Lo·ra·ta·din",              indication:"Allergie, Nesselsucht",           cat:"Allergie",       diff:1 },
+  { word:"Salbutamol",         ipa:"zalbuˈtaːmɔl",                syl:"Sal·bu·ta·mol",             indication:"Asthma, COPD (Notfall)",          cat:"Atemwege",       diff:1 },
+  { word:"Budesonid",          ipa:"budəzoˈniːt",                 syl:"Bu·de·so·nid",              indication:"Asthma, COPD, Morbus Crohn",      cat:"Atemwege",       diff:1 },
+  { word:"Montelukast",        ipa:"monteˈluːkast",               syl:"Mon·te·lu·kast",            indication:"Asthma, Allergische Rhinitis",   cat:"Atemwege",       diff:2 },
+  { word:"Tiotropium",         ipa:"tioˈtʁoːpiʊm",                syl:"Ti·o·tro·pi·um",            indication:"COPD, Dauertherapie",            cat:"Atemwege",       diff:2 },
+  // Extreme / Bonus
+  { word:"Hydrochlorothiazid", ipa:"ˌhyːdʁokloːʁotiˈaːtsiːt",    syl:"Hy·dro·chlo·ro·thi·a·zid", indication:"Bluthochdruck, Entwässerung",     cat:"Diuretikum",     diff:3 },
+  { word:"Cholecalciferol",    ipa:"ˌkoːlekalˈtsiːfeʁɔl",         syl:"Cho·le·cal·ci·fe·rol",      indication:"Vitamin D, Knochengesundheit",    cat:"Vitamin",        diff:3 },
+  { word:"Esomeprazol",        ipa:"ˌeːzomeˈpʁaːtsɔl",            syl:"E·so·me·pra·zol",           indication:"Magenschutz (stärker)",           cat:"Magen-Darm",     diff:2 },
+  { word:"Desloratadin",       ipa:"dɛsloːʁataˈdiːn",             syl:"Des·lo·ra·ta·din",          indication:"Allergie (neuere Generation)",   cat:"Allergie",       diff:2 },
+  { word:"Levetiracetam",      ipa:"leːvɛtɪˈʁaːtsɛtam",           syl:"Le·ve·ti·ra·ce·tam",        indication:"Epilepsie",                       cat:"Neurologie",     diff:3 },
+  { word:"Rivaroxaban",        ipa:"ʁivaˈʁɔksaban",               syl:"Ri·va·rox·a·ban",           indication:"Antikoagulans, DOAK",            cat:"Antikoagulans",  diff:2 },
+  // Apotheken-Alltag
+  { word:"Rezeptur",           ipa:"ʁeˈtsɛptuːɐ̯",                 syl:"Re·zept·ur",                indication:"Individuelle Herstellung",        cat:"Apotheke",       diff:1 },
+  { word:"Substitution",       ipa:"zʊpstituˈtsi̯oːn",             syl:"Sub·sti·tu·ti·on",          indication:"Austausch von Medikamenten",     cat:"Apotheke",       diff:2 },
+  { word:"Defektur",           ipa:"defɛkˈtuːɐ̯",                  syl:"De·fek·tur",                indication:"Vorratsherstellung",             cat:"Apotheke",       diff:1 },
+  { word:"Suppositorium",      ipa:"zupoziˈtoːʁiʊm",              syl:"Sup·po·si·to·ri·um",        indication:"Rektale Darreichungsform",       cat:"Apotheke",       diff:3 },
+];
+
+// ═══════════════════════════════════════════════
+//  PHARMA RUNNER – GAME ENGINE
+// ═══════════════════════════════════════════════
+const RUNNER_SPEEDS = [4000, 3000, 2000, 1500, 1000]; // ms per word (by combo tier)
+const COMBO_TIERS   = [0, 5, 10, 15, 20];
+const COMBO_MULT    = [1.0, 1.2, 1.5, 2.0, 2.5];
+const MILESTONE_ICONS = ['💊','💉','🫀','🧪','📋','🩹','🧬','⚗️'];
+
+let RG = {
+  active:    false,
+  paused:    false,
+  lives:     3,
+  combo:     0,
+  score:     0,
+  wordQueue: [],
+  curIdx:    0,
+  timer:     null,
+  tempoInt:  null,
+  timeLeft:  4000,
+  totalTime: 4000,
+  recog:     null,
+  listening: false,
+  milestoneTimer: null,
+};
+
+function rnEl(id) { return document.getElementById(id); }
+
+function getComboTier(combo) {
+  for (let i = COMBO_TIERS.length - 1; i >= 0; i--) {
+    if (combo >= COMBO_TIERS[i]) return i;
+  }
+  return 0;
+}
+
+function startRunner() {
+  rnEl('runnerScreen').classList.add('active');
+  // Reset overlay to start state
+  rnEl('rnOverlay').classList.remove('hidden');
+  rnEl('rnOvIcon').textContent = '🏃';
+  rnEl('rnOvTitle').textContent = 'Pharma Runner';
+  rnEl('rnOvSub').textContent = 'Sprich die Wirkstoffnamen aus bevor die Zeit abläuft!\nJe länger die Combo, desto schneller wird es.';
+  rnEl('rnOvScore').style.display = 'none';
+  rnEl('rnOvHs').style.display = 'none';
+  rnEl('rnOvBtn').textContent = '🎮  Starten';
+  rnEl('rnOvBtn').onclick = rnStartGame;
+}
+
+function stopRunner() {
+  rnStopMic();
+  clearTimeout(RG.timer);
+  clearInterval(RG.tempoInt);
+  clearTimeout(RG.milestoneTimer);
+  RG.active = false;
+  rnEl('runnerScreen').classList.remove('active');
+}
+
+function rnStartGame() {
+  rnEl('rnOverlay').classList.add('hidden');
+  // Shuffle words, weight by difficulty (harder words less frequent early)
+  RG.wordQueue = [...RN_WORDS].sort(() => Math.random() - 0.5);
+  RG.curIdx   = 0;
+  RG.lives    = 3;
+  RG.combo    = 0;
+  RG.score    = 0;
+  RG.active   = true;
+  RG.paused   = false;
+  rnRenderLives();
+  rnRenderScore();
+  rnNextWord();
+  rnSpawnMilestones();
+}
+
+function rnNextWord() {
+  if (!RG.active || RG.paused) return;
+  rnStopMic();
+  rnEl('rnHeard').textContent = '';
+  rnEl('rnFeedback').className = 'rn-feedback';
+  rnEl('rnFeedback').textContent = '';
+  rnEl('rnCard').className = 'rn-card';
+
+  if (RG.curIdx >= RG.wordQueue.length) RG.curIdx = 0; // loop
+  const w = RG.wordQueue[RG.curIdx++];
+
+  rnEl('rnCat').textContent  = w.cat;
+  rnEl('rnWord').textContent = w.word;
+  rnEl('rnIpa').textContent  = w.ipa;
+  rnEl('rnSyl').textContent  = w.syl;
+  rnEl('rnIndication').textContent = '💊 ' + w.indication;
+
+  // Dynamic font size
+  const wEl = rnEl('rnWord');
+  wEl.style.fontSize = w.word.length > 18 ? '18px' : w.word.length > 12 ? '24px' : '';
+
+  // Start timer
+  const tier = getComboTier(RG.combo);
+  RG.totalTime = RUNNER_SPEEDS[tier];
+  RG.timeLeft  = RG.totalTime;
+
+  clearInterval(RG.tempoInt);
+  clearTimeout(RG.timer);
+
+  const tickMs = 50;
+  RG.tempoInt = setInterval(() => {
+    RG.timeLeft -= tickMs;
+    const pct = Math.max(0, RG.timeLeft / RG.totalTime * 100);
+    rnEl('rnTempoFill').style.width = pct + '%';
+    // Color shift: green → yellow → red
+    const h = Math.round(pct * 1.2); // 0–120 hue
+    rnEl('rnTempoFill').style.background = `hsl(${h},100%,55%)`;
+  }, tickMs);
+
+  RG.timer = setTimeout(() => {
+    clearInterval(RG.tempoInt);
+    rnWrongAnswer(w, null); // time ran out
+  }, RG.totalTime);
+
+  // Auto-start mic
+  rnStartMic(w);
+}
+
+function rnCorrectAnswer(w) {
+  clearTimeout(RG.timer);
+  clearInterval(RG.tempoInt);
+  rnStopMic();
+
+  RG.combo++;
+  const tier = getComboTier(RG.combo);
+  const mult = COMBO_MULT[tier];
+  const pts  = Math.round(100 * mult);
+  RG.score  += pts;
+
+  rnEl('rnCard').classList.add('correct');
+  rnEl('rnFeedback').className = 'rn-feedback ok';
+  rnEl('rnFeedback').textContent = `✅ +${pts} Punkte`;
+  rnRenderCombo();
+  rnRenderScore();
+
+  // Combo badge at key thresholds
+  const badges = { 5:'🔥 COMBO ×5!', 10:'⚡ ON FIRE! ×10', 15:'💥 INSANE! ×15', 20:'👑 PHARMA-LEGENDE!' };
+  if (badges[RG.combo]) rnShowBadge(badges[RG.combo]);
+
+  // Bonus life every 3 correct
+  if (RG.combo % 3 === 0 && RG.lives < 5) {
+    RG.lives++;
+    rnRenderLives();
+    rnShowBadge('❤️ +1 Leben!');
+  }
+
+  setTimeout(rnNextWord, 700);
+}
+
+function rnWrongAnswer(w, spoken) {
+  rnStopMic();
+  RG.combo = 0;
+  RG.lives--;
+  rnRenderLives();
+  rnRenderCombo();
+
+  rnEl('rnCard').classList.add('wrong');
+  rnEl('rnFeedback').className = 'rn-feedback bad';
+  rnEl('rnFeedback').textContent = spoken
+    ? `❌ Erkannt: "${spoken}"`
+    : '⏰ Zeit abgelaufen!';
+
+  if (RG.lives <= 0) {
+    setTimeout(rnGameOver, 900);
+  } else {
+    setTimeout(rnNextWord, 1100);
+  }
+}
+
+function rnGameOver() {
+  RG.active = false;
+  clearTimeout(RG.timer);
+  clearInterval(RG.tempoInt);
+  clearTimeout(RG.milestoneTimer);
+  rnStopMic();
+
+  const hs = Math.max(RG.score, parseInt(localStorage.getItem('pv_runner_hs') || '0'));
+  localStorage.setItem('pv_runner_hs', hs);
+
+  rnEl('rnOverlay').classList.remove('hidden');
+  rnEl('rnOvIcon').textContent  = RG.score >= 1000 ? '🏆' : '💀';
+  rnEl('rnOvTitle').textContent = RG.score >= 1000 ? 'Ausgezeichnet!' : 'Game Over';
+  rnEl('rnOvSub').textContent   = `Du hast ${RG.curIdx} Wirkstoffe geschafft.`;
+  rnEl('rnOvScore').style.display = 'block';
+  rnEl('rnOvScore').textContent   = RG.score;
+  rnEl('rnOvHs').style.display  = 'block';
+  rnEl('rnOvHs').textContent    = `🏅 Highscore: ${hs}`;
+  rnEl('rnOvBtn').textContent   = '🔄  Nochmal';
+  rnEl('rnOvBtn').onclick       = rnStartGame;
+}
+
+function rnPause() {
+  if (!RG.active) return;
+  if (RG.paused) {
+    RG.paused = false;
+    rnEl('rnOverlay').classList.add('hidden');
+    rnNextWord();
+  } else {
+    RG.paused = true;
+    clearTimeout(RG.timer);
+    clearInterval(RG.tempoInt);
+    rnStopMic();
+    rnEl('rnOverlay').classList.remove('hidden');
+    rnEl('rnOvIcon').textContent  = '⏸';
+    rnEl('rnOvTitle').textContent = 'Pause';
+    rnEl('rnOvSub').textContent   = `Score: ${RG.score} · Combo: ${RG.combo}`;
+    rnEl('rnOvScore').style.display = 'none';
+    rnEl('rnOvHs').style.display  = 'none';
+    rnEl('rnOvBtn').textContent   = '▶️  Weiterspielen';
+    rnEl('rnOvBtn').onclick       = rnPause;
+  }
+}
+
+function rnRenderLives() {
+  const container = rnEl('rnLives');
+  container.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    if (i < Math.max(RG.lives, 0)) {
+      container.innerHTML += '<span class="rn-heart">❤️</span>';
+    } else if (i < 3) {
+      container.innerHTML += '<span class="rn-heart lost">🖤</span>';
+    }
+  }
+}
+
+function rnRenderScore() { rnEl('rnScore').textContent = RG.score; }
+
+function rnRenderCombo() {
+  const comboEl = rnEl('rnCombo');
+  const icons = ['','🔥','⚡','💥','👑'];
+  const tier = getComboTier(RG.combo);
+  comboEl.textContent = `${icons[Math.min(tier,4)]} ×${RG.combo}`;
+  comboEl.classList.remove('bump');
+  void comboEl.offsetWidth;
+  comboEl.classList.add('bump');
+  setTimeout(() => comboEl.classList.remove('bump'), 180);
+}
+
+function rnShowBadge(text) {
+  const b = rnEl('rnBadge');
+  b.textContent = text;
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 1500);
+}
+
+function rnSpawnMilestones() {
+  if (!RG.active) return;
+  const icon = MILESTONE_ICONS[Math.floor(Math.random() * MILESTONE_ICONS.length)];
+  const div  = document.createElement('div');
+  div.className = 'rn-milestone';
+  div.textContent = icon;
+  div.style.left = (15 + Math.random() * 70) + '%';
+  rnEl('runnerScreen').appendChild(div);
+  div.addEventListener('animationend', () => div.remove());
+  RG.milestoneTimer = setTimeout(rnSpawnMilestones, 1200 + Math.random() * 1600);
+}
+
+// ── Runner Speech Recognition ──
+function rnStartMic(word) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    rnEl('rnMicHint').textContent = '⚠️ Spracherkennung nicht verfügbar';
+    return;
+  }
+  if (RG.recog) { try { RG.recog.stop(); } catch(_){} }
+
+  const r = new SR();
+  r.lang = 'de-DE';
+  r.continuous = false;
+  r.interimResults = true;
+  r.maxAlternatives = 1;
+  RG.recog = r;
+
+  r.onstart = () => {
+    RG.listening = true;
+    rnEl('rnMic').classList.add('listening');
+    rnEl('rnMicHint').textContent = '🎤 Höre zu …';
+  };
+
+  r.onresult = (evt) => {
+    let interim = '', final = '';
+    for (let i = evt.resultIndex; i < evt.results.length; i++) {
+      const t = evt.results[i][0].transcript;
+      if (evt.results[i].isFinal) final += t; else interim += t;
+    }
+    const heard = final || interim;
+    rnEl('rnHeard').textContent = heard;
+    if (final && RG.active && !RG.paused) {
+      const target = normalize(word.word);
+      const said   = normalize(final.trim());
+      const maxLen = Math.max(target.length, said.length);
+      const sim    = maxLen === 0 ? 1 : 1 - levenshtein(target, said) / maxLen;
+      if (sim >= 0.8) rnCorrectAnswer(word);
+      else            rnWrongAnswer(word, final.trim());
+    }
+  };
+
+  r.onend = () => {
+    RG.listening = false;
+    rnEl('rnMic').classList.remove('listening');
+    rnEl('rnMicHint').textContent = 'Tippe zum Sprechen';
+    RG.recog = null;
+    // Restart if game still active and no answer yet
+    if (RG.active && !RG.paused) {
+      const curWord = RG.wordQueue[RG.curIdx - 1];
+      if (curWord && rnEl('rnCard').className === 'rn-card') {
+        setTimeout(() => { if (RG.active && !RG.paused) rnStartMic(curWord); }, 300);
+      }
+    }
+  };
+
+  r.onerror = (evt) => {
+    RG.listening = false;
+    rnEl('rnMic').classList.remove('listening');
+    RG.recog = null;
+    if (evt.error !== 'no-speech' && evt.error !== 'aborted') {
+      rnEl('rnMicHint').textContent = '⚠️ ' + evt.error;
+    }
+  };
+
+  try { r.start(); } catch(_) {}
+}
+
+function rnStopMic() {
+  if (RG.recog) { try { RG.recog.stop(); } catch(_){} RG.recog = null; }
+  RG.listening = false;
+  if (rnEl('rnMic')) rnEl('rnMic').classList.remove('listening');
+  if (rnEl('rnMicHint')) rnEl('rnMicHint').textContent = 'Tippe zum Sprechen';
+}
+
+function rnToggleMic() {
+  if (!RG.active || RG.paused) return;
+  if (RG.listening) { rnStopMic(); return; }
+  const curWord = RG.wordQueue[RG.curIdx - 1];
+  if (curWord) rnStartMic(curWord);
+}
 
 // ── BOOT ──
 load();
