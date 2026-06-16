@@ -35,6 +35,7 @@
     }
     .screen { display: none; padding: 32px 20px 116px; min-height: 100vh; animation: fadeUp .25s ease; }
     .screen.active { display: block; }
+    #screenOnboard.active { display: flex; padding: 0; }
     @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
     /* NAV */
@@ -488,7 +489,8 @@
     /* ── Onboarding Screen ── */
     #screenOnboard {
       display:flex; flex-direction:column; align-items:center; justify-content:center;
-      min-height:100vh; padding:30px 20px; text-align:center; gap:0;
+      height:100vh; max-height:100vh; overflow:hidden;
+      padding:24px 24px; text-align:center; gap:0; box-sizing:border-box;
     }
     .onboard-avatar {
       width:110px; height:110px; border-radius:50%; object-fit:contain;
