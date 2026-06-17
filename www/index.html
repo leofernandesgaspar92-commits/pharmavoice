@@ -487,6 +487,24 @@
     .lang-btn:hover  { background:rgba(255,255,255,.18); }
 
 
+    /* ── Audio Settings Modal ── */
+    #audioSettingsModal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.7); align-items:flex-end; justify-content:center; }
+    #audioSettingsModal.open { display:flex; }
+    .audio-sheet { background:#1a1a2e; border-radius:20px 20px 0 0; padding:24px 20px 36px; width:100%; max-width:480px; }
+    .audio-sheet h3 { font-size:16px; font-weight:700; margin:0 0 18px; color:#fff; }
+    .audio-row { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+    .audio-row label { flex:1; font-size:14px; color:rgba(255,255,255,.85); }
+    .audio-slider { flex:2; -webkit-appearance:none; height:4px; border-radius:4px; background:rgba(255,255,255,.2); outline:none; }
+    .audio-slider::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--char-primary,var(--teal)); cursor:pointer; }
+    .audio-toggle { position:relative; width:44px; height:24px; flex-shrink:0; }
+    .audio-toggle input { opacity:0; width:0; height:0; }
+    .audio-toggle-track { position:absolute; inset:0; background:rgba(255,255,255,.2); border-radius:12px; transition:.2s; cursor:pointer; }
+    .audio-toggle input:checked + .audio-toggle-track { background:var(--char-primary,var(--teal)); }
+    .audio-toggle-track::after { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; }
+    .audio-toggle input:checked + .audio-toggle-track::after { left:23px; }
+    .audio-divider { border:none; border-top:1px solid rgba(255,255,255,.1); margin:12px 0; }
+    .audio-close-btn { width:100%; padding:13px; background:rgba(255,255,255,.08); border:none; border-radius:12px; color:#fff; font-size:15px; font-weight:600; cursor:pointer; margin-top:8px; }
+
     /* ── Confetti Canvas ── */
     #confettiCanvas {
       position:fixed; top:0; left:0; width:100%; height:100%;
@@ -560,6 +578,58 @@
 <body>
 
 <canvas id="confettiCanvas"></canvas>
+
+<!-- ══ AUDIO SETTINGS MODAL ══ -->
+<div id="audioSettingsModal" onclick="if(event.target===this)closeAudioSettings()">
+  <div class="audio-sheet">
+    <h3>🔊 Audio-Einstellungen</h3>
+
+    <div class="audio-row">
+      <span>🔊</span>
+      <label>Sound-Effekte</label>
+      <label class="audio-toggle">
+        <input type="checkbox" id="chkSound" onchange="audioSettingChange('sound',this.checked)">
+        <span class="audio-toggle-track"></span>
+      </label>
+    </div>
+    <div class="audio-row">
+      <span>🎚️</span>
+      <label>Lautstärke</label>
+      <input class="audio-slider" type="range" id="sliderSound" min="0" max="1" step="0.05"
+             oninput="AudioSystem.setSoundVol(+this.value)">
+    </div>
+
+    <hr class="audio-divider">
+
+    <div class="audio-row">
+      <span>🗣️</span>
+      <label>Sprachausgabe</label>
+      <label class="audio-toggle">
+        <input type="checkbox" id="chkSpeech" onchange="audioSettingChange('speech',this.checked)">
+        <span class="audio-toggle-track"></span>
+      </label>
+    </div>
+    <div class="audio-row">
+      <span>🎚️</span>
+      <label>Stimmlautstärke</label>
+      <input class="audio-slider" type="range" id="sliderSpeech" min="0" max="1" step="0.05"
+             oninput="AudioSystem.setSpeechVol(+this.value)">
+    </div>
+
+    <hr class="audio-divider">
+
+    <div class="audio-row">
+      <span>📳</span>
+      <label>Vibration bei Fehler</label>
+      <label class="audio-toggle">
+        <input type="checkbox" id="chkVib" onchange="audioSettingChange('vib',this.checked)">
+        <span class="audio-toggle-track"></span>
+      </label>
+    </div>
+
+    <button class="audio-close-btn" onclick="closeAudioSettings()">Schließen</button>
+  </div>
+</div>
 <div class="xp-pop" id="xpPop">+10 Shekel 🪙</div>
 
 
@@ -688,8 +758,7 @@
       <button class="lang-btn active" data-lang="de" onclick="switchLang('de')">🇩🇪</button>
       <button class="lang-btn" data-lang="en" onclick="switchLang('en')">🇬🇧</button>
       <button class="lang-btn" data-lang="pt" onclick="switchLang('pt')">🇵🇹</button>
-      <button class="lang-btn" id="btnSound" onclick="toggleAudioSound()" title="Sounds">🔊</button>
-      <button class="lang-btn" id="btnSpeech" onclick="toggleAudioSpeech()" title="Sprache">🗣️</button>
+      <button class="lang-btn" onclick="openAudioSettings()" title="Audio-Einstellungen">🔊</button>
     </div>
   </div>
 
@@ -1627,16 +1696,24 @@ const CharacterSystem = (() => {
 
 function switchLang(l) { CharacterSystem.setLang(l); }
 
-function toggleAudioSound() {
-  const on = AudioSystem.toggleSound();
-  const btn = document.getElementById('btnSound');
-  if (btn) { btn.textContent = on ? '🔊' : '🔇'; btn.classList.toggle('active', on); }
+function openAudioSettings() {
+  const m = document.getElementById('audioSettingsModal');
+  document.getElementById('chkSound').checked  = AudioSystem.isSoundOn();
+  document.getElementById('chkSpeech').checked = AudioSystem.isSpeechOn();
+  document.getElementById('chkVib').checked    = AudioSystem.isVibOn();
+  document.getElementById('sliderSound').value  = AudioSystem.getSoundVol();
+  document.getElementById('sliderSpeech').value = AudioSystem.getSpeechVol();
+  m.classList.add('open');
 }
 
-function toggleAudioSpeech() {
-  const on = AudioSystem.toggleSpeech();
-  const btn = document.getElementById('btnSpeech');
-  if (btn) { btn.textContent = on ? '🗣️' : '🔕'; btn.classList.toggle('active', on); }
+function closeAudioSettings() {
+  document.getElementById('audioSettingsModal').classList.remove('open');
+}
+
+function audioSettingChange(type, val) {
+  if (type === 'sound')  AudioSystem.toggleSound();
+  if (type === 'speech') AudioSystem.toggleSpeech();
+  if (type === 'vib')    AudioSystem.toggleVib();
 }
 
 function openCharModal()  {
@@ -3152,110 +3229,161 @@ const AudioSystem = (() => {
     return _ctx;
   }
 
-  function tone(freq, type, vol, attack, sustain, release, delay = 0) {
-    const ac = ctx();
+  // Settings (persisted)
+  let _soundEnabled  = localStorage.getItem('pv_sound_on')  !== 'false';
+  let _speechEnabled = localStorage.getItem('pv_speech_on') !== 'false';
+  let _vibEnabled    = localStorage.getItem('pv_vib_on')    !== 'false';
+  let _soundVol      = parseFloat(localStorage.getItem('pv_sound_vol'))  || 0.8;
+  let _speechVol     = parseFloat(localStorage.getItem('pv_speech_vol')) || 1.0;
+
+  function savePrefs() {
+    localStorage.setItem('pv_sound_on',   _soundEnabled);
+    localStorage.setItem('pv_speech_on',  _speechEnabled);
+    localStorage.setItem('pv_vib_on',     _vibEnabled);
+    localStorage.setItem('pv_sound_vol',  _soundVol);
+    localStorage.setItem('pv_speech_vol', _speechVol);
+  }
+
+  // Low-level tone helper
+  function playTone(ac, freq, duration, type = 'sine', fadeDuration = 0.1) {
     const osc = ac.createOscillator();
     const gain = ac.createGain();
     osc.connect(gain); gain.connect(ac.destination);
     osc.type = type; osc.frequency.value = freq;
-    const t = ac.currentTime + delay;
-    gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(vol, t + attack);
-    gain.gain.setValueAtTime(vol, t + attack + sustain);
-    gain.gain.linearRampToValueAtTime(0, t + attack + sustain + release);
-    osc.start(t); osc.stop(t + attack + sustain + release + 0.01);
+    const v = _soundVol * 0.35;
+    gain.gain.setValueAtTime(v, ac.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + duration + fadeDuration);
+    osc.start(ac.currentTime); osc.stop(ac.currentTime + duration + fadeDuration + 0.01);
   }
 
-  function correct() {
+  // ── Correct variants ──
+  function correct(variant = 'random') {
+    if (!_soundEnabled) return;
     const ac = ctx();
-    const osc = ac.createOscillator();
-    const gain = ac.createGain();
-    osc.connect(gain); gain.connect(ac.destination);
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ac.currentTime);
-    osc.frequency.setValueAtTime(1108.73, ac.currentTime + 0.1);
-    gain.gain.setValueAtTime(0.3, ac.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.3);
-    osc.start(ac.currentTime); osc.stop(ac.currentTime + 0.3);
+    const variants = ['ding', 'pling', 'trill'];
+    const v = variant === 'random' ? variants[Math.floor(Math.random() * variants.length)] : variant;
+    if (v === 'ding') {
+      const osc = ac.createOscillator(), gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ac.currentTime);
+      osc.frequency.setValueAtTime(1108.73, ac.currentTime + 0.1);
+      gain.gain.setValueAtTime(_soundVol * 0.3, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.3);
+      osc.start(ac.currentTime); osc.stop(ac.currentTime + 0.31);
+    } else if (v === 'pling') {
+      playTone(ac, 660, 0.1);
+      setTimeout(() => playTone(ctx(), 880, 0.1), 150);
+    } else {
+      [880, 932, 880, 932, 880].forEach((f, i) => setTimeout(() => playTone(ctx(), f, i === 4 ? 0.15 : 0.05), i * 50));
+    }
   }
 
-  function wrong() {
-    tone(300, 'sawtooth', 0.18, 0.01, 0.08, 0.10);
-    tone(220, 'sawtooth', 0.18, 0.01, 0.10, 0.14, 0.12);
+  // ── Wrong variants ──
+  function wrong(variant = 'random') {
+    if (!_soundEnabled) return;
+    const ac = ctx();
+    const variants = ['boo', 'bumm', 'sad'];
+    const v = variant === 'random' ? variants[Math.floor(Math.random() * variants.length)] : variant;
+    if (v === 'boo')       { playTone(ac, 200, 0.4, 'sawtooth', 0.2); }
+    else if (v === 'bumm') { playTone(ac, 80,  0.3, 'square',   0.3); }
+    else { // sad – falling melody
+      playTone(ac, 440, 0.2);
+      setTimeout(() => playTone(ctx(), 349, 0.2), 200);
+      setTimeout(() => playTone(ctx(), 293, 0.4), 400);
+    }
   }
 
-  function combo() {
-    [523, 659, 784, 1047].forEach((f, i) => tone(f, 'sine', 0.28, 0.01, 0.05, 0.08, i * 0.08));
+  // ── Combo (scales with combo count) ──
+  function combo(comboCount = 4) {
+    if (!_soundEnabled) return;
+    const notes = Math.min(comboCount, 8);
+    for (let i = 0; i < notes; i++) {
+      const freq = 440 * Math.pow(1.059, i * 2);
+      setTimeout(() => playTone(ctx(), freq, 0.08, 'sine', 0.15), i * 80);
+    }
   }
 
+  // ── Level-up ──
   function levelUp() {
-    [392, 523, 659, 784, 1047].forEach((f, i) => tone(f, 'triangle', 0.30, 0.01, 0.08, 0.1, i * 0.1));
+    if (!_soundEnabled) return;
+    [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(ctx(), f, 0.2, 'sine', 0.3), i * 200));
   }
 
-  function click() { tone(880, 'sine', 0.12, 0.005, 0.02, 0.04); }
+  // ── Game over ──
+  function gameOver() {
+    if (!_soundEnabled) return;
+    [440, 370, 330, 293].forEach((f, i) => setTimeout(() => playTone(ctx(), f, 0.3, 'sine', 0.2), i * 250));
+  }
 
+  // ── Streak chime ──
   function streak() {
-    [659, 784, 1047, 1319].forEach((f, i) => tone(f, 'sine', 0.25, 0.01, 0.06, 0.08, i * 0.09));
+    if (!_soundEnabled) return;
+    [659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => playTone(ctx(), f, 0.08, 'sine', 0.1), i * 90));
   }
 
-  // Speech Synthesis
-  const SPEAK_TEXTS = {
-    correct: { de: ['Richtig!','Ausgezeichnet!','Perfekt!','Super!','Genau!'], en: ['Correct!','Excellent!','Perfect!','Great!','Spot on!'], pt: ['Correto!','Excelente!','Perfeito!','Ótimo!','Isso mesmo!'] },
-    wrong:   { de: ['Leider falsch!','Fast richtig!','Nicht ganz!','Versuch es nochmal!'], en: ['Wrong!','Almost right!','Not quite!','Try again!'], pt: ['Errado!','Quase certo!','Não é bem isso!','Tenta de novo!'] },
-    levelup: { de: ['Level aufgestiegen! Weiter so!'], en: ['Level up! Keep going!'], pt: ['Subiu de nível! Continue assim!'] },
-    streak:  { de: ['Tolle Serie! Weiter so!'], en: ['Great streak! Keep it up!'], pt: ['Ótima série! Continue assim!'] },
-    perfect: { de: ['Perfekt! Alle richtig!'], en: ['Perfect score!'], pt: ['Pontuação perfeita!'] },
+  // ── Click ──
+  function click() { if (_soundEnabled) playTone(ctx(), 880, 0.02, 'sine', 0.04); }
+
+  // ── Vibration ──
+  function vib(pattern = 50) {
+    if (_vibEnabled && navigator.vibrate) navigator.vibrate(pattern);
+  }
+
+  // ── Speech ──
+  const PHRASES = {
+    correct: { de:['Richtig!','Super!','Ausgezeichnet!','Perfekt!','Genau!','Toll gemacht!'], en:['Correct!','Great!','Excellent!','Perfect!','Spot on!','Well done!'], pt:['Correto!','Ótimo!','Excelente!','Perfeito!','Isso mesmo!','Muito bem!'] },
+    wrong:   { de:['Leider falsch!','Fast richtig!','Versuch\'s nochmal!','Nicht aufgeben!','Knapp daneben!'], en:['Sorry, wrong!','Almost right!','Try again!','Don\'t give up!','So close!'], pt:['Infelizmente errado!','Quase certo!','Tente novamente!','Não desista!','Tão perto!'] },
+    levelup: { de:['Level aufgestiegen! Weiter so!','Du bist besser geworden!'], en:['Level up! Keep going!','You\'re improving!'], pt:['Subiu de nível! Continue assim!','Você está melhorando!'] },
+    streak:  { de:['Tolle Serie! Weiter so!','Du bist in der Zone!'], en:['Great streak! Keep it up!','You\'re on fire!'], pt:['Ótima série! Continue assim!','Você está em chama!'] },
+    perfect: { de:['Perfekt! Alle richtig! Fantastisch!'], en:['Perfect score! Amazing!'], pt:['Pontuação perfeita! Incrível!'] },
   };
 
-  let _speechEnabled = true;
-  let _soundEnabled = true;
-
   function speak(key, lang) {
-    if (!_speechEnabled) return;
-    if (!window.speechSynthesis) return;
-    const pool = (SPEAK_TEXTS[key] || {})[lang] || (SPEAK_TEXTS[key] || {})['de'] || [];
+    if (!_speechEnabled || !window.speechSynthesis) return;
+    const pool = (PHRASES[key] || {})[lang] || (PHRASES[key] || {})['de'] || [];
     if (!pool.length) return;
-    const text = pool[Math.floor(Math.random() * pool.length)];
     window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-PT' : 'de-DE';
-    utt.rate = 1.0; utt.pitch = 1.05; utt.volume = 0.9;
+    const utt = new SpeechSynthesisUtterance(pool[Math.floor(Math.random() * pool.length)]);
+    utt.lang = lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-BR' : 'de-DE';
+    utt.rate = 1.0; utt.pitch = 1.05; utt.volume = _speechVol;
     window.speechSynthesis.speak(utt);
   }
 
+  // ── Public feedback combos ──
   function playCorrect(lang, isCombo) {
-    if (_soundEnabled) isCombo ? combo() : correct();
-    speak('correct', lang);
+    isCombo ? combo(5) : correct();
+    vib(30);
+    setTimeout(() => speak('correct', lang), 200);
   }
 
   function playWrong(lang) {
-    if (_soundEnabled) wrong();
-    speak('wrong', lang);
+    wrong();
+    vib([60, 30, 60]);
+    setTimeout(() => speak('wrong', lang), 300);
   }
 
-  function playLevelUp(lang) {
-    if (_soundEnabled) levelUp();
-    speak('levelup', lang);
-  }
+  function playLevelUp(lang) { levelUp(); setTimeout(() => speak('levelup', lang), 400); }
+  function playStreak(lang)  { streak();  setTimeout(() => speak('streak', lang), 300); }
+  function playPerfect(lang) { levelUp(); setTimeout(() => speak('perfect', lang), 400); }
+  function playClick()       { click(); }
+  function playGameOver()    { gameOver(); }
 
-  function playStreak(lang) {
-    if (_soundEnabled) streak();
-    speak('streak', lang);
-  }
+  // ── Toggles ──
+  function toggleSound()  { _soundEnabled  = !_soundEnabled;  savePrefs(); return _soundEnabled; }
+  function toggleSpeech() { _speechEnabled = !_speechEnabled; savePrefs(); return _speechEnabled; }
+  function toggleVib()    { _vibEnabled    = !_vibEnabled;    savePrefs(); return _vibEnabled; }
+  function setSoundVol(v)  { _soundVol  = v; savePrefs(); }
+  function setSpeechVol(v) { _speechVol = v; savePrefs(); }
+  function isSoundOn()   { return _soundEnabled; }
+  function isSpeechOn()  { return _speechEnabled; }
+  function isVibOn()     { return _vibEnabled; }
+  function getSoundVol() { return _soundVol; }
+  function getSpeechVol(){ return _speechVol; }
 
-  function playPerfect(lang) {
-    if (_soundEnabled) levelUp();
-    speak('perfect', lang);
-  }
-
-  function playClick() { if (_soundEnabled) click(); }
-
-  function toggleSpeech() { _speechEnabled = !_speechEnabled; return _speechEnabled; }
-  function toggleSound()  { _soundEnabled  = !_soundEnabled;  return _soundEnabled; }
-  function isSpeechOn()   { return _speechEnabled; }
-  function isSoundOn()    { return _soundEnabled; }
-
-  return { playCorrect, playWrong, playLevelUp, playStreak, playPerfect, playClick, toggleSpeech, toggleSound, isSpeechOn, isSoundOn };
+  return { playCorrect, playWrong, playLevelUp, playStreak, playPerfect, playClick, playGameOver,
+           toggleSound, toggleSpeech, toggleVib, setSoundVol, setSpeechVol,
+           isSoundOn, isSpeechOn, isVibOn, getSoundVol, getSpeechVol };
 })();
 
 // ══ WRONG STREAK TRACKER ══
