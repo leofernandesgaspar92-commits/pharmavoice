@@ -688,6 +688,8 @@
       <button class="lang-btn active" data-lang="de" onclick="switchLang('de')">🇩🇪</button>
       <button class="lang-btn" data-lang="en" onclick="switchLang('en')">🇬🇧</button>
       <button class="lang-btn" data-lang="pt" onclick="switchLang('pt')">🇵🇹</button>
+      <button class="lang-btn" id="btnSound" onclick="toggleAudioSound()" title="Sounds">🔊</button>
+      <button class="lang-btn" id="btnSpeech" onclick="toggleAudioSpeech()" title="Sprache">🗣️</button>
     </div>
   </div>
 
@@ -1625,6 +1627,18 @@ const CharacterSystem = (() => {
 
 function switchLang(l) { CharacterSystem.setLang(l); }
 
+function toggleAudioSound() {
+  const on = AudioSystem.toggleSound();
+  const btn = document.getElementById('btnSound');
+  if (btn) { btn.textContent = on ? '🔊' : '🔇'; btn.classList.toggle('active', on); }
+}
+
+function toggleAudioSpeech() {
+  const on = AudioSystem.toggleSpeech();
+  const btn = document.getElementById('btnSpeech');
+  if (btn) { btn.textContent = on ? '🗣️' : '🔕'; btn.classList.toggle('active', on); }
+}
+
 function openCharModal()  {
   CharacterSystem.renderGrid();
   el('charModalBg').classList.add('open');
@@ -1970,9 +1984,10 @@ function pick(btn, correct, med) {
   sm2Update(med.name, good);
   TamaSystem.update(good ? 'correct' : 'wrong');
   trackAnswer(good);
+  const lang = CharacterSystem.getLang();
   const comboType = good && Q.correct > 0 && Q.correct % 5 === 0 ? 'combo' : good ? 'correct' : 'wrong';
-  if (good) avatarAnimate(comboType === 'combo' ? 'anim-bounce3' : 'anim-nod');
-  else      avatarAnimate('anim-shake');
+  if (good) { AudioSystem.playCorrect(lang, comboType === 'combo'); avatarAnimate(comboType === 'combo' ? 'anim-bounce3' : 'anim-nod'); }
+  else      { AudioSystem.playWrong(lang); avatarAnimate('anim-shake'); }
   CharacterSystem.react(comboType);
   S.learned = Math.min(S.learned + 1, 9999);
   set('progXp', `${Q.sessionXP} Shekel`);
@@ -2027,8 +2042,11 @@ function showResult() {
   set('resXP',     `+${Q.sessionXP}`);
   set('resStreak', `${S.streak} 🔥`);
   set('resTotal',  S.xp);
+  const _rl = CharacterSystem.getLang();
   CharacterSystem.notifyStreak(S.streak);
-  if (s === t || Q.sessionXP >= 80) CharacterSystem.notifyLevelUp();
+  if (S.streak >= 3) AudioSystem.playStreak(_rl);
+  if (s === t) { AudioSystem.playPerfect(_rl); CharacterSystem.notifyLevelUp(); }
+  else if (Q.sessionXP >= 80) { AudioSystem.playLevelUp(_rl); CharacterSystem.notifyLevelUp(); }
   if (S.streak >= 5) setTimeout(() => AvatarQ.ask('streak5'), 5000);
   else if (Q.correct < 4) setTimeout(() => AvatarQ.ask('tip'), 4000);
   showScreen('Result');
@@ -3125,6 +3143,113 @@ function avatarAnimate(cls) {
   av.classList.add(cls);
   setTimeout(() => av.classList.remove(cls), 1000);
 }
+
+// ══ AUDIO SYSTEM ══
+const AudioSystem = (() => {
+  let _ctx = null;
+  function ctx() {
+    if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return _ctx;
+  }
+
+  function tone(freq, type, vol, attack, sustain, release, delay = 0) {
+    const ac = ctx();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.type = type; osc.frequency.value = freq;
+    const t = ac.currentTime + delay;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + attack);
+    gain.gain.setValueAtTime(vol, t + attack + sustain);
+    gain.gain.linearRampToValueAtTime(0, t + attack + sustain + release);
+    osc.start(t); osc.stop(t + attack + sustain + release + 0.01);
+  }
+
+  function correct() {
+    tone(523, 'sine', 0.35, 0.01, 0.08, 0.12);
+    tone(659, 'sine', 0.30, 0.01, 0.08, 0.12, 0.1);
+    tone(784, 'sine', 0.28, 0.01, 0.12, 0.18, 0.2);
+  }
+
+  function wrong() {
+    tone(300, 'sawtooth', 0.18, 0.01, 0.08, 0.10);
+    tone(220, 'sawtooth', 0.18, 0.01, 0.10, 0.14, 0.12);
+  }
+
+  function combo() {
+    [523, 659, 784, 1047].forEach((f, i) => tone(f, 'sine', 0.28, 0.01, 0.05, 0.08, i * 0.08));
+  }
+
+  function levelUp() {
+    [392, 523, 659, 784, 1047].forEach((f, i) => tone(f, 'triangle', 0.30, 0.01, 0.08, 0.1, i * 0.1));
+  }
+
+  function click() { tone(880, 'sine', 0.12, 0.005, 0.02, 0.04); }
+
+  function streak() {
+    [659, 784, 1047, 1319].forEach((f, i) => tone(f, 'sine', 0.25, 0.01, 0.06, 0.08, i * 0.09));
+  }
+
+  // Speech Synthesis
+  const SPEAK_TEXTS = {
+    correct: { de: ['Richtig!','Ausgezeichnet!','Perfekt!','Super!','Genau!'], en: ['Correct!','Excellent!','Perfect!','Great!','Spot on!'], pt: ['Correto!','Excelente!','Perfeito!','Ótimo!','Isso mesmo!'] },
+    wrong:   { de: ['Leider falsch!','Fast richtig!','Nicht ganz!','Versuch es nochmal!'], en: ['Wrong!','Almost right!','Not quite!','Try again!'], pt: ['Errado!','Quase certo!','Não é bem isso!','Tenta de novo!'] },
+    levelup: { de: ['Level aufgestiegen! Weiter so!'], en: ['Level up! Keep going!'], pt: ['Subiu de nível! Continue assim!'] },
+    streak:  { de: ['Tolle Serie! Weiter so!'], en: ['Great streak! Keep it up!'], pt: ['Ótima série! Continue assim!'] },
+    perfect: { de: ['Perfekt! Alle richtig!'], en: ['Perfect score!'], pt: ['Pontuação perfeita!'] },
+  };
+
+  let _speechEnabled = true;
+  let _soundEnabled = true;
+
+  function speak(key, lang) {
+    if (!_speechEnabled) return;
+    if (!window.speechSynthesis) return;
+    const pool = (SPEAK_TEXTS[key] || {})[lang] || (SPEAK_TEXTS[key] || {})['de'] || [];
+    if (!pool.length) return;
+    const text = pool[Math.floor(Math.random() * pool.length)];
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-PT' : 'de-DE';
+    utt.rate = 1.0; utt.pitch = 1.05; utt.volume = 0.9;
+    window.speechSynthesis.speak(utt);
+  }
+
+  function playCorrect(lang, isCombo) {
+    if (_soundEnabled) isCombo ? combo() : correct();
+    speak('correct', lang);
+  }
+
+  function playWrong(lang) {
+    if (_soundEnabled) wrong();
+    speak('wrong', lang);
+  }
+
+  function playLevelUp(lang) {
+    if (_soundEnabled) levelUp();
+    speak('levelup', lang);
+  }
+
+  function playStreak(lang) {
+    if (_soundEnabled) streak();
+    speak('streak', lang);
+  }
+
+  function playPerfect(lang) {
+    if (_soundEnabled) levelUp();
+    speak('perfect', lang);
+  }
+
+  function playClick() { if (_soundEnabled) click(); }
+
+  function toggleSpeech() { _speechEnabled = !_speechEnabled; return _speechEnabled; }
+  function toggleSound()  { _soundEnabled  = !_soundEnabled;  return _soundEnabled; }
+  function isSpeechOn()   { return _speechEnabled; }
+  function isSoundOn()    { return _soundEnabled; }
+
+  return { playCorrect, playWrong, playLevelUp, playStreak, playPerfect, playClick, toggleSpeech, toggleSound, isSpeechOn, isSoundOn };
+})();
 
 // ══ WRONG STREAK TRACKER ══
 let _wrongStreak = 0;
