@@ -487,6 +487,23 @@
     .lang-btn:hover  { background:rgba(255,255,255,.18); }
 
 
+    /* ── Daily Mission Card ── */
+    .mission-card { background:linear-gradient(135deg,#1a1a3e,#2d1b4e); border:1.5px solid rgba(255,180,0,.35); border-radius:16px; padding:16px; margin-bottom:18px; }
+    .mission-card.mission-done { background:linear-gradient(135deg,#0d2137,#0a3d2e); border-color:rgba(0,168,107,.4); }
+    .mission-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+    .mission-icon  { font-size:18px; }
+    .mission-title { font-size:14px; font-weight:800; color:#fff; flex:1; }
+    .mission-xp    { font-size:12px; font-weight:700; color:#FFC107; }
+    .mission-body  { font-size:13px; color:rgba(255,255,255,.75); line-height:1.5; }
+    .mission-bar   { height:5px; background:rgba(255,255,255,.15); border-radius:4px; margin-bottom:12px; overflow:hidden; }
+    .mission-bar-fill { height:100%; background:linear-gradient(90deg,#FFC107,#FF9800); border-radius:4px; transition:width .5s ease; }
+    .mission-steps { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+    .mission-step  { font-size:12px; color:rgba(255,255,255,.5); }
+    .mission-step.mstep-current { color:#fff; font-weight:700; }
+    .mission-step.mstep-done    { color:rgba(0,230,150,.8); }
+    .mission-btn   { width:100%; padding:12px; background:linear-gradient(135deg,#FFC107,#FF9800); border:none; border-radius:12px; color:#1a1a1a; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; }
+    .mission-btn:active { transform:scale(.98); }
+
     /* ── Hub Screen ── */
     .hub-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
     .hub-title  { font-size:22px; font-weight:900; color:var(--text); }
@@ -907,7 +924,7 @@
 
   <div class="section-title">Lernebenen</div>
   <div class="level-cards" id="levelCardsHome"></div>
-  <button class="btn-start" onclick="showScreen('Hub');HubSystem.render()">🚀 &nbsp;Jetzt lernen starten</button>
+  <button class="btn-start" onclick="showScreen('Hub');HubSystem.render();if(!DailyMissionSystem.isDone())DailyMissionSystem.start()">🚀 &nbsp;Jetzt lernen starten</button>
 </div>
 
 <!-- ══ LEARN ══ -->
@@ -2264,6 +2281,7 @@ function showResult() {
   if (S.streak >= 5) setTimeout(() => AvatarQ.ask('streak5'), 5000);
   else if (Q.correct < 4) setTimeout(() => AvatarQ.ask('tip'), 4000);
   HubSystem._hookLearnEnd(Q.correct);
+  DailyMissionSystem._hookLearnEnd(Q.correct);
   showScreen('Result');
 }
 
@@ -2831,6 +2849,7 @@ function rnGameOver() {
   const hs = Math.max(RG.score, parseInt(localStorage.getItem('pv_runner_hs') || '0'));
   localStorage.setItem('pv_runner_hs', hs);
   HubSystem._hookRunnerEnd(RG.score);
+  DailyMissionSystem._hookRunnerEnd(RG.score);
 
   rnEl('rnOverlay').classList.remove('hidden');
   rnEl('rnOvIcon').textContent  = RG.score >= 1000 ? '🏆' : '💀';
@@ -3554,6 +3573,120 @@ CharacterSystem.showBubble = function(text, dur) {
 };
 
 
+// ══ DAILY MISSION SYSTEM ════════════════════════════════════════════════
+const DailyMissionSystem = (() => {
+  const LS_KEY = 'pv_daily_mission';
+
+  // Mission template: 5 Wirkstoffe → 1 Runner-Runde → 5 Wirkstoffe
+  const STEPS = [
+    { type:'speak',  label:'5 Wirkstoffe aussprechen', goal:5 },
+    { type:'runner', label:'1 Runner-Runde spielen',    goal:1 },
+    { type:'speak',  label:'5 weitere Wirkstoffe',      goal:5 },
+  ];
+  const BONUS_XP = 50;
+
+  function _todayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function _load() {
+    let state;
+    try { state = JSON.parse(localStorage.getItem(LS_KEY)); } catch { state = null; }
+    const today = _todayKey();
+    if (!state || state.date !== today) {
+      state = { date: today, stepIdx: 0, stepProgress: 0, done: false, claimed: false };
+      _save(state);
+    }
+    return state;
+  }
+  function _save(state) { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+  function isDone() { return _load().done; }
+  function isClaimed() { return _load().claimed; }
+
+  function currentStep() {
+    const state = _load();
+    if (state.done) return null;
+    return STEPS[state.stepIdx];
+  }
+
+  // Called when the user presses "Jetzt lernen starten" — routes into the
+  // active mission step instead of the free hub flow, until mission is done.
+  function start() {
+    const state = _load();
+    if (state.done) { HubSystem.playNext(); return; }
+    const step = STEPS[state.stepIdx];
+    if (step.type === 'speak') {
+      sessionStorage.setItem('mission_speak_active', '1');
+      openModal();
+    } else if (step.type === 'runner') {
+      sessionStorage.setItem('mission_runner_active', '1');
+      startRunner();
+    }
+  }
+
+  function _advance() {
+    const state = _load();
+    state.stepIdx++;
+    state.stepProgress = 0;
+    if (state.stepIdx >= STEPS.length) {
+      state.done = true;
+      const data = JSON.parse(localStorage.getItem('pv2') || '{}');
+      data.xp = (data.xp || 0) + BONUS_XP;
+      localStorage.setItem('pv2', JSON.stringify(data));
+      refreshUI();
+      CharacterSystem.notifyLevelUp();
+    }
+    _save(state);
+  }
+
+  function _hookLearnEnd(correct) {
+    if (!sessionStorage.getItem('mission_speak_active')) return;
+    sessionStorage.removeItem('mission_speak_active');
+    const state = _load();
+    const step = STEPS[state.stepIdx];
+    if (!step || step.type !== 'speak') return;
+    if (correct >= step.goal) _advance();
+  }
+
+  function _hookRunnerEnd(score) {
+    if (!sessionStorage.getItem('mission_runner_active')) return;
+    sessionStorage.removeItem('mission_runner_active');
+    const state = _load();
+    const step = STEPS[state.stepIdx];
+    if (!step || step.type !== 'runner') return;
+    _advance(); // one played round always counts
+  }
+
+  function renderCard() {
+    const state = _load();
+    const step  = STEPS[state.stepIdx];
+    const pct   = Math.round((state.stepIdx / STEPS.length) * 100);
+    if (state.done) {
+      return `
+        <div class="mission-card mission-done">
+          <div class="mission-header"><span class="mission-icon">🎯</span><span class="mission-title">Tagesmission abgeschlossen!</span></div>
+          <div class="mission-body">+${BONUS_XP} Bonus-Shekel verdient. Komm morgen wieder!</div>
+        </div>`;
+    }
+    const stepsHtml = STEPS.map((s,i) => {
+      const cls = i < state.stepIdx ? 'mstep-done' : i === state.stepIdx ? 'mstep-current' : 'mstep-locked';
+      const icon = i < state.stepIdx ? '✅' : i === state.stepIdx ? (s.type==='runner'?'🏃':'🎤') : '⚪';
+      return `<div class="mission-step ${cls}">${icon} ${s.label}</div>`;
+    }).join('');
+    return `
+      <div class="mission-card">
+        <div class="mission-header"><span class="mission-icon">🎯</span><span class="mission-title">Tagesmission</span><span class="mission-xp">+${BONUS_XP} 🪙</span></div>
+        <div class="mission-bar"><div class="mission-bar-fill" style="width:${pct}%"></div></div>
+        <div class="mission-steps">${stepsHtml}</div>
+        <button class="mission-btn" onclick="DailyMissionSystem.start()">▶ &nbsp;${step.label}</button>
+      </div>`;
+  }
+
+  return { start, isDone, isClaimed, currentStep, renderCard, _hookLearnEnd, _hookRunnerEnd };
+})();
+
 // ══ UNIFIED HUB SYSTEM ══════════════════════════════════════════════════
 const HubSystem = (() => {
   const LS_KEY = 'pv_hub';
@@ -3701,6 +3834,7 @@ const HubSystem = (() => {
           <div class="hub-sub">${doneLevels} von ${totalLevels} Level abgeschlossen</div>
         </div>
       </div>
+      ${DailyMissionSystem.renderCard()}
       ${next ? `<button class="hub-cta" onclick="HubSystem.playNext()">🚀 &nbsp;${next.level.type==='runner'?'Runner-Level starten':next.level.type==='quiz'?'Quiz starten':'Aussprache üben'}: ${next.level.name}</button>` : `<button class="hub-cta" onclick="HubSystem.render()">🏆 Alle Level abgeschlossen!</button>`}
     `;
 
