@@ -547,6 +547,9 @@
     .badge-missing { background:rgba(255,51,102,.15); color:#FF3366; }
     .badge-partial { background:rgba(255,152,0,.15);  color:#FF9800; }
     .badge-done    { background:rgba(46,204,113,.15); color:#2ECC71; }
+    .gd-score-bar  { height:4px; background:rgba(255,255,255,.1); border-radius:4px; margin:10px 0 4px; position:relative; }
+    .gd-score-fill { height:100%; border-radius:4px; transition:width .6s ease; }
+    .gd-score-val  { font-size:10px; color:rgba(255,255,255,.4); position:absolute; right:0; top:-14px; }
 
     /* ── Audio Settings Modal ── */
     #audioSettingsModal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.7); align-items:flex-end; justify-content:center; }
@@ -4031,18 +4034,172 @@ const GameDesignerAgent = (() => {
     out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function refresh() {
-    render();
-    if (window.CharacterSystem) CharacterSystem.showBubble('Ich hab neue Trends analysiert! 🎮', 2500);
+  // ── AutoUpdateSystem ─────────────────────────────────────────────────────
+  const UPDATE_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+
+  // Analyze current app state to score feature priority dynamically
+  function _analyzeAppState() {
+    let pv2 = {};
+    try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch(e) {}
+    const sm2Raw = localStorage.getItem('pv_sm2');
+    let sm2 = {};
+    try { sm2 = JSON.parse(sm2Raw || '{}'); } catch(e) {}
+
+    const xp        = pv2.xp || 0;
+    const streak    = pv2.streak || 0;
+    const learned   = Object.keys(sm2).length;
+    const coins     = parseInt(localStorage.getItem('pv_coins') || '0');
+    const sm2Vals   = Object.values(sm2);
+    const avgEF     = sm2Vals.length ? sm2Vals.reduce((a,b) => a + (b.ef||2.5), 0) / sm2Vals.length : 2.5;
+    const hardWords = sm2Vals.filter(e => (e.ef||2.5) < 2.0).length;
+
+    return { xp, streak, learned, coins, avgEF, hardWords };
   }
 
-  return { render, refresh, generateDoc, showTab };
+  // Score each feature based on current app state
+  function _scoreSuggestions(state) {
+    const scores = {
+      streak_shield: state.streak >= 3 ? 90 : 40,       // Very relevant if streak exists
+      adaptive_deck: state.hardWords >= 5 ? 95 : 60,    // Highly relevant if many hard words
+      combo_quest:   state.xp >= 100  ? 80 : 50,        // Good if player has XP history
+      daily_boss:    state.learned >= 20 ? 85 : 45,     // Only valuable with word base
+      npc_mentor:    state.hardWords >= 3 ? 75 : 50,    // Mentor helps when struggling
+      escape_room:   state.learned >= 40 ? 70 : 30,     // Needs vocab breadth
+      friend_duel:   state.xp >= 500 ? 65 : 40,         // Social features after engagement
+      ar_scanner:    80,                                  // Always high (marketing/novelty)
+    };
+    return scores;
+  }
+
+  function _classifyPriority(scores) {
+    const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+    return {
+      highPriority: sorted.filter(([,s]) => s >= 75).map(([id]) => id),
+      medium:       sorted.filter(([,s]) => s >= 50 && s < 75).map(([id]) => id),
+      low:          sorted.filter(([,s]) => s < 50).map(([id]) => id),
+      sorted,
+    };
+  }
+
+  function checkForUpdate() {
+    const last = parseInt(localStorage.getItem('pv_gd_last_update') || '0');
+    const now = Date.now();
+    if (!last || (now - last) > UPDATE_INTERVAL) {
+      performUpdate(false);
+    }
+  }
+
+  function performUpdate(manual = true) {
+    const state    = _analyzeAppState();
+    const scores   = _scoreSuggestions(state);
+    const priority = _classifyPriority(scores);
+
+    // Persist results
+    localStorage.setItem('pv_gd_scores',      JSON.stringify(scores));
+    localStorage.setItem('pv_gd_priority',     JSON.stringify(priority));
+    localStorage.setItem('pv_gd_state_snap',   JSON.stringify(state));
+    localStorage.setItem('pv_gd_last_update',  Date.now().toString());
+
+    // Show notification for top high-priority new feature if not already seen
+    const seen = new Set(JSON.parse(localStorage.getItem('pv_gd_notified') || '[]'));
+    const freshHigh = priority.highPriority.filter(id => !seen.has(id));
+    if (freshHigh.length > 0) {
+      const feat = FEATURES.find(f => f.id === freshHigh[0]);
+      if (feat) _showUpdateNotification(feat, priority.highPriority.length);
+      localStorage.setItem('pv_gd_notified', JSON.stringify([...seen, ...freshHigh]));
+    }
+
+    if (manual) {
+      render();
+      if (window.CharacterSystem) CharacterSystem.showBubble('Analyse abgeschlossen! Schau in den Design-Tab 🎮', 3000);
+      if (window.AudioSystem) AudioSystem.playClick();
+    }
+
+    return { state, scores, priority };
+  }
+
+  function _showUpdateNotification(feat, highCount) {
+    // Inject a dismissible banner on top of home screen
+    const existing = document.getElementById('gdNotifBanner');
+    if (existing) existing.remove();
+
+    const banner = document.createElement('div');
+    banner.id = 'gdNotifBanner';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:700;background:linear-gradient(90deg,#1a1a3e,#0d2137);border-bottom:1.5px solid rgba(100,180,255,.4);padding:10px 16px;display:flex;align-items:center;gap:10px;animation:fadeUp .3s ease';
+    banner.innerHTML = `
+      <span style="font-size:20px">🎮</span>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700;color:#fff">${highCount} neue Feature-Empfehlung${highCount > 1 ? 'en' : ''} für dich!</div>
+        <div style="font-size:11px;color:rgba(100,180,255,.8)">Priorität: ${feat.title}</div>
+      </div>
+      <button onclick="showScreen('GameDesign');GameDesignerAgent.render();document.getElementById('gdNotifBanner').remove()" style="background:var(--teal);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#000;cursor:pointer">Ansehen</button>
+      <button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:18px;cursor:pointer;padding:0 4px">×</button>
+    `;
+    document.body.prepend(banner);
+    setTimeout(() => { if (banner.parentElement) banner.remove(); }, 8000);
+  }
+
+  // ── Priority-aware suggestion render ─────────────────────────────────────
+  function _renderSuggestions() {
+    const container = document.getElementById('gdSuggestions');
+    if (!container) return;
+
+    let scores = {};
+    try { scores = JSON.parse(localStorage.getItem('pv_gd_scores') || '{}'); } catch(e) {}
+    const hasScores = Object.keys(scores).length > 0;
+
+    const sorted = hasScores
+      ? [...FEATURES].sort((a,b) => (scores[b.id]||0) - (scores[a.id]||0))
+      : FEATURES;
+
+    container.innerHTML = sorted.map(f => {
+      const score = scores[f.id];
+      const scoreHTML = score !== undefined
+        ? `<div class="gd-score-bar"><div class="gd-score-fill" style="width:${score}%;background:${score>=75?'#2ECC71':score>=50?'#FF9800':'#FF3366'}"></div><span class="gd-score-val">${score}% Priorität</span></div>`
+        : '';
+      return `
+        <div class="gd-card" style="--gd-accent:${f.accent}">
+          <div class="gd-card-cat">${f.cat}</div>
+          <div class="gd-card-title">${f.title}</div>
+          <div class="gd-card-body">${f.body}</div>
+          ${scoreHTML}
+          <div class="gd-card-tags">${f.tags.map(t=>`<span class="gd-tag">${t}</span>`).join('')}</div>
+          <span class="gd-card-effort effort-${f.effort}">${f.effort==='low'?'⚡ Schnell umsetzbar':f.effort==='med'?'🔨 Mittlerer Aufwand':'🏗️ Großes Feature'}</span>
+        </div>`;
+    }).join('');
+  }
+
+  function refresh() {
+    performUpdate(true);
+  }
+
+  function render() {
+    _renderInsight();
+    showTab('mechanics');
+    _renderSuggestions();
+    _renderDocSelect();
+    _renderUpdateStatus();
+  }
+
+  function _renderUpdateStatus() {
+    const last = parseInt(localStorage.getItem('pv_gd_last_update') || '0');
+    const snap = JSON.parse(localStorage.getItem('pv_gd_state_snap') || 'null');
+    const upd  = document.getElementById('gdUpdated');
+    if (!upd) return;
+    const dateStr = last ? new Date(last).toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Noch nie';
+    const nextStr = last ? new Date(last + UPDATE_INTERVAL).toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit'}) : '—';
+    const snapStr = snap ? ` · ${snap.learned} Wörter · Streak ${snap.streak} · ${snap.hardWords} schwere Wörter` : '';
+    upd.innerHTML = `🕐 Letzte Analyse: ${dateStr}${snapStr}<br>📅 Nächste: ${nextStr}`;
+  }
+
+  return { render, refresh, generateDoc, showTab, checkForUpdate, performUpdate };
 })();
 
 // ── BOOT ──
 document.getElementById('screenHome').classList.add('active');
 load();
 refreshTierUI();
+setTimeout(() => GameDesignerAgent.checkForUpdate(), 1500);
 </script>
 </body>
 </html>
