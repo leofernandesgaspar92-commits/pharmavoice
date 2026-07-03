@@ -946,7 +946,7 @@
   <div class="nav-item" id="navProf" onclick="showScreen('Profile')">
     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Profil</span>
   </div>
-  <div class="nav-item" id="navGD" onclick="showScreen('GameDesign');GameDesignerAgent.render()">
+  <div class="nav-item" id="navGD" onclick="showScreen('GameDesign');gameDesigner.render()">
     <svg viewBox="0 0 24 24"><path d="M15 7.5V2H9v5.5l3 3 3-3zM7.5 9H2v6h5.5l3-3-3-3zM9 16.5V22h6v-5.5l-3-3-3 3zM16.5 9l-3 3 3 3H22V9h-5.5z"/></svg><span>Design</span>
   </div>
 </nav>
@@ -3769,42 +3769,65 @@ const AutoUpdateSystem = (() => {
 })();
 
 // ── GameDesignerAgent (orchestrator) ─────────────────────────────────────
-const GameDesignerAgent = (() => {
+class GameDesignerAgent {
+  constructor() {
+    // Use the singleton IIFEs as subsystem references
+    this.trendAnalyzer    = TrendAnalyzer;
+    this.mechanicGenerator = MechanicGenerator;
+    this.designDocGenerator = DesignDocumentGenerator;
+    this.autoUpdater      = AutoUpdateSystem;
 
-  const INSIGHTS = [
-    { title:'Spaced Repetition + Gamification', body:'SM-2-Algorithmus + Belohnungssystem erhöht Retention um 40%. Duolingo hält 85% der Nutzer 30 Tage aktiv.', source:'Bildungsforschung 2024 · Duolingo Annual Report', accent:'#2ECC71' },
-    { title:'"Fail Forward" Psychologie (Endless Runner)', body:'Subway Surfers: Scheitern fühlt sich wie Fortschritt an. Jeder Tod gibt XP. Spieler spielen sofort weiter.', source:'GDC Talk 2023 · "The Psychology of Mobile Games"', accent:'#FF9800' },
-    { title:'Micro-Rewards alle 90 Sekunden', body:'Candy Crush gibt alle 60-90 Sekunden Belohnungen. Dopamin-Ausschüttung bei kurzen Intervallen stärkt Gewohnheitsbildung.', source:'Behavioral Psychology Review 2023', accent:'#FF69B4' },
-    { title:'Social Proof & Leaderboards', body:'Sichtbarkeit anderer Spieler erhöht Engagement um 25-35%. Freundschafts-Leaderboards sind effektiver als globale.', source:'Stanford Gamification Lab 2024', accent:'#9B59B6' },
-    { title:'Adaptive Difficulty (DDA)', body:'"Flow Zone": 70-80% Erfolgsrate optimal. Zu leicht = Langeweile, zu schwer = Frustration.', source:'Game UX Research 2024', accent:'#00E5FF' },
-    { title:'Narrative in Lern-Apps', body:'Apps mit Story haben 3x höhere Retention. Emotionale Bindung an Charaktere hält Spieler aktiv.', source:'Mobile Learning Research 2024', accent:'#FFC107' },
-    { title:'Streak-Psychologie: Loss Aversion', body:'"Loss Aversion" ist mächtiger als Gewinn-Motivation. Duolingo nutzt "Streak Freeze" als Premium-Feature.', source:'Behavioral Economics in App Design', accent:'#FF4500' },
-    { title:'Escape Rooms in Bildung', body:'89% der Teilnehmer empfehlen das Format. Zeitdruck + Narrative = maximaler Flow.', source:'Medical Education Journal 2024', accent:'#2ECC71' },
-  ];
+    this.currentTrends      = null;
+    this.currentSuggestions = null;
+    this.designDocuments    = [];
 
-  function _weekSeed() {
+    this._INSIGHTS = [
+      { title:'Spaced Repetition + Gamification', body:'SM-2-Algorithmus + Belohnungssystem erhöht Retention um 40%. Duolingo hält 85% der Nutzer 30 Tage aktiv.', source:'Bildungsforschung 2024 · Duolingo Annual Report', accent:'#2ECC71' },
+      { title:'"Fail Forward" Psychologie (Endless Runner)', body:'Subway Surfers: Scheitern fühlt sich wie Fortschritt an. Jeder Tod gibt XP. Spieler spielen sofort weiter.', source:'GDC Talk 2023 · "The Psychology of Mobile Games"', accent:'#FF9800' },
+      { title:'Micro-Rewards alle 90 Sekunden', body:'Candy Crush gibt alle 60-90 Sekunden Belohnungen. Dopamin-Ausschüttung bei kurzen Intervallen stärkt Gewohnheitsbildung.', source:'Behavioral Psychology Review 2023', accent:'#FF69B4' },
+      { title:'Social Proof & Leaderboards', body:'Sichtbarkeit anderer Spieler erhöht Engagement um 25-35%. Freundschafts-Leaderboards sind effektiver als globale.', source:'Stanford Gamification Lab 2024', accent:'#9B59B6' },
+      { title:'Adaptive Difficulty (DDA)', body:'"Flow Zone": 70-80% Erfolgsrate optimal. Zu leicht = Langeweile, zu schwer = Frustration.', source:'Game UX Research 2024', accent:'#00E5FF' },
+      { title:'Narrative in Lern-Apps', body:'Apps mit Story haben 3x höhere Retention. Emotionale Bindung an Charaktere hält Spieler aktiv.', source:'Mobile Learning Research 2024', accent:'#FFC107' },
+      { title:'Streak-Psychologie: Loss Aversion', body:'"Loss Aversion" ist mächtiger als Gewinn-Motivation. Duolingo nutzt "Streak Freeze" als Premium-Feature.', source:'Behavioral Economics in App Design', accent:'#FF4500' },
+      { title:'Escape Rooms in Bildung', body:'89% der Teilnehmer empfehlen das Format. Zeitdruck + Narrative = maximaler Flow.', source:'Medical Education Journal 2024', accent:'#2ECC71' },
+    ];
+
+    this.init();
+  }
+
+  _weekSeed() {
     const d = new Date();
     return Math.floor(d.getFullYear()*53 + d.getTime()/(1000*60*60*24*7));
   }
 
-  // ── Full Analysis pipeline ──────────────────────────────────────────────
-  function fullAnalysis() {
-    const result = AutoUpdateSystem.performUpdate(true);
-    const trends = TrendAnalyzer.analyzeTrends();
-    const suggestions = MechanicGenerator.generateMechanics(trends, result.scores);
-    renderDashboard();
-    return { trends, suggestions, scores: result.scores };
+  async init() {
+    const stored = localStorage.getItem('gameTrends');
+    if (stored) this.currentTrends = JSON.parse(stored);
+    const suggestions = localStorage.getItem('mechanicSuggestions');
+    if (suggestions) this.currentSuggestions = JSON.parse(suggestions);
+    await this.autoUpdater.checkForUpdate();
   }
 
-  // ── Dashboard HTML ──────────────────────────────────────────────────────
-  function renderDashboard() {
+  // ── Full Analysis pipeline ──────────────────────────────────────────────
+  async fullAnalysis() {
+    const result = this.autoUpdater.performUpdate(true);
+    this.currentTrends = this.trendAnalyzer.analyzeTrends();
+    const all = this.mechanicGenerator.generateMechanics(this.currentTrends, result.scores);
+    this.currentSuggestions = all;
+    this.designDocuments = all.highPriority.map(s => this.designDocGenerator.generateDocument(s.id));
+    this.renderDashboard();
+    return { trends: this.currentTrends, suggestions: all, scores: result.scores };
+  }
+
+  // ── Dashboard ──────────────────────────────────────────────────────────
+  renderDashboard() {
     const el = document.getElementById('gdDashboard');
     if (!el) return;
-    const scores  = AutoUpdateSystem.getScores();
-    const snap    = AutoUpdateSystem.getStateSnap();
-    const last    = AutoUpdateSystem.getLastUpdate();
-    const insight = INSIGHTS[_weekSeed() % INSIGHTS.length];
-    const suggestions = MechanicGenerator.generateMechanics(null, scores);
+    const scores  = this.autoUpdater.getScores();
+    const snap    = this.autoUpdater.getStateSnap();
+    const last    = this.autoUpdater.getLastUpdate();
+    const insight = this._INSIGHTS[this._weekSeed() % this._INSIGHTS.length];
+    const suggestions = this.mechanicGenerator.generateMechanics(null, scores);
 
     const lastStr = last ? new Date(last).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Nie';
     const nextStr = last ? new Date(last+7*24*60*60*1000).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}) : '—';
@@ -3813,13 +3836,11 @@ const GameDesignerAgent = (() => {
     el.innerHTML = `
       <h2 class="screen-h">🎮 Game Designer</h2>
 
-      <!-- Status bar -->
       <div class="gd-status-bar">
         <div class="gd-status-text">🕐 Letzte Analyse: ${lastStr}${snapStr}<br>📅 Nächste: ${nextStr}</div>
         <button class="gd-doc-btn" onclick="gameDesigner.fullAnalysis()">🔄 Analysieren</button>
       </div>
 
-      <!-- Weekly Insight -->
       <div class="gd-insight-card" style="border-color:${insight.accent}55">
         <div class="gd-insight-label">💡 WÖCHENTLICHER TREND</div>
         <div class="gd-insight-title">${insight.title}</div>
@@ -3827,7 +3848,6 @@ const GameDesignerAgent = (() => {
         <div class="gd-insight-source">📚 Quelle: ${insight.source}</div>
       </div>
 
-      <!-- Trend Analyzer tabs -->
       <div class="gd-section-title">📊 Trend-Analyse: Top Mobile Games</div>
       <div class="gd-analyzer-tabs" id="gdAnalyzerTabs">
         <button class="gd-atab active" onclick="gameDesigner.showTab('mechanics',this)">Mechaniken</button>
@@ -3837,35 +3857,42 @@ const GameDesignerAgent = (() => {
       </div>
       <div id="gdAnalyzerContent"></div>
 
-      <!-- Feature Suggestions grouped by priority -->
       <div class="gd-section-title">🔥 Hochpriorität</div>
-      ${_renderSuggestionList(suggestions.highPriority, scores)}
+      ${this.renderSuggestionList(suggestions.highPriority, scores)}
 
       <div class="gd-section-title">⚡ Mittelpriorität</div>
-      ${_renderSuggestionList(suggestions.mediumPriority, scores)}
+      ${this.renderSuggestionList(suggestions.mediumPriority, scores)}
 
       <div class="gd-section-title">💡 Zukunft</div>
-      ${_renderSuggestionList(suggestions.lowPriority, scores)}
+      ${this.renderSuggestionList(suggestions.lowPriority, scores)}
 
-      <!-- Design Doc Generator -->
       <div class="gd-section-title">📄 Design-Dokument generieren</div>
       <div class="gd-doc-row">
         <select class="gd-select" id="gdDocSelect">
-          ${MechanicGenerator.CATALOG.map(f=>`<option value="${f.id}">${f.name}</option>`).join('')}
+          ${this.mechanicGenerator.CATALOG.map(f=>`<option value="${f.id}">${f.name}</option>`).join('')}
         </select>
         <button class="gd-doc-btn" onclick="gameDesigner.generateFullDoc()">Generieren ▶</button>
       </div>
       <div id="gdDocOutput" class="gd-doc-output hidden"></div>
     `;
 
-    // Init first tab
-    showTab('mechanics');
+    this.showTab('mechanics');
   }
 
-  function _renderSuggestionList(list, scores) {
+  renderSuggestions() {
+    if (!this.currentSuggestions) return '<p>Keine Vorschläge. Führe eine Analyse durch.</p>';
+    const scores = this.autoUpdater.getScores();
+    return `
+      <h4>🔥 Hochpriorität</h4>${this.renderSuggestionList(this.currentSuggestions.highPriority, scores)}
+      <h4>⚡ Mittelpriorität</h4>${this.renderSuggestionList(this.currentSuggestions.mediumPriority, scores)}
+      <h4>💡 Zukunft</h4>${this.renderSuggestionList(this.currentSuggestions.lowPriority, scores)}
+    `;
+  }
+
+  renderSuggestionList(list, scores) {
     if (!list || !list.length) return '<p style="color:rgba(255,255,255,.3);font-size:13px;margin-bottom:12px">Keine Vorschläge in dieser Kategorie.</p>';
     return list.map(m => {
-      const score = scores[m.id];
+      const score = scores ? scores[m.id] : null;
       const scoreBar = score!=null ? `<div class="gd-score-bar"><div class="gd-score-fill" style="width:${score}%;background:${score>=75?'#2ECC71':score>=50?'#FF9800':'#FF3366'}"></div><span class="gd-score-val">${score}% Priorität</span></div>` : '';
       const effortCls = m.effort==='low'?'effort-low':m.effort==='high'?'effort-high':'effort-med';
       const effortTxt = m.effort==='low'?'⚡ Schnell':m.effort==='high'?'🏗️ Groß':'🔨 Mittel';
@@ -3884,40 +3911,54 @@ const GameDesignerAgent = (() => {
     }).join('');
   }
 
+  renderTrends() {
+    if (!this.currentTrends) return '<p>Keine Trends verfügbar. Führe eine Analyse durch.</p>';
+    let html = '<div class="trend-grid">';
+    for (const [game, data] of Object.entries(this.trendAnalyzer.TOP_GAMES)) {
+      html += `<div class="trend-card"><h4>${game}</h4><ul>${data.mechanics.map(m=>`<li>${m}</li>`).join('')}</ul></div>`;
+    }
+    return html + '</div>';
+  }
+
+  renderDocuments() {
+    if (!this.designDocuments.length) return '<p>Keine Dokumente. Führe eine Analyse durch.</p>';
+    return this.designDocuments.map(doc => this.designDocGenerator.renderHTML(doc)).join('');
+  }
+
   // ── Analyzer Tabs ───────────────────────────────────────────────────────
-  function showTab(tab, btn) {
+  showTab(tab, btn) {
     if (btn) {
       document.querySelectorAll('.gd-atab').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
     }
     const c = document.getElementById('gdAnalyzerContent');
     if (!c) return;
-    if (tab === 'mechanics')  c.innerHTML = _mechHTML();
-    if (tab === 'ux')         c.innerHTML = _uxHTML();
-    if (tab === 'engagement') c.innerHTML = _engHTML();
-    if (tab === 'gap')        c.innerHTML = _gapHTML();
+    if (tab === 'mechanics')  c.innerHTML = this._mechHTML();
+    if (tab === 'ux')         c.innerHTML = this._uxHTML();
+    if (tab === 'engagement') c.innerHTML = this._engHTML();
+    if (tab === 'gap')        c.innerHTML = this._gapHTML();
   }
 
-  function _mechHTML() {
-    return Object.entries(TrendAnalyzer.TOP_GAMES).map(([game,data])=>{
+  _mechHTML() {
+    return Object.entries(this.trendAnalyzer.TOP_GAMES).map(([game,data])=>{
       const pills = data.mechanics.map(m=>{
-        const has = TrendAnalyzer.PHARMAVOICE_HAS.has(m);
+        const has = this.trendAnalyzer.PHARMAVOICE_HAS.has(m);
         return `<span class="gd-pill ${has?'gd-pill-has':'gd-pill-neu'}">${has?'✓ ':'+ '}${m}</span>`;
       }).join('');
       return `<div class="gd-game-row"><div class="gd-game-name">🎮 ${game}</div><div class="gd-pill-row">${pills}</div></div>`;
     }).join('');
   }
 
-  function _uxHTML() {
-    return TrendAnalyzer.UX_PATTERNS.map(p=>`
+  _uxHTML() {
+    return this.trendAnalyzer.UX_PATTERNS.map(p=>`
       <div class="gd-game-row">
         <div class="gd-game-name">${p.name} <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,.35)">· ${p.games.join(', ')}</span></div>
         <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;line-height:1.5">${p.desc}</div>
       </div>`).join('');
   }
 
-  function _engHTML() {
-    return TrendAnalyzer.ENGAGEMENT_STRATEGIES.map(e=>`
+  _engHTML() {
+    return this.trendAnalyzer.ENGAGEMENT_STRATEGIES.map(e=>`
       <div class="gd-game-row">
         <div class="gd-game-name">${e.strategy} <span class="gd-tag" style="margin-left:4px">${e.type}</span></div>
         <div style="font-size:11px;color:rgba(255,255,255,.35);margin:3px 0">${e.games.join(' · ')}</div>
@@ -3925,9 +3966,9 @@ const GameDesignerAgent = (() => {
       </div>`).join('');
   }
 
-  function _gapHTML() {
+  _gapHTML() {
     const order = ['missing','partial','done'];
-    return [...TrendAnalyzer.GAP_ANALYSIS].sort((a,b)=>order.indexOf(a.status)-order.indexOf(b.status)).map(g=>{
+    return [...this.trendAnalyzer.GAP_ANALYSIS].sort((a,b)=>order.indexOf(a.status)-order.indexOf(b.status)).map(g=>{
       const cls = g.status==='done'?'badge-done':g.status==='partial'?'badge-partial':'badge-missing';
       const txt = g.status==='done'?'✅ Implementiert':g.status==='partial'?'🔨 Teilweise':'❌ Fehlt';
       return `<div class="gd-gap-row">
@@ -3939,35 +3980,32 @@ const GameDesignerAgent = (() => {
   }
 
   // ── Design Doc ──────────────────────────────────────────────────────────
-  function generateFullDoc(id) {
+  generateFullDoc(id) {
     if (!id) { const sel = document.getElementById('gdDocSelect'); if (sel) id = sel.value; }
     if (!id) return;
     const out = document.getElementById('gdDocOutput');
     if (!out) return;
-    const doc = DesignDocumentGenerator.generateDocument(id);
-    out.innerHTML = DesignDocumentGenerator.renderHTML(doc);
+    const doc = this.designDocGenerator.generateDocument(id);
+    out.innerHTML = this.designDocGenerator.renderHTML(doc);
     out.classList.remove('hidden');
     out.scrollIntoView({ behavior:'smooth', block:'nearest' });
-    // Also select in dropdown
     const sel = document.getElementById('gdDocSelect');
     if (sel) sel.value = id;
   }
 
-  function render()   { renderDashboard(); }
-  function refresh()  { fullAnalysis(); }
-  function checkForUpdate() { AutoUpdateSystem.checkForUpdate(); }
+  render()         { this.renderDashboard(); }
+  refresh()        { this.fullAnalysis(); }
+  checkForUpdate() { this.autoUpdater.checkForUpdate(); }
+}
 
-  return { render, refresh, fullAnalysis, renderDashboard, showTab, generateFullDoc, checkForUpdate };
-})();
-
-// Global alias for onclick handlers
-const gameDesigner = GameDesignerAgent;
+// Global singleton instance
+const gameDesigner = new GameDesignerAgent();
 
 // ── BOOT ──
 document.getElementById('screenHome').classList.add('active');
 load();
 refreshTierUI();
-setTimeout(() => GameDesignerAgent.checkForUpdate(), 1500);
+setTimeout(() => gameDesigner.checkForUpdate(), 1500);
 </script>
 </body>
 </html>
