@@ -531,6 +531,28 @@
     .mission-btn   { width:100%; padding:12px; background:linear-gradient(135deg,#FFC107,#FF9800); border:none; border-radius:12px; color:#1a1a1a; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; }
     .mission-btn:active { transform:scale(.98); }
 
+    /* ── Pharma Park ── */
+    .park-sub  { font-size:13px; color:var(--gray); margin:-8px 0 16px; }
+    .park-world {
+      position:relative; width:100%; aspect-ratio:1/1.1; max-height:60vh;
+      background:linear-gradient(160deg,#eef7f1 0%,#dff3e6 100%); border-radius:20px;
+      border:1.5px solid var(--border); overflow:hidden; margin-bottom:16px;
+    }
+    :root[data-theme="dark"] .park-world, .dark .park-world { background:linear-gradient(160deg,#12261c 0%,#0d1f17 100%); }
+    .park-zone { position:absolute; width:26%; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; transition:.15s; padding:10px 4px; border-radius:16px; }
+    .park-zone:active { transform:scale(.94); }
+    .park-zone-icon  { font-size:34px; filter:drop-shadow(0 3px 5px rgba(0,0,0,.15)); }
+    .park-zone-label { font-size:12px; font-weight:800; color:var(--text); }
+    .park-zone-tag   { font-size:10px; color:var(--gray); background:rgba(255,255,255,.6); border-radius:8px; padding:1px 6px; }
+    :root[data-theme="dark"] .park-zone-tag, .dark .park-zone-tag { background:rgba(255,255,255,.08); }
+    .park-zone-shelf     { top:8%;  left:6%; }
+    .park-zone-treadmill { top:8%;  right:6%; }
+    .park-zone-customer  { bottom:10%; left:6%; }
+    .park-zone-lab       { bottom:10%; right:6%; }
+    .park-avatar { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:40px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.25)); animation:parkIdle 2.4s ease-in-out infinite; }
+    @keyframes parkIdle { 0%,100%{transform:translate(-50%,-50%) translateY(0);} 50%{transform:translate(-50%,-50%) translateY(-6px);} }
+    .park-hint { text-align:center; font-size:12px; color:var(--gray); }
+
     /* ── Hub Screen ── */
     .hub-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
     .hub-title  { font-size:22px; font-weight:900; color:var(--text); }
@@ -1039,6 +1061,37 @@
 <!-- ══ HUB ══ -->
 <div class="screen" id="screenHub">
   <div id="hubContent"></div>
+</div>
+
+<!-- ══ PHARMA PARK ══ -->
+<div class="screen" id="screenPark">
+  <button class="back-btn" onclick="showScreen('Hub');HubSystem.render()">← Zurück zum Hub</button>
+  <h2 class="screen-h">🏞️ Pharma Park</h2>
+  <div class="park-sub">Lauf frei durch die Apotheke und tippe eine Station an</div>
+  <div class="park-world" id="parkWorld">
+    <div class="park-zone park-zone-shelf" id="parkShelf" onclick="ParkSystem.enter('shelf')">
+      <div class="park-zone-icon">📚</div>
+      <div class="park-zone-label">Regal</div>
+      <div class="park-zone-tag">🎤 Aussprache</div>
+    </div>
+    <div class="park-zone park-zone-treadmill" id="parkTreadmill" onclick="ParkSystem.enter('treadmill')">
+      <div class="park-zone-icon">🏃</div>
+      <div class="park-zone-label">Laufband</div>
+      <div class="park-zone-tag">🏃 Runner</div>
+    </div>
+    <div class="park-zone park-zone-customer" id="parkCustomer" onclick="ParkSystem.enter('customer')">
+      <div class="park-zone-icon">🧑‍⚕️</div>
+      <div class="park-zone-label">Kunde</div>
+      <div class="park-zone-tag">🧠 Quiz</div>
+    </div>
+    <div class="park-zone park-zone-lab" id="parkLab" onclick="ParkSystem.enter('lab')">
+      <div class="park-zone-icon">🧪</div>
+      <div class="park-zone-label">Labor</div>
+      <div class="park-zone-tag">⚗️ Rezeptur</div>
+    </div>
+    <div class="park-avatar" id="parkAvatar">🧑</div>
+  </div>
+  <div class="park-hint" id="parkHint">Tippe auf eine Station, um dort zu üben.</div>
 </div>
 
 <!-- ══ NAV ══ -->
@@ -2098,7 +2151,7 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el('screen' + name).classList.add('active');
-  const map = { Home:'navHome', Hub:'navHub', Achievements:'navAch', Profile:'navProf', Learn:'navHub', Result:'navHub', GameDesign:'navGD' };
+  const map = { Home:'navHome', Hub:'navHub', Park:'navHub', Achievements:'navAch', Profile:'navProf', Learn:'navHub', Result:'navHub', GameDesign:'navGD' };
   if (map[name]) el(map[name]).classList.add('active');
   CharacterSystem.showAvatar();
   refreshUI();
@@ -3623,6 +3676,46 @@ CharacterSystem.showBubble = function(text, dur) {
 };
 
 
+// ══ PHARMA PARK (open-world hub) ════════════════════════════════════════
+const ParkSystem = (() => {
+  const ZONE_MSG = {
+    shelf:     '📚 Du gehst zum Regal und übst die Aussprache …',
+    treadmill: '🏃 Ab aufs Laufband – Runner-Modus startet …',
+    customer:  '🧑‍⚕️ Ein Kunde hat eine Frage für dich – Quiz startet …',
+    lab:       '🧪 Willkommen im Labor – Rezeptur-Training startet …',
+  };
+
+  function _moveAvatarTo(zoneEl) {
+    const avatar = document.getElementById('parkAvatar');
+    const world  = document.getElementById('parkWorld');
+    if (!avatar || !world || !zoneEl) return;
+    const wr = world.getBoundingClientRect(), zr = zoneEl.getBoundingClientRect();
+    const x = zr.left - wr.left + zr.width/2;
+    const y = zr.top  - wr.top  + zr.height/2;
+    avatar.style.transition = 'left .4s ease, top .4s ease, transform .4s ease';
+    avatar.style.left = x + 'px';
+    avatar.style.top  = y + 'px';
+    avatar.style.transform = 'translate(-50%,-50%)';
+  }
+
+  function enter(zone) {
+    const zoneEl = document.getElementById('park' + zone.charAt(0).toUpperCase() + zone.slice(1));
+    _moveAvatarTo(zoneEl);
+    const hint = document.getElementById('parkHint');
+    if (hint) hint.textContent = ZONE_MSG[zone] || '';
+
+    setTimeout(() => {
+      if (zone === 'shelf' || zone === 'customer' || zone === 'lab') {
+        openModal(); // existing level-select → startLearn(); customer/lab reuse speak deck as MVP
+      } else if (zone === 'treadmill') {
+        startRunner();
+      }
+    }, 550);
+  }
+
+  return { enter };
+})();
+
 // ══ SMART LEARN SYSTEM (adaptive coach) ════════════════════════════════
 const SmartLearnSystem = (() => {
   const LS_SESSIONS = 'pv_smart_sessions'; // rolling log of recent learn sessions
@@ -4050,6 +4143,7 @@ const HubSystem = (() => {
       </div>
       ${DailyMissionSystem.isDone() ? SmartLearnSystem.renderCard() : DailyMissionSystem.renderCard()}
       ${next ? `<button class="hub-cta" onclick="HubSystem.playNext()">🚀 &nbsp;${next.level.type==='runner'?'Runner-Level starten':next.level.type==='quiz'?'Quiz starten':'Aussprache üben'}: ${next.level.name}</button>` : `<button class="hub-cta" onclick="HubSystem.render()">🏆 Alle Level abgeschlossen!</button>`}
+      <button class="hub-cta" style="background:linear-gradient(135deg,#5B4DFF,#8B7FFF);box-shadow:0 6px 20px rgba(91,77,255,.35);margin-bottom:24px" onclick="showScreen('Park')">🏞️ &nbsp;Pharma Park erkunden</button>
     `;
 
     for (const world of WORLDS) {
