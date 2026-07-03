@@ -4460,6 +4460,12 @@ const TrendAnalyzer = (() => {
       engagement:  ['Creator Revenue','Limited Items','Game Events'],
       monetization:['Robux IAP','Premium Subscription','Creator Marketplace'],
     },
+    'Youth Pharma (UI-Referenz)': {
+      mechanics:   ['Dual-Currency Economy (Coins/Gems)','Energy System','Isometric World Map','Team Roster','Mission Objectives'],
+      ux:          ['Top Resource Bar','Glass-Panel Cards','Character Portrait mit Level-Ring','Tab-Navigation im Shop','Building-Level-Badges auf Karte'],
+      engagement:  ['Team-Progression (mehrere Begleiter parallel leveln)','Missionsziel mit Live-Fortschritt','Energie als Session-Limiter'],
+      monetization:['Gem-Pakete','Starter/Chemist/Mega/Ultimate Packs','Equipment- & Booster-Shop'],
+    },
   };
 
   const PHARMAVOICE_HAS = new Set([
@@ -4477,6 +4483,8 @@ const TrendAnalyzer = (() => {
     { name:'Kinetic Typography', games:['Candy Crush','Block Blast!'], desc:'"FANTASTIC!" mit Bounce — Wörter animieren bei Ereignissen. Fehlt noch in PharmaVoice.' },
     { name:'Tension Arc (Boss/Event)', games:['Royal Match','Clash Royale'], desc:'Regelmäßige Klimax-Momente (Boss-Level, Events) nach ruhigeren Phasen.' },
     { name:'Social Proof Indicators', games:['Duolingo','Monopoly GO!'], desc:'"Dein Freund Leo hat heute 150 XP gemacht" — Fehlt in PharmaVoice.' },
+    { name:'Top Resource Bar', games:['Youth Pharma (UI-Referenz)'], desc:'Coins/Gems/Energie permanent sichtbar oben — Ressourcenstatus jederzeit ablesbar, erzeugt Kaufanreiz bei knapper Energie.' },
+    { name:'Isometric World Map mit Node-Leveln', games:['Youth Pharma (UI-Referenz)'], desc:'Gebäude/Stationen als Karten-Icons mit eigenem Level-Badge — räumliche Progression statt reiner Listen-Ansicht.' },
   ];
 
   const ENGAGEMENT_STRATEGIES = [
@@ -4486,6 +4494,7 @@ const TrendAnalyzer = (() => {
     { strategy:'Seasonal Events', games:['Royal Match','Monopoly GO!'], type:'Retention', desc:'Zeitbegrenzte Events mit exklusiven Belohnungen erzeugen FOMO.' },
     { strategy:'Daily Login Bonus', games:['Homescapes','Monopoly GO!'], type:'Retention', desc:'Täglich einloggen → Belohnung. Einfach aber wirksam.' },
     { strategy:'Meaningful Collection', games:['Clash Royale','Monopoly GO!'], type:'Langzeit', desc:'Spieler sammeln Karten, Sticker — visualisiert Langzeitfortschritt.' },
+    { strategy:'Team Roster Progression', games:['Youth Pharma (UI-Referenz)'], type:'Langzeit', desc:'Mehrere Begleiter/Charaktere leveln parallel — jeder mit eigener XP-Leiste und Sternebewertung, statt nur einem Avatar.' },
   ];
 
   const GAP_ANALYSIS = [
@@ -4497,6 +4506,8 @@ const TrendAnalyzer = (() => {
     { title:'Spaced Repetition', status:'done', priority:'erledigt', desc:'SM-2 vollständig. Kompetitiver Vorteil — kaum ein Lern-Spiel hat das.' },
     { title:'NPC Characters', status:'done', priority:'erledigt', desc:'Beatrice, Victor, Fin, Ari mit Tamagotchi + Canvas-Avatare. Besser als Duolingo.' },
     { title:'Audio Feedback', status:'done', priority:'erledigt', desc:'Web Audio + Speech Synthesis in 3 Sprachen. Vollständig.' },
+    { title:'Top Ressourcen-Leiste', status:'missing', priority:'mittel', desc:'Youth-Pharma-Referenz zeigt Coins/Gems/Energie permanent oben. PharmaVoice zeigt Shekel nur auf dem Home-Screen.' },
+    { title:'Team-Roster (mehrere Begleiter)', status:'partial', priority:'niedrig', desc:'Aktuell nur EIN aktiver Begleiter wählbar. Youth-Pharma-Referenz zeigt ein ganzes Team mit individuellen Level-Balken.' },
   ];
 
   function analyzeTrends() {
@@ -4528,6 +4539,8 @@ const MechanicGenerator = (() => {
       description:'Kontextbasierte Erklärungen durch Beatrice/Victor wenn Wort 3x falsch.' },
     { id:'ar_scanner',    name:'AR-Wirkstoff-Scanner',              priority:'low',    effort:'high', inspiration:['Google Lens','Duolingo Camera'],
       description:'Kamera → Medikamentenpackung → sofortige Aussprache-Challenge.' },
+    { id:'resource_hud',  name:'Ressourcen-HUD & Team-Roster',       priority:'medium', effort:'med',  inspiration:['Youth Pharma (UI-Referenz)'],
+      description:'Permanente Top-Leiste mit Shekel/Gems/Energie + Team-Ansicht mit mehreren Begleitern, die parallel leveln (statt nur einem aktiven Avatar).' },
   ];
 
   function generateMechanics(trends, scores = {}) {
@@ -4558,6 +4571,7 @@ const DesignDocumentGenerator = (() => {
     friend_duel:   { inspiration:'Clash Royale PvP, Duolingo Friend Leagues', overview:'Asynchrones 1v1 per Link. Beide spielen dieselbe Wortliste.', mechanics:{rules:'Challenger generiert Link mit Seed. Gegner öffnet Link, spielt.',triggers:'• Link-Button in Profil  • Gegner: Link → gleiche Wortliste  • Ergebnis: URL-Hash',rewards:'• Gewinner: +300 Münzen + "Duell-Sieger"-Badge  • Verlierer: +50 Münzen'}, flow:['Profil: "Freund herausfordern"','Link generiert + kopiert','Freund öffnet Link → Duell','Ergebnis verglichen','Gewinner-Animation'], ux:{layout:'Duell-Screen mit beiden Avataren links/rechts',feedback:'VS-Intro; dramatische Sieges-Sequenz',states:['challenge-created','opponent-playing','result-done']}, technical:{storage:'URL-Hash: #duel=seed:score:char',seed:'Wortliste per Date+UUID deterministisch',files:'~150 Zeilen',noBackend:true}, metrics:{dau:'Viralität: jedes Duell = neuer Touchpoint',retention:'Kompetitiver Druck → tägl. Rückkehr',session:'Duell-Accept-Rate Ziel: >60%'}, roadmap:[{phase:'MVP',time:'6-8h',tasks:['URL-Schema','Duell-Screen','Ergebnis-Vergleich']},{phase:'V2',time:'+4h',tasks:['Avatar-VS-Animation','Münzen-Transfer']},{phase:'V3',time:'+6h',tasks:['Liga-System']}], effort:'6-8h', impact:'Sehr hoch (Viral)' },
     npc_mentor:    { inspiration:'Duolingo Characters, LLM-NPCs (GDC 2024)', overview:'Template-Engine erzeugt personalisierte Lehr-Gespräche wenn Wort 3x falsch.', mechanics:{rules:'Nach 3+ Fehlern am selben Wort → kontextuelle Erklärung per Template.',triggers:'• 3x falsches Wort  • Neues Level  • Perfekte Runde',rewards:'• Gefühl von persönlichem Tutor  • Merkfähigkeit ↑'}, flow:['Fehler-Zähler per Wort','Schwellenwert → Bubble erscheint','Erklärung mit Tipp','Option: "Mehr erklären" → 3 Variationen'], ux:{layout:'Erweiterter Chat-Bubble; Charakter zeigt Erklär-Emotion',feedback:'Wort-Highlight in Bubble; Silben-Trennung animiert',states:['normal','tip-triggered','explaining','understood']}, technical:{storage:'pv_sm2 Fehler-Zähler bereits vorhanden',seed:'TIP_TEMPLATES[wordName] oder generische Analogie',files:'~120 Zeilen',noBackend:true}, metrics:{dau:'Fehler-Rate nach Tipp: -25% erwartet',retention:'Charakterbindung ↑',session:'Spieler fragen mehr Tipps an'}, roadmap:[{phase:'MVP',time:'4-5h',tasks:['Template-Engine','Top-50-Wörter','Bubble-UI']},{phase:'V2',time:'+4h',tasks:['Alle 102 Wörter','3 Varianten je']},{phase:'V3',time:'+6h',tasks:['Charakter-spez. Lehr-Stil']}], effort:'4-5h', impact:'Hoch' },
     ar_scanner:    { inspiration:'Google Lens, Duolingo Camera Mode', overview:'Kamera → Packung → OCR-Match → sofortige Aussprache-Challenge.', mechanics:{rules:'getUserMedia + Canvas-OCR; Fuzzy-Match gegen WORDS (Levenshtein ≥ 0.6).',triggers:'• Match gefunden → Highlight-Box + "Aussprechen!"  • Kein Match → "Anderen Winkel"',rewards:'• Erster Scan: "AR-Pionier"-Badge  • 10 Scans: "Scan-Meister"  • Jeder Scan: +30 Münzen'}, flow:['Button "Scannen" in Home','Kamera öffnet (getUserMedia)','Rotes Fadenkreuz scannt','Wirkstoff erkannt → Karte','Challenge startet'], ux:{layout:'Vollbild-Kamera mit HUD-Overlay',feedback:'Grüne Bounding-Box; Kamera-Klick-Sound',states:['idle','scanning','found','challenge','no-match']}, technical:{storage:'pv_ar_scans; pv_ar_badges',seed:'Tesseract.js Browser-OCR + Levenshtein-Match',files:'~200 Zeilen',noBackend:true}, metrics:{dau:'Marketing-Hook: viral auf TikTok/LinkedIn',retention:'Reale Lernverknüpfung',session:'Sessions nach erstem Scan: länger'}, roadmap:[{phase:'MVP',time:'10-12h',tasks:['getUserMedia','Levenshtein-Match','Basic UI']},{phase:'V2',time:'+6h',tasks:['Tesseract.js OCR']},{phase:'V3',time:'+8h',tasks:['Packaging-Datenbank']}], effort:'10-12h', impact:'Marketing: Sehr hoch' },
+    resource_hud:  { inspiration:'Youth Pharma (UI-Referenz-Screenshot)', overview:'Permanente Top-Leiste (Shekel/Gems/Energie) auf jedem Screen + Team-Ansicht mit mehreren parallel levelnden Begleitern statt nur einem aktiven Avatar.', mechanics:{rules:'Energie regeneriert 1 Punkt / 5min (Cap 100); jede Lern-Session kostet 10 Energie. Team-XP verteilt sich anteilig auf alle aktiven Begleiter.',triggers:'• Energie leer → Sanftes Cooldown-Overlay statt Hardstop  • Team-Level-Up → Bounce-Animation auf Portrait',rewards:'• Volle Energie-Leiste: "Aufgeladen"-Badge  • Alle 4 Begleiter Lv.10: "Vollständiges Team"-Abzeichen'}, flow:['Top-Bar auf allen Screens sichtbar (Shekel/Gems/Energie)','Team-Tab in Profil: 4 Begleiter-Karten mit Level-Balken','Tap auf Begleiter → Mini-Stats + "Trainieren"-Button','Energie sinkt mit jeder Session, regeneriert passiv'], ux:{layout:'Fixe Top-Bar mit Glass-Panel-Optik über allen Screens; Team-Grid 2×2 im Profil',feedback:'Energie-Balken pulsiert bei <20%; Team-Karten-Glow bei Level-Up',states:['full-energy','low-energy','depleted','team-levelup']}, technical:{storage:'pv_energy (value, lastRegenTs); pv_team (Array von Begleiter-XP)',seed:'setInterval-freie Regeneration: Delta aus Date.now() beim Laden berechnen',files:'~150 Zeilen (Top-Bar-Komponente + Team-Grid)',noBackend:true}, metrics:{dau:'Session-Frequenz durch Energie-Timing gesteuert',retention:'Team-Sammel-Ziel verlängert Langzeitbindung',session:'Kürzere, häufigere Sessions statt langer Einzelsitzungen'}, roadmap:[{phase:'MVP',time:'3-4h',tasks:['Top-Bar-Komponente','Energie-System','Team-Grid UI']},{phase:'V2',time:'+3h',tasks:['Team-XP-Verteilung','Trainieren-Interaktion']},{phase:'V3',time:'+4h',tasks:['Gems als zweite Währung + Shop-Anbindung']}], effort:'3-4h', impact:'Mittel' },
   };
 
   function generateDocument(featureId) {
