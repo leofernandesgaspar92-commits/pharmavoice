@@ -36,6 +36,28 @@
     .screen { display: none; padding: 32px 20px 116px; min-height: 100vh; animation: fadeUp .25s ease; }
     .screen.active { display: block; }
 
+    /* ── Resource Top Bar (Youth-Pharma-Referenz: Coins/Gems/Energy) ── */
+    .pv-topbar { position:sticky; top:0; z-index:250; display:flex; align-items:center; justify-content:center; gap:8px; padding:8px 14px; background:rgba(255,255,255,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
+    :root[data-theme="dark"] .pv-topbar, .dark .pv-topbar { background:rgba(15,20,30,.85); }
+    .pv-res-pill { display:flex; align-items:center; gap:4px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:5px 11px; font-size:12px; font-weight:800; color:var(--text); white-space:nowrap; }
+    .pv-energy-pill { position:relative; padding-bottom:5px; }
+    .pv-energy-track { position:absolute; left:11px; right:11px; bottom:2px; height:3px; background:var(--border); border-radius:3px; overflow:hidden; }
+    .pv-energy-fill { height:100%; background:linear-gradient(90deg,#FFC107,#FF9800); border-radius:3px; transition:width .4s ease; }
+    .pv-energy-pill.low .pv-energy-fill { background:linear-gradient(90deg,#FF3366,#FF6B35); animation:pvEnergyPulse 1s ease-in-out infinite; }
+    @keyframes pvEnergyPulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    /* ── Team Roster (Youth-Pharma-Referenz) ── */
+    .team-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .team-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 10px; text-align:center; }
+    .team-emoji { font-size:32px; margin-bottom:4px; }
+    .team-name  { font-size:13px; font-weight:800; color:var(--text); }
+    .team-role  { font-size:10.5px; color:var(--gray); margin-bottom:8px; }
+    .team-lvl   { font-size:11px; font-weight:700; color:var(--green); margin-bottom:4px; }
+    .team-bar   { height:5px; background:var(--border); border-radius:5px; overflow:hidden; margin-bottom:4px; }
+    .team-bar-fill { height:100%; background:linear-gradient(90deg,var(--green),#00E68A); border-radius:5px; transition:width .5s ease; }
+    .team-xp-txt { font-size:10px; color:var(--gray); margin-bottom:6px; }
+    .team-star  { font-size:11px; }
+
     @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
     /* NAV */
@@ -522,7 +544,7 @@
     .smart-body  { font-size:13px; color:rgba(255,255,255,.75); line-height:1.5; margin-bottom:12px; }
     .smart-btn   { width:100%; padding:12px; background:linear-gradient(135deg,#00D4FF,#0090C7); border:none; border-radius:12px; color:#04202b; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; }
     .smart-btn:active { transform:scale(.98); }
-    .smart-coach-banner { position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:900; background:linear-gradient(135deg,#0d2137,#1a1a3e); border:1.5px solid rgba(100,180,255,.4); border-radius:14px; padding:12px 16px; display:flex; align-items:center; gap:10px; max-width:90%; box-shadow:0 8px 24px rgba(0,0,0,.35); animation:smartBannerIn .3s ease; }
+    .smart-coach-banner { position:fixed; top:64px; left:50%; transform:translateX(-50%); z-index:900; background:linear-gradient(135deg,#0d2137,#1a1a3e); border:1.5px solid rgba(100,180,255,.4); border-radius:14px; padding:12px 16px; display:flex; align-items:center; gap:10px; max-width:90%; box-shadow:0 8px 24px rgba(0,0,0,.35); animation:smartBannerIn .3s ease; }
     .smart-coach-icon { font-size:18px; flex-shrink:0; }
     .smart-coach-text { font-size:13px; color:#fff; line-height:1.4; }
     @keyframes smartBannerIn { from{opacity:0;transform:translateX(-50%) translateY(-10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
@@ -782,6 +804,16 @@
 <body>
 
 <canvas id="confettiCanvas"></canvas>
+
+<!-- ══ RESOURCE TOP BAR ══ -->
+<div class="pv-topbar" id="pvTopbar">
+  <div class="pv-res-pill" title="Shekel">🪙 <span id="topbarCoins">0</span></div>
+  <div class="pv-res-pill" title="Gems">💎 <span id="topbarGems">0</span></div>
+  <div class="pv-res-pill pv-energy-pill" title="Energie">
+    ⚡ <span id="topbarEnergy">100</span>/100
+    <div class="pv-energy-track"><div class="pv-energy-fill" id="topbarEnergyFill" style="width:100%"></div></div>
+  </div>
+</div>
 
 <!-- ══ AUDIO SETTINGS MODAL ══ -->
 <div id="audioSettingsModal" onclick="if(event.target===this)closeAudioSettings()">
@@ -1078,6 +1110,9 @@
     <div class="prog-track"><div class="prog-fill" id="profProgFill" style="width:0%"></div></div>
     <div class="lvl-xp-row"><span id="profProgTxt">0 / 200 Shekel</span><span id="profProgPct">0%</span></div>
   </div>
+
+  <div class="section-title" style="margin-top:24px">👥 Mein Team</div>
+  <div id="profTeamGrid"></div>
 </div>
 
 <!-- ══ GAME DESIGNER SCREEN ══ -->
@@ -2136,6 +2171,8 @@ function refreshUI() {
   set('profProgLabel', `Level ${lvl+1} benötigt <strong>${(lvl)*xpPerLevel} Shekel</strong>`);
   renderLevelCards();
   renderHomeDashboard();
+  ResourceSystem.renderTopbar();
+  if (el('profTeamGrid')) el('profTeamGrid').innerHTML = TeamSystem.renderGrid();
 }
 
 function renderHomeDashboard() {
@@ -2288,6 +2325,7 @@ function startLearn(lvId = 1) {
   // SM-2: put overdue/new drugs first, then shuffle the rest
   const sorted = sm2SortMeds(pool);
   Q = { meds: sorted.slice(0, 10), idx: 0, correct: 0, sessionXP: 0, answered: false, lvId };
+  ResourceSystem.spendEnergy();
   setTimeout(() => CharacterSystem.showBubble(
     (CharacterSystem.getCurrent()?.msgs.start || ['Los geht\'s!'])[Math.floor(Math.random()*2)]
   ), 400);
@@ -2887,6 +2925,7 @@ function stopRunner() {
 
 function rnStartGame() {
   rnEl('rnOverlay').classList.add('hidden');
+  ResourceSystem.spendEnergy();
   // Shuffle words, weight by difficulty (harder words less frequent early)
   RG.wordQueue = [...RN_WORDS].sort(() => Math.random() - 0.5);
   RG.curIdx   = 0;
@@ -3755,6 +3794,107 @@ CharacterSystem.showBubble = function(text, dur) {
 
 
 // ══ PHARMA PARK (open-world hub) ════════════════════════════════════════
+// ══ RESOURCE SYSTEM (Youth-Pharma-Referenz: Coins/Gems/Energy HUD) ══════
+const ResourceSystem = (() => {
+  const LS_ENERGY = 'pv_energy';
+  const LS_GEMS   = 'pv_gems';
+  const MAX_ENERGY = 100;
+  const REGEN_MS   = 5 * 60 * 1000; // +1 Energie alle 5 Minuten
+  const SESSION_COST = 10;
+
+  function _loadEnergy() {
+    let e; try { e = JSON.parse(localStorage.getItem(LS_ENERGY)); } catch { e = null; }
+    if (!e) e = { value: MAX_ENERGY, ts: Date.now() };
+    const elapsed = Date.now() - e.ts;
+    const regen = Math.floor(elapsed / REGEN_MS);
+    if (regen > 0) {
+      e.value = Math.min(MAX_ENERGY, e.value + regen);
+      e.ts = Date.now();
+      _saveEnergy(e);
+    }
+    return e;
+  }
+  function _saveEnergy(e) { localStorage.setItem(LS_ENERGY, JSON.stringify(e)); }
+
+  function getEnergy() { return _loadEnergy().value; }
+  function spendEnergy(amount = SESSION_COST) {
+    const e = _loadEnergy();
+    e.value = Math.max(0, e.value - amount);
+    _saveEnergy(e);
+    renderTopbar();
+    return e.value;
+  }
+  function hasEnergy(amount = SESSION_COST) { return getEnergy() >= amount; }
+
+  function getGems() { try { return parseInt(localStorage.getItem(LS_GEMS)) || 0; } catch { return 0; } }
+  function addGems(amount) {
+    const g = getGems() + amount;
+    localStorage.setItem(LS_GEMS, g);
+    renderTopbar();
+    return g;
+  }
+
+  function renderTopbar() {
+    const coinsEl = document.getElementById('topbarCoins');
+    const gemsEl  = document.getElementById('topbarGems');
+    const enEl    = document.getElementById('topbarEnergy');
+    const fillEl  = document.getElementById('topbarEnergyFill');
+    const pillEl  = document.querySelector('.pv-energy-pill');
+    if (!coinsEl) return;
+    let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch {}
+    coinsEl.textContent = (pv2.xp || 0).toLocaleString('de-DE');
+    gemsEl.textContent  = getGems();
+    const energy = getEnergy();
+    enEl.textContent = energy;
+    if (fillEl) fillEl.style.width = energy + '%';
+    if (pillEl) pillEl.classList.toggle('low', energy <= 20);
+  }
+
+  return { getEnergy, spendEnergy, hasEnergy, getGems, addGems, renderTopbar, MAX_ENERGY, SESSION_COST };
+})();
+
+// ══ TEAM SYSTEM (mehrere Begleiter leveln parallel, Youth-Pharma-Referenz) ══
+const TeamSystem = (() => {
+  const MEMBERS = [
+    { id:'beatrice', name:'Beatrice', role:'Apothekerin',       emoji:'👩‍⚕️' },
+    { id:'victor',   name:'Victor',   role:'PKA-Lehrling',      emoji:'👨‍🎓' },
+    { id:'fin',      name:'Fin',      role:'Treuer Begleiter',  emoji:'🐕' },
+    { id:'ari',      name:'Ari',      role:'Süße Begleiterin',  emoji:'🐶' },
+  ];
+  const XP_PER_MEMBER_LEVEL = 100;
+
+  // Team-XP wird live aus dem Gesamt-XP abgeleitet (gleichmäßig auf alle 4
+  // Begleiter verteilt) statt separat verfolgt zu werden — immer konsistent,
+  // ohne dass jede XP-Vergabestelle im Code extra angepasst werden muss.
+  function _totalXp() {
+    let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch {}
+    return pv2.xp || 0;
+  }
+
+  function renderGrid() {
+    const share = Math.round(_totalXp() / MEMBERS.length);
+    return `<div class="team-grid">${MEMBERS.map(m => {
+      const xp = share;
+      const lvl = Math.floor(xp / XP_PER_MEMBER_LEVEL) + 1;
+      const inLvl = xp % XP_PER_MEMBER_LEVEL;
+      const pct = Math.round(inLvl / XP_PER_MEMBER_LEVEL * 100);
+      const stars = Math.min(5, Math.floor(lvl / 2) + 1);
+      const starsHtml = [1,2,3,4,5].map(n => `<span class="team-star">${n <= stars ? '⭐' : '☆'}</span>`).join('');
+      return `<div class="team-card">
+        <div class="team-emoji">${m.emoji}</div>
+        <div class="team-name">${m.name}</div>
+        <div class="team-role">${m.role}</div>
+        <div class="team-lvl">Lv. ${lvl}</div>
+        <div class="team-bar"><div class="team-bar-fill" style="width:${pct}%"></div></div>
+        <div class="team-xp-txt">${inLvl}/${XP_PER_MEMBER_LEVEL}</div>
+        <div class="team-stars">${starsHtml}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  return { renderGrid, MEMBERS };
+})();
+
 const ParkSystem = (() => {
   const ZONE_MSG = {
     shelf:     '📚 Du gehst zum Regal und übst die Aussprache …',
@@ -4020,6 +4160,7 @@ const DailyMissionSystem = (() => {
       const data = JSON.parse(localStorage.getItem('pv2') || '{}');
       data.xp = (data.xp || 0) + BONUS_XP;
       localStorage.setItem('pv2', JSON.stringify(data));
+      ResourceSystem.addGems(5);
       refreshUI();
       CharacterSystem.notifyLevelUp();
     }
@@ -4506,8 +4647,8 @@ const TrendAnalyzer = (() => {
     { title:'Spaced Repetition', status:'done', priority:'erledigt', desc:'SM-2 vollständig. Kompetitiver Vorteil — kaum ein Lern-Spiel hat das.' },
     { title:'NPC Characters', status:'done', priority:'erledigt', desc:'Beatrice, Victor, Fin, Ari mit Tamagotchi + Canvas-Avatare. Besser als Duolingo.' },
     { title:'Audio Feedback', status:'done', priority:'erledigt', desc:'Web Audio + Speech Synthesis in 3 Sprachen. Vollständig.' },
-    { title:'Top Ressourcen-Leiste', status:'missing', priority:'mittel', desc:'Youth-Pharma-Referenz zeigt Coins/Gems/Energie permanent oben. PharmaVoice zeigt Shekel nur auf dem Home-Screen.' },
-    { title:'Team-Roster (mehrere Begleiter)', status:'partial', priority:'niedrig', desc:'Aktuell nur EIN aktiver Begleiter wählbar. Youth-Pharma-Referenz zeigt ein ganzes Team mit individuellen Level-Balken.' },
+    { title:'Top Ressourcen-Leiste', status:'done', priority:'erledigt', desc:'Sticky Top-Bar mit Shekel/Gems/Energie auf allen Screens umgesetzt (ResourceSystem).' },
+    { title:'Team-Roster (mehrere Begleiter)', status:'done', priority:'erledigt', desc:'Team-Grid im Profil zeigt alle 4 Begleiter mit individuellem Level/Fortschrittsbalken (TeamSystem), XP gleichmäßig aus Gesamt-XP abgeleitet.' },
   ];
 
   function analyzeTrends() {
@@ -4539,8 +4680,8 @@ const MechanicGenerator = (() => {
       description:'Kontextbasierte Erklärungen durch Beatrice/Victor wenn Wort 3x falsch.' },
     { id:'ar_scanner',    name:'AR-Wirkstoff-Scanner',              priority:'low',    effort:'high', inspiration:['Google Lens','Duolingo Camera'],
       description:'Kamera → Medikamentenpackung → sofortige Aussprache-Challenge.' },
-    { id:'resource_hud',  name:'Ressourcen-HUD & Team-Roster',       priority:'medium', effort:'med',  inspiration:['Youth Pharma (UI-Referenz)'],
-      description:'Permanente Top-Leiste mit Shekel/Gems/Energie + Team-Ansicht mit mehreren Begleitern, die parallel leveln (statt nur einem aktiven Avatar).' },
+    // resource_hud (Ressourcen-HUD & Team-Roster) wurde umgesetzt — siehe ResourceSystem/TeamSystem,
+    // daher aus dem Vorschlags-Katalog entfernt, damit der Agent es nicht erneut empfiehlt.
   ];
 
   function generateMechanics(trends, scores = {}) {
