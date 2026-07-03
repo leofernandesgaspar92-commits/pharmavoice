@@ -288,6 +288,20 @@
     .rn-lane-r { right:22%; animation-delay:.3s; }
     @keyframes lanePulse { 0%,100%{opacity:.5;} 50%{opacity:1;} }
 
+    /* Fusion Mode: obstacle approaching + runner sprite */
+    .rn-runner { position:absolute; left:50%; bottom:8%; transform:translateX(-50%); font-size:34px; z-index:5; filter:drop-shadow(0 4px 6px rgba(0,0,0,.5)); transition:transform .15s; }
+    .rn-runner.jump  { animation:rnRunnerJump .5s ease; }
+    .rn-runner.hit   { animation:rnRunnerHit .4s ease; }
+    @keyframes rnRunnerJump { 0%{transform:translateX(-50%) translateY(0)} 40%{transform:translateX(-50%) translateY(-26px) rotate(-8deg)} 100%{transform:translateX(-50%) translateY(0)} }
+    @keyframes rnRunnerHit  { 0%,100%{transform:translateX(-50%)} 25%{transform:translateX(-58%) rotate(-10deg)} 75%{transform:translateX(-42%) rotate(10deg)} }
+    .rn-obstacle { position:absolute; left:50%; top:-15%; transform:translateX(-50%); font-size:30px; z-index:4; opacity:0; filter:drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
+    .rn-obstacle.approaching { opacity:1; animation-name:rnObstacleApproach; animation-timing-function:linear; animation-fill-mode:forwards; }
+    .rn-obstacle.cleared { animation:rnObstacleBreak .35s ease forwards; }
+    .rn-obstacle.hit-player { animation:rnObstacleFlash .3s ease; }
+    @keyframes rnObstacleApproach { from{top:-15%;} to{top:78%;} }
+    @keyframes rnObstacleBreak { 0%{opacity:1;transform:translateX(-50%) scale(1);} 100%{opacity:0;transform:translateX(-50%) scale(1.8) rotate(25deg);} }
+    @keyframes rnObstacleFlash { 0%,100%{opacity:1;} 50%{opacity:.2;} }
+
     /* Milestones */
     .rn-milestone {
       position:absolute; font-size:28px; animation:milestoneFall 2s linear forwards;
@@ -1053,6 +1067,8 @@
   <div class="rn-road">
     <div class="rn-lane-l"></div>
     <div class="rn-lane-r"></div>
+    <div class="rn-obstacle" id="rnObstacle">🚧</div>
+    <div class="rn-runner" id="rnRunner">🏃</div>
   </div>
 
   <!-- Header: score / combo / lives -->
@@ -2798,6 +2814,15 @@ function rnNextWord() {
     rnWrongAnswer(w, null); // time ran out
   }, RG.totalTime);
 
+  // Fusion Mode: obstacle approaches the runner in sync with the timer
+  const obs = rnEl('rnObstacle');
+  if (obs) {
+    obs.className = 'rn-obstacle';
+    void obs.offsetWidth; // reflow to restart animation
+    obs.style.animationDuration = RG.totalTime + 'ms';
+    obs.className = 'rn-obstacle approaching';
+  }
+
   // Auto-start mic
   rnStartMic(w);
 }
@@ -2818,6 +2843,11 @@ function rnCorrectAnswer(w) {
   rnEl('rnFeedback').textContent = `✅ +${pts} Punkte`;
   rnRenderCombo();
   rnRenderScore();
+
+  // Fusion Mode: runner jumps the obstacle, obstacle shatters
+  const runnerEl = rnEl('rnRunner'), obsEl = rnEl('rnObstacle');
+  if (runnerEl) { runnerEl.classList.remove('hit'); runnerEl.classList.add('jump'); setTimeout(()=>runnerEl.classList.remove('jump'), 500); }
+  if (obsEl) obsEl.classList.add('cleared');
 
   // Combo badge at key thresholds
   const badges = { 5:'🔥 COMBO ×5!', 10:'⚡ ON FIRE! ×10', 15:'💥 INSANE! ×15', 20:'👑 PHARMA-LEGENDE!' };
@@ -2845,6 +2875,11 @@ function rnWrongAnswer(w, spoken) {
   rnEl('rnFeedback').textContent = spoken
     ? `❌ Erkannt: "${spoken}"`
     : '⏰ Zeit abgelaufen!';
+
+  // Fusion Mode: obstacle hits the runner
+  const runnerEl = rnEl('rnRunner'), obsEl = rnEl('rnObstacle');
+  if (runnerEl) { runnerEl.classList.remove('jump'); runnerEl.classList.add('hit'); setTimeout(()=>runnerEl.classList.remove('hit'), 400); }
+  if (obsEl) { obsEl.classList.add('hit-player'); }
 
   if (RG.lives <= 0) {
     setTimeout(rnGameOver, 900);
