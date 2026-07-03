@@ -2365,6 +2365,7 @@ function showResult() {
   HubSystem._hookLearnEnd(Q.correct);
   DailyMissionSystem._hookLearnEnd(Q.correct);
   SmartLearnSystem._hookLearnEnd(Q.correct, Q.meds.length);
+  localStorage.setItem('pv_last_learn_date', new Date().toISOString().slice(0,10));
   showScreen('Result');
 }
 
@@ -4232,23 +4233,37 @@ class UnifiedLearningHub {
     this.currentMode = null;
   }
 
+  // ===== Nutzerdaten für den Game Designer Agent aufbereiten =====
   loadPlayerData() {
     let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch {}
-    let hub = {}; try { hub = JSON.parse(localStorage.getItem('pv_hub') || '{}'); } catch {}
-    const learnSessions = (() => { try { return JSON.parse(localStorage.getItem('pv_smart_sessions')) || []; } catch { return []; } })();
+    let sm2 = {}; try { sm2 = JSON.parse(localStorage.getItem('pv_sm2') || '{}'); } catch {}
+    const learnLog  = (() => { try { return JSON.parse(localStorage.getItem('pv_smart_sessions')) || []; } catch { return []; } })();
+    const runnerLog = (() => { try { return JSON.parse(localStorage.getItem('pv_smart_runs'))     || []; } catch { return []; } })();
+    const today = new Date().toISOString().slice(0,10);
+
+    const totalAttempts = learnLog.reduce((s,e) => s + e.total, 0);
+    const correctTotal  = learnLog.reduce((s,e) => s + e.correct, 0);
+    const weakWords = Object.entries(sm2).filter(([,d]) => d.reps === 0).map(([name]) => name);
+    const xpPerLevel = 200;
+
     return {
-      xp: pv2.xp || 0,
-      streak: S.streak || 0,
-      hubLevelsDone: Object.values(hub).filter(l => l && l.done).length,
-      learnSessionsLogged: learnSessions.length,
-      isNewPlayer: (pv2.xp || 0) === 0 && learnSessions.length === 0,
+      totalWords:        S.learned || pv2.learned || 0,
+      lastLearnDate:      localStorage.getItem('pv_last_learn_date'),
+      wrongAnswers:       totalAttempts - correctTotal,
+      totalAttempts,
+      runnerPlayedToday:  runnerLog.some(e => new Date(e.ts).toISOString().slice(0,10) === today),
+      streak:             S.streak || 0,
+      level:              Math.floor((pv2.xp || 0) / xpPerLevel) + 1,
+      xp:                 pv2.xp || 0,
+      weakWords,
     };
   }
 
   // ===== HAUPTFUNKTION: "Jetzt lernen starten" =====
   startLearning() {
-    const data = this.loadPlayerData();
-    const recommendation = this.recommendMode(data);
+    const playerData    = this.loadPlayerData();
+    const analysis       = gameDesigner.analyzePlayerState(playerData);
+    const recommendation = gameDesigner.recommendMode(analysis);
     this.currentMode = recommendation.mode;
 
     showScreen('Hub');
@@ -4258,28 +4273,11 @@ class UnifiedLearningHub {
       case 'world':         this.startWorldMode(recommendation); break;
       case 'daily_mission': this.startDailyMission(recommendation); break;
       case 'learn':         this.startLearnMode(recommendation); break;
-      case 'fusion':        this.startFusionMode(recommendation); break;
+      case 'runner':        this.startFusionMode(recommendation); break;
       default:               this.startSmartLearn(recommendation);
     }
 
     this.showModeAnnouncement(recommendation);
-  }
-
-  // ===== Entscheidung: welcher Modus passt gerade am besten =====
-  recommendMode(data) {
-    // Onboarding: brandneue Nutzer starten in der strukturierten Welt, nicht beim Coach
-    if (data.isNewPlayer) {
-      return { mode:'world', reason:'Willkommen! Wir starten mit deiner ersten Lernwelt.' };
-    }
-    // Tagesmission hat Vorrang, solange sie offen ist
-    if (!DailyMissionSystem.isDone()) {
-      return { mode:'daily_mission', reason:'Deine Tagesmission wartet auf dich.' };
-    }
-    // Sonst entscheidet der Smart Coach (Fehlerquote, Tageszeit, Aktivität)
-    const decision = SmartLearnSystem.decide();
-    if (decision.mode === 'speak')  return { mode:'learn',  reason: decision.reason };
-    if (decision.mode === 'runner') return { mode:'fusion', reason: decision.reason };
-    return { mode:'smart_learn', reason: decision.reason, mixSteps: decision.mixSteps };
   }
 
   // ===== MODE: WORLD (Welt-/Level-Karte) =====
@@ -4291,11 +4289,11 @@ class UnifiedLearningHub {
   // ===== MODE: LEARN (fokussierte Aussprache-Session) =====
   startLearnMode() { openModal(); }
 
-  // ===== MODE: FUSION (Runner mit Lern-Elementen) =====
+  // ===== MODE: FUSION (Runner mit Lern-Elementen, bereits als Fusion-Mode gestaltet) =====
   startFusionMode() { startRunner(); }
 
   // ===== MODE: SMART LEARN (gemischte Sequenz) =====
-  startSmartLearn(recommendation) { SmartLearnSystem.start(); }
+  startSmartLearn() { SmartLearnSystem.start(); }
 
   showModeAnnouncement(recommendation) {
     let banner = document.getElementById('smartCoachBanner');
@@ -4303,7 +4301,7 @@ class UnifiedLearningHub {
     banner = document.createElement('div');
     banner.id = 'smartCoachBanner';
     banner.className = 'smart-coach-banner';
-    const icon = { world:'🌍', daily_mission:'🎯', learn:'🎤', fusion:'🏃', smart_learn:'🤖' }[recommendation.mode] || '🤖';
+    const icon = { world:'🌍', daily_mission:'🎯', learn:'🎤', runner:'🏃', smart_learn:'🤖' }[recommendation.mode] || '🤖';
     banner.innerHTML = `<span class="smart-coach-icon">${icon}</span><span class="smart-coach-text">${recommendation.reason}</span>`;
     document.body.appendChild(banner);
     setTimeout(() => banner.remove(), 4500);
@@ -4601,6 +4599,7 @@ class GameDesignerAgent {
     this.mechanicGenerator = MechanicGenerator;
     this.designDocGenerator = DesignDocumentGenerator;
     this.autoUpdater      = AutoUpdateSystem;
+    this.dailyMission     = DailyMissionSystem;
 
     this.currentTrends      = null;
     this.currentSuggestions = null;
@@ -4631,6 +4630,78 @@ class GameDesignerAgent {
     const suggestions = localStorage.getItem('mechanicSuggestions');
     if (suggestions) this.currentSuggestions = JSON.parse(suggestions);
     await this.autoUpdater.checkForUpdate();
+  }
+
+  // ── Player-mode recommendation (used by UnifiedLearningHub) ────────────
+  analyzePlayerState(playerData) {
+    const today = new Date().toISOString().slice(0,10);
+    return {
+      isNew:             playerData.totalWords < 10,
+      hasLearnedToday:   playerData.lastLearnDate === today,
+      errorRate:         playerData.totalAttempts ? playerData.wrongAnswers / playerData.totalAttempts : 0,
+      runnerPlayedToday: playerData.runnerPlayedToday,
+      streak:            playerData.streak,
+      level:             playerData.level,
+      weakWords:         playerData.weakWords || [],
+      mood:              this.detectMood(playerData),
+      goals:             this.getPendingGoals(playerData),
+    };
+  }
+
+  detectMood(playerData) {
+    const hour = new Date().getHours();
+    if (hour < 8 || hour >= 22) return 'low';
+    if (playerData.streak >= 5) return 'high';
+    return 'medium';
+  }
+
+  getPendingGoals(playerData) {
+    const goals = [];
+    if (playerData.streak > 0 && playerData.streak < 3)  goals.push(`Noch ${3 - playerData.streak} Tage bis zum 3-Tage-Streak-Abzeichen`);
+    if (playerData.streak >= 3 && playerData.streak < 7) goals.push(`Noch ${7 - playerData.streak} Tage bis zum 7-Tage-Streak-Abzeichen`);
+    if (playerData.xp < 200) goals.push(`Noch ${200 - playerData.xp} Shekel bis Level 2`);
+    return goals;
+  }
+
+  getCurrentWorld(level) {
+    const worlds = HubSystem.WORLDS;
+    const idx = Math.min(Math.floor((level - 1) / 2), worlds.length - 1);
+    return worlds[Math.max(idx, 0)];
+  }
+
+  recommendMode(analysis) {
+    // NEUER Nutzer → Learn Modus mit Grundlagen
+    if (analysis.isNew) {
+      return { mode:'learn', reason:'Erste Schritte – lerne die Grundlagen', words:5, difficulty:'easy' };
+    }
+    // NOCH NICHT HEUTE GELERNT → Daily Mission
+    if (!analysis.hasLearnedToday) {
+      return { mode:'daily_mission', reason:'Starte deine tägliche Mission!', mission: this.dailyMission.currentStep() };
+    }
+    // HOHE FEHLERQUOTE → Learn Modus, Fokus auf schwache Wörter
+    if (analysis.errorRate > 0.3) {
+      return { mode:'learn', reason:'Üben, Üben, Üben – du schaffst das!', focus: analysis.weakWords, words:10 };
+    }
+    // NIEDRIGE FEHLERQUOTE, noch kein Runner heute → Belohnung
+    if (analysis.errorRate < 0.1 && analysis.runnerPlayedToday === false) {
+      return { mode:'runner', reason:'Du bist heute richtig gut! Belohnung: Runner!', difficulty:'medium' };
+    }
+    // Fortgeschrittener Nutzer → Welt-Fortschritt
+    if (analysis.level > 3) {
+      const world = this.getCurrentWorld(analysis.level);
+      return { mode:'world', reason:`Setze deine Reise in ${world.name} fort!`, world, level: analysis.level };
+    }
+    // STANDARD: kombinierte Sequenz
+    return { mode:'smart_learn', reason:'Personalisiertes Lernen für dich', sequence: this.generateSequence(analysis), estimatedTime:'5-10 min' };
+  }
+
+  generateSequence(analysis) {
+    const sequence = [];
+    if (analysis.errorRate > 0.2) sequence.push({ type:'learn', words:5 });
+    if (analysis.runnerPlayedToday === false) sequence.push({ type:'runner', duration:'1 Runde' });
+    else sequence.push({ type:'learn', words:5 });
+    if (analysis.errorRate < 0.2) sequence.push({ type:'learn', words:5, difficulty:'hard' });
+    return sequence;
   }
 
   // ── Full Analysis pipeline ──────────────────────────────────────────────
