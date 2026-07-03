@@ -511,6 +511,23 @@
     .gd-doc-output { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:16px; font-size:13px; color:var(--text); line-height:1.7; white-space:pre-wrap; }
     .gd-refresh-btn { width:100%; padding:13px; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:14px; font-weight:600; cursor:pointer; margin-top:8px; }
     .gd-updated { font-size:11px; color:rgba(255,255,255,.3); text-align:center; margin-top:8px; }
+    .gd-analyzer-tabs { display:flex; gap:6px; margin-bottom:12px; overflow-x:auto; }
+    .gd-atab { background:rgba(255,255,255,.07); border:1px solid var(--border); border-radius:20px; padding:7px 14px; font-size:12px; font-weight:600; color:rgba(255,255,255,.6); cursor:pointer; white-space:nowrap; }
+    .gd-atab.active { background:var(--teal); color:#000; border-color:var(--teal); }
+    .gd-game-row { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:8px; }
+    .gd-game-name { font-size:13px; font-weight:700; color:var(--text); margin-bottom:6px; }
+    .gd-pill-row { display:flex; flex-wrap:wrap; gap:5px; }
+    .gd-pill { border-radius:6px; padding:3px 9px; font-size:11px; font-weight:600; }
+    .gd-pill-has  { background:rgba(46,204,113,.15); color:#2ECC71; }
+    .gd-pill-miss { background:rgba(255,51,102,.12);  color:#FF3366; }
+    .gd-pill-neu  { background:rgba(0,229,255,.12);   color:#00E5FF; }
+    .gd-gap-row { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:8px; }
+    .gd-gap-title { font-size:14px; font-weight:700; color:var(--text); margin-bottom:4px; }
+    .gd-gap-sub   { font-size:12px; color:rgba(255,255,255,.55); line-height:1.5; }
+    .gd-gap-badge { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; margin-top:6px; }
+    .badge-missing { background:rgba(255,51,102,.15); color:#FF3366; }
+    .badge-partial { background:rgba(255,152,0,.15);  color:#FF9800; }
+    .badge-done    { background:rgba(46,204,113,.15); color:#2ECC71; }
 
     /* ── Audio Settings Modal ── */
     #audioSettingsModal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.7); align-items:flex-end; justify-content:center; }
@@ -899,6 +916,16 @@
     <div class="gd-insight-body" id="gdInsightBody"></div>
     <div class="gd-insight-source" id="gdInsightSource"></div>
   </div>
+
+  <!-- Trend Analyzer -->
+  <div class="gd-section-title">📊 Trend-Analyse: Top Mobile Games</div>
+  <div class="gd-analyzer-tabs" id="gdAnalyzerTabs">
+    <button class="gd-atab active" onclick="GameDesignerAgent.showTab('mechanics',this)">Mechaniken</button>
+    <button class="gd-atab" onclick="GameDesignerAgent.showTab('ux',this)">UX-Patterns</button>
+    <button class="gd-atab" onclick="GameDesignerAgent.showTab('engagement',this)">Engagement</button>
+    <button class="gd-atab" onclick="GameDesignerAgent.showTab('gap',this)">Gap-Analyse</button>
+  </div>
+  <div id="gdAnalyzerContent"></div>
 
   <!-- Feature Suggestions -->
   <div class="gd-section-title">🚀 Feature-Vorschläge für PharmaVoice</div>
@@ -3474,7 +3501,113 @@ CharacterSystem.showBubble = function(text, dur) {
 // ══ GAME DESIGNER AGENT ══
 const GameDesignerAgent = (() => {
 
-  // ── Knowledge Base ──────────────────────────────────────────────────────
+  // ── TrendAnalyzer: Top Games Knowledge Base ─────────────────────────────
+  const TOP_GAMES = {
+    'Subway Surfers': {
+      mechanics:   ['Endless Runner','Coin Collection','Power-Ups','Obstacle Avoidance','Daily Challenges'],
+      ux:          ['One-Tap Control','Instant Restart','Visual Speed Increase','Character Variety'],
+      engagement:  ['Daily Missions','Season Events','Score Leaderboard','Hoverboard Unlocks'],
+      monetization:['Coin IAP','Character Bundles','Key Revives'],
+    },
+    'Candy Crush Saga': {
+      mechanics:   ['Match-3','Level Progression','Boosters','Streak Bonuses','Lives System'],
+      ux:          ['Satisfying Animations','Color Coding','Haptic Feedback','Clear Win/Lose State'],
+      engagement:  ['Daily Spin','Event Challenges','Friends Map','Episode Rewards'],
+      monetization:['Extra Lives','Booster Packs','Unlimited Lives Pass'],
+    },
+    'Duolingo': {
+      mechanics:   ['Spaced Repetition','Streak System','XP System','Daily Challenges','Leaderboards'],
+      ux:          ['Mascot NPC','Short Lessons','Immediate Feedback','Progress Bars'],
+      engagement:  ['Streak Freeze','Streak Repair','Gem Economy','Friend League'],
+      monetization:['Super Duolingo','Streak Freeze','Heart Refills'],
+    },
+    'Block Blast!': {
+      mechanics:   ['Tile Matching','Combo System','Endless Mode','No Time Pressure'],
+      ux:          ['Tactile Piece Placement','Combo Flash','Clean Minimalism','Sound Design'],
+      engagement:  ['High Score Chasing','Daily Puzzle','Streak Multiplier'],
+      monetization:['Ad Removal','Undo Moves','Continue After Loss'],
+    },
+    'Royal Match': {
+      mechanics:   ['Match-3','Power-Ups','Team Events','Season Pass','Boss Levels'],
+      ux:          ['King Character Guide','Rewarding Animations','Clear Level Goals'],
+      engagement:  ['Team Battles','Piggy Bank','Daily Login Bonus','Chest Opening'],
+      monetization:['Coins IAP','Royal Pass','Booster Packs'],
+    },
+    'Monopoly GO!': {
+      mechanics:   ['Board Game','Social Features','Event Collecting','Mini-Games','Dice Rolls'],
+      ux:          ['Familiar Brand','Social Feed','Rich Animations'],
+      engagement:  ['Partner Events','Sticker Trading','Flash Events','Friend Visits'],
+      monetization:['Dice Rolls IAP','Sticker Packs','Event Passes'],
+    },
+    'Clash Royale': {
+      mechanics:   ['PvP Real-Time','Card Collection','Battle Pass','Seasons','Chest System'],
+      ux:          ['Fast Matches (3min)','Live Opponent','Card Level Display'],
+      engagement:  ['Clan Wars','Season Rewards','Trophy Road','Global Leaderboard'],
+      monetization:['Gems IAP','Pass Royale','Chest Slots'],
+    },
+    'Roblox': {
+      mechanics:   ['User-Generated Content','Virtual Economy','Social Platform','Avatar System'],
+      ux:          ['Low Entry Barrier','Cross-Platform','Friend Presence'],
+      engagement:  ['Creator Revenue','Limited Items','Game Events'],
+      monetization:['Robux IAP','Premium Subscription','Creator Marketplace'],
+    },
+  };
+
+  const PHARMAVOICE_HAS = new Set([
+    'Spaced Repetition','XP System','Streak System','Daily Challenges','Level Progression',
+    'Combo System','Power-Ups','Leaderboard (local)','Immediate Feedback','Character NPC',
+    'Sound Design','Progress Bars','Mascot NPC','Endless Mode (Runner)','Haptic Feedback',
+  ]);
+
+  // UX pattern library
+  const UX_PATTERNS = [
+    { name:'One-Tap / One-Action', games:['Subway Surfers','Block Blast!'], desc:'Kerninteraktion reduziert auf eine einzige Geste. Senkt kognitive Last. PharmaVoice: Tippe auf Silbe statt langer UI.' },
+    { name:'Instant Restart', games:['Subway Surfers','Temple Run'], desc:'Nach einem Fehler sofortiger Neustart ohne Ladezeit. "Noch einmal"-Reflex. PharmaVoice: Runner-Tod → sofort neue Runde.' },
+    { name:'Satisfying Feedback Loops', games:['Block Blast!','Candy Crush Saga'], desc:'Jede Aktion hat übertriebene, aber angemessene visuelle + akustische Reaktion. Macht Fehler ertragbar.' },
+    { name:'Progress Visualization', games:['Duolingo','Royal Match'], desc:'Fortschrittsbalken, XP-Anzeige, Level-Map — Spieler sieht Wachstum zwischen Sessions.' },
+    { name:'NPC-Guide / Mascot', games:['Duolingo','Royal Match'], desc:'Ein Charakter führt durch das Spiel, gibt Feedback und schafft emotionale Bindung. PharmaVoice: Beatrice/Victor/Fin/Ari tun das bereits.' },
+    { name:'Kinetic Typography', games:['Candy Crush Saga','Block Blast!'], desc:'Wörter und Zahlen animieren bei Ereignissen (Combo, Score). "FANTASTIC!" mit Bounce. Aktuell fehlt das in PharmaVoice.' },
+    { name:'Tension Arc (Boss/Event)', games:['Royal Match','Clash Royale'], desc:'Regelmäßige Klimax-Momente (Boss-Level, Sonder-Events) nach ruhigeren Phasen. Hält langfristiges Engagement.' },
+    { name:'Social Proof Indicators', games:['Duolingo','Monopoly GO!'], desc:'"Dein Freund Leo hat heute 150 XP gemacht" — Vergleich ohne direkten Wettbewerb. Fehlt in PharmaVoice.' },
+  ];
+
+  // Engagement strategies
+  const ENGAGEMENT = [
+    { strategy:'Variable Reward Schedule', games:['Candy Crush','Clash Royale'], type:'Psychologie',
+      desc:'Belohnungen kommen unvorhersehbar — stärker als feste Intervalle (Skinner Box). Münzen im Runner variieren bereits. Ausbaubar mit Chest-System.' },
+    { strategy:'Loss Aversion (Streak)', games:['Duolingo','Subway Surfers'], type:'Retention',
+      desc:'Angst, etwas zu verlieren ist stärker als Freude, etwas zu gewinnen. Streak-System nutzt das. Streak-Schild als kaufbares Item würde dies maximieren.' },
+    { strategy:'Social Competition (Leagues)', games:['Duolingo','Clash Royale'], type:'Sozial',
+      desc:'Wöchentliche Ligen mit Aufstieg/Abstieg. Spieler gegen Spieler im selben Level-Bereich — faire Konkurrenz. PharmaVoice hat noch keine sozialen Ligen.' },
+    { strategy:'Seasonal Events', games:['Royal Match','Monopoly GO!'], type:'Retention',
+      desc:'Zeitbegrenzte Events mit exklusiven Belohnungen erzeugen FOMO. Tägliche Apotheken-Krisen (saisonal: Grippe-Saison, Sommerreise) wären ideal.' },
+    { strategy:'Daily Login Bonus', games:['Homescapes','Monopoly GO!'], type:'Retention',
+      desc:'Einfache, aber wirksame Mechanik: Täglich einloggen → Belohnung. PharmaVoice-Streak tut das implizit, aber kein expliziter Bonus.' },
+    { strategy:'Meaningful Collection', games:['Clash Royale','Monopoly GO!'], type:'Langzeit',
+      desc:'Spieler sammeln Karten, Sticker, Figuren — Kollektion visualisiert Langzeitfortschritt. Wirkstoff-Sammlung ("Mein Pharma-Lexikon") fehlt noch.' },
+  ];
+
+  // Gap analysis
+  const GAPS = [
+    { title:'Soziale Features', status:'missing', priority:'hoch',
+      desc:'Duolingo, Clash Royale und Monopoly GO! zeigen: Soziale Verbindungen verdoppeln Retention. PharmaVoice hat KEINE sozialen Features. Empfehlung: Freundes-Duell als ersten Schritt.' },
+    { title:'Seasonal/Time-Limited Events', status:'missing', priority:'hoch',
+      desc:'Royal Match und Monopoly GO! erzeugen FOMO durch zeitbegrenzte Events. PharmaVoice hat nur den täglichen Challenge-Seed. Apotheken-Event zur Grippe-Saison fehlt.' },
+    { title:'Kinetic Typography & Cel Animations', status:'missing', priority:'mittel',
+      desc:'Block Blast und Candy Crush haben übertriebene, befriedigende Animations-Reaktionen auf jede Aktion. PharmaVoice: nur CSS-Klassen. Canvas-basierte Burst-Animationen fehlen.' },
+    { title:'Collection / Compendium', status:'missing', priority:'mittel',
+      desc:'Spieler wollen Fortschritt sammeln. Clash Royale hat Karten, Roblox Avatare. PharmaVoice: kein "Mein Wirkstoff-Lexikon" das sich füllt.' },
+    { title:'Variable Reward (Chest System)', status:'partial', priority:'mittel',
+      desc:'Münzen im Runner sind variabel, aber kein echtes Chest/Loot-System. Duolingo\'s "Streak Freeze kaufen" ist einfacher zu implementieren.' },
+    { title:'Spaced Repetition', status:'done', priority:'erledigt',
+      desc:'SM-2-Algorithmus ist vollständig implementiert (pv_sm2). Sehr gut — kaum ein Lern-Spiel hat das. Kompetitiver Vorteil.' },
+    { title:'NPC Characters', status:'done', priority:'erledigt',
+      desc:'Beatrice, Victor, Fin, Ari mit Tamagotchi-System, Canvas-Avatare und i18n-Dialogen. Besser als Duolingo\'s statischer Duo-Owl.' },
+    { title:'Audio Feedback', status:'done', priority:'erledigt',
+      desc:'Web Audio API mit 3 Correct/Wrong-Varianten, Speech Synthesis in 3 Sprachen, Settings-Modal. Vollständig.' },
+  ];
+
+  // ── Insights (weekly rotating) ───────────────────────────────────────────
   const INSIGHTS = [
     { title:'Spaced Repetition + Gamification',
       body:'Studien zeigen: Kombination von SM-2-Algorithmus mit Belohnungssystemen erhöht Retention um 40%. Duolingo nutzt dies als Kern-Mechanik — tägliche Erinnerungen + Streak-Belohnungen halten 85% der Nutzer 30 Tage aktiv.',
@@ -3665,10 +3798,64 @@ IMPACT: Mittel-Hoch (Bewährte Duolingo-Mechanik)`,
   // ── Render ───────────────────────────────────────────────────────────────
   function render() {
     _renderInsight();
+    showTab('mechanics');
     _renderSuggestions();
     _renderDocSelect();
     const upd = document.getElementById('gdUpdated');
-    if (upd) upd.textContent = 'Analyse-Stand: ' + new Date().toLocaleDateString('de-DE');
+    if (upd) upd.textContent = 'Analyse-Stand: ' + new Date().toLocaleDateString('de-DE') + ' · 10 Top-Games analysiert';
+  }
+
+  function showTab(tab, btn) {
+    if (btn) {
+      document.querySelectorAll('.gd-atab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    const c = document.getElementById('gdAnalyzerContent');
+    if (!c) return;
+    if (tab === 'mechanics')  c.innerHTML = _renderMechanics();
+    if (tab === 'ux')         c.innerHTML = _renderUX();
+    if (tab === 'engagement') c.innerHTML = _renderEngagement();
+    if (tab === 'gap')        c.innerHTML = _renderGap();
+  }
+
+  function _renderMechanics() {
+    return Object.entries(TOP_GAMES).map(([game, data]) => {
+      const pills = data.mechanics.map(m => {
+        const has = PHARMAVOICE_HAS.has(m);
+        return `<span class="gd-pill ${has ? 'gd-pill-has' : 'gd-pill-neu'}">${has ? '✓ ' : '+ '}${m}</span>`;
+      }).join('');
+      return `<div class="gd-game-row"><div class="gd-game-name">🎮 ${game}</div><div class="gd-pill-row">${pills}</div></div>`;
+    }).join('');
+  }
+
+  function _renderUX() {
+    return UX_PATTERNS.map(p => `
+      <div class="gd-game-row">
+        <div class="gd-game-name">${p.name} <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,.4)">· ${p.games.join(', ')}</span></div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;line-height:1.5">${p.desc}</div>
+      </div>`).join('');
+  }
+
+  function _renderEngagement() {
+    return ENGAGEMENT.map(e => `
+      <div class="gd-game-row">
+        <div class="gd-game-name">${e.strategy} <span class="gd-tag" style="margin-left:4px">${e.type}</span></div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin:3px 0">${e.games.join(' · ')}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.5">${e.desc}</div>
+      </div>`).join('');
+  }
+
+  function _renderGap() {
+    const order = ['missing','partial','done'];
+    return [...GAPS].sort((a,b) => order.indexOf(a.status) - order.indexOf(b.status)).map(g => {
+      const badgeCls = g.status === 'done' ? 'badge-done' : g.status === 'partial' ? 'badge-partial' : 'badge-missing';
+      const badgeTxt = g.status === 'done' ? '✅ Implementiert' : g.status === 'partial' ? '🔨 Teilweise' : '❌ Fehlt';
+      return `<div class="gd-gap-row">
+        <div class="gd-gap-title">${g.title} <span style="font-size:11px;color:rgba(255,255,255,.35)">Priorität: ${g.priority}</span></div>
+        <div class="gd-gap-sub">${g.desc}</div>
+        <span class="gd-gap-badge ${badgeCls}">${badgeTxt}</span>
+      </div>`;
+    }).join('');
   }
 
   function _renderInsight() {
@@ -3722,7 +3909,7 @@ IMPACT: Mittel-Hoch (Bewährte Duolingo-Mechanik)`,
     if (window.CharacterSystem) CharacterSystem.showBubble('Ich hab neue Trends analysiert! 🎮', 2500);
   }
 
-  return { render, refresh, generateDoc };
+  return { render, refresh, generateDoc, showTab };
 })();
 
 // ── BOOT ──
