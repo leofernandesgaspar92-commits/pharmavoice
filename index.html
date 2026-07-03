@@ -556,20 +556,20 @@
     .gd-trend-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 12px; }
     .gd-trend-name { font-size:12px; font-weight:800; color:var(--text); margin-bottom:8px; line-height:1.3; }
     .gd-trend-list { margin:0; padding-left:14px; }
-    .gd-trend-list li { font-size:11px; color:rgba(255,255,255,.6); margin-bottom:4px; line-height:1.4; }
+    .gd-trend-list li { font-size:11px; color:var(--text2); margin-bottom:4px; line-height:1.4; }
     .gd-sugg-list { display:flex; flex-direction:column; gap:10px; }
     .gd-sugg-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 16px; }
     .gd-sugg-header { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
     .gd-sugg-icon  { font-size:16px; flex-shrink:0; }
     .gd-sugg-title { font-size:13px; font-weight:800; color:var(--text); letter-spacing:.03em; }
-    .gd-sugg-body  { font-size:12px; color:rgba(255,255,255,.6); line-height:1.55; margin-bottom:10px; }
+    .gd-sugg-body  { font-size:12px; color:var(--text2); line-height:1.55; margin-bottom:10px; }
     .gd-sugg-doc-btn { background:rgba(255,255,255,.07); border:1px solid var(--border); border-radius:8px; padding:6px 14px; font-size:12px; color:var(--text); cursor:pointer; font-weight:600; }
     .gd-sugg-doc-btn:active { background:rgba(255,255,255,.12); }
     .gd-doc-list { display:flex; flex-direction:column; gap:6px; }
-    .gd-doc-list-item { font-size:13px; color:rgba(255,255,255,.7); padding:6px 0; border-bottom:1px solid rgba(255,255,255,.06); }
-    .gd-doc-list-empty { font-size:13px; color:rgba(255,255,255,.3); font-style:italic; }
+    .gd-doc-list-item { font-size:13px; color:var(--text2); padding:6px 0; border-bottom:1px solid var(--border); }
+    .gd-doc-list-empty { font-size:13px; color:var(--gray); font-style:italic; }
     .gd-status-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
-    .gd-status-text { font-size:12px; color:rgba(255,255,255,.5); line-height:1.5; }
+    .gd-status-text { font-size:12px; color:var(--gray); line-height:1.5; }
 
     /* ── Audio Settings Modal ── */
     #audioSettingsModal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.7); align-items:flex-end; justify-content:center; }
@@ -3834,7 +3834,7 @@ class GameDesignerAgent {
     this.currentTrends = this.trendAnalyzer.analyzeTrends();
     const all = this.mechanicGenerator.generateMechanics(this.currentTrends, result.scores);
     this.currentSuggestions = all;
-    this.designDocuments = all.highPriority.map(s => this.designDocGenerator.generateDocument(s.id));
+    this.designDocuments = all.highPriority.map(s => this.designDocGenerator.generateDocument(s.id)).filter(Boolean);
     this.renderDashboard();
     return { trends: this.currentTrends, suggestions: all, scores: result.scores };
   }
@@ -3910,100 +3910,6 @@ class GameDesignerAgent {
     `;
   }
 
-  renderSuggestions() {
-    const scores = this.autoUpdater.getScores();
-    const all = this.mechanicGenerator.generateMechanics(null, scores);
-    return [
-      ...all.highPriority.map(s=>({...s,_icon:'🔥'})),
-      ...all.mediumPriority.map(s=>({...s,_icon:'⚡'})),
-      ...all.lowPriority.map(s=>({...s,_icon:'💡'})),
-    ].map(m=>`
-      <div class="gd-sugg-card">
-        <div class="gd-sugg-header"><span class="gd-sugg-icon">${m._icon}</span><span class="gd-sugg-title">${m.name.toUpperCase()}</span></div>
-        <div class="gd-sugg-body">${m.description}</div>
-        <button class="gd-sugg-doc-btn" onclick="gameDesigner.generateFullDoc('${m.id}')">📄 Design-Dokument erstellen</button>
-      </div>`).join('');
-  }
-
-  renderSuggestionList(list) {
-    if (!list || !list.length) return '';
-    return list.map(m=>`
-      <div class="gd-sugg-card">
-        <div class="gd-sugg-header"><span class="gd-sugg-title">${m.name.toUpperCase()}</span></div>
-        <div class="gd-sugg-body">${m.description}</div>
-        <button class="gd-sugg-doc-btn" onclick="gameDesigner.generateFullDoc('${m.id}')">📄 Design-Dokument erstellen</button>
-      </div>`).join('');
-  }
-
-  renderTrends() {
-    const topGames = Object.entries(this.trendAnalyzer.TOP_GAMES).slice(0,3);
-    return `<div class="gd-trend-grid">${topGames.map(([game,data])=>`
-      <div class="gd-trend-card">
-        <div class="gd-trend-name">${game}</div>
-        <ul class="gd-trend-list">${data.mechanics.slice(0,4).map(m=>`<li>${m}</li>`).join('')}</ul>
-      </div>`).join('')}</div>`;
-  }
-
-  renderDocuments() {
-    const today = new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
-    if (!this.designDocuments.length) return '<p style="color:rgba(255,255,255,.35);font-size:13px">Noch keine Dokumente generiert.</p>';
-    return this.designDocuments.map(d=>`<div class="gd-doc-list-item">• ${d.title} – GDD v1.0 (${today})</div>`).join('');
-  }
-
-  // ── Analyzer Tabs ───────────────────────────────────────────────────────
-  showTab(tab, btn) {
-    if (btn) {
-      document.querySelectorAll('.gd-atab').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-    const c = document.getElementById('gdAnalyzerContent');
-    if (!c) return;
-    if (tab === 'mechanics')  c.innerHTML = this._mechHTML();
-    if (tab === 'ux')         c.innerHTML = this._uxHTML();
-    if (tab === 'engagement') c.innerHTML = this._engHTML();
-    if (tab === 'gap')        c.innerHTML = this._gapHTML();
-  }
-
-  _mechHTML() {
-    return Object.entries(this.trendAnalyzer.TOP_GAMES).map(([game,data])=>{
-      const pills = data.mechanics.map(m=>{
-        const has = this.trendAnalyzer.PHARMAVOICE_HAS.has(m);
-        return `<span class="gd-pill ${has?'gd-pill-has':'gd-pill-neu'}">${has?'✓ ':'+ '}${m}</span>`;
-      }).join('');
-      return `<div class="gd-game-row"><div class="gd-game-name">🎮 ${game}</div><div class="gd-pill-row">${pills}</div></div>`;
-    }).join('');
-  }
-
-  _uxHTML() {
-    return this.trendAnalyzer.UX_PATTERNS.map(p=>`
-      <div class="gd-game-row">
-        <div class="gd-game-name">${p.name} <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,.35)">· ${p.games.join(', ')}</span></div>
-        <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;line-height:1.5">${p.desc}</div>
-      </div>`).join('');
-  }
-
-  _engHTML() {
-    return this.trendAnalyzer.ENGAGEMENT_STRATEGIES.map(e=>`
-      <div class="gd-game-row">
-        <div class="gd-game-name">${e.strategy} <span class="gd-tag" style="margin-left:4px">${e.type}</span></div>
-        <div style="font-size:11px;color:rgba(255,255,255,.35);margin:3px 0">${e.games.join(' · ')}</div>
-        <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.5">${e.desc}</div>
-      </div>`).join('');
-  }
-
-  _gapHTML() {
-    const order = ['missing','partial','done'];
-    return [...this.trendAnalyzer.GAP_ANALYSIS].sort((a,b)=>order.indexOf(a.status)-order.indexOf(b.status)).map(g=>{
-      const cls = g.status==='done'?'badge-done':g.status==='partial'?'badge-partial':'badge-missing';
-      const txt = g.status==='done'?'✅ Implementiert':g.status==='partial'?'🔨 Teilweise':'❌ Fehlt';
-      return `<div class="gd-gap-row">
-        <div class="gd-gap-title">${g.title} <span style="font-size:11px;color:rgba(255,255,255,.35)">Priorität: ${g.priority}</span></div>
-        <div class="gd-gap-sub">${g.desc}</div>
-        <span class="gd-gap-badge ${cls}">${txt}</span>
-      </div>`;
-    }).join('');
-  }
-
   // ── Design Doc ──────────────────────────────────────────────────────────
   generateFullDoc(id) {
     if (!id) { const sel = document.getElementById('gdDocSelect'); if (sel) id = sel.value; }
@@ -4011,6 +3917,17 @@ class GameDesignerAgent {
     const out = document.getElementById('gdDocOutput');
     if (!out) return;
     const doc = this.designDocGenerator.generateDocument(id);
+    if (!doc) return;
+    // Track in designDocuments and refresh the doc list
+    if (!this.designDocuments.some(d => d.title === doc.title)) {
+      this.designDocuments.push(doc);
+      const listEl = document.querySelector('.gd-doc-list');
+      if (listEl) {
+        const today = new Date().toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric'});
+        listEl.innerHTML = this.designDocuments
+          .map(d => `<div class="gd-doc-list-item">• ${d.title} – GDD v1.0 (${today})</div>`).join('');
+      }
+    }
     out.innerHTML = this.designDocGenerator.renderHTML(doc);
     out.classList.remove('hidden');
     out.scrollIntoView({ behavior:'smooth', block:'nearest' });
