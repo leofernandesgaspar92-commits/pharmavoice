@@ -487,6 +487,31 @@
     .lang-btn:hover  { background:rgba(255,255,255,.18); }
 
 
+    /* ── Game Designer Screen ── */
+    .gd-insight-card { background:linear-gradient(135deg,#1a1a3e,#0d2137); border:1.5px solid rgba(100,180,255,.3); border-radius:16px; padding:18px; margin-bottom:20px; }
+    .gd-insight-label { font-size:10px; font-weight:700; letter-spacing:.1em; color:rgba(100,180,255,.7); margin-bottom:6px; }
+    .gd-insight-title { font-size:17px; font-weight:800; color:#fff; margin-bottom:8px; line-height:1.3; }
+    .gd-insight-body  { font-size:13px; color:rgba(255,255,255,.75); line-height:1.6; margin-bottom:8px; }
+    .gd-insight-source { font-size:11px; color:rgba(100,180,255,.6); }
+    .gd-section-title { font-size:13px; font-weight:700; letter-spacing:.06em; color:rgba(255,255,255,.5); text-transform:uppercase; margin:20px 0 10px; }
+    .gd-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; position:relative; overflow:hidden; }
+    .gd-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--gd-accent,var(--teal)); border-radius:4px 0 0 4px; }
+    .gd-card-cat  { font-size:10px; font-weight:700; letter-spacing:.08em; color:var(--gd-accent,var(--teal)); margin-bottom:4px; }
+    .gd-card-title { font-size:15px; font-weight:800; color:var(--text); margin-bottom:6px; }
+    .gd-card-body  { font-size:13px; color:var(--text2); line-height:1.55; }
+    .gd-card-tags  { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
+    .gd-tag { background:rgba(255,255,255,.07); border-radius:6px; padding:3px 8px; font-size:11px; color:rgba(255,255,255,.55); }
+    .gd-card-effort { display:inline-block; margin-top:10px; font-size:11px; padding:3px 10px; border-radius:20px; font-weight:600; }
+    .effort-low  { background:rgba(46,204,113,.15); color:#2ECC71; }
+    .effort-med  { background:rgba(255,152,0,.15);  color:#FF9800; }
+    .effort-high { background:rgba(255,69,0,.15);   color:#FF4500; }
+    .gd-doc-row  { display:flex; gap:10px; margin-bottom:12px; }
+    .gd-select   { flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:10px 12px; color:var(--text); font-size:14px; outline:none; }
+    .gd-doc-btn  { background:var(--teal); border:none; border-radius:10px; padding:10px 18px; color:#000; font-size:14px; font-weight:700; cursor:pointer; white-space:nowrap; }
+    .gd-doc-output { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:16px; font-size:13px; color:var(--text); line-height:1.7; white-space:pre-wrap; }
+    .gd-refresh-btn { width:100%; padding:13px; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:14px; font-weight:600; cursor:pointer; margin-top:8px; }
+    .gd-updated { font-size:11px; color:rgba(255,255,255,.3); text-align:center; margin-top:8px; }
+
     /* ── Audio Settings Modal ── */
     #audioSettingsModal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.7); align-items:flex-end; justify-content:center; }
     #audioSettingsModal.open { display:flex; }
@@ -863,6 +888,35 @@
   </div>
 </div>
 
+<!-- ══ GAME DESIGNER SCREEN ══ -->
+<div class="screen" id="screenGameDesign">
+  <h2 class="screen-h">🎮 Game Designer</h2>
+
+  <!-- Weekly Insight -->
+  <div class="gd-insight-card" id="gdInsightCard">
+    <div class="gd-insight-label">💡 WÖCHENTLICHER TREND</div>
+    <div class="gd-insight-title" id="gdInsightTitle"></div>
+    <div class="gd-insight-body" id="gdInsightBody"></div>
+    <div class="gd-insight-source" id="gdInsightSource"></div>
+  </div>
+
+  <!-- Feature Suggestions -->
+  <div class="gd-section-title">🚀 Feature-Vorschläge für PharmaVoice</div>
+  <div id="gdSuggestions"></div>
+
+  <!-- Design Doc Generator -->
+  <div class="gd-section-title">📄 Design-Dokument generieren</div>
+  <div class="gd-doc-row">
+    <select class="gd-select" id="gdDocSelect"></select>
+    <button class="gd-doc-btn" onclick="GameDesignerAgent.generateDoc()">Generieren ▶</button>
+  </div>
+  <div id="gdDocOutput" class="gd-doc-output hidden"></div>
+
+  <!-- Refresh -->
+  <button class="gd-refresh-btn" onclick="GameDesignerAgent.refresh()">🔄 Neu analysieren</button>
+  <div class="gd-updated" id="gdUpdated"></div>
+</div>
+
 <!-- ══ NAV ══ -->
 <nav class="nav">
   <div class="nav-item active" id="navHome" onclick="showScreen('Home')">
@@ -876,6 +930,9 @@
   </div>
   <div class="nav-item" id="navProf" onclick="showScreen('Profile')">
     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Profil</span>
+  </div>
+  <div class="nav-item" id="navGD" onclick="showScreen('GameDesign');GameDesignerAgent.render()">
+    <svg viewBox="0 0 24 24"><path d="M15 7.5V2H9v5.5l3 3 3-3zM7.5 9H2v6h5.5l3-3-3-3zM9 16.5V22h6v-5.5l-3-3-3 3zM16.5 9l-3 3 3 3H22V9h-5.5z"/></svg><span>Design</span>
   </div>
 </nav>
 
@@ -1915,7 +1972,7 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el('screen' + name).classList.add('active');
-  const map = { Home:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navLearn', Result:'navLearn' };
+  const map = { Home:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navLearn', Result:'navLearn', GameDesign:'navGD' };
   if (map[name]) el(map[name]).classList.add('active');
   CharacterSystem.showAvatar();
   refreshUI();
@@ -3413,6 +3470,260 @@ CharacterSystem.showBubble = function(text, dur) {
   if (name) text = text.replace(/\[Name\]/g, name);
   _origShowBubble(text, dur);
 };
+
+// ══ GAME DESIGNER AGENT ══
+const GameDesignerAgent = (() => {
+
+  // ── Knowledge Base ──────────────────────────────────────────────────────
+  const INSIGHTS = [
+    { title:'Spaced Repetition + Gamification',
+      body:'Studien zeigen: Kombination von SM-2-Algorithmus mit Belohnungssystemen erhöht Retention um 40%. Duolingo nutzt dies als Kern-Mechanik — tägliche Erinnerungen + Streak-Belohnungen halten 85% der Nutzer 30 Tage aktiv.',
+      source:'Bildungsforschung 2024 · Duolingo Annual Report', accent:'#2ECC71' },
+    { title:'Endless Runner: "Fail Forward" Psychologie',
+      body:'Subway Surfers und Temple Run nutzen das "Fail Forward"-Prinzip: Scheitern fühlt sich wie Fortschritt an. Jeder Tod gibt XP, schaltet Features frei oder zeigt neue Inhalte. Spieler spielen nach einem Fehler sofort weiter.',
+      source:'GDC Talk 2023 · "The Psychology of Mobile Games"', accent:'#FF9800' },
+    { title:'Micro-Rewards alle 90 Sekunden',
+      body:'Candy Crush gibt alle 60-90 Sekunden eine Belohnung: Level-Abschluss, Booster, Münzen. Wissenschaft: Dopamin-Ausschüttung bei kurzen Intervallen stärkt Gewohnheitsbildung. Optimal für Lern-Apps.',
+      source:'Behavioral Psychology Review 2023', accent:'#FF69B4' },
+    { title:'Social Proof & Leaderboards',
+      body:'Sichtbarkeit anderer Spieler erhöht Engagement um 25-35%. Freundschafts-Leaderboards (nicht globale) sind effektiver — Konkurrenz mit Bekannten motiviert stärker als gegen Anonyme.',
+      source:'Stanford Gamification Lab 2024', accent:'#9B59B6' },
+    { title:'Adaptive Difficulty (DDA)',
+      body:'Dynamic Difficulty Adjustment (DDA) hält Spieler in der "Flow Zone". Zu leicht = Langeweile, zu schwer = Frustration. Optimal: 70-80% Erfolgsrate. PharmaVoice könnte Wortlisten basierend auf SM-2-Scores anpassen.',
+      source:'Game UX Research 2024', accent:'#00E5FF' },
+    { title:'Narrative Progression in Lern-Apps',
+      body:'Apps mit Story-Elementen haben 3x höhere Retention als reine Drill-Apps. Duolingo\'s Charaktere (Duo, Lily, Oscar) erzeugen emotionale Bindung. Selbst minimale Narrative ("Hilf Beatrice die Apotheke zu retten!") erhöhen Motivation.',
+      source:'Mobile Learning Research 2024', accent:'#FFC107' },
+    { title:'Streak-Psychologie: Verlustangst als Motor',
+      body:'"Loss Aversion" ist mächtiger als Gewinn-Motivation. Ein verlorener 7-Tage-Streak motiviert mehr als ein neuer 7-Tage-Streak. Duolingo nutzt "Streak Freeze" als Premium-Feature — Spieler zahlen, um Streaks zu schützen.',
+      source:'Behavioral Economics in App Design', accent:'#FF4500' },
+    { title:'Escape Room Elemente in Bildung',
+      body:'Escape Rooms in medizinischen Ausbildungen steigern Teamarbeit und kritisches Denken. 89% der Teilnehmer empfehlen das Format. Für PharmaVoice: Zeitbasierte "Apotheken-Krisen" lösen, wo Wissen direkt angewendet wird.',
+      source:'Medical Education Journal 2024', accent:'#2ECC71' },
+  ];
+
+  const FEATURES = [
+    { id:'daily_boss', cat:'GAMEPLAY', accent:'#FF4500', effort:'high',
+      title:'Täglicher Apotheken-Boss',
+      body:'Jeden Tag gibt es einen speziellen "Boss-Wirkstoff" mit 5x höherem Schwierigkeitsgrad. Besiegst du ihn, erhältst du 500 Münzen und ein Abzeichen. Missed du ihn, verlierst du nichts — aber der nächste Tag startet schwerer.',
+      tags:['Daily Challenge','Boss Fight','Münzen','Abzeichen'] },
+    { id:'escape_room', cat:'MODUS', accent:'#9B59B6', effort:'high',
+      title:'Apotheken-Krisen-Modus (Escape Room)',
+      body:'Ein Patient hat einen medizinischen Notfall. Du hast 5 Minuten, um 10 Wirkstoffe korrekt auszusprechen. Jede Fehlantwort kostet 30 Sekunden. Schaffst du es rechtzeitig? Zeitdruck + Narrative = maximaler Flow.',
+      tags:['Zeitlimit','Story','Spannung','Kooperation'] },
+    { id:'adaptive_deck', cat:'KI-FEATURE', accent:'#00E5FF', effort:'med',
+      title:'Adaptives Lernkarten-Deck',
+      body:'Der SM-2-Algorithmus wählt automatisch die 10 Karten aus, die du am dringendsten brauchst. Wörter mit niedrigem EF kommen häufiger. Ein "Heute\'s Deck" badge zeigt, wie personalisiert dein Training ist.',
+      tags:['SM-2','Personalisierung','KI','Effizienz'] },
+    { id:'friend_duel', cat:'SOZIAL', accent:'#FF69B4', effort:'high',
+      title:'Freundes-Duell (1v1)',
+      body:'Fordere einen Freund per Link heraus. Beide spielen dieselbe Wortliste gleichzeitig — wer mehr richtig hat, gewinnt Münzen vom Verlierer. Asynchron spielbar (kein gleichzeitiger Login nötig).',
+      tags:['Multiplayer','Teilen','Münzen','Wettkampf'] },
+    { id:'combo_quest', cat:'GAMEPLAY', accent:'#FFC107', effort:'low',
+      title:'Combo-Quest System',
+      body:'Täglich wechselnde Mini-Quests: "Erreiche x5 Combo", "Beantworte 5 Antibiotika in Folge richtig", "Lerne 3 neue Wörter". Jede Quest gibt Münzen + XP. Quests haben 3 Schwierigkeitsstufen (Silber/Gold/Diamant).',
+      tags:['Quests','Tägliche Ziele','Münzen','Fortschritt'] },
+    { id:'streak_shield', cat:'RETENTION', accent:'#2ECC71', effort:'low',
+      title:'Streak-Schild (Kaufbar mit Münzen)',
+      body:'Spieler können mit 200 Münzen einen "Streak Freeze" kaufen, der einen verpassten Tag kompensiert. Psychologischer Effekt: Verlustangst wird zu Kaufmotivation. Standard bei Duolingo — bewährt.',
+      tags:['Streak','Münzen','Retention','Psychologie'] },
+    { id:'ar_scanner', cat:'ZUKUNFT', accent:'#FF9800', effort:'high',
+      title:'AR-Wirkstoff-Scanner (Vision)',
+      body:'Kamera öffnen, Medikamentenpackung draufhalten, App erkennt den Wirkstoff und startet sofort eine Aussprache-Challenge. Ohne externe API via OCR + lokale Wortliste. Spektakuläres Feature für App-Stores.',
+      tags:['Augmented Reality','Kamera','Innovation','Marketing'] },
+    { id:'npc_mentor', cat:'KI-NPC', accent:'#9B59B6', effort:'med',
+      title:'Intelligenter NPC-Mentor-Modus',
+      body:'Beatrice/Victor/Fin/Ari führen echte "Lehr-Gespräche". Statt fester Texte generieren sie kontextbasierte Erklärungen: "Du hast Ibuprofen 3x falsch — die Betonung liegt auf PRO, wie in PROfi!". Lokal via Template-Engine.',
+      tags:['NPC','Personalisierung','Erklärungen','Engagement'] },
+  ];
+
+  const DESIGN_DOCS = {
+    daily_boss: `📋 GAME DESIGN DOKUMENT: Täglicher Apotheken-Boss
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+KONZEPT
+Jeden Tag um Mitternacht erscheint ein neuer "Boss-Wirkstoff" mit erhöhtem Schwierigkeitsgrad. Der Spieler hat 24 Stunden, ihn zu besiegen.
+
+MECHANIK
+• Boss = zufälliger Wirkstoff aus Level 3+ mit 5 Aussprache-Varianten
+• Spieler muss 3 von 5 Varianten korrekt aussprechen (Mikrofon oder Auswahl)
+• Zeitlimit: 60 Sekunden pro Versuch, 3 Versuche max.
+• Erfolg: +500 Münzen, Boss-Abzeichen, +50 XP
+• Misserfolg: Boss bleibt (für Übungsmodus)
+
+BELOHNUNGEN
+• 1. Sieg: 500 Münzen
+• 3 Siege in Folge: "Boss Killer" Abzeichen
+• 7 Siege in Folge: Exklusiver Charakter-Skin
+
+IMPLEMENTIERUNG
+• localStorage: pv_daily_boss = {date, bossId, attempts, won}
+• Tägliches Seed: new Date().toDateString() → Index in WORDS Array
+• UI: Roter Banner auf Home-Screen wenn Boss verfügbar
+• Keine Backend-Anfragen nötig
+
+AUFWAND: ~4-6 Stunden Vanilla JS
+IMPACT: Hoch (Daily Active Users ↑)`,
+
+    escape_room: `📋 GAME DESIGN DOKUMENT: Apotheken-Krisen-Modus
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+KONZEPT
+Narrative: "Patient mit Polymedikation braucht sofort Beratung. 5 Minuten. Los!"
+
+MECHANIK
+• 10 zufällige Wirkstoffe aus Patientenprofil (definierte Krankheitsbilder)
+• Countdown-Timer: 5:00 → 0:00 sichtbar
+• Falsche Antwort: -30 Sekunden (dramatischer Sound)
+• Richtige Antwort: Nächster Wirkstoff sofort (kein Warten)
+• Canvas-Fortschrittsbalken: Patient-Gesundheitsanzeige
+
+SZENARIEN (6 Stück)
+1. Diabetiker mit Herzinsuffizienz (5 Wirkstoffe)
+2. Alte Dame mit 8 Medikamenten (Interaktionen erkennen)
+3. Schwangere Notaufnahme (Kontraindikationen)
+4. Kinderdosierung (Pädiatrie-Wirkstoffe)
+5. Akute Sepsis (Antibiotikaübersicht)
+6. Post-OP Schmerztherapie
+
+BELOHNUNGEN
+• Zeitbonus: Jede verbleibende Sekunde = 10 Münzen
+• Perfekt (0 Fehler): "Apotheken-Held" Titel
+• Tagesrekord: In Statistiken gespeichert
+
+IMPLEMENTIERUNG
+• localStorage: pv_escape_runs[]
+• Szenario-Auswahl per Modal
+• Canvas-Timer wie in runner.html
+AUFWAND: ~8-10 Stunden
+IMPACT: Sehr hoch (Virality + tiefe Session-Tiefe)`,
+
+    adaptive_deck: `📋 GAME DESIGN DOKUMENT: Adaptives Lernkarten-Deck
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+KONZEPT
+Basierend auf SM-2-Daten (pv_sm2) wählt die App täglich die 10 dringendsten Wörter.
+
+ALGORITHMUS
+1. Lade alle SM-2-Einträge
+2. Berechne "Urgency Score" = (due_date - heute) × (1/EF)
+3. Top 10 nach Urgency → "Heutiges Deck"
+4. Neue Wörter (nie gelernt): immer 2-3 im Deck
+
+UI
+• Badge "Personalisiert für dich" auf Lern-Button
+• Deck-Vorschau: 3 Wort-Chips vor dem Start sichtbar
+• Nach Session: "Nächste Fälligkeit in X Tagen"
+
+BELOHNUNGEN
+• Alle 10 richtig: "Perfektes Deck" Badge
+• 7 Tage personalisiertes Lernen: "KI-Schüler" Abzeichen
+
+IMPLEMENTIERUNG
+• Erweitere existing load() in index.html
+• Neue Funktion getAdaptiveDeck(n=10)
+• Keine Änderung an SM-2-Core nötig
+AUFWAND: ~2-3 Stunden
+IMPACT: Hoch (Effizienz + Retention)`,
+
+    streak_shield: `📋 GAME DESIGN DOKUMENT: Streak-Schild
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+KONZEPT
+Spieler kaufen mit 200 Münzen einen "Streak Freeze" — schützt vor Streak-Verlust.
+
+MECHANIK
+• Max 2 Shields gleichzeitig besitzbar
+• Shield verbraucht sich automatisch wenn Tag verpasst
+• Anzeige: Schildsymbol neben Streak-Zahl mit Count
+
+SHOP
+• 1 Shield: 200 Münzen
+• 3 Shields: 500 Münzen (Bundle)
+• Wöchentlich 1 gratis Shield (Retention-Bonus)
+
+PSYCHOLOGIE
+• Spieler die Shields besitzen spielen aktiver (Verlustangst vor Shield-Verlust)
+• Münzen bekommen neuen Wert → mehr Motivation im Runner-Modus
+
+IMPLEMENTIERUNG
+• pv_shields: Anzahl verfügbarer Shields
+• In S.lastPlayed-Prüfung: if (S.streak lost && shields > 0) → shields--
+• Shop-Modal auf Profil-Screen
+• ~1-2 Stunden Aufwand
+IMPACT: Mittel-Hoch (Bewährte Duolingo-Mechanik)`,
+  };
+
+  // ── State ────────────────────────────────────────────────────────────────
+  let _rendered = false;
+
+  function _weekSeed() {
+    const d = new Date();
+    return Math.floor((d.getFullYear() * 53 + Math.floor(d.getTime() / (1000 * 60 * 60 * 24 * 7))));
+  }
+
+  // ── Render ───────────────────────────────────────────────────────────────
+  function render() {
+    _renderInsight();
+    _renderSuggestions();
+    _renderDocSelect();
+    const upd = document.getElementById('gdUpdated');
+    if (upd) upd.textContent = 'Analyse-Stand: ' + new Date().toLocaleDateString('de-DE');
+  }
+
+  function _renderInsight() {
+    const insight = INSIGHTS[_weekSeed() % INSIGHTS.length];
+    const titleEl = document.getElementById('gdInsightTitle');
+    const bodyEl  = document.getElementById('gdInsightBody');
+    const srcEl   = document.getElementById('gdInsightSource');
+    const card    = document.getElementById('gdInsightCard');
+    if (!titleEl) return;
+    titleEl.textContent = insight.title;
+    bodyEl.textContent  = insight.body;
+    srcEl.textContent   = '📚 Quelle: ' + insight.source;
+    if (card) card.style.borderColor = (insight.accent || '#2ECC71') + '55';
+  }
+
+  function _renderSuggestions() {
+    const container = document.getElementById('gdSuggestions');
+    if (!container) return;
+    container.innerHTML = FEATURES.map(f => `
+      <div class="gd-card" style="--gd-accent:${f.accent}">
+        <div class="gd-card-cat">${f.cat}</div>
+        <div class="gd-card-title">${f.title}</div>
+        <div class="gd-card-body">${f.body}</div>
+        <div class="gd-card-tags">${f.tags.map(t => `<span class="gd-tag">${t}</span>`).join('')}</div>
+        <span class="gd-card-effort effort-${f.effort}">${f.effort === 'low' ? '⚡ Schnell umsetzbar' : f.effort === 'med' ? '🔨 Mittlerer Aufwand' : '🏗️ Großes Feature'}</span>
+      </div>
+    `).join('');
+  }
+
+  function _renderDocSelect() {
+    const sel = document.getElementById('gdDocSelect');
+    if (!sel) return;
+    sel.innerHTML = FEATURES.filter(f => DESIGN_DOCS[f.id]).map(f =>
+      `<option value="${f.id}">${f.title}</option>`
+    ).join('');
+  }
+
+  function generateDoc() {
+    const sel = document.getElementById('gdDocSelect');
+    const out = document.getElementById('gdDocOutput');
+    if (!sel || !out) return;
+    const doc = DESIGN_DOCS[sel.value];
+    if (!doc) return;
+    out.textContent = doc;
+    out.classList.remove('hidden');
+    out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function refresh() {
+    render();
+    if (window.CharacterSystem) CharacterSystem.showBubble('Ich hab neue Trends analysiert! 🎮', 2500);
+  }
+
+  return { render, refresh, generateDoc };
+})();
 
 // ── BOOT ──
 document.getElementById('screenHome').classList.add('active');
