@@ -233,14 +233,27 @@
     .upgrade-close { width:100%; margin-top:8px; padding:14px; background:transparent; border:1.5px solid var(--border); border-radius:var(--r); color:var(--gray); font-size:15px; cursor:pointer; font-family:inherit; }
 
     /* HOME HERO */
-    .home-hero { background:linear-gradient(135deg,#00A86B 0%,#00C97F 100%); border-radius:20px; padding:24px 20px; margin-bottom:24px; position:relative; overflow:hidden; box-shadow:0 6px 24px rgba(0,168,107,.3); }
-    .home-hero::after { content:''; position:absolute; right:-20px; top:-20px; width:120px; height:120px; background:rgba(255,255,255,.08); border-radius:50%; }
-    .home-hero::before { content:''; position:absolute; right:30px; bottom:-30px; width:80px; height:80px; background:rgba(255,255,255,.06); border-radius:50%; }
-    .hero-label { color:rgba(255,255,255,.8); font-size:12px; font-weight:600; margin-bottom:4px; text-transform:uppercase; letter-spacing:.8px; }
-    .hero-xp { color:#fff; font-size:36px; font-weight:900; line-height:1; margin-bottom:12px; }
-    .hero-xp span { font-size:16px; font-weight:600; opacity:.85; }
-    .hero-stats { display:flex; gap:16px; }
-    .hero-stat { display:flex; align-items:center; gap:6px; color:rgba(255,255,255,.9); font-size:13px; font-weight:600; }
+    /* ── Home Dashboard (unified) ── */
+    .home-greet { display:flex; align-items:center; gap:12px; margin-bottom:16px; cursor:pointer; }
+    .home-greet-avatar { width:48px; height:48px; border-radius:50%; background:var(--bg2); border:2px solid var(--green); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; }
+    .home-greet-avatar img { width:100%; height:100%; object-fit:cover; }
+    .home-greet-emoji { font-size:24px; }
+    .home-greet-bubble { flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:16px 16px 16px 4px; padding:10px 14px; font-size:13px; color:var(--text); line-height:1.4; }
+    .home-cta { width:100%; padding:18px 20px; background:linear-gradient(135deg,#00A86B,#00C97F); border:none; border-radius:18px; cursor:pointer; text-align:left; margin-bottom:20px; box-shadow:0 6px 20px rgba(0,168,107,.32); font-family:inherit; }
+    .home-cta:active { transform:scale(.98); }
+    .home-cta-title { color:#fff; font-size:18px; font-weight:900; margin-bottom:4px; }
+    .home-cta-sub   { color:rgba(255,255,255,.85); font-size:12.5px; font-weight:600; }
+    .home-progress-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:24px; }
+    .home-progress-row { display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; font-size:12.5px; font-weight:700; color:var(--text); margin-bottom:10px; }
+    .home-progress-bar { height:8px; background:var(--border); border-radius:8px; overflow:hidden; }
+    .home-progress-fill { height:100%; background:linear-gradient(90deg,var(--green),#00E68A); border-radius:8px; transition:width .5s ease; }
+    .home-world-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:24px; }
+    .home-world-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .home-world-icon { font-size:24px; }
+    .home-world-name { font-size:14px; font-weight:800; color:var(--text); }
+    .home-world-sub  { font-size:12px; color:var(--gray); margin-top:1px; }
+    .home-world-bar  { height:6px; background:var(--border); border-radius:6px; overflow:hidden; }
+    .home-world-fill { height:100%; background:linear-gradient(90deg,#00D4FF,#0090C7); border-radius:6px; transition:width .5s ease; }
 
     /* DEV PANEL */
     .dev-panel { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; overflow-y:auto; padding:20px; }
@@ -953,27 +966,41 @@
     </div>
   </div>
 
-  <!-- Hero card replacing plain greeting + stats row -->
-  <div class="home-hero">
-    <div class="hero-label">Deine Lernpunkte</div>
-    <div class="hero-xp"><span id="heroXp">0</span> <span>Shekel 🪙</span></div>
-    <div class="hero-stats">
-      <div class="hero-stat">🔥 <span id="heroStreak">0</span> Streak</div>
-      <div class="hero-stat">📚 <span id="heroLearned">0</span> Begriffe</div>
-      <div class="hero-stat" id="heroDue" style="display:none">🧠 <span id="heroDueCount">0</span> fällig</div>
+  <!-- Avatar greeting -->
+  <div class="home-greet" id="homeGreet" onclick="openCharModal()">
+    <div class="home-greet-avatar" id="homeGreetAvatar">
+      <img id="homeGreetImg" src="" alt="" onerror="this.style.display='none'">
+      <span id="homeGreetEmoji" class="home-greet-emoji" style="display:none">🐶</span>
     </div>
-    <div class="char-hero-btn" id="charHeroBtn" onclick="openCharModal()">
-      <img id="charHeroBtnImg" src="" alt="" onerror="this.style.display='none'">
-      <span id="charHeroBtnEmoji" class="char-hero-emoji" style="display:none">🐶</span>
-      <span id="charHeroBtnName">Begleiter wählen</span>
-    </div>
+    <div class="home-greet-bubble" id="homeGreetBubble">Hallo! Lade dein Tagesziel …</div>
   </div>
+
+  <!-- Main CTA: single unified start button -->
+  <button class="home-cta" onclick="unifiedHub.startLearning()">
+    <div class="home-cta-title">🎯 &nbsp;Jetzt lernen starten</div>
+    <div class="home-cta-sub" id="homeCtaSub">🔥 Bereit für deine nächste Session</div>
+  </button>
 
   <div id="upgradeBannerHome"></div>
 
-  <div class="section-title">Lernebenen</div>
-  <div class="level-cards" id="levelCardsHome"></div>
-  <button class="btn-start" onclick="unifiedHub.startLearning()">🚀 &nbsp;Jetzt lernen starten</button>
+  <!-- Progress -->
+  <div class="section-title">📊 DEIN FORTSCHRITT</div>
+  <div class="home-progress-card">
+    <div class="home-progress-row">
+      <span id="homeProgLevel">Level 1/30</span>
+      <span id="homeProgXp">XP: 0</span>
+      <span id="homeProgStreak">🔥 Streak: 0 Tage</span>
+    </div>
+    <div class="home-progress-bar"><div class="home-progress-fill" id="homeProgFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- Daily mission -->
+  <div class="section-title">📅 TÄGLICHE MISSION</div>
+  <div id="homeMissionCard"></div>
+
+  <!-- World progress -->
+  <div class="section-title">🌍 WELT-FORTSCHRITT</div>
+  <div id="homeWorldCard"></div>
 </div>
 
 <!-- ══ LEARN ══ -->
@@ -2108,6 +2135,56 @@ function refreshUI() {
   set('profProgPct', pct + '%');
   set('profProgLabel', `Level ${lvl+1} benötigt <strong>${(lvl)*xpPerLevel} Shekel</strong>`);
   renderLevelCards();
+  renderHomeDashboard();
+}
+
+function renderHomeDashboard() {
+  if (!el('homeProgLevel')) return; // screen not yet in DOM
+  const xpPerLevel = 200;
+  const lvl = Math.floor(S.xp / xpPerLevel) + 1;
+  const inLvl = S.xp % xpPerLevel;
+  const pct = Math.min(Math.round(inLvl / xpPerLevel * 100), 100);
+  const maxLvl = 30;
+
+  // Progress card
+  set('homeProgLevel',  `Level ${Math.min(lvl,maxLvl)}/${maxLvl}`);
+  set('homeProgXp',     `XP: ${S.xp.toLocaleString('de-DE')}`);
+  set('homeProgStreak', `🔥 Streak: ${S.streak} Tage`);
+  el('homeProgFill').style.width = pct + '%';
+
+  // Daily mission card (reuse existing renderer)
+  if (el('homeMissionCard')) el('homeMissionCard').innerHTML = DailyMissionSystem.renderCard();
+
+  // World progress card
+  const ws = HubSystem.getCurrentWorldSummary();
+  if (el('homeWorldCard')) {
+    el('homeWorldCard').innerHTML = `
+      <div class="home-world-row">
+        <span class="home-world-icon">${ws.world.icon}</span>
+        <div>
+          <div class="home-world-name">${ws.world.name}</div>
+          <div class="home-world-sub">Level ${ws.done}/${ws.total}</div>
+        </div>
+      </div>
+      <div class="home-world-bar"><div class="home-world-fill" style="width:${ws.pct}%"></div></div>`;
+  }
+
+  // Greeting avatar + bubble text
+  const charId = localStorage.getItem('pv_char') || 'beatrice';
+  const CHAR_EMOJI = { beatrice:'👩‍⚕️', victor:'👨‍🎓', fin:'🐕', ari:'🐶' };
+  const img = el('homeGreetImg'), emo = el('homeGreetEmoji');
+  if (img) { img.src = `img/${charId}.png`; img.style.display = ''; img.onerror = () => { img.style.display='none'; if(emo){emo.style.display='';emo.textContent=CHAR_EMOJI[charId]||'🐶';} }; }
+
+  // Recommendation-driven greeting + CTA subtitle
+  try {
+    const playerData    = unifiedHub.loadPlayerData();
+    const analysis       = gameDesigner.analyzePlayerState(playerData);
+    const recommendation = gameDesigner.recommendMode(analysis);
+    const name = getPlayerName();
+    const modeLbl = { learn:'Lern-Modus', daily_mission:'Tägliche Mission', runner:'Runner-Belohnung', world:'Weltreise', smart_learn:'Smart Learn (5-10 min)' }[recommendation.mode] || 'Smart Learn';
+    if (el('homeGreetBubble')) el('homeGreetBubble').innerHTML = `${name ? 'Hallo ' + name + '! ' : 'Hallo! '}${recommendation.reason}`;
+    if (el('homeCtaSub')) el('homeCtaSub').textContent = `🔥 Empfohlen: ${modeLbl.toUpperCase()}`;
+  } catch (e) { /* gameDesigner/unifiedHub not yet initialized on first paint */ }
 }
 
 function canPlay(lvId) {
@@ -3992,7 +4069,13 @@ const DailyMissionSystem = (() => {
       </div>`;
   }
 
-  return { start, isDone, isClaimed, currentStep, renderCard, _hookLearnEnd, _hookRunnerEnd };
+  function getSummary() {
+    const speakGoal  = STEPS.filter(s=>s.type==='speak').reduce((s,st)=>s+st.goal,0);
+    const runnerGoal = STEPS.filter(s=>s.type==='runner').length;
+    return { speakGoal, runnerGoal, bonusXp: BONUS_XP };
+  }
+
+  return { start, isDone, isClaimed, currentStep, renderCard, getSummary, _hookLearnEnd, _hookRunnerEnd };
 })();
 
 // ══ UNIFIED HUB SYSTEM ══════════════════════════════════════════════════
@@ -4221,7 +4304,19 @@ const HubSystem = (() => {
     }
   }
 
-  return { render, playNext, completeLevel, _launchById, _hookRunnerEnd, _hookLearnEnd, WORLDS };
+  function getCurrentWorldSummary() {
+    const state = _load();
+    for (const w of WORLDS) {
+      const done = w.levels.filter(l => state[l.id]?.done).length;
+      if (done < w.levels.length) {
+        return { world: w, done, total: w.levels.length, pct: Math.round(done / w.levels.length * 100) };
+      }
+    }
+    const last = WORLDS[WORLDS.length - 1];
+    return { world: last, done: last.levels.length, total: last.levels.length, pct: 100 };
+  }
+
+  return { render, playNext, completeLevel, _launchById, _hookRunnerEnd, _hookLearnEnd, getCurrentWorldSummary, WORLDS };
 })();
 
 // ══ UNIFIED LEARNING HUB (top-level orchestrator) ══════════════════════
