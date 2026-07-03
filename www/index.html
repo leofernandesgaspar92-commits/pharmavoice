@@ -929,41 +929,7 @@
 
 <!-- ══ GAME DESIGNER SCREEN ══ -->
 <div class="screen" id="screenGameDesign">
-  <h2 class="screen-h">🎮 Game Designer</h2>
-
-  <!-- Weekly Insight -->
-  <div class="gd-insight-card" id="gdInsightCard">
-    <div class="gd-insight-label">💡 WÖCHENTLICHER TREND</div>
-    <div class="gd-insight-title" id="gdInsightTitle"></div>
-    <div class="gd-insight-body" id="gdInsightBody"></div>
-    <div class="gd-insight-source" id="gdInsightSource"></div>
-  </div>
-
-  <!-- Trend Analyzer -->
-  <div class="gd-section-title">📊 Trend-Analyse: Top Mobile Games</div>
-  <div class="gd-analyzer-tabs" id="gdAnalyzerTabs">
-    <button class="gd-atab active" onclick="GameDesignerAgent.showTab('mechanics',this)">Mechaniken</button>
-    <button class="gd-atab" onclick="GameDesignerAgent.showTab('ux',this)">UX-Patterns</button>
-    <button class="gd-atab" onclick="GameDesignerAgent.showTab('engagement',this)">Engagement</button>
-    <button class="gd-atab" onclick="GameDesignerAgent.showTab('gap',this)">Gap-Analyse</button>
-  </div>
-  <div id="gdAnalyzerContent"></div>
-
-  <!-- Feature Suggestions -->
-  <div class="gd-section-title">🚀 Feature-Vorschläge für PharmaVoice</div>
-  <div id="gdSuggestions"></div>
-
-  <!-- Design Doc Generator -->
-  <div class="gd-section-title">📄 Design-Dokument generieren</div>
-  <div class="gd-doc-row">
-    <select class="gd-select" id="gdDocSelect"></select>
-    <button class="gd-doc-btn" onclick="GameDesignerAgent.generateDoc()">Generieren ▶</button>
-  </div>
-  <div id="gdDocOutput" class="gd-doc-output hidden"></div>
-
-  <!-- Refresh -->
-  <button class="gd-refresh-btn" onclick="GameDesignerAgent.refresh()">🔄 Neu analysieren</button>
-  <div class="gd-updated" id="gdUpdated"></div>
+  <div id="gdDashboard"></div>
 </div>
 
 <!-- ══ NAV ══ -->
@@ -3520,10 +3486,13 @@ CharacterSystem.showBubble = function(text, dur) {
   _origShowBubble(text, dur);
 };
 
-// ══ GAME DESIGNER AGENT ══
-const GameDesignerAgent = (() => {
 
-  // ── TrendAnalyzer: Top Games Knowledge Base ─────────────────────────────
+// ══ GAME DESIGNER AGENT ══════════════════════════════════════════════════
+// Architecture: TrendAnalyzer → MechanicGenerator → DesignDocumentGenerator
+//               + AutoUpdateSystem — all wired by GameDesignerAgent
+
+// ── TrendAnalyzer ────────────────────────────────────────────────────────
+const TrendAnalyzer = (() => {
   const TOP_GAMES = {
     'Subway Surfers': {
       mechanics:   ['Endless Runner','Coin Collection','Power-Ups','Obstacle Avoidance','Daily Challenges'],
@@ -3581,619 +3550,418 @@ const GameDesignerAgent = (() => {
     'Sound Design','Progress Bars','Mascot NPC','Endless Mode (Runner)','Haptic Feedback',
   ]);
 
-  // UX pattern library
   const UX_PATTERNS = [
-    { name:'One-Tap / One-Action', games:['Subway Surfers','Block Blast!'], desc:'Kerninteraktion reduziert auf eine einzige Geste. Senkt kognitive Last. PharmaVoice: Tippe auf Silbe statt langer UI.' },
-    { name:'Instant Restart', games:['Subway Surfers','Temple Run'], desc:'Nach einem Fehler sofortiger Neustart ohne Ladezeit. "Noch einmal"-Reflex. PharmaVoice: Runner-Tod → sofort neue Runde.' },
-    { name:'Satisfying Feedback Loops', games:['Block Blast!','Candy Crush Saga'], desc:'Jede Aktion hat übertriebene, aber angemessene visuelle + akustische Reaktion. Macht Fehler ertragbar.' },
+    { name:'One-Tap / One-Action', games:['Subway Surfers','Block Blast!'], desc:'Kerninteraktion reduziert auf eine einzige Geste. Senkt kognitive Last.' },
+    { name:'Instant Restart', games:['Subway Surfers','Temple Run'], desc:'Nach einem Fehler sofortiger Neustart ohne Ladezeit. "Noch einmal"-Reflex.' },
+    { name:'Satisfying Feedback Loops', games:['Block Blast!','Candy Crush Saga'], desc:'Jede Aktion hat übertriebene, aber angemessene visuelle + akustische Reaktion.' },
     { name:'Progress Visualization', games:['Duolingo','Royal Match'], desc:'Fortschrittsbalken, XP-Anzeige, Level-Map — Spieler sieht Wachstum zwischen Sessions.' },
-    { name:'NPC-Guide / Mascot', games:['Duolingo','Royal Match'], desc:'Ein Charakter führt durch das Spiel, gibt Feedback und schafft emotionale Bindung. PharmaVoice: Beatrice/Victor/Fin/Ari tun das bereits.' },
-    { name:'Kinetic Typography', games:['Candy Crush Saga','Block Blast!'], desc:'Wörter und Zahlen animieren bei Ereignissen (Combo, Score). "FANTASTIC!" mit Bounce. Aktuell fehlt das in PharmaVoice.' },
-    { name:'Tension Arc (Boss/Event)', games:['Royal Match','Clash Royale'], desc:'Regelmäßige Klimax-Momente (Boss-Level, Sonder-Events) nach ruhigeren Phasen. Hält langfristiges Engagement.' },
-    { name:'Social Proof Indicators', games:['Duolingo','Monopoly GO!'], desc:'"Dein Freund Leo hat heute 150 XP gemacht" — Vergleich ohne direkten Wettbewerb. Fehlt in PharmaVoice.' },
+    { name:'NPC-Guide / Mascot', games:['Duolingo','Royal Match'], desc:'Ein Charakter führt durch das Spiel. PharmaVoice: Beatrice/Victor/Fin/Ari.' },
+    { name:'Kinetic Typography', games:['Candy Crush','Block Blast!'], desc:'"FANTASTIC!" mit Bounce — Wörter animieren bei Ereignissen. Fehlt noch in PharmaVoice.' },
+    { name:'Tension Arc (Boss/Event)', games:['Royal Match','Clash Royale'], desc:'Regelmäßige Klimax-Momente (Boss-Level, Events) nach ruhigeren Phasen.' },
+    { name:'Social Proof Indicators', games:['Duolingo','Monopoly GO!'], desc:'"Dein Freund Leo hat heute 150 XP gemacht" — Fehlt in PharmaVoice.' },
   ];
 
-  // Engagement strategies
-  const ENGAGEMENT = [
-    { strategy:'Variable Reward Schedule', games:['Candy Crush','Clash Royale'], type:'Psychologie',
-      desc:'Belohnungen kommen unvorhersehbar — stärker als feste Intervalle (Skinner Box). Münzen im Runner variieren bereits. Ausbaubar mit Chest-System.' },
-    { strategy:'Loss Aversion (Streak)', games:['Duolingo','Subway Surfers'], type:'Retention',
-      desc:'Angst, etwas zu verlieren ist stärker als Freude, etwas zu gewinnen. Streak-System nutzt das. Streak-Schild als kaufbares Item würde dies maximieren.' },
-    { strategy:'Social Competition (Leagues)', games:['Duolingo','Clash Royale'], type:'Sozial',
-      desc:'Wöchentliche Ligen mit Aufstieg/Abstieg. Spieler gegen Spieler im selben Level-Bereich — faire Konkurrenz. PharmaVoice hat noch keine sozialen Ligen.' },
-    { strategy:'Seasonal Events', games:['Royal Match','Monopoly GO!'], type:'Retention',
-      desc:'Zeitbegrenzte Events mit exklusiven Belohnungen erzeugen FOMO. Tägliche Apotheken-Krisen (saisonal: Grippe-Saison, Sommerreise) wären ideal.' },
-    { strategy:'Daily Login Bonus', games:['Homescapes','Monopoly GO!'], type:'Retention',
-      desc:'Einfache, aber wirksame Mechanik: Täglich einloggen → Belohnung. PharmaVoice-Streak tut das implizit, aber kein expliziter Bonus.' },
-    { strategy:'Meaningful Collection', games:['Clash Royale','Monopoly GO!'], type:'Langzeit',
-      desc:'Spieler sammeln Karten, Sticker, Figuren — Kollektion visualisiert Langzeitfortschritt. Wirkstoff-Sammlung ("Mein Pharma-Lexikon") fehlt noch.' },
+  const ENGAGEMENT_STRATEGIES = [
+    { strategy:'Variable Reward Schedule', games:['Candy Crush','Clash Royale'], type:'Psychologie', desc:'Belohnungen kommen unvorhersehbar — stärker als feste Intervalle (Skinner Box).' },
+    { strategy:'Loss Aversion (Streak)', games:['Duolingo','Subway Surfers'], type:'Retention', desc:'Angst etwas zu verlieren ist stärker als Freude etwas zu gewinnen.' },
+    { strategy:'Social Competition (Leagues)', games:['Duolingo','Clash Royale'], type:'Sozial', desc:'Wöchentliche Ligen mit Aufstieg/Abstieg — faire Konkurrenz.' },
+    { strategy:'Seasonal Events', games:['Royal Match','Monopoly GO!'], type:'Retention', desc:'Zeitbegrenzte Events mit exklusiven Belohnungen erzeugen FOMO.' },
+    { strategy:'Daily Login Bonus', games:['Homescapes','Monopoly GO!'], type:'Retention', desc:'Täglich einloggen → Belohnung. Einfach aber wirksam.' },
+    { strategy:'Meaningful Collection', games:['Clash Royale','Monopoly GO!'], type:'Langzeit', desc:'Spieler sammeln Karten, Sticker — visualisiert Langzeitfortschritt.' },
   ];
 
-  // Gap analysis
-  const GAPS = [
-    { title:'Soziale Features', status:'missing', priority:'hoch',
-      desc:'Duolingo, Clash Royale und Monopoly GO! zeigen: Soziale Verbindungen verdoppeln Retention. PharmaVoice hat KEINE sozialen Features. Empfehlung: Freundes-Duell als ersten Schritt.' },
-    { title:'Seasonal/Time-Limited Events', status:'missing', priority:'hoch',
-      desc:'Royal Match und Monopoly GO! erzeugen FOMO durch zeitbegrenzte Events. PharmaVoice hat nur den täglichen Challenge-Seed. Apotheken-Event zur Grippe-Saison fehlt.' },
-    { title:'Kinetic Typography & Cel Animations', status:'missing', priority:'mittel',
-      desc:'Block Blast und Candy Crush haben übertriebene, befriedigende Animations-Reaktionen auf jede Aktion. PharmaVoice: nur CSS-Klassen. Canvas-basierte Burst-Animationen fehlen.' },
-    { title:'Collection / Compendium', status:'missing', priority:'mittel',
-      desc:'Spieler wollen Fortschritt sammeln. Clash Royale hat Karten, Roblox Avatare. PharmaVoice: kein "Mein Wirkstoff-Lexikon" das sich füllt.' },
-    { title:'Variable Reward (Chest System)', status:'partial', priority:'mittel',
-      desc:'Münzen im Runner sind variabel, aber kein echtes Chest/Loot-System. Duolingo\'s "Streak Freeze kaufen" ist einfacher zu implementieren.' },
-    { title:'Spaced Repetition', status:'done', priority:'erledigt',
-      desc:'SM-2-Algorithmus ist vollständig implementiert (pv_sm2). Sehr gut — kaum ein Lern-Spiel hat das. Kompetitiver Vorteil.' },
-    { title:'NPC Characters', status:'done', priority:'erledigt',
-      desc:'Beatrice, Victor, Fin, Ari mit Tamagotchi-System, Canvas-Avatare und i18n-Dialogen. Besser als Duolingo\'s statischer Duo-Owl.' },
-    { title:'Audio Feedback', status:'done', priority:'erledigt',
-      desc:'Web Audio API mit 3 Correct/Wrong-Varianten, Speech Synthesis in 3 Sprachen, Settings-Modal. Vollständig.' },
+  const GAP_ANALYSIS = [
+    { title:'Soziale Features', status:'missing', priority:'hoch', desc:'Duolingo, Clash Royale zeigen: Soziale Verbindungen verdoppeln Retention. PharmaVoice hat KEINE sozialen Features.' },
+    { title:'Seasonal Events', status:'missing', priority:'hoch', desc:'Royal Match und Monopoly GO! erzeugen FOMO. PharmaVoice hat nur den täglichen Challenge-Seed.' },
+    { title:'Kinetic Typography', status:'missing', priority:'mittel', desc:'Block Blast und Candy Crush haben befriedigende Animations-Reaktionen. Canvas-Bursts fehlen.' },
+    { title:'Collection / Compendium', status:'missing', priority:'mittel', desc:'Spieler wollen Fortschritt sammeln. "Mein Wirkstoff-Lexikon" fehlt.' },
+    { title:'Variable Reward (Chest)', status:'partial', priority:'mittel', desc:'Münzen im Runner variieren, aber kein echtes Chest/Loot-System.' },
+    { title:'Spaced Repetition', status:'done', priority:'erledigt', desc:'SM-2 vollständig. Kompetitiver Vorteil — kaum ein Lern-Spiel hat das.' },
+    { title:'NPC Characters', status:'done', priority:'erledigt', desc:'Beatrice, Victor, Fin, Ari mit Tamagotchi + Canvas-Avatare. Besser als Duolingo.' },
+    { title:'Audio Feedback', status:'done', priority:'erledigt', desc:'Web Audio + Speech Synthesis in 3 Sprachen. Vollständig.' },
   ];
 
-  // ── Insights (weekly rotating) ───────────────────────────────────────────
-  const INSIGHTS = [
-    { title:'Spaced Repetition + Gamification',
-      body:'Studien zeigen: Kombination von SM-2-Algorithmus mit Belohnungssystemen erhöht Retention um 40%. Duolingo nutzt dies als Kern-Mechanik — tägliche Erinnerungen + Streak-Belohnungen halten 85% der Nutzer 30 Tage aktiv.',
-      source:'Bildungsforschung 2024 · Duolingo Annual Report', accent:'#2ECC71' },
-    { title:'Endless Runner: "Fail Forward" Psychologie',
-      body:'Subway Surfers und Temple Run nutzen das "Fail Forward"-Prinzip: Scheitern fühlt sich wie Fortschritt an. Jeder Tod gibt XP, schaltet Features frei oder zeigt neue Inhalte. Spieler spielen nach einem Fehler sofort weiter.',
-      source:'GDC Talk 2023 · "The Psychology of Mobile Games"', accent:'#FF9800' },
-    { title:'Micro-Rewards alle 90 Sekunden',
-      body:'Candy Crush gibt alle 60-90 Sekunden eine Belohnung: Level-Abschluss, Booster, Münzen. Wissenschaft: Dopamin-Ausschüttung bei kurzen Intervallen stärkt Gewohnheitsbildung. Optimal für Lern-Apps.',
-      source:'Behavioral Psychology Review 2023', accent:'#FF69B4' },
-    { title:'Social Proof & Leaderboards',
-      body:'Sichtbarkeit anderer Spieler erhöht Engagement um 25-35%. Freundschafts-Leaderboards (nicht globale) sind effektiver — Konkurrenz mit Bekannten motiviert stärker als gegen Anonyme.',
-      source:'Stanford Gamification Lab 2024', accent:'#9B59B6' },
-    { title:'Adaptive Difficulty (DDA)',
-      body:'Dynamic Difficulty Adjustment (DDA) hält Spieler in der "Flow Zone". Zu leicht = Langeweile, zu schwer = Frustration. Optimal: 70-80% Erfolgsrate. PharmaVoice könnte Wortlisten basierend auf SM-2-Scores anpassen.',
-      source:'Game UX Research 2024', accent:'#00E5FF' },
-    { title:'Narrative Progression in Lern-Apps',
-      body:'Apps mit Story-Elementen haben 3x höhere Retention als reine Drill-Apps. Duolingo\'s Charaktere (Duo, Lily, Oscar) erzeugen emotionale Bindung. Selbst minimale Narrative ("Hilf Beatrice die Apotheke zu retten!") erhöhen Motivation.',
-      source:'Mobile Learning Research 2024', accent:'#FFC107' },
-    { title:'Streak-Psychologie: Verlustangst als Motor',
-      body:'"Loss Aversion" ist mächtiger als Gewinn-Motivation. Ein verlorener 7-Tage-Streak motiviert mehr als ein neuer 7-Tage-Streak. Duolingo nutzt "Streak Freeze" als Premium-Feature — Spieler zahlen, um Streaks zu schützen.',
-      source:'Behavioral Economics in App Design', accent:'#FF4500' },
-    { title:'Escape Room Elemente in Bildung',
-      body:'Escape Rooms in medizinischen Ausbildungen steigern Teamarbeit und kritisches Denken. 89% der Teilnehmer empfehlen das Format. Für PharmaVoice: Zeitbasierte "Apotheken-Krisen" lösen, wo Wissen direkt angewendet wird.',
-      source:'Medical Education Journal 2024', accent:'#2ECC71' },
+  function analyzeTrends() {
+    return { mechanics: Object.fromEntries(Object.entries(TOP_GAMES).map(([g,d]) => [g,d.mechanics])),
+             ux: Object.fromEntries(Object.entries(TOP_GAMES).map(([g,d]) => [g,d.ux])),
+             engagement: Object.fromEntries(Object.entries(TOP_GAMES).map(([g,d]) => [g,d.engagement])),
+             raw: TOP_GAMES };
+  }
+
+  return { analyzeTrends, TOP_GAMES, PHARMAVOICE_HAS, UX_PATTERNS, ENGAGEMENT_STRATEGIES, GAP_ANALYSIS };
+})();
+
+// ── MechanicGenerator ────────────────────────────────────────────────────
+const MechanicGenerator = (() => {
+  const CATALOG = [
+    { id:'daily_boss',    name:'Täglicher Apotheken-Boss',          priority:'high',   effort:'med',  inspiration:['Royal Match','Clash Royale'],
+      description:'Täglich neuer Boss-Wirkstoff mit erhöhter Schwierigkeit. 24h Zeitfenster, 500 Münzen Belohnung.' },
+    { id:'escape_room',   name:'Apotheken-Krisen-Modus',            priority:'high',   effort:'high', inspiration:['Escape Room Research','Keep Talking'],
+      description:'5-Minuten-Zeitdruck: 10 Wirkstoffe aussprechen. Fehler kosten 30 Sek.' },
+    { id:'adaptive_deck', name:'Adaptives Lernkarten-Deck',         priority:'high',   effort:'low',  inspiration:['Duolingo','Anki'],
+      description:'SM-2-basiertes tägliches Deck mit Urgency-Score. Top-10 dringendste Wörter.' },
+    { id:'combo_quest',   name:'Combo-Quest System',                 priority:'high',   effort:'med',  inspiration:['Duolingo Challenges','Royal Match'],
+      description:'Täglich 3 Quests (Silber/Gold/Diamant) mit Münzen-Belohnungen.' },
+    { id:'streak_shield', name:'Streak-Schild (käuflich)',           priority:'medium', effort:'low',  inspiration:['Duolingo Streak Freeze'],
+      description:'200 Münzen → schützt Streak bei versäumtem Tag. Loss-Aversion-Mechanik.' },
+    { id:'friend_duel',   name:'Freundes-Duell 1v1',                priority:'medium', effort:'high', inspiration:['Clash Royale PvP','Duolingo Leagues'],
+      description:'Asynchrones Duell per Link. Gleiche Wortliste — wer mehr richtig hat gewinnt.' },
+    { id:'npc_mentor',    name:'NPC-Mentor-Modus',                   priority:'medium', effort:'med',  inspiration:['Duolingo Characters','LLM NPCs GDC2024'],
+      description:'Kontextbasierte Erklärungen durch Beatrice/Victor wenn Wort 3x falsch.' },
+    { id:'ar_scanner',    name:'AR-Wirkstoff-Scanner',              priority:'low',    effort:'high', inspiration:['Google Lens','Duolingo Camera'],
+      description:'Kamera → Medikamentenpackung → sofortige Aussprache-Challenge.' },
   ];
 
-  const FEATURES = [
-    { id:'daily_boss', cat:'GAMEPLAY', accent:'#FF4500', effort:'high',
-      title:'Täglicher Apotheken-Boss',
-      body:'Jeden Tag gibt es einen speziellen "Boss-Wirkstoff" mit 5x höherem Schwierigkeitsgrad. Besiegst du ihn, erhältst du 500 Münzen und ein Abzeichen. Missed du ihn, verlierst du nichts — aber der nächste Tag startet schwerer.',
-      tags:['Daily Challenge','Boss Fight','Münzen','Abzeichen'] },
-    { id:'escape_room', cat:'MODUS', accent:'#9B59B6', effort:'high',
-      title:'Apotheken-Krisen-Modus (Escape Room)',
-      body:'Ein Patient hat einen medizinischen Notfall. Du hast 5 Minuten, um 10 Wirkstoffe korrekt auszusprechen. Jede Fehlantwort kostet 30 Sekunden. Schaffst du es rechtzeitig? Zeitdruck + Narrative = maximaler Flow.',
-      tags:['Zeitlimit','Story','Spannung','Kooperation'] },
-    { id:'adaptive_deck', cat:'KI-FEATURE', accent:'#00E5FF', effort:'med',
-      title:'Adaptives Lernkarten-Deck',
-      body:'Der SM-2-Algorithmus wählt automatisch die 10 Karten aus, die du am dringendsten brauchst. Wörter mit niedrigem EF kommen häufiger. Ein "Heute\'s Deck" badge zeigt, wie personalisiert dein Training ist.',
-      tags:['SM-2','Personalisierung','KI','Effizienz'] },
-    { id:'friend_duel', cat:'SOZIAL', accent:'#FF69B4', effort:'high',
-      title:'Freundes-Duell (1v1)',
-      body:'Fordere einen Freund per Link heraus. Beide spielen dieselbe Wortliste gleichzeitig — wer mehr richtig hat, gewinnt Münzen vom Verlierer. Asynchron spielbar (kein gleichzeitiger Login nötig).',
-      tags:['Multiplayer','Teilen','Münzen','Wettkampf'] },
-    { id:'combo_quest', cat:'GAMEPLAY', accent:'#FFC107', effort:'low',
-      title:'Combo-Quest System',
-      body:'Täglich wechselnde Mini-Quests: "Erreiche x5 Combo", "Beantworte 5 Antibiotika in Folge richtig", "Lerne 3 neue Wörter". Jede Quest gibt Münzen + XP. Quests haben 3 Schwierigkeitsstufen (Silber/Gold/Diamant).',
-      tags:['Quests','Tägliche Ziele','Münzen','Fortschritt'] },
-    { id:'streak_shield', cat:'RETENTION', accent:'#2ECC71', effort:'low',
-      title:'Streak-Schild (Kaufbar mit Münzen)',
-      body:'Spieler können mit 200 Münzen einen "Streak Freeze" kaufen, der einen verpassten Tag kompensiert. Psychologischer Effekt: Verlustangst wird zu Kaufmotivation. Standard bei Duolingo — bewährt.',
-      tags:['Streak','Münzen','Retention','Psychologie'] },
-    { id:'ar_scanner', cat:'ZUKUNFT', accent:'#FF9800', effort:'high',
-      title:'AR-Wirkstoff-Scanner (Vision)',
-      body:'Kamera öffnen, Medikamentenpackung draufhalten, App erkennt den Wirkstoff und startet sofort eine Aussprache-Challenge. Ohne externe API via OCR + lokale Wortliste. Spektakuläres Feature für App-Stores.',
-      tags:['Augmented Reality','Kamera','Innovation','Marketing'] },
-    { id:'npc_mentor', cat:'KI-NPC', accent:'#9B59B6', effort:'med',
-      title:'Intelligenter NPC-Mentor-Modus',
-      body:'Beatrice/Victor/Fin/Ari führen echte "Lehr-Gespräche". Statt fester Texte generieren sie kontextbasierte Erklärungen: "Du hast Ibuprofen 3x falsch — die Betonung liegt auf PRO, wie in PROfi!". Lokal via Template-Engine.',
-      tags:['NPC','Personalisierung','Erklärungen','Engagement'] },
-  ];
+  function generateMechanics(trends, scores = {}) {
+    const items = CATALOG.map(m => ({
+      ...m,
+      score: scores[m.id] || (m.priority === 'high' ? 80 : m.priority === 'medium' ? 55 : 35),
+    })).sort((a,b) => b.score - a.score);
 
-  // ── DesignDocumentGenerator ──────────────────────────────────────────────
-  const DesignDocumentGenerator = {
-    // Per-feature data used by all section generators
-    _data: {
-      daily_boss: {
-        inspiration: 'Royal Match Boss Levels, Clash Royale Season Boss',
-        overview: 'Täglich um Mitternacht erscheint ein neuer "Boss-Wirkstoff" — ein schwieriger INN mit 5 Aussprache-Varianten. Der Spieler hat 24 Stunden zum Besiegen.',
-        mechanics: {
-          rules: 'Boss = zufälliger Wirkstoff aus Level 3+; Spieler braucht 3 von 5 korrekte Aussprachen.',
-          triggers: '• Zeitlimit 60 Sek./Versuch  • 3 Versuche max.  • Misserfolg → Boss bleibt als Übungsoption',
-          rewards: '• Sieg: +500 Münzen, +50 XP, Boss-Abzeichen  • 3 in Folge: "Boss Killer"-Badge  • 7 in Folge: Charakter-Skin'
-        },
-        flow: ['Home-Screen zeigt roten Boss-Banner', 'Tap → Boss-Modal öffnet sich', 'Countdown 3-2-1 → Aussprache/Klick', '3 von 5 richtig → Sieg-Animation + Belohnungen', 'Misserfolg → "Morgen wieder" Nachricht'],
-        ux: { layout:'Vollbild-Modal mit Boss-Avatar (Charakter in roter Aura)', feedback:'Dramatische Trommel-Sounds bei Treffern; "BOSS DEFEATED!" Konfetti', states:['idle (Banner)', 'active (Modal offen)', 'won (Konfetti)', 'failed (graues Banner)'] },
-        technical: {
-          storage: 'pv_daily_boss = { date, bossId, attempts, won }',
-          seed: 'new Date().toDateString() → Hash → Index in WORDS-Array',
-          files: 'index.html: ~80 neue Zeilen (Modal HTML + JS)',
-          noBackend: true
-        },
-        metrics: { dau:'DAU ↑ 20-30% erwartet (tägl. Pflicht-Anreiz)', retention:'D7-Retention ↑', session:'Session-Länge +45 Sek. im Schnitt' },
-        roadmap: [{ phase:'MVP', time:'4-6h', tasks:['Boss-Seed-Logik','Modal-HTML','Basis-Belohnungen']},{ phase:'V2', time:'+3h', tasks:['Boss-Streak-Tracking','Skin-Unlocks']},{ phase:'V3', time:'+5h', tasks:['Boss-Animationen','Sound-Set']}],
-        effort:'4-6h', impact:'Hoch'
-      },
-      escape_room: {
-        inspiration: 'Medical Escape Rooms (Med. Education Journal 2024), Keep Talking and Nobody Explodes',
-        overview: 'Zeitbasierter Krisen-Modus: Patient braucht sofort Beratung. 5 Minuten, 10 Wirkstoffe, Fehler kosten Zeit.',
-        mechanics: {
-          rules: '10 Wirkstoffe aus Patientenprofil; je Fehlantwort: -30 Sekunden.',
-          triggers: '• Countdown-Timer läuft sichtbar  • Richtige Antwort → sofort Nächster  • Timer = 0 → Game Over',
-          rewards: '• Zeitbonus: verbleibende Sekunden × 10 Münzen  • 0 Fehler: "Apotheken-Held"-Titel  • Rekord gespeichert'
-        },
-        flow: ['Szenario-Wahl (6 Krankheitsbilder)', 'Briefing: Patient & Symptome (5 Sek.)', 'Timer startet → 10 Wirkstoffe', 'Countdown mit Herzschlag-Sound', 'Ergebnis mit Zeit + Münzen'],
-        ux: { layout:'Canvas-Vollbild: Patient-Icon, Timer-Balken, Herzschlag-Linie', feedback:'Rotes Aufblitzen + Ticking bei Zeitverlust; grünes Glow bei richtig', states:['briefing','running','overtime (unter 60 Sek.)','success','gameover'] },
-        technical: {
-          storage: 'pv_escape_runs = [{ date, scenario, time, coins, perfect }]',
-          seed: 'Szenarien sind fest definierte Wirkstoff-Arrays pro Krankheitsbild',
-          files: 'index.html: ~200 Zeilen (Canvas-Timer, Szenarien, Modal)',
-          noBackend: true
-        },
-        metrics: { dau:'Session-Tiefe ↑ (längste Sessions)', retention:'Social Sharing: "Ich hab alle 10!" motiviert Weitergabe', session:'Durchschnitt 4-6 Min. pro Run' },
-        roadmap: [{ phase:'MVP', time:'8-10h', tasks:['Canvas-Timer','2 Szenarien','Basis-Auswertung']},{ phase:'V2', time:'+4h', tasks:['Alle 6 Szenarien','Herzschlag-Audio']},{ phase:'V3', time:'+6h', tasks:['Multiplayer-Variante','Daily Szenario-Rotation']}],
-        effort:'8-10h', impact:'Sehr hoch'
-      },
-      adaptive_deck: {
-        inspiration: 'Duolingo Spaced Repetition, Anki Adaptive Algorithm',
-        overview: 'SM-2-Daten (pv_sm2) bestimmen täglich die 10 dringendsten Wörter. Urgency Score = Fälligkeit × inverse Easiness.',
-        mechanics: {
-          rules: 'Urgency Score = (due_date - heute_ms) × (1 / EF); Top 10 werden als "Heutiges Deck" geladen.',
-          triggers: '• Neue Wörter (EF=undefined): immer 2-3 im Deck  • Falsch beantwortet: sofort in Folge-Sitzung zurück',
-          rewards: '• Alle 10 richtig: "Perfektes Deck"-Badge  • 7 Tage Nutzung: "KI-Schüler"-Abzeichen'
-        },
-        flow: ['Home zeigt "Dein heutiges Deck (10 Wörter)"', '3 Wort-Chips als Vorschau sichtbar', 'Start → priorisierter Lern-Flow', 'Nach Session: "Nächste Fälligkeit in X Tagen"'],
-        ux: { layout:'Badge "Personalisiert für dich 🤖" auf Lern-Button; Deck-Chip-Vorschau', feedback:'Nach Session: grüne Balken "Gut gelernt" vs. rote "Braucht Übung"', states:['deck-preview','in-session','result-with-next-due'] },
-        technical: {
-          storage: 'Nutzt pv_sm2 (bereits vorhanden)',
-          seed: 'getAdaptiveDeck(n=10): sort by urgency score, slice top n',
-          files: 'index.html: ~30 neue Zeilen in load() + getAdaptiveDeck()',
-          noBackend: true
-        },
-        metrics: { dau:'Effizienz-Empfinden ↑ ("Ich lerne genau was ich brauche")', retention:'Langzeit-Retention da Wörter wiederkehren', session:'Kürzere aber dichtere Sessions' },
-        roadmap: [{ phase:'MVP', time:'2-3h', tasks:['getAdaptiveDeck()','Badge UI','Deck-Vorschau']},{ phase:'V2', time:'+2h', tasks:['Fälligkeits-Anzeige','Performance-Tipps']},{ phase:'V3', time:'+3h', tasks:['Adaptive Quiztypen je EF-Wert']}],
-        effort:'2-3h', impact:'Hoch'
-      },
-      combo_quest: {
-        inspiration: 'Duolingo Daily Challenges, Royal Match Event Quests',
-        overview: 'Täglich wechselnde Mini-Quests (Silber/Gold/Diamant), die Combo, Kategorie-Wissen und Streak kombinieren.',
-        mechanics: {
-          rules: 'Täglich 3 Quests (eine je Schwierigkeit). Abschluss = Münzen + XP. Nicht erfüllte verfallen.',
-          triggers: '• Quest: "Erreiche x5 Combo"  • Quest: "5 Antibiotika richtig"  • Quest: "3 neue Wörter heute"',
-          rewards: '• Silber: +50 Münzen  • Gold: +150 Münzen  • Diamant: +400 Münzen + Spezial-Badge'
-        },
-        flow: ['Home zeigt Quest-Karte mit 3 Quests', 'Fortschrittsbalken pro Quest live-aktualisiert', 'Quest abgeschlossen → Pop-up + Sound', 'Tagesabschluss: Bonus wenn alle 3 erfüllt'],
-        ux: { layout:'Quest-Karte zwischen Hero und Level-Buttons; Checkboxen mit Progressbalken', feedback:'Gold-Funkel-Animation bei Abschluss; Charakter-Reaktion', states:['available','in-progress','completed','expired'] },
-        technical: {
-          storage: 'pv_quests = { date, quests: [{id, target, progress, done}] }',
-          seed: 'Quest-Pool von 30 Quests; täglich 3 per Date-Seed ausgewählt',
-          files: 'index.html: ~100 Zeilen (Quest-Engine, UI, Hooks in pick())',
-          noBackend: true
-        },
-        metrics: { dau:'Session-Häufigkeit ↑ (Quests motivieren tägl. Rückkehr)', retention:'Quest-Completion-Rate als Key Metric', session:'Sessions bis Quest-Erfüllung: ca. 2-3 Sessions/Tag' },
-        roadmap: [{ phase:'MVP', time:'3-4h', tasks:['Quest-Engine','3 Quest-Typen','UI-Karte']},{ phase:'V2', time:'+3h', tasks:['30 Quest-Pool','Diamant-Belohnungen']},{ phase:'V3', time:'+4h', tasks:['Wöchentliche Mega-Quest','Quest-Archiv']}],
-        effort:'3-4h', impact:'Hoch'
-      },
-      streak_shield: {
-        inspiration: 'Duolingo Streak Freeze, Clash Royale Shield',
-        overview: 'Kaufbarer Streak-Schutz mit Münzen. Max 2 Shields. Psychologischer Effekt: Verlustangst → mehr Aktivität.',
-        mechanics: {
-          rules: '1 Shield = 200 Münzen; verbraucht sich automatisch bei versäumtem Tag; max 2 gleichzeitig.',
-          triggers: '• Tagescheck: if (tag_verpasst && shields > 0) → shields--  • Streak bleibt erhalten',
-          rewards: '• 1 gratis Shield wöchentlich  • Bundle: 3 Shields für 500 Münzen'
-        },
-        flow: ['Profil-Screen: Shop-Button', 'Shop zeigt Shield-Preise', 'Kauf → shields++, coins -= 200', 'Tag verpasst → Shield verbraucht, Streak intakt', 'Kein Shield → Streak bricht'],
-        ux: { layout:'🛡️ neben Streak-Zahl; Zahl zeigt Shield-Vorrat', feedback:'Grünes Aufblitzen wenn Shield aktiv verbraucht', states:['no-shield','1-shield','2-shields','shield-used'] },
-        technical: {
-          storage: 'pv_shields: number; in showResult() / load() geprüft',
-          seed: 'Wöchentlicher gratis Shield: if (letzte_gratis > 7 Tage) → shields++',
-          files: 'index.html: ~50 Zeilen (Shop-Modal, Streak-Prüf-Hook)',
-          noBackend: true
-        },
-        metrics: { dau:'Streak-Verlust-Rate ↓ 40%', retention:'Spieler mit Shields spielen 2x häufiger', session:'Coins bekommen durch Shields mehr Wert → Runner-Motivation ↑' },
-        roadmap: [{ phase:'MVP', time:'1-2h', tasks:['Shield-Storage','Streak-Hook','Profil-Anzeige']},{ phase:'V2', time:'+2h', tasks:['Shop-Modal','Wöchentl. Gratis-Shield']},{ phase:'V3', time:'+3h', tasks:['Bundle-Preise','Shield-Animation']}],
-        effort:'1-2h', impact:'Mittel-Hoch'
-      },
-      friend_duel: {
-        inspiration: 'Clash Royale PvP, Duolingo Friend Leagues',
-        overview: 'Asynchrones 1v1 per geteiltem Link. Beide spielen dieselbe Wortliste — wer mehr richtig hat gewinnt Münzen.',
-        mechanics: {
-          rules: 'Challenger generiert Link mit seed (Wortliste + Datum). Opponent öffnet Link, spielt, Ergebnis wird per URL-Param zurückgegeben.',
-          triggers: '• Herausforderer: Link-Button in Profil  • Gegner: Link öffnen → gleiche Wortliste  • Ergebnis: localStorage-Vergleich oder URL-Hash',
-          rewards: '• Gewinner: +300 Münzen + "Duell-Sieger"-Badge  • Verlierer: +50 Münzen (Trost)'
-        },
-        flow: ['Profil: "Freund herausfordern"', 'Link wird generiert + kopiert', 'Freund öffnet Link → direkt ins Duell', 'Beide Ergebnisse werden verglichen', 'Gewinner-Anzeige mit Sieger-Animation'],
-        ux: { layout:'Duell-Screen mit beiden Avataren links/rechts', feedback:'VS-Intro-Animation; dramatische Sieges-Sequenz', states:['challenge-created','opponent-playing','result-pending','result-done'] },
-        technical: {
-          storage: 'URL-Hash: #duel=seed:score:char (challenger encoded); kein Backend',
-          seed: 'Wortliste per Date+UUID-Seed deterministisch; beide Spieler haben exakt dieselbe Liste',
-          files: 'index.html: ~150 Zeilen (Link-Generator, Duell-Screen, URL-Parser)',
-          noBackend: true
-        },
-        metrics: { dau:'Viralität: jedes Duell = 1 neuer User-Touchpoint', retention:'Kompetitiver Druck → tägliche Rückkehr', session:'Duell-Accept-Rate als Key Metric (Ziel: >60%)' },
-        roadmap: [{ phase:'MVP', time:'6-8h', tasks:['URL-Schema','Duell-Screen','Ergebnis-Vergleich']},{ phase:'V2', time:'+4h', tasks:['Avatar-VS-Animation','Münzen-Transfer']},{ phase:'V3', time:'+6h', tasks:['Liga-System','Wöchentliche Duell-Rangliste']}],
-        effort:'6-8h', impact:'Sehr hoch (Viral)'
-      },
-      npc_mentor: {
-        inspiration: 'Duolingo Characters (Lily, Oscar), LLM-NPCs (GDC 2024)',
-        overview: 'Kontextbasierte Lehr-Gespräche durch Beatrice/Victor/Fin/Ari — Template-Engine ersetzt echte KI, erzeugt aber personalisiertes Gefühl.',
-        mechanics: {
-          rules: 'Nach 3+ Fehlern am selben Wort → Charakter gibt kontextuelle Erklärung. Template: "[Wort] hat die Betonung auf [Silbe] — wie in [Beispiel]!"',
-          triggers: '• 3x falsches Wort  • Neues Level erreicht  • Langer Nichtbesuch  • Perfekte Runde',
-          rewards: '• Gefühl von persönlichem Tutor  • Merkfähigkeit ↑ durch Kontext-Beispiele'
-        },
-        flow: ['Fehler am Wort wird getrackt', 'Nach Schwellenwert: Charakter-Bubble erscheint', 'Erklärung mit Wort-spezifischem Tipp', 'Option: "Mehr erklären" → 3 Tipp-Variationen'],
-        ux: { layout:'Erweiterter Chat-Bubble mit Tipp-Bereich; Charakter zeigt Erklär-Emotion', feedback:'Wort-Highlight in Bubble; Silben-Trennung animiert', states:['normal','tip-triggered','explaining','understood'] },
-        technical: {
-          storage: 'pv_sm2 Fehler-Zähler bereits vorhanden; neue Tipp-Templates pro Wort',
-          seed: 'TIP_TEMPLATES[wordName] oder generisch: "[Silbe] betonen wie in [Analogy]"',
-          files: 'index.html: ~120 Zeilen (Template-Engine, Charakter-Reaktionen)',
-          noBackend: true
-        },
-        metrics: { dau:'Fehler-Rate nach Tipp: erwartet -25%', retention:'Charakterbindung ↑ (Spieler "sprechen" mit Charakter)', session:'Session-Tiefe: Spieler fragen mehr Tipps an' },
-        roadmap: [{ phase:'MVP', time:'4-5h', tasks:['Template-Engine','Tipp für Top-50-Wörter','Bubble-UI']},{ phase:'V2', time:'+4h', tasks:['Alle 102 Wörter','3 Tipp-Varianten je Wort']},{ phase:'V3', time:'+6h', tasks:['Charakter-spez. Lehr-Stil','Tipp-Archiv']}],
-        effort:'4-5h', impact:'Hoch'
-      },
-      ar_scanner: {
-        inspiration: 'Google Lens, Duolingo Camera Mode',
-        overview: 'Kamera → Medikamentenpackung → App erkennt Wirkstoff via OCR + lokale Wortliste → sofortige Aussprache-Challenge.',
-        mechanics: {
-          rules: 'Canvas-basiertes OCR-Scanning via getUserMedia; Fuzzy-Match gegen WORDS-Array (Levenshtein ≥ 0.6).',
-          triggers: '• Match gefunden → Highlight-Box + "Aussprechen!"-Button  • Kein Match → "Versuche anderen Winkel"',
-          rewards: '• Erster Scan: "AR-Pionier"-Badge  • 10 Scans: "Scan-Meister"-Badge  • Jeder Scan: +30 Münzen'
-        },
-        flow: ['Button "Scannen" in Home-Screen', 'Kamera öffnet sich (getUserMedia)', 'Rotes Fadenkreuz scannt kontinuierlich', 'Wirkstoff erkannt → grünes Glow + Wort-Karte', 'Aussprache-Challenge startet direkt'],
-        ux: { layout:'Vollbild-Kamera mit HUD-Overlay; Scan-Animation', feedback:'Grüne Bounding-Box wenn Wirkstoff erkannt; Kamera-Klick-Sound', states:['idle','scanning','found','challenge','no-match'] },
-        technical: {
-          storage: 'pv_ar_scans = Anzahl; pv_ar_badges = []',
-          seed: 'Tesseract.js (7kB) für Browser-OCR; alternativ Canvas-Pixel-Text-Extraktion',
-          files: 'index.html: ~200 Zeilen (getUserMedia, Canvas-OCR, Match-Logik)',
-          noBackend: true
-        },
-        metrics: { dau:'Marketing-Hook: Demo-Video viral auf TikTok/LinkedIn', retention:'Reale Lernverknüpfung (Wirkstoff in Natur gesehen)', session:'Sessions nach erstem Scan: ↑ Länge' },
-        roadmap: [{ phase:'MVP', time:'10-12h', tasks:['getUserMedia','Levenshtein-Match','Basic UI']},{ phase:'V2', time:'+6h', tasks:['Tesseract.js OCR','Verbesserter Match']},{ phase:'V3', time:'+8h', tasks:['Packaging-Datenbank','Beipackzettel-Scan']}],
-        effort:'10-12h', impact:'Marketing: Sehr hoch'
-      },
-    },
+    return {
+      all: items,
+      highPriority:   items.filter(m => m.score >= 75),
+      mediumPriority: items.filter(m => m.score >= 50 && m.score < 75),
+      lowPriority:    items.filter(m => m.score < 50),
+    };
+  }
 
-    generateDocument(featureId) {
-      const f = this._data[featureId];
-      const feat = FEATURES.find(x => x.id === featureId);
-      if (!f || !feat) return null;
-      return {
-        title: feat.title,
-        version: '1.0',
-        date: new Date().toLocaleDateString('de-DE'),
-        targetAudience: 'PKA-Lehrlinge, Apotheken-Personal, Pharmazie-Studierende',
-        inspiration: f.inspiration,
-        overview: f.overview,
-        mechanics: f.mechanics,
-        flow: f.flow,
-        ux: f.ux,
-        technical: f.technical,
-        metrics: f.metrics,
-        roadmap: f.roadmap,
-        effort: f.effort,
-        impact: f.impact,
-      };
-    },
+  return { generateMechanics, CATALOG };
+})();
 
-    renderHTML(doc) {
-      if (!doc) return '<p style="color:rgba(255,255,255,.4)">Kein Dokument gefunden.</p>';
-      const section = (emoji, title, html) =>
-        `<div class="gdd-section"><div class="gdd-section-title">${emoji} ${title}</div>${html}</div>`;
-      const li = (arr) => arr.map(x => `<li>${x}</li>`).join('');
-      const kv = (obj) => Object.entries(obj).map(([k,v]) => `<div class="gdd-kv"><span class="gdd-key">${k}</span><span class="gdd-val">${v}</span></div>`).join('');
-
-      return `
-        <div class="gdd-header">
-          <div class="gdd-title">${doc.title}</div>
-          <div class="gdd-meta">v${doc.version} · ${doc.date} · 🎯 ${doc.targetAudience}</div>
-        </div>
-        ${section('💡','Übersicht & Inspiration',`<p>${doc.overview}</p><p class="gdd-inspiration">Inspiriert von: ${doc.inspiration}</p>`)}
-        ${section('⚙️','Kern-Mechaniken',`${kv(doc.mechanics)}`)}
-        ${section('🔄','User Flow',`<ol class="gdd-flow">${li(doc.flow)}</ol>`)}
-        ${section('🎨','UX-Design',`
-          <div class="gdd-kv"><span class="gdd-key">Layout</span><span class="gdd-val">${doc.ux.layout}</span></div>
-          <div class="gdd-kv"><span class="gdd-key">Feedback</span><span class="gdd-val">${doc.ux.feedback}</span></div>
-          <div class="gdd-kv"><span class="gdd-key">States</span><span class="gdd-val">${doc.ux.states.join(' → ')}</span></div>
-        `)}
-        ${section('🛠️','Technische Implementierung',`
-          <div class="gdd-kv"><span class="gdd-key">localStorage</span><span class="gdd-val gdd-code">${doc.technical.storage}</span></div>
-          <div class="gdd-kv"><span class="gdd-key">Seed/Logik</span><span class="gdd-val">${doc.technical.seed}</span></div>
-          <div class="gdd-kv"><span class="gdd-key">Dateien</span><span class="gdd-val">${doc.technical.files}</span></div>
-          <div class="gdd-kv"><span class="gdd-key">Backend</span><span class="gdd-val" style="color:#2ECC71">${doc.technical.noBackend ? '✅ Kein Backend nötig (localStorage only)' : '⚠️ Backend erforderlich'}</span></div>
-        `)}
-        ${section('📊','Erfolgs-Metriken',`${kv(doc.metrics)}`)}
-        ${section('🗺️','Roadmap',doc.roadmap.map(p =>
-          `<div class="gdd-phase"><span class="gdd-phase-label">${p.phase}</span><span class="gdd-phase-time">${p.time}</span><ul>${li(p.tasks)}</ul></div>`
-        ).join(''))}
-        <div class="gdd-footer">
-          <span class="gd-card-effort effort-${doc.effort.includes('1-2') || doc.effort.includes('2-3') || doc.effort.includes('3-4') ? 'low' : doc.effort.includes('8') || doc.effort.includes('10') || doc.effort.includes('12') ? 'high' : 'med'}">⏱ ${doc.effort} Vanilla JS</span>
-          <span style="color:var(--teal);font-size:12px;font-weight:700;margin-left:10px">Impact: ${doc.impact}</span>
-        </div>
-      `;
-    }
+// ── DesignDocumentGenerator ──────────────────────────────────────────────
+const DesignDocumentGenerator = (() => {
+  const _data = {
+    daily_boss:    { inspiration:'Royal Match Boss Levels, Clash Royale Season Boss', overview:'Täglich um Mitternacht erscheint ein neuer "Boss-Wirkstoff" — ein schwieriger INN mit 5 Aussprache-Varianten. Der Spieler hat 24 Stunden zum Besiegen.', mechanics:{rules:'Boss = zufälliger Wirkstoff aus Level 3+; 3 von 5 korrekte Aussprachen nötig.',triggers:'• 60 Sek./Versuch  • 3 Versuche max.  • Misserfolg → Übungsoption',rewards:'• Sieg: +500 Münzen, +50 XP, Boss-Abzeichen  • 7-Streak: Charakter-Skin'}, flow:['Home-Screen: roter Boss-Banner','Tap → Boss-Modal','Countdown 3-2-1 → Aussprache/Klick','3 von 5 richtig → Sieg-Animation','Misserfolg → "Morgen wieder"'], ux:{layout:'Vollbild-Modal mit Boss-Avatar in roter Aura',feedback:'Trommel-Sounds; "BOSS DEFEATED!" Konfetti',states:['idle','active','won','failed']}, technical:{storage:'pv_daily_boss = {date, bossId, attempts, won}',seed:'new Date().toDateString() → Index in WORDS-Array',files:'~80 neue Zeilen',noBackend:true}, metrics:{dau:'DAU ↑ 20-30%',retention:'D7-Retention ↑',session:'+45 Sek. Ø'}, roadmap:[{phase:'MVP',time:'4-6h',tasks:['Boss-Seed-Logik','Modal-HTML','Basis-Belohnungen']},{phase:'V2',time:'+3h',tasks:['Boss-Streak-Tracking','Skin-Unlocks']},{phase:'V3',time:'+5h',tasks:['Boss-Animationen','Sound-Set']}], effort:'4-6h', impact:'Hoch' },
+    escape_room:   { inspiration:'Medical Escape Rooms (Med. Education Journal 2024)', overview:'Zeitbasierter Krisen-Modus: Patient braucht sofort Beratung. 5 Minuten, 10 Wirkstoffe, Fehler kosten Zeit.', mechanics:{rules:'10 Wirkstoffe aus Patientenprofil; Fehlantwort: -30 Sekunden.',triggers:'• Countdown-Timer sichtbar  • Richtige Antwort → sofort Nächster  • Timer = 0 → Game Over',rewards:'• Zeitbonus: verbleibende Sek. × 10 Münzen  • 0 Fehler: "Apotheken-Held"-Titel'}, flow:['Szenario-Wahl (6 Krankheitsbilder)','Briefing: Patient & Symptome','Timer startet → 10 Wirkstoffe','Countdown mit Herzschlag-Sound','Ergebnis mit Zeit + Münzen'], ux:{layout:'Canvas-Vollbild: Patient-Icon, Timer-Balken, Herzschlag',feedback:'Rotes Aufblitzen bei Zeitverlust; grünes Glow bei richtig',states:['briefing','running','overtime','success','gameover']}, technical:{storage:'pv_escape_runs = [{date, scenario, time, coins, perfect}]',seed:'Szenarien: fest definierte Wirkstoff-Arrays',files:'~200 Zeilen (Canvas-Timer, Szenarien)',noBackend:true}, metrics:{dau:'Tiefste Session-Länge',retention:'Social Sharing motiviert Weitergabe',session:'4-6 Min. Ø pro Run'}, roadmap:[{phase:'MVP',time:'8-10h',tasks:['Canvas-Timer','2 Szenarien','Basis-Auswertung']},{phase:'V2',time:'+4h',tasks:['Alle 6 Szenarien','Herzschlag-Audio']},{phase:'V3',time:'+6h',tasks:['Daily Szenario-Rotation']}], effort:'8-10h', impact:'Sehr hoch' },
+    adaptive_deck: { inspiration:'Duolingo Spaced Repetition, Anki', overview:'SM-2-Daten (pv_sm2) bestimmen täglich die 10 dringendsten Wörter. Urgency Score = Fälligkeit × inverse Easiness.', mechanics:{rules:'Urgency = (due_date - heute_ms) × (1/EF); Top 10 → "Heutiges Deck".',triggers:'• Neue Wörter: immer 2-3 im Deck  • Falsch beantwortet: in Folge-Sitzung zurück',rewards:'• Alle 10 richtig: "Perfektes Deck"-Badge  • 7 Tage: "KI-Schüler"-Abzeichen'}, flow:['Home: "Dein heutiges Deck (10 Wörter)"','3 Wort-Chips als Vorschau','Start → priorisierter Flow','Nach Session: "Nächste Fälligkeit in X Tagen"'], ux:{layout:'Badge "Personalisiert für dich 🤖" auf Lern-Button',feedback:'Grüne/rote Balken nach Session',states:['deck-preview','in-session','result-with-next-due']}, technical:{storage:'Nutzt pv_sm2 (bereits vorhanden)',seed:'getAdaptiveDeck(n=10): sort by urgency, slice',files:'~30 neue Zeilen in load()',noBackend:true}, metrics:{dau:'Effizienz-Empfinden ↑',retention:'Wörter kehren wieder → Langzeit',session:'Kürzer aber dichter'}, roadmap:[{phase:'MVP',time:'2-3h',tasks:['getAdaptiveDeck()','Badge UI','Deck-Vorschau']},{phase:'V2',time:'+2h',tasks:['Fälligkeits-Anzeige']},{phase:'V3',time:'+3h',tasks:['Adaptive Quiztypen je EF-Wert']}], effort:'2-3h', impact:'Hoch' },
+    combo_quest:   { inspiration:'Duolingo Daily Challenges, Royal Match Event Quests', overview:'Täglich 3 Quests (Silber/Gold/Diamant) die Combo, Kategorie-Wissen und Streak kombinieren.', mechanics:{rules:'3 Quests täglich, je eine Schwierigkeit. Abschluss = Münzen + XP. Verfallen täglich.',triggers:'• "Erreiche x5 Combo"  • "5 Antibiotika richtig"  • "3 neue Wörter heute"',rewards:'• Silber: +50 Münzen  • Gold: +150  • Diamant: +400 + Spezial-Badge'}, flow:['Home: Quest-Karte mit 3 Quests','Fortschrittsbalken live-aktualisiert','Abschluss → Pop-up + Sound','Alle 3: Bonus'], ux:{layout:'Quest-Karte zwischen Hero und Level-Buttons',feedback:'Gold-Funkel-Animation; Charakter-Reaktion',states:['available','in-progress','completed','expired']}, technical:{storage:'pv_quests = {date, quests:[{id,target,progress,done}]}',seed:'Quest-Pool 30 Stück; täglich 3 per Date-Seed',files:'~100 Zeilen (Quest-Engine + Hooks in pick())',noBackend:true}, metrics:{dau:'Session-Häufigkeit ↑',retention:'Quest-Completion-Rate als KPI',session:'2-3 Sessions/Tag'}, roadmap:[{phase:'MVP',time:'3-4h',tasks:['Quest-Engine','3 Quest-Typen','UI-Karte']},{phase:'V2',time:'+3h',tasks:['30 Quest-Pool','Diamant-Rewards']},{phase:'V3',time:'+4h',tasks:['Wöchentliche Mega-Quest']}], effort:'3-4h', impact:'Hoch' },
+    streak_shield: { inspiration:'Duolingo Streak Freeze, Clash Royale Shield', overview:'Kaufbarer Streak-Schutz mit Münzen. Max 2. Verlustangst → mehr Aktivität.', mechanics:{rules:'1 Shield = 200 Münzen; verbraucht sich automatisch bei versäumtem Tag.',triggers:'• if (tag_verpasst && shields > 0) → shields--  • Streak bleibt erhalten',rewards:'• 1 gratis Shield wöchentlich  • Bundle: 3 für 500 Münzen'}, flow:['Profil-Screen: Shop-Button','Shop: Shield-Preise','Kauf → shields++','Tag verpasst → Shield verbraucht','Kein Shield → Streak bricht'], ux:{layout:'🛡️ neben Streak-Zahl mit Vorrats-Count',feedback:'Grünes Aufblitzen wenn Shield aktiv verbraucht',states:['no-shield','1-shield','2-shields','shield-used']}, technical:{storage:'pv_shields: number',seed:'Wöchentlicher Gratis-Shield: if (>7 Tage) → shields++',files:'~50 Zeilen (Shop-Modal, Streak-Hook)',noBackend:true}, metrics:{dau:'Streak-Verlust-Rate ↓ 40%',retention:'Shields-Besitzer spielen 2x häufiger',session:'Coins bekommen mehr Wert → Runner-Motivation ↑'}, roadmap:[{phase:'MVP',time:'1-2h',tasks:['Shield-Storage','Streak-Hook','Profil-Anzeige']},{phase:'V2',time:'+2h',tasks:['Shop-Modal','Wöchentl. Gratis']},{phase:'V3',time:'+3h',tasks:['Bundle-Preise','Shield-Animation']}], effort:'1-2h', impact:'Mittel-Hoch' },
+    friend_duel:   { inspiration:'Clash Royale PvP, Duolingo Friend Leagues', overview:'Asynchrones 1v1 per Link. Beide spielen dieselbe Wortliste.', mechanics:{rules:'Challenger generiert Link mit Seed. Gegner öffnet Link, spielt.',triggers:'• Link-Button in Profil  • Gegner: Link → gleiche Wortliste  • Ergebnis: URL-Hash',rewards:'• Gewinner: +300 Münzen + "Duell-Sieger"-Badge  • Verlierer: +50 Münzen'}, flow:['Profil: "Freund herausfordern"','Link generiert + kopiert','Freund öffnet Link → Duell','Ergebnis verglichen','Gewinner-Animation'], ux:{layout:'Duell-Screen mit beiden Avataren links/rechts',feedback:'VS-Intro; dramatische Sieges-Sequenz',states:['challenge-created','opponent-playing','result-done']}, technical:{storage:'URL-Hash: #duel=seed:score:char',seed:'Wortliste per Date+UUID deterministisch',files:'~150 Zeilen',noBackend:true}, metrics:{dau:'Viralität: jedes Duell = neuer Touchpoint',retention:'Kompetitiver Druck → tägl. Rückkehr',session:'Duell-Accept-Rate Ziel: >60%'}, roadmap:[{phase:'MVP',time:'6-8h',tasks:['URL-Schema','Duell-Screen','Ergebnis-Vergleich']},{phase:'V2',time:'+4h',tasks:['Avatar-VS-Animation','Münzen-Transfer']},{phase:'V3',time:'+6h',tasks:['Liga-System']}], effort:'6-8h', impact:'Sehr hoch (Viral)' },
+    npc_mentor:    { inspiration:'Duolingo Characters, LLM-NPCs (GDC 2024)', overview:'Template-Engine erzeugt personalisierte Lehr-Gespräche wenn Wort 3x falsch.', mechanics:{rules:'Nach 3+ Fehlern am selben Wort → kontextuelle Erklärung per Template.',triggers:'• 3x falsches Wort  • Neues Level  • Perfekte Runde',rewards:'• Gefühl von persönlichem Tutor  • Merkfähigkeit ↑'}, flow:['Fehler-Zähler per Wort','Schwellenwert → Bubble erscheint','Erklärung mit Tipp','Option: "Mehr erklären" → 3 Variationen'], ux:{layout:'Erweiterter Chat-Bubble; Charakter zeigt Erklär-Emotion',feedback:'Wort-Highlight in Bubble; Silben-Trennung animiert',states:['normal','tip-triggered','explaining','understood']}, technical:{storage:'pv_sm2 Fehler-Zähler bereits vorhanden',seed:'TIP_TEMPLATES[wordName] oder generische Analogie',files:'~120 Zeilen',noBackend:true}, metrics:{dau:'Fehler-Rate nach Tipp: -25% erwartet',retention:'Charakterbindung ↑',session:'Spieler fragen mehr Tipps an'}, roadmap:[{phase:'MVP',time:'4-5h',tasks:['Template-Engine','Top-50-Wörter','Bubble-UI']},{phase:'V2',time:'+4h',tasks:['Alle 102 Wörter','3 Varianten je']},{phase:'V3',time:'+6h',tasks:['Charakter-spez. Lehr-Stil']}], effort:'4-5h', impact:'Hoch' },
+    ar_scanner:    { inspiration:'Google Lens, Duolingo Camera Mode', overview:'Kamera → Packung → OCR-Match → sofortige Aussprache-Challenge.', mechanics:{rules:'getUserMedia + Canvas-OCR; Fuzzy-Match gegen WORDS (Levenshtein ≥ 0.6).',triggers:'• Match gefunden → Highlight-Box + "Aussprechen!"  • Kein Match → "Anderen Winkel"',rewards:'• Erster Scan: "AR-Pionier"-Badge  • 10 Scans: "Scan-Meister"  • Jeder Scan: +30 Münzen'}, flow:['Button "Scannen" in Home','Kamera öffnet (getUserMedia)','Rotes Fadenkreuz scannt','Wirkstoff erkannt → Karte','Challenge startet'], ux:{layout:'Vollbild-Kamera mit HUD-Overlay',feedback:'Grüne Bounding-Box; Kamera-Klick-Sound',states:['idle','scanning','found','challenge','no-match']}, technical:{storage:'pv_ar_scans; pv_ar_badges',seed:'Tesseract.js Browser-OCR + Levenshtein-Match',files:'~200 Zeilen',noBackend:true}, metrics:{dau:'Marketing-Hook: viral auf TikTok/LinkedIn',retention:'Reale Lernverknüpfung',session:'Sessions nach erstem Scan: länger'}, roadmap:[{phase:'MVP',time:'10-12h',tasks:['getUserMedia','Levenshtein-Match','Basic UI']},{phase:'V2',time:'+6h',tasks:['Tesseract.js OCR']},{phase:'V3',time:'+8h',tasks:['Packaging-Datenbank']}], effort:'10-12h', impact:'Marketing: Sehr hoch' },
   };
 
-  // ── State ────────────────────────────────────────────────────────────────
-  let _rendered = false;
+  function generateDocument(featureId) {
+    const f = _data[featureId];
+    const cat = MechanicGenerator.CATALOG.find(x => x.id === featureId);
+    if (!f || !cat) return null;
+    return { title:cat.name, version:'1.0', date:new Date().toLocaleDateString('de-DE'),
+      targetAudience:'PKA-Lehrlinge, Apotheken-Personal, Pharmazie-Studierende',
+      inspiration:f.inspiration, overview:f.overview, mechanics:f.mechanics,
+      flow:f.flow, ux:f.ux, technical:f.technical, metrics:f.metrics,
+      roadmap:f.roadmap, effort:f.effort, impact:f.impact };
+  }
+
+  function renderHTML(doc) {
+    if (!doc) return '<p style="color:rgba(255,255,255,.4)">Kein Dokument gefunden.</p>';
+    const section = (emoji, title, html) =>
+      `<div class="gdd-section"><div class="gdd-section-title">${emoji} ${title}</div>${html}</div>`;
+    const li   = arr => arr.map(x => `<li>${x}</li>`).join('');
+    const kv   = obj => Object.entries(obj).map(([k,v]) =>
+      `<div class="gdd-kv"><span class="gdd-key">${k}</span><span class="gdd-val">${v}</span></div>`).join('');
+    return `
+      <div class="gdd-header">
+        <div class="gdd-title">${doc.title}</div>
+        <div class="gdd-meta">v${doc.version} · ${doc.date} · 🎯 ${doc.targetAudience}</div>
+      </div>
+      ${section('💡','Übersicht',`<p>${doc.overview}</p><p class="gdd-inspiration">Inspiriert von: ${doc.inspiration}</p>`)}
+      ${section('⚙️','Kern-Mechaniken',kv(doc.mechanics))}
+      ${section('🔄','User Flow',`<ol class="gdd-flow">${li(doc.flow)}</ol>`)}
+      ${section('🎨','UX-Design',`
+        <div class="gdd-kv"><span class="gdd-key">Layout</span><span class="gdd-val">${doc.ux.layout}</span></div>
+        <div class="gdd-kv"><span class="gdd-key">Feedback</span><span class="gdd-val">${doc.ux.feedback}</span></div>
+        <div class="gdd-kv"><span class="gdd-key">States</span><span class="gdd-val">${doc.ux.states.join(' → ')}</span></div>`)}
+      ${section('🛠️','Technische Implementierung',`
+        <div class="gdd-kv"><span class="gdd-key">localStorage</span><span class="gdd-val gdd-code">${doc.technical.storage}</span></div>
+        <div class="gdd-kv"><span class="gdd-key">Seed/Logik</span><span class="gdd-val">${doc.technical.seed}</span></div>
+        <div class="gdd-kv"><span class="gdd-key">Dateien</span><span class="gdd-val">${doc.technical.files}</span></div>
+        <div class="gdd-kv"><span class="gdd-key">Backend</span><span class="gdd-val" style="color:#2ECC71">${doc.technical.noBackend?'✅ Kein Backend nötig':'⚠️ Backend erforderlich'}</span></div>`)}
+      ${section('📊','Metriken',kv(doc.metrics))}
+      ${section('🗺️','Roadmap',doc.roadmap.map(p =>
+        `<div class="gdd-phase"><span class="gdd-phase-label">${p.phase}</span><span class="gdd-phase-time">${p.time}</span><ul>${li(p.tasks)}</ul></div>`).join(''))}
+      <div class="gdd-footer">
+        <span class="gd-card-effort effort-${doc.effort.match(/^[12]-[23]/)?'low':doc.effort.match(/^[89]|10|12/)?'high':'med'}">⏱ ${doc.effort}</span>
+        <span style="color:var(--teal);font-size:12px;font-weight:700;margin-left:10px">Impact: ${doc.impact}</span>
+      </div>`;
+  }
+
+  return { generateDocument, renderHTML };
+})();
+
+// ── AutoUpdateSystem ─────────────────────────────────────────────────────
+const AutoUpdateSystem = (() => {
+  const INTERVAL = 7 * 24 * 60 * 60 * 1000;
+
+  function _appState() {
+    let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2')||'{}'); } catch(e){}
+    let sm2 = {}; try { sm2 = JSON.parse(localStorage.getItem('pv_sm2')||'{}'); } catch(e){}
+    const vals = Object.values(sm2);
+    return {
+      xp:        pv2.xp||0, streak: pv2.streak||0,
+      learned:   Object.keys(sm2).length,
+      coins:     parseInt(localStorage.getItem('pv_coins')||'0'),
+      hardWords: vals.filter(e=>(e.ef||2.5)<2.0).length,
+    };
+  }
+
+  function _score(state) {
+    return {
+      streak_shield: state.streak>=3?90:40,
+      adaptive_deck: state.hardWords>=5?95:60,
+      combo_quest:   state.xp>=100?80:50,
+      daily_boss:    state.learned>=20?85:45,
+      npc_mentor:    state.hardWords>=3?75:50,
+      escape_room:   state.learned>=40?70:30,
+      friend_duel:   state.xp>=500?65:40,
+      ar_scanner:    80,
+    };
+  }
+
+  function checkForUpdate() {
+    const last = parseInt(localStorage.getItem('pv_gd_last_update')||'0');
+    if (!last || (Date.now()-last) > INTERVAL) performUpdate(false);
+  }
+
+  function performUpdate(manual=true) {
+    const state    = _appState();
+    const scores   = _score(state);
+    const sorted   = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+    const priority = {
+      highPriority:   sorted.filter(([,s])=>s>=75).map(([id])=>id),
+      mediumPriority: sorted.filter(([,s])=>s>=50&&s<75).map(([id])=>id),
+      lowPriority:    sorted.filter(([,s])=>s<50).map(([id])=>id),
+      sorted,
+    };
+    localStorage.setItem('pv_gd_scores',     JSON.stringify(scores));
+    localStorage.setItem('pv_gd_priority',   JSON.stringify(priority));
+    localStorage.setItem('pv_gd_state_snap', JSON.stringify(state));
+    localStorage.setItem('pv_gd_last_update',Date.now().toString());
+
+    // Notification for unseen high-priority features
+    const seen   = new Set(JSON.parse(localStorage.getItem('pv_gd_notified')||'[]'));
+    const fresh  = priority.highPriority.filter(id=>!seen.has(id));
+    if (fresh.length) {
+      const feat = MechanicGenerator.CATALOG.find(f=>f.id===fresh[0]);
+      if (feat) _notify(feat, priority.highPriority.length);
+      localStorage.setItem('pv_gd_notified', JSON.stringify([...seen,...fresh]));
+    }
+    if (manual && window.CharacterSystem) CharacterSystem.showBubble('Analyse abgeschlossen! 🎮', 3000);
+    return { state, scores, priority };
+  }
+
+  function _notify(feat, count) {
+    const old = document.getElementById('gdNotifBanner');
+    if (old) old.remove();
+    const b = document.createElement('div');
+    b.id = 'gdNotifBanner';
+    b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:700;background:linear-gradient(90deg,#1a1a3e,#0d2137);border-bottom:1.5px solid rgba(100,180,255,.4);padding:10px 16px;display:flex;align-items:center;gap:10px;animation:fadeUp .3s ease';
+    b.innerHTML=`<span style="font-size:20px">🎮</span><div style="flex:1"><div style="font-size:12px;font-weight:700;color:#fff">${count} neue Feature-Empfehlung${count>1?'en':''} verfügbar!</div><div style="font-size:11px;color:rgba(100,180,255,.8)">Top-Priorität: ${feat.name}</div></div><button onclick="showScreen('GameDesign');gameDesigner.renderDashboard();document.getElementById('gdNotifBanner').remove()" style="background:var(--teal);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#000;cursor:pointer">Ansehen</button><button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:18px;cursor:pointer;padding:0 4px">×</button>`;
+    document.body.prepend(b);
+    setTimeout(()=>{ if(b.parentElement) b.remove(); }, 8000);
+  }
+
+  function getLastUpdate() { return parseInt(localStorage.getItem('pv_gd_last_update')||'0'); }
+  function getScores()     { try { return JSON.parse(localStorage.getItem('pv_gd_scores')||'{}'); } catch(e){ return {}; } }
+  function getStateSnap()  { try { return JSON.parse(localStorage.getItem('pv_gd_state_snap')||'null'); } catch(e){ return null; } }
+
+  return { checkForUpdate, performUpdate, getLastUpdate, getScores, getStateSnap };
+})();
+
+// ── GameDesignerAgent (orchestrator) ─────────────────────────────────────
+const GameDesignerAgent = (() => {
+
+  const INSIGHTS = [
+    { title:'Spaced Repetition + Gamification', body:'SM-2-Algorithmus + Belohnungssystem erhöht Retention um 40%. Duolingo hält 85% der Nutzer 30 Tage aktiv.', source:'Bildungsforschung 2024 · Duolingo Annual Report', accent:'#2ECC71' },
+    { title:'"Fail Forward" Psychologie (Endless Runner)', body:'Subway Surfers: Scheitern fühlt sich wie Fortschritt an. Jeder Tod gibt XP. Spieler spielen sofort weiter.', source:'GDC Talk 2023 · "The Psychology of Mobile Games"', accent:'#FF9800' },
+    { title:'Micro-Rewards alle 90 Sekunden', body:'Candy Crush gibt alle 60-90 Sekunden Belohnungen. Dopamin-Ausschüttung bei kurzen Intervallen stärkt Gewohnheitsbildung.', source:'Behavioral Psychology Review 2023', accent:'#FF69B4' },
+    { title:'Social Proof & Leaderboards', body:'Sichtbarkeit anderer Spieler erhöht Engagement um 25-35%. Freundschafts-Leaderboards sind effektiver als globale.', source:'Stanford Gamification Lab 2024', accent:'#9B59B6' },
+    { title:'Adaptive Difficulty (DDA)', body:'"Flow Zone": 70-80% Erfolgsrate optimal. Zu leicht = Langeweile, zu schwer = Frustration.', source:'Game UX Research 2024', accent:'#00E5FF' },
+    { title:'Narrative in Lern-Apps', body:'Apps mit Story haben 3x höhere Retention. Emotionale Bindung an Charaktere hält Spieler aktiv.', source:'Mobile Learning Research 2024', accent:'#FFC107' },
+    { title:'Streak-Psychologie: Loss Aversion', body:'"Loss Aversion" ist mächtiger als Gewinn-Motivation. Duolingo nutzt "Streak Freeze" als Premium-Feature.', source:'Behavioral Economics in App Design', accent:'#FF4500' },
+    { title:'Escape Rooms in Bildung', body:'89% der Teilnehmer empfehlen das Format. Zeitdruck + Narrative = maximaler Flow.', source:'Medical Education Journal 2024', accent:'#2ECC71' },
+  ];
 
   function _weekSeed() {
     const d = new Date();
-    return Math.floor((d.getFullYear() * 53 + Math.floor(d.getTime() / (1000 * 60 * 60 * 24 * 7))));
+    return Math.floor(d.getFullYear()*53 + d.getTime()/(1000*60*60*24*7));
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────
-  function render() {
-    _renderInsight();
+  // ── Full Analysis pipeline ──────────────────────────────────────────────
+  function fullAnalysis() {
+    const result = AutoUpdateSystem.performUpdate(true);
+    const trends = TrendAnalyzer.analyzeTrends();
+    const suggestions = MechanicGenerator.generateMechanics(trends, result.scores);
+    renderDashboard();
+    return { trends, suggestions, scores: result.scores };
+  }
+
+  // ── Dashboard HTML ──────────────────────────────────────────────────────
+  function renderDashboard() {
+    const el = document.getElementById('gdDashboard');
+    if (!el) return;
+    const scores  = AutoUpdateSystem.getScores();
+    const snap    = AutoUpdateSystem.getStateSnap();
+    const last    = AutoUpdateSystem.getLastUpdate();
+    const insight = INSIGHTS[_weekSeed() % INSIGHTS.length];
+    const suggestions = MechanicGenerator.generateMechanics(null, scores);
+
+    const lastStr = last ? new Date(last).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Nie';
+    const nextStr = last ? new Date(last+7*24*60*60*1000).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}) : '—';
+    const snapStr = snap ? ` · ${snap.learned} Wörter · Streak ${snap.streak} · ${snap.hardWords} schwere` : '';
+
+    el.innerHTML = `
+      <h2 class="screen-h">🎮 Game Designer</h2>
+
+      <!-- Status bar -->
+      <div class="gd-status-bar">
+        <div class="gd-status-text">🕐 Letzte Analyse: ${lastStr}${snapStr}<br>📅 Nächste: ${nextStr}</div>
+        <button class="gd-doc-btn" onclick="gameDesigner.fullAnalysis()">🔄 Analysieren</button>
+      </div>
+
+      <!-- Weekly Insight -->
+      <div class="gd-insight-card" style="border-color:${insight.accent}55">
+        <div class="gd-insight-label">💡 WÖCHENTLICHER TREND</div>
+        <div class="gd-insight-title">${insight.title}</div>
+        <div class="gd-insight-body">${insight.body}</div>
+        <div class="gd-insight-source">📚 Quelle: ${insight.source}</div>
+      </div>
+
+      <!-- Trend Analyzer tabs -->
+      <div class="gd-section-title">📊 Trend-Analyse: Top Mobile Games</div>
+      <div class="gd-analyzer-tabs" id="gdAnalyzerTabs">
+        <button class="gd-atab active" onclick="gameDesigner.showTab('mechanics',this)">Mechaniken</button>
+        <button class="gd-atab" onclick="gameDesigner.showTab('ux',this)">UX-Patterns</button>
+        <button class="gd-atab" onclick="gameDesigner.showTab('engagement',this)">Engagement</button>
+        <button class="gd-atab" onclick="gameDesigner.showTab('gap',this)">Gap-Analyse</button>
+      </div>
+      <div id="gdAnalyzerContent"></div>
+
+      <!-- Feature Suggestions grouped by priority -->
+      <div class="gd-section-title">🔥 Hochpriorität</div>
+      ${_renderSuggestionList(suggestions.highPriority, scores)}
+
+      <div class="gd-section-title">⚡ Mittelpriorität</div>
+      ${_renderSuggestionList(suggestions.mediumPriority, scores)}
+
+      <div class="gd-section-title">💡 Zukunft</div>
+      ${_renderSuggestionList(suggestions.lowPriority, scores)}
+
+      <!-- Design Doc Generator -->
+      <div class="gd-section-title">📄 Design-Dokument generieren</div>
+      <div class="gd-doc-row">
+        <select class="gd-select" id="gdDocSelect">
+          ${MechanicGenerator.CATALOG.map(f=>`<option value="${f.id}">${f.name}</option>`).join('')}
+        </select>
+        <button class="gd-doc-btn" onclick="gameDesigner.generateFullDoc()">Generieren ▶</button>
+      </div>
+      <div id="gdDocOutput" class="gd-doc-output hidden"></div>
+    `;
+
+    // Init first tab
     showTab('mechanics');
-    _renderSuggestions();
-    _renderDocSelect();
-    const upd = document.getElementById('gdUpdated');
-    if (upd) upd.textContent = 'Analyse-Stand: ' + new Date().toLocaleDateString('de-DE') + ' · 10 Top-Games analysiert';
   }
 
+  function _renderSuggestionList(list, scores) {
+    if (!list || !list.length) return '<p style="color:rgba(255,255,255,.3);font-size:13px;margin-bottom:12px">Keine Vorschläge in dieser Kategorie.</p>';
+    return list.map(m => {
+      const score = scores[m.id];
+      const scoreBar = score!=null ? `<div class="gd-score-bar"><div class="gd-score-fill" style="width:${score}%;background:${score>=75?'#2ECC71':score>=50?'#FF9800':'#FF3366'}"></div><span class="gd-score-val">${score}% Priorität</span></div>` : '';
+      const effortCls = m.effort==='low'?'effort-low':m.effort==='high'?'effort-high':'effort-med';
+      const effortTxt = m.effort==='low'?'⚡ Schnell':m.effort==='high'?'🏗️ Groß':'🔨 Mittel';
+      const inspo = m.inspiration.map(i=>`<span class="gd-tag">${i}</span>`).join('');
+      return `<div class="gd-card">
+        <div class="gd-card-cat">${m.id.replace('_',' ').toUpperCase()}</div>
+        <div class="gd-card-title">${m.name}</div>
+        <div class="gd-card-body">${m.description}</div>
+        ${scoreBar}
+        <div class="gd-card-tags" style="margin-top:8px"><span style="font-size:11px;color:rgba(255,255,255,.35);margin-right:4px">Inspiriert von:</span>${inspo}</div>
+        <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+          <span class="gd-card-effort ${effortCls}">${effortTxt}</span>
+          <button onclick="gameDesigner.generateFullDoc('${m.id}')" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:11px;color:var(--text);cursor:pointer">📄 Design-Dok</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Analyzer Tabs ───────────────────────────────────────────────────────
   function showTab(tab, btn) {
     if (btn) {
-      document.querySelectorAll('.gd-atab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.gd-atab').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
     }
     const c = document.getElementById('gdAnalyzerContent');
     if (!c) return;
-    if (tab === 'mechanics')  c.innerHTML = _renderMechanics();
-    if (tab === 'ux')         c.innerHTML = _renderUX();
-    if (tab === 'engagement') c.innerHTML = _renderEngagement();
-    if (tab === 'gap')        c.innerHTML = _renderGap();
+    if (tab === 'mechanics')  c.innerHTML = _mechHTML();
+    if (tab === 'ux')         c.innerHTML = _uxHTML();
+    if (tab === 'engagement') c.innerHTML = _engHTML();
+    if (tab === 'gap')        c.innerHTML = _gapHTML();
   }
 
-  function _renderMechanics() {
-    return Object.entries(TOP_GAMES).map(([game, data]) => {
-      const pills = data.mechanics.map(m => {
-        const has = PHARMAVOICE_HAS.has(m);
-        return `<span class="gd-pill ${has ? 'gd-pill-has' : 'gd-pill-neu'}">${has ? '✓ ' : '+ '}${m}</span>`;
+  function _mechHTML() {
+    return Object.entries(TrendAnalyzer.TOP_GAMES).map(([game,data])=>{
+      const pills = data.mechanics.map(m=>{
+        const has = TrendAnalyzer.PHARMAVOICE_HAS.has(m);
+        return `<span class="gd-pill ${has?'gd-pill-has':'gd-pill-neu'}">${has?'✓ ':'+ '}${m}</span>`;
       }).join('');
       return `<div class="gd-game-row"><div class="gd-game-name">🎮 ${game}</div><div class="gd-pill-row">${pills}</div></div>`;
     }).join('');
   }
 
-  function _renderUX() {
-    return UX_PATTERNS.map(p => `
+  function _uxHTML() {
+    return TrendAnalyzer.UX_PATTERNS.map(p=>`
       <div class="gd-game-row">
-        <div class="gd-game-name">${p.name} <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,.4)">· ${p.games.join(', ')}</span></div>
+        <div class="gd-game-name">${p.name} <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,.35)">· ${p.games.join(', ')}</span></div>
         <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;line-height:1.5">${p.desc}</div>
       </div>`).join('');
   }
 
-  function _renderEngagement() {
-    return ENGAGEMENT.map(e => `
+  function _engHTML() {
+    return TrendAnalyzer.ENGAGEMENT_STRATEGIES.map(e=>`
       <div class="gd-game-row">
         <div class="gd-game-name">${e.strategy} <span class="gd-tag" style="margin-left:4px">${e.type}</span></div>
-        <div style="font-size:11px;color:rgba(255,255,255,.4);margin:3px 0">${e.games.join(' · ')}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin:3px 0">${e.games.join(' · ')}</div>
         <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.5">${e.desc}</div>
       </div>`).join('');
   }
 
-  function _renderGap() {
+  function _gapHTML() {
     const order = ['missing','partial','done'];
-    return [...GAPS].sort((a,b) => order.indexOf(a.status) - order.indexOf(b.status)).map(g => {
-      const badgeCls = g.status === 'done' ? 'badge-done' : g.status === 'partial' ? 'badge-partial' : 'badge-missing';
-      const badgeTxt = g.status === 'done' ? '✅ Implementiert' : g.status === 'partial' ? '🔨 Teilweise' : '❌ Fehlt';
+    return [...TrendAnalyzer.GAP_ANALYSIS].sort((a,b)=>order.indexOf(a.status)-order.indexOf(b.status)).map(g=>{
+      const cls = g.status==='done'?'badge-done':g.status==='partial'?'badge-partial':'badge-missing';
+      const txt = g.status==='done'?'✅ Implementiert':g.status==='partial'?'🔨 Teilweise':'❌ Fehlt';
       return `<div class="gd-gap-row">
         <div class="gd-gap-title">${g.title} <span style="font-size:11px;color:rgba(255,255,255,.35)">Priorität: ${g.priority}</span></div>
         <div class="gd-gap-sub">${g.desc}</div>
-        <span class="gd-gap-badge ${badgeCls}">${badgeTxt}</span>
+        <span class="gd-gap-badge ${cls}">${txt}</span>
       </div>`;
     }).join('');
   }
 
-  function _renderInsight() {
-    const insight = INSIGHTS[_weekSeed() % INSIGHTS.length];
-    const titleEl = document.getElementById('gdInsightTitle');
-    const bodyEl  = document.getElementById('gdInsightBody');
-    const srcEl   = document.getElementById('gdInsightSource');
-    const card    = document.getElementById('gdInsightCard');
-    if (!titleEl) return;
-    titleEl.textContent = insight.title;
-    bodyEl.textContent  = insight.body;
-    srcEl.textContent   = '📚 Quelle: ' + insight.source;
-    if (card) card.style.borderColor = (insight.accent || '#2ECC71') + '55';
-  }
-
-  function _renderSuggestions() {
-    const container = document.getElementById('gdSuggestions');
-    if (!container) return;
-    container.innerHTML = FEATURES.map(f => `
-      <div class="gd-card" style="--gd-accent:${f.accent}">
-        <div class="gd-card-cat">${f.cat}</div>
-        <div class="gd-card-title">${f.title}</div>
-        <div class="gd-card-body">${f.body}</div>
-        <div class="gd-card-tags">${f.tags.map(t => `<span class="gd-tag">${t}</span>`).join('')}</div>
-        <span class="gd-card-effort effort-${f.effort}">${f.effort === 'low' ? '⚡ Schnell umsetzbar' : f.effort === 'med' ? '🔨 Mittlerer Aufwand' : '🏗️ Großes Feature'}</span>
-      </div>
-    `).join('');
-  }
-
-  function _renderDocSelect() {
-    const sel = document.getElementById('gdDocSelect');
-    if (!sel) return;
-    sel.innerHTML = FEATURES.filter(f => DesignDocumentGenerator._data[f.id]).map(f =>
-      `<option value="${f.id}">${f.title}</option>`
-    ).join('');
-  }
-
-  function generateDoc() {
-    const sel = document.getElementById('gdDocSelect');
+  // ── Design Doc ──────────────────────────────────────────────────────────
+  function generateFullDoc(id) {
+    if (!id) { const sel = document.getElementById('gdDocSelect'); if (sel) id = sel.value; }
+    if (!id) return;
     const out = document.getElementById('gdDocOutput');
-    if (!sel || !out) return;
-    const doc = DesignDocumentGenerator.generateDocument(sel.value);
+    if (!out) return;
+    const doc = DesignDocumentGenerator.generateDocument(id);
     out.innerHTML = DesignDocumentGenerator.renderHTML(doc);
     out.classList.remove('hidden');
-    out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    out.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    // Also select in dropdown
+    const sel = document.getElementById('gdDocSelect');
+    if (sel) sel.value = id;
   }
 
-  // ── AutoUpdateSystem ─────────────────────────────────────────────────────
-  const UPDATE_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+  function render()   { renderDashboard(); }
+  function refresh()  { fullAnalysis(); }
+  function checkForUpdate() { AutoUpdateSystem.checkForUpdate(); }
 
-  // Analyze current app state to score feature priority dynamically
-  function _analyzeAppState() {
-    let pv2 = {};
-    try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch(e) {}
-    const sm2Raw = localStorage.getItem('pv_sm2');
-    let sm2 = {};
-    try { sm2 = JSON.parse(sm2Raw || '{}'); } catch(e) {}
-
-    const xp        = pv2.xp || 0;
-    const streak    = pv2.streak || 0;
-    const learned   = Object.keys(sm2).length;
-    const coins     = parseInt(localStorage.getItem('pv_coins') || '0');
-    const sm2Vals   = Object.values(sm2);
-    const avgEF     = sm2Vals.length ? sm2Vals.reduce((a,b) => a + (b.ef||2.5), 0) / sm2Vals.length : 2.5;
-    const hardWords = sm2Vals.filter(e => (e.ef||2.5) < 2.0).length;
-
-    return { xp, streak, learned, coins, avgEF, hardWords };
-  }
-
-  // Score each feature based on current app state
-  function _scoreSuggestions(state) {
-    const scores = {
-      streak_shield: state.streak >= 3 ? 90 : 40,       // Very relevant if streak exists
-      adaptive_deck: state.hardWords >= 5 ? 95 : 60,    // Highly relevant if many hard words
-      combo_quest:   state.xp >= 100  ? 80 : 50,        // Good if player has XP history
-      daily_boss:    state.learned >= 20 ? 85 : 45,     // Only valuable with word base
-      npc_mentor:    state.hardWords >= 3 ? 75 : 50,    // Mentor helps when struggling
-      escape_room:   state.learned >= 40 ? 70 : 30,     // Needs vocab breadth
-      friend_duel:   state.xp >= 500 ? 65 : 40,         // Social features after engagement
-      ar_scanner:    80,                                  // Always high (marketing/novelty)
-    };
-    return scores;
-  }
-
-  function _classifyPriority(scores) {
-    const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
-    return {
-      highPriority: sorted.filter(([,s]) => s >= 75).map(([id]) => id),
-      medium:       sorted.filter(([,s]) => s >= 50 && s < 75).map(([id]) => id),
-      low:          sorted.filter(([,s]) => s < 50).map(([id]) => id),
-      sorted,
-    };
-  }
-
-  function checkForUpdate() {
-    const last = parseInt(localStorage.getItem('pv_gd_last_update') || '0');
-    const now = Date.now();
-    if (!last || (now - last) > UPDATE_INTERVAL) {
-      performUpdate(false);
-    }
-  }
-
-  function performUpdate(manual = true) {
-    const state    = _analyzeAppState();
-    const scores   = _scoreSuggestions(state);
-    const priority = _classifyPriority(scores);
-
-    // Persist results
-    localStorage.setItem('pv_gd_scores',      JSON.stringify(scores));
-    localStorage.setItem('pv_gd_priority',     JSON.stringify(priority));
-    localStorage.setItem('pv_gd_state_snap',   JSON.stringify(state));
-    localStorage.setItem('pv_gd_last_update',  Date.now().toString());
-
-    // Show notification for top high-priority new feature if not already seen
-    const seen = new Set(JSON.parse(localStorage.getItem('pv_gd_notified') || '[]'));
-    const freshHigh = priority.highPriority.filter(id => !seen.has(id));
-    if (freshHigh.length > 0) {
-      const feat = FEATURES.find(f => f.id === freshHigh[0]);
-      if (feat) _showUpdateNotification(feat, priority.highPriority.length);
-      localStorage.setItem('pv_gd_notified', JSON.stringify([...seen, ...freshHigh]));
-    }
-
-    if (manual) {
-      render();
-      if (window.CharacterSystem) CharacterSystem.showBubble('Analyse abgeschlossen! Schau in den Design-Tab 🎮', 3000);
-      if (window.AudioSystem) AudioSystem.playClick();
-    }
-
-    return { state, scores, priority };
-  }
-
-  function _showUpdateNotification(feat, highCount) {
-    // Inject a dismissible banner on top of home screen
-    const existing = document.getElementById('gdNotifBanner');
-    if (existing) existing.remove();
-
-    const banner = document.createElement('div');
-    banner.id = 'gdNotifBanner';
-    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:700;background:linear-gradient(90deg,#1a1a3e,#0d2137);border-bottom:1.5px solid rgba(100,180,255,.4);padding:10px 16px;display:flex;align-items:center;gap:10px;animation:fadeUp .3s ease';
-    banner.innerHTML = `
-      <span style="font-size:20px">🎮</span>
-      <div style="flex:1">
-        <div style="font-size:12px;font-weight:700;color:#fff">${highCount} neue Feature-Empfehlung${highCount > 1 ? 'en' : ''} für dich!</div>
-        <div style="font-size:11px;color:rgba(100,180,255,.8)">Priorität: ${feat.title}</div>
-      </div>
-      <button onclick="showScreen('GameDesign');GameDesignerAgent.render();document.getElementById('gdNotifBanner').remove()" style="background:var(--teal);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#000;cursor:pointer">Ansehen</button>
-      <button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:18px;cursor:pointer;padding:0 4px">×</button>
-    `;
-    document.body.prepend(banner);
-    setTimeout(() => { if (banner.parentElement) banner.remove(); }, 8000);
-  }
-
-  // ── Priority-aware suggestion render ─────────────────────────────────────
-  function _renderSuggestions() {
-    const container = document.getElementById('gdSuggestions');
-    if (!container) return;
-
-    let scores = {};
-    try { scores = JSON.parse(localStorage.getItem('pv_gd_scores') || '{}'); } catch(e) {}
-    const hasScores = Object.keys(scores).length > 0;
-
-    const sorted = hasScores
-      ? [...FEATURES].sort((a,b) => (scores[b.id]||0) - (scores[a.id]||0))
-      : FEATURES;
-
-    container.innerHTML = sorted.map(f => {
-      const score = scores[f.id];
-      const scoreHTML = score !== undefined
-        ? `<div class="gd-score-bar"><div class="gd-score-fill" style="width:${score}%;background:${score>=75?'#2ECC71':score>=50?'#FF9800':'#FF3366'}"></div><span class="gd-score-val">${score}% Priorität</span></div>`
-        : '';
-      return `
-        <div class="gd-card" style="--gd-accent:${f.accent}">
-          <div class="gd-card-cat">${f.cat}</div>
-          <div class="gd-card-title">${f.title}</div>
-          <div class="gd-card-body">${f.body}</div>
-          ${scoreHTML}
-          <div class="gd-card-tags">${f.tags.map(t=>`<span class="gd-tag">${t}</span>`).join('')}</div>
-          <span class="gd-card-effort effort-${f.effort}">${f.effort==='low'?'⚡ Schnell umsetzbar':f.effort==='med'?'🔨 Mittlerer Aufwand':'🏗️ Großes Feature'}</span>
-        </div>`;
-    }).join('');
-  }
-
-  function refresh() {
-    performUpdate(true);
-  }
-
-  function render() {
-    _renderInsight();
-    showTab('mechanics');
-    _renderSuggestions();
-    _renderDocSelect();
-    _renderUpdateStatus();
-  }
-
-  function _renderUpdateStatus() {
-    const last = parseInt(localStorage.getItem('pv_gd_last_update') || '0');
-    const snap = JSON.parse(localStorage.getItem('pv_gd_state_snap') || 'null');
-    const upd  = document.getElementById('gdUpdated');
-    if (!upd) return;
-    const dateStr = last ? new Date(last).toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Noch nie';
-    const nextStr = last ? new Date(last + UPDATE_INTERVAL).toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit'}) : '—';
-    const snapStr = snap ? ` · ${snap.learned} Wörter · Streak ${snap.streak} · ${snap.hardWords} schwere Wörter` : '';
-    upd.innerHTML = `🕐 Letzte Analyse: ${dateStr}${snapStr}<br>📅 Nächste: ${nextStr}`;
-  }
-
-  return { render, refresh, generateDoc, showTab, checkForUpdate, performUpdate };
+  return { render, refresh, fullAnalysis, renderDashboard, showTab, generateFullDoc, checkForUpdate };
 })();
+
+// Global alias for onclick handlers
+const gameDesigner = GameDesignerAgent;
 
 // ── BOOT ──
 document.getElementById('screenHome').classList.add('active');
