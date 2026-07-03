@@ -550,6 +550,26 @@
     .gd-score-bar  { height:4px; background:rgba(255,255,255,.1); border-radius:4px; margin:10px 0 4px; position:relative; }
     .gd-score-fill { height:100%; border-radius:4px; transition:width .6s ease; }
     .gd-score-val  { font-size:10px; color:rgba(255,255,255,.4); position:absolute; right:0; top:-14px; }
+    /* ── GD redesign: trend cards, suggestion cards, doc list ── */
+    .gd-divider { border:none; border-top:1px solid var(--border); margin:18px 0; }
+    .gd-trend-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:4px; }
+    .gd-trend-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 12px; }
+    .gd-trend-name { font-size:12px; font-weight:800; color:var(--text); margin-bottom:8px; line-height:1.3; }
+    .gd-trend-list { margin:0; padding-left:14px; }
+    .gd-trend-list li { font-size:11px; color:rgba(255,255,255,.6); margin-bottom:4px; line-height:1.4; }
+    .gd-sugg-list { display:flex; flex-direction:column; gap:10px; }
+    .gd-sugg-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 16px; }
+    .gd-sugg-header { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+    .gd-sugg-icon  { font-size:16px; flex-shrink:0; }
+    .gd-sugg-title { font-size:13px; font-weight:800; color:var(--text); letter-spacing:.03em; }
+    .gd-sugg-body  { font-size:12px; color:rgba(255,255,255,.6); line-height:1.55; margin-bottom:10px; }
+    .gd-sugg-doc-btn { background:rgba(255,255,255,.07); border:1px solid var(--border); border-radius:8px; padding:6px 14px; font-size:12px; color:var(--text); cursor:pointer; font-weight:600; }
+    .gd-sugg-doc-btn:active { background:rgba(255,255,255,.12); }
+    .gd-doc-list { display:flex; flex-direction:column; gap:6px; }
+    .gd-doc-list-item { font-size:13px; color:rgba(255,255,255,.7); padding:6px 0; border-bottom:1px solid rgba(255,255,255,.06); }
+    .gd-doc-list-empty { font-size:13px; color:rgba(255,255,255,.3); font-style:italic; }
+    .gd-status-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
+    .gd-status-text { font-size:12px; color:rgba(255,255,255,.5); line-height:1.5; }
 
     /* ── Audio Settings Modal ── */
     #audioSettingsModal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.7); align-items:flex-end; justify-content:center; }
@@ -3823,51 +3843,64 @@ class GameDesignerAgent {
   renderDashboard() {
     const el = document.getElementById('gdDashboard');
     if (!el) return;
-    const scores  = this.autoUpdater.getScores();
-    const snap    = this.autoUpdater.getStateSnap();
-    const last    = this.autoUpdater.getLastUpdate();
-    const insight = this._INSIGHTS[this._weekSeed() % this._INSIGHTS.length];
+    const scores      = this.autoUpdater.getScores();
+    const last        = this.autoUpdater.getLastUpdate();
     const suggestions = this.mechanicGenerator.generateMechanics(null, scores);
+    const today       = new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const lastStr     = last ? new Date(last).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Nie';
 
-    const lastStr = last ? new Date(last).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Nie';
-    const nextStr = last ? new Date(last+7*24*60*60*1000).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}) : '—';
-    const snapStr = snap ? ` · ${snap.learned} Wörter · Streak ${snap.streak} · ${snap.hardWords} schwere` : '';
+    // Build top-game trend cards (first 3 games)
+    const topGames = Object.entries(this.trendAnalyzer.TOP_GAMES).slice(0,3);
+    const trendCards = topGames.map(([game,data])=>`
+      <div class="gd-trend-card">
+        <div class="gd-trend-name">${game}</div>
+        <ul class="gd-trend-list">${data.mechanics.slice(0,4).map(m=>`<li>${m}</li>`).join('')}</ul>
+      </div>`).join('');
+
+    // Build all suggestion cards (high → medium → low, each with priority icon)
+    const allSuggestions = [
+      ...suggestions.highPriority.map(s=>({...s,_icon:'🔥'})),
+      ...suggestions.mediumPriority.map(s=>({...s,_icon:'⚡'})),
+      ...suggestions.lowPriority.map(s=>({...s,_icon:'💡'})),
+    ];
+    const suggCards = allSuggestions.map(m=>`
+      <div class="gd-sugg-card">
+        <div class="gd-sugg-header">
+          <span class="gd-sugg-icon">${m._icon}</span>
+          <span class="gd-sugg-title">${m.name.toUpperCase()}</span>
+        </div>
+        <div class="gd-sugg-body">${m.description}</div>
+        <button class="gd-sugg-doc-btn" onclick="gameDesigner.generateFullDoc('${m.id}')">📄 Design-Dokument erstellen</button>
+      </div>`).join('');
+
+    // Document list (generated docs stored on this instance)
+    const docList = this.designDocuments.length
+      ? this.designDocuments.map(d=>`<div class="gd-doc-list-item">• ${d.title} – GDD v1.0 (${today})</div>`).join('')
+      : '<div class="gd-doc-list-empty">Noch keine Dokumente generiert.</div>';
 
     el.innerHTML = `
-      <h2 class="screen-h">🎮 Game Designer</h2>
+      <h2 class="screen-h">🎮 Game Designer Agent</h2>
 
       <div class="gd-status-bar">
-        <div class="gd-status-text">🕐 Letzte Analyse: ${lastStr}${snapStr}<br>📅 Nächste: ${nextStr}</div>
-        <button class="gd-doc-btn" onclick="gameDesigner.fullAnalysis()">🔄 Analysieren</button>
+        <div class="gd-status-text">📅 Letzte Analyse: ${lastStr}</div>
+        <button class="gd-doc-btn" onclick="gameDesigner.fullAnalysis()">🔄 Jetzt analysieren</button>
       </div>
 
-      <div class="gd-insight-card" style="border-color:${insight.accent}55">
-        <div class="gd-insight-label">💡 WÖCHENTLICHER TREND</div>
-        <div class="gd-insight-title">${insight.title}</div>
-        <div class="gd-insight-body">${insight.body}</div>
-        <div class="gd-insight-source">📚 Quelle: ${insight.source}</div>
-      </div>
+      <div class="gd-divider"></div>
 
-      <div class="gd-section-title">📊 Trend-Analyse: Top Mobile Games</div>
-      <div class="gd-analyzer-tabs" id="gdAnalyzerTabs">
-        <button class="gd-atab active" onclick="gameDesigner.showTab('mechanics',this)">Mechaniken</button>
-        <button class="gd-atab" onclick="gameDesigner.showTab('ux',this)">UX-Patterns</button>
-        <button class="gd-atab" onclick="gameDesigner.showTab('engagement',this)">Engagement</button>
-        <button class="gd-atab" onclick="gameDesigner.showTab('gap',this)">Gap-Analyse</button>
-      </div>
-      <div id="gdAnalyzerContent"></div>
+      <div class="gd-section-title">📊 TOP TRENDS</div>
+      <div class="gd-trend-grid">${trendCards}</div>
 
-      <div class="gd-section-title">🔥 Hochpriorität</div>
-      ${this.renderSuggestionList(suggestions.highPriority, scores)}
+      <div class="gd-divider"></div>
 
-      <div class="gd-section-title">⚡ Mittelpriorität</div>
-      ${this.renderSuggestionList(suggestions.mediumPriority, scores)}
+      <div class="gd-section-title">💡 NEUE FEATURE-VORSCHLÄGE</div>
+      <div class="gd-sugg-list">${suggCards}</div>
 
-      <div class="gd-section-title">💡 Zukunft</div>
-      ${this.renderSuggestionList(suggestions.lowPriority, scores)}
+      <div class="gd-divider"></div>
 
-      <div class="gd-section-title">📄 Design-Dokument generieren</div>
-      <div class="gd-doc-row">
+      <div class="gd-section-title">📄 DESIGN-DOKUMENTE</div>
+      <div class="gd-doc-list">${docList}</div>
+      <div class="gd-doc-row" style="margin-top:10px">
         <select class="gd-select" id="gdDocSelect">
           ${this.mechanicGenerator.CATALOG.map(f=>`<option value="${f.id}">${f.name}</option>`).join('')}
         </select>
@@ -3875,54 +3908,46 @@ class GameDesignerAgent {
       </div>
       <div id="gdDocOutput" class="gd-doc-output hidden"></div>
     `;
-
-    this.showTab('mechanics');
   }
 
   renderSuggestions() {
-    if (!this.currentSuggestions) return '<p>Keine Vorschläge. Führe eine Analyse durch.</p>';
     const scores = this.autoUpdater.getScores();
-    return `
-      <h4>🔥 Hochpriorität</h4>${this.renderSuggestionList(this.currentSuggestions.highPriority, scores)}
-      <h4>⚡ Mittelpriorität</h4>${this.renderSuggestionList(this.currentSuggestions.mediumPriority, scores)}
-      <h4>💡 Zukunft</h4>${this.renderSuggestionList(this.currentSuggestions.lowPriority, scores)}
-    `;
+    const all = this.mechanicGenerator.generateMechanics(null, scores);
+    return [
+      ...all.highPriority.map(s=>({...s,_icon:'🔥'})),
+      ...all.mediumPriority.map(s=>({...s,_icon:'⚡'})),
+      ...all.lowPriority.map(s=>({...s,_icon:'💡'})),
+    ].map(m=>`
+      <div class="gd-sugg-card">
+        <div class="gd-sugg-header"><span class="gd-sugg-icon">${m._icon}</span><span class="gd-sugg-title">${m.name.toUpperCase()}</span></div>
+        <div class="gd-sugg-body">${m.description}</div>
+        <button class="gd-sugg-doc-btn" onclick="gameDesigner.generateFullDoc('${m.id}')">📄 Design-Dokument erstellen</button>
+      </div>`).join('');
   }
 
-  renderSuggestionList(list, scores) {
-    if (!list || !list.length) return '<p style="color:rgba(255,255,255,.3);font-size:13px;margin-bottom:12px">Keine Vorschläge in dieser Kategorie.</p>';
-    return list.map(m => {
-      const score = scores ? scores[m.id] : null;
-      const scoreBar = score!=null ? `<div class="gd-score-bar"><div class="gd-score-fill" style="width:${score}%;background:${score>=75?'#2ECC71':score>=50?'#FF9800':'#FF3366'}"></div><span class="gd-score-val">${score}% Priorität</span></div>` : '';
-      const effortCls = m.effort==='low'?'effort-low':m.effort==='high'?'effort-high':'effort-med';
-      const effortTxt = m.effort==='low'?'⚡ Schnell':m.effort==='high'?'🏗️ Groß':'🔨 Mittel';
-      const inspo = m.inspiration.map(i=>`<span class="gd-tag">${i}</span>`).join('');
-      return `<div class="gd-card">
-        <div class="gd-card-cat">${m.id.replace('_',' ').toUpperCase()}</div>
-        <div class="gd-card-title">${m.name}</div>
-        <div class="gd-card-body">${m.description}</div>
-        ${scoreBar}
-        <div class="gd-card-tags" style="margin-top:8px"><span style="font-size:11px;color:rgba(255,255,255,.35);margin-right:4px">Inspiriert von:</span>${inspo}</div>
-        <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
-          <span class="gd-card-effort ${effortCls}">${effortTxt}</span>
-          <button onclick="gameDesigner.generateFullDoc('${m.id}')" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:11px;color:var(--text);cursor:pointer">📄 Design-Dok</button>
-        </div>
-      </div>`;
-    }).join('');
+  renderSuggestionList(list) {
+    if (!list || !list.length) return '';
+    return list.map(m=>`
+      <div class="gd-sugg-card">
+        <div class="gd-sugg-header"><span class="gd-sugg-title">${m.name.toUpperCase()}</span></div>
+        <div class="gd-sugg-body">${m.description}</div>
+        <button class="gd-sugg-doc-btn" onclick="gameDesigner.generateFullDoc('${m.id}')">📄 Design-Dokument erstellen</button>
+      </div>`).join('');
   }
 
   renderTrends() {
-    if (!this.currentTrends) return '<p>Keine Trends verfügbar. Führe eine Analyse durch.</p>';
-    let html = '<div class="trend-grid">';
-    for (const [game, data] of Object.entries(this.trendAnalyzer.TOP_GAMES)) {
-      html += `<div class="trend-card"><h4>${game}</h4><ul>${data.mechanics.map(m=>`<li>${m}</li>`).join('')}</ul></div>`;
-    }
-    return html + '</div>';
+    const topGames = Object.entries(this.trendAnalyzer.TOP_GAMES).slice(0,3);
+    return `<div class="gd-trend-grid">${topGames.map(([game,data])=>`
+      <div class="gd-trend-card">
+        <div class="gd-trend-name">${game}</div>
+        <ul class="gd-trend-list">${data.mechanics.slice(0,4).map(m=>`<li>${m}</li>`).join('')}</ul>
+      </div>`).join('')}</div>`;
   }
 
   renderDocuments() {
-    if (!this.designDocuments.length) return '<p>Keine Dokumente. Führe eine Analyse durch.</p>';
-    return this.designDocuments.map(doc => this.designDocGenerator.renderHTML(doc)).join('');
+    const today = new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+    if (!this.designDocuments.length) return '<p style="color:rgba(255,255,255,.35);font-size:13px">Noch keine Dokumente generiert.</p>';
+    return this.designDocuments.map(d=>`<div class="gd-doc-list-item">• ${d.title} – GDD v1.0 (${today})</div>`).join('');
   }
 
   // ── Analyzer Tabs ───────────────────────────────────────────────────────
