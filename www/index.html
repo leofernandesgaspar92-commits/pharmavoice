@@ -487,6 +487,19 @@
     .lang-btn:hover  { background:rgba(255,255,255,.18); }
 
 
+    /* ── Smart Learn Coach ── */
+    .smart-card { background:linear-gradient(135deg,#0d2137,#1a1a3e); border:1.5px solid rgba(100,180,255,.35); border-radius:16px; padding:16px; margin-bottom:18px; }
+    .smart-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .smart-icon  { font-size:18px; }
+    .smart-title { font-size:14px; font-weight:800; color:#fff; }
+    .smart-body  { font-size:13px; color:rgba(255,255,255,.75); line-height:1.5; margin-bottom:12px; }
+    .smart-btn   { width:100%; padding:12px; background:linear-gradient(135deg,#00D4FF,#0090C7); border:none; border-radius:12px; color:#04202b; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; }
+    .smart-btn:active { transform:scale(.98); }
+    .smart-coach-banner { position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:900; background:linear-gradient(135deg,#0d2137,#1a1a3e); border:1.5px solid rgba(100,180,255,.4); border-radius:14px; padding:12px 16px; display:flex; align-items:center; gap:10px; max-width:90%; box-shadow:0 8px 24px rgba(0,0,0,.35); animation:smartBannerIn .3s ease; }
+    .smart-coach-icon { font-size:18px; flex-shrink:0; }
+    .smart-coach-text { font-size:13px; color:#fff; line-height:1.4; }
+    @keyframes smartBannerIn { from{opacity:0;transform:translateX(-50%) translateY(-10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
     /* ── Daily Mission Card ── */
     .mission-card { background:linear-gradient(135deg,#1a1a3e,#2d1b4e); border:1.5px solid rgba(255,180,0,.35); border-radius:16px; padding:16px; margin-bottom:18px; }
     .mission-card.mission-done { background:linear-gradient(135deg,#0d2137,#0a3d2e); border-color:rgba(0,168,107,.4); }
@@ -924,7 +937,7 @@
 
   <div class="section-title">Lernebenen</div>
   <div class="level-cards" id="levelCardsHome"></div>
-  <button class="btn-start" onclick="showScreen('Hub');HubSystem.render();if(!DailyMissionSystem.isDone())DailyMissionSystem.start()">🚀 &nbsp;Jetzt lernen starten</button>
+  <button class="btn-start" onclick="showScreen('Hub');HubSystem.render();if(!DailyMissionSystem.isDone())DailyMissionSystem.start();else SmartLearnSystem.start()">🚀 &nbsp;Jetzt lernen starten</button>
 </div>
 
 <!-- ══ LEARN ══ -->
@@ -2282,6 +2295,7 @@ function showResult() {
   else if (Q.correct < 4) setTimeout(() => AvatarQ.ask('tip'), 4000);
   HubSystem._hookLearnEnd(Q.correct);
   DailyMissionSystem._hookLearnEnd(Q.correct);
+  SmartLearnSystem._hookLearnEnd(Q.correct, Q.meds.length);
   showScreen('Result');
 }
 
@@ -2850,6 +2864,7 @@ function rnGameOver() {
   localStorage.setItem('pv_runner_hs', hs);
   HubSystem._hookRunnerEnd(RG.score);
   DailyMissionSystem._hookRunnerEnd(RG.score);
+  SmartLearnSystem._hookRunnerEnd(RG.score);
 
   rnEl('rnOverlay').classList.remove('hidden');
   rnEl('rnOvIcon').textContent  = RG.score >= 1000 ? '🏆' : '💀';
@@ -3573,6 +3588,170 @@ CharacterSystem.showBubble = function(text, dur) {
 };
 
 
+// ══ SMART LEARN SYSTEM (adaptive coach) ════════════════════════════════
+const SmartLearnSystem = (() => {
+  const LS_SESSIONS = 'pv_smart_sessions'; // rolling log of recent learn sessions
+  const LS_RUNS     = 'pv_smart_runs';     // rolling log of recent runner rounds
+  const MAX_LOG = 8;
+
+  function _pushLog(key, entry) {
+    let log; try { log = JSON.parse(localStorage.getItem(key)) || []; } catch { log = []; }
+    log.push(entry);
+    if (log.length > MAX_LOG) log.shift();
+    localStorage.setItem(key, JSON.stringify(log));
+  }
+  function _readLog(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
+  }
+
+  function recordLearnSession(correct, total) {
+    _pushLog(LS_SESSIONS, { correct, total, ts: Date.now() });
+  }
+  function recordRunnerRound(score) {
+    _pushLog(LS_RUNS, { score, ts: Date.now() });
+  }
+
+  // ── Analysis ───────────────────────────────────────────────────────────
+  function _errorRate() {
+    const log = _readLog(LS_SESSIONS);
+    if (!log.length) return null;
+    const totals = log.reduce((s,e)=>s+e.total, 0);
+    const corrects = log.reduce((s,e)=>s+e.correct, 0);
+    return totals ? 1 - (corrects/totals) : null;
+  }
+
+  function _hoursSinceLast() {
+    if (!S.lastPlayed) return 999;
+    const last = new Date(S.lastPlayed);
+    return (Date.now() - last.getTime()) / 3600000;
+  }
+
+  function _runnerRoundsToday() {
+    const log = _readLog(LS_RUNS);
+    const today = new Date().toISOString().slice(0,10);
+    return log.filter(e => new Date(e.ts).toISOString().slice(0,10) === today).length;
+  }
+  function _learnSessionsToday() {
+    const log = _readLog(LS_SESSIONS);
+    const today = new Date().toISOString().slice(0,10);
+    return log.filter(e => new Date(e.ts).toISOString().slice(0,10) === today).length;
+  }
+
+  // Decide what the user should do right now.
+  // Returns { mode:'speak'|'runner'|'mixed', reason:string, mixSteps?:[...] }
+  function decide() {
+    const errorRate = _errorRate();
+    const runnerToday = _runnerRoundsToday();
+    const learnToday  = _learnSessionsToday();
+    const hour = new Date().getHours();
+    const lowEnergy = hour < 8 || hour >= 22;
+
+    // High error rate → focus on speak practice
+    if (errorRate !== null && errorRate >= 0.35) {
+      return { mode:'speak', reason:'Deine Fehlerquote ist gerade etwas höher – wir üben gezielt im Lern-Modus.' };
+    }
+    // Already did a lot of learn sessions today, no runner yet → runner
+    if (learnToday >= 2 && runnerToday === 0) {
+      return { mode:'runner', reason:'Du hast heute schon viel gelernt – Zeit für eine Runde Pharma Runner!' };
+    }
+    // Low energy hours (early morning / late night) → short runner burst instead of focused study
+    if (lowEnergy && runnerToday === 0) {
+      return { mode:'runner', reason:'Kurze Zeit? Eine schnelle Runner-Runde passt jetzt perfekt.' };
+    }
+    // Long time away → gentle reintroduction with mix
+    if (_hoursSinceLast() >= 20) {
+      return { mode:'mixed', reason:'Schön, dass du wieder da bist! Wir starten mit einer Mischung aus Lernen und Runner.', mixSteps:[
+        { type:'speak',  goal:3 }, { type:'runner', goal:1 }, { type:'speak', goal:3 },
+      ]};
+    }
+    // Default: balanced mix
+    return { mode:'mixed', reason:'Ausgewogene Session: erst ein bisschen üben, dann eine Runner-Runde.', mixSteps:[
+      { type:'speak', goal:3 }, { type:'runner', goal:1 }, { type:'speak', goal:3 },
+    ]};
+  }
+
+  // ── Execution ──────────────────────────────────────────────────────────
+  let _mixQueue = [];
+
+  function start() {
+    const decision = decide();
+    _showCoachBanner(decision.reason);
+    if (decision.mode === 'speak') {
+      sessionStorage.setItem('smart_speak_active', '1');
+      openModal();
+    } else if (decision.mode === 'runner') {
+      sessionStorage.setItem('smart_runner_active', '1');
+      startRunner();
+    } else {
+      _mixQueue = [...decision.mixSteps];
+      _runNextMixStep();
+    }
+  }
+
+  function _runNextMixStep() {
+    if (!_mixQueue.length) return;
+    const step = _mixQueue[0];
+    if (step.type === 'speak') {
+      sessionStorage.setItem('smart_mix_active', '1');
+      sessionStorage.setItem('smart_mix_goal', step.goal);
+      openModal();
+    } else {
+      sessionStorage.setItem('smart_mix_runner_active', '1');
+      startRunner();
+    }
+  }
+
+  function _showCoachBanner(reason) {
+    let banner = document.getElementById('smartCoachBanner');
+    if (banner) banner.remove();
+    banner = document.createElement('div');
+    banner.id = 'smartCoachBanner';
+    banner.className = 'smart-coach-banner';
+    banner.innerHTML = `<span class="smart-coach-icon">🤖</span><span class="smart-coach-text">${reason}</span>`;
+    document.body.appendChild(banner);
+    setTimeout(() => banner.remove(), 4500);
+  }
+
+  function _hookLearnEnd(correct, total) {
+    recordLearnSession(correct, total);
+    if (sessionStorage.getItem('smart_speak_active')) {
+      sessionStorage.removeItem('smart_speak_active');
+    }
+    if (sessionStorage.getItem('smart_mix_active')) {
+      sessionStorage.removeItem('smart_mix_active');
+      sessionStorage.removeItem('smart_mix_goal');
+      _mixQueue.shift();
+      _runNextMixStep();
+    }
+  }
+
+  function _hookRunnerEnd(score) {
+    recordRunnerRound(score);
+    if (sessionStorage.getItem('smart_runner_active')) {
+      sessionStorage.removeItem('smart_runner_active');
+    }
+    if (sessionStorage.getItem('smart_mix_runner_active')) {
+      sessionStorage.removeItem('smart_mix_runner_active');
+      _mixQueue.shift();
+      _runNextMixStep();
+    }
+  }
+
+  function renderCard() {
+    const decision = decide();
+    const modeIcon  = decision.mode === 'runner' ? '🏃' : decision.mode === 'speak' ? '🎤' : '🎯';
+    const modeLabel = decision.mode === 'runner' ? 'Runner-Runde' : decision.mode === 'speak' ? 'Lern-Session' : 'Mix-Session';
+    return `
+      <div class="smart-card">
+        <div class="smart-header"><span class="smart-icon">🤖</span><span class="smart-title">Smart Coach empfiehlt</span></div>
+        <div class="smart-body">${decision.reason}</div>
+        <button class="smart-btn" onclick="SmartLearnSystem.start()">${modeIcon} &nbsp;${modeLabel} starten</button>
+      </div>`;
+  }
+
+  return { start, decide, recordLearnSession, recordRunnerRound, renderCard, _hookLearnEnd, _hookRunnerEnd };
+})();
+
 // ══ DAILY MISSION SYSTEM ════════════════════════════════════════════════
 const DailyMissionSystem = (() => {
   const LS_KEY = 'pv_daily_mission';
@@ -3834,7 +4013,7 @@ const HubSystem = (() => {
           <div class="hub-sub">${doneLevels} von ${totalLevels} Level abgeschlossen</div>
         </div>
       </div>
-      ${DailyMissionSystem.renderCard()}
+      ${DailyMissionSystem.isDone() ? SmartLearnSystem.renderCard() : DailyMissionSystem.renderCard()}
       ${next ? `<button class="hub-cta" onclick="HubSystem.playNext()">🚀 &nbsp;${next.level.type==='runner'?'Runner-Level starten':next.level.type==='quiz'?'Quiz starten':'Aussprache üben'}: ${next.level.name}</button>` : `<button class="hub-cta" onclick="HubSystem.render()">🏆 Alle Level abgeschlossen!</button>`}
     `;
 
