@@ -973,7 +973,7 @@
 
   <div class="section-title">Lernebenen</div>
   <div class="level-cards" id="levelCardsHome"></div>
-  <button class="btn-start" onclick="showScreen('Hub');HubSystem.render();if(!DailyMissionSystem.isDone())DailyMissionSystem.start();else SmartLearnSystem.start()">🚀 &nbsp;Jetzt lernen starten</button>
+  <button class="btn-start" onclick="unifiedHub.startLearning()">🚀 &nbsp;Jetzt lernen starten</button>
 </div>
 
 <!-- ══ LEARN ══ -->
@@ -4222,6 +4222,95 @@ const HubSystem = (() => {
 
   return { render, playNext, completeLevel, _launchById, _hookRunnerEnd, _hookLearnEnd, WORLDS };
 })();
+
+// ══ UNIFIED LEARNING HUB (top-level orchestrator) ══════════════════════
+// Single entry point for "Jetzt lernen starten". Wraps the existing
+// HubSystem (world/level map), DailyMissionSystem, SmartLearnSystem
+// (adaptive coach) and the Fusion-mode Runner into one decision flow.
+class UnifiedLearningHub {
+  constructor() {
+    this.currentMode = null;
+  }
+
+  loadPlayerData() {
+    let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch {}
+    let hub = {}; try { hub = JSON.parse(localStorage.getItem('pv_hub') || '{}'); } catch {}
+    const learnSessions = (() => { try { return JSON.parse(localStorage.getItem('pv_smart_sessions')) || []; } catch { return []; } })();
+    return {
+      xp: pv2.xp || 0,
+      streak: S.streak || 0,
+      hubLevelsDone: Object.values(hub).filter(l => l && l.done).length,
+      learnSessionsLogged: learnSessions.length,
+      isNewPlayer: (pv2.xp || 0) === 0 && learnSessions.length === 0,
+    };
+  }
+
+  // ===== HAUPTFUNKTION: "Jetzt lernen starten" =====
+  startLearning() {
+    const data = this.loadPlayerData();
+    const recommendation = this.recommendMode(data);
+    this.currentMode = recommendation.mode;
+
+    showScreen('Hub');
+    HubSystem.render();
+
+    switch (recommendation.mode) {
+      case 'world':         this.startWorldMode(recommendation); break;
+      case 'daily_mission': this.startDailyMission(recommendation); break;
+      case 'learn':         this.startLearnMode(recommendation); break;
+      case 'fusion':        this.startFusionMode(recommendation); break;
+      default:               this.startSmartLearn(recommendation);
+    }
+
+    this.showModeAnnouncement(recommendation);
+  }
+
+  // ===== Entscheidung: welcher Modus passt gerade am besten =====
+  recommendMode(data) {
+    // Onboarding: brandneue Nutzer starten in der strukturierten Welt, nicht beim Coach
+    if (data.isNewPlayer) {
+      return { mode:'world', reason:'Willkommen! Wir starten mit deiner ersten Lernwelt.' };
+    }
+    // Tagesmission hat Vorrang, solange sie offen ist
+    if (!DailyMissionSystem.isDone()) {
+      return { mode:'daily_mission', reason:'Deine Tagesmission wartet auf dich.' };
+    }
+    // Sonst entscheidet der Smart Coach (Fehlerquote, Tageszeit, Aktivität)
+    const decision = SmartLearnSystem.decide();
+    if (decision.mode === 'speak')  return { mode:'learn',  reason: decision.reason };
+    if (decision.mode === 'runner') return { mode:'fusion', reason: decision.reason };
+    return { mode:'smart_learn', reason: decision.reason, mixSteps: decision.mixSteps };
+  }
+
+  // ===== MODE: WORLD (Welt-/Level-Karte) =====
+  startWorldMode() { HubSystem.playNext(); }
+
+  // ===== MODE: DAILY MISSION =====
+  startDailyMission() { DailyMissionSystem.start(); }
+
+  // ===== MODE: LEARN (fokussierte Aussprache-Session) =====
+  startLearnMode() { openModal(); }
+
+  // ===== MODE: FUSION (Runner mit Lern-Elementen) =====
+  startFusionMode() { startRunner(); }
+
+  // ===== MODE: SMART LEARN (gemischte Sequenz) =====
+  startSmartLearn(recommendation) { SmartLearnSystem.start(); }
+
+  showModeAnnouncement(recommendation) {
+    let banner = document.getElementById('smartCoachBanner');
+    if (banner) banner.remove();
+    banner = document.createElement('div');
+    banner.id = 'smartCoachBanner';
+    banner.className = 'smart-coach-banner';
+    const icon = { world:'🌍', daily_mission:'🎯', learn:'🎤', fusion:'🏃', smart_learn:'🤖' }[recommendation.mode] || '🤖';
+    banner.innerHTML = `<span class="smart-coach-icon">${icon}</span><span class="smart-coach-text">${recommendation.reason}</span>`;
+    document.body.appendChild(banner);
+    setTimeout(() => banner.remove(), 4500);
+  }
+}
+
+const unifiedHub = new UnifiedLearningHub();
 
 // ══ GAME DESIGNER AGENT ══════════════════════════════════════════════════
 // Architecture: TrendAnalyzer → MechanicGenerator → DesignDocumentGenerator
