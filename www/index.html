@@ -2502,7 +2502,7 @@ function startLearn(lvId = 1) {
   }
   ResourceSystem.spendEnergy();
   setTimeout(() => CharacterSystem.showBubble(
-    (CharacterSystem.getCurrent()?.msgs.start || ['Los geht\'s!'])[Math.floor(Math.random()*2)]
+    (CharacterSystem.getCurrent?.()?.msgs?.start || ['Los geht\'s!', 'Auf geht\'s!'])[Math.floor(Math.random()*2)]
   ), 400);
   // Update learn chip
   el('learnChip').textContent = `${lv.icon}  ${lv.name} Level`;
