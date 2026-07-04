@@ -52,6 +52,23 @@
     .pv-energy-pill.low .pv-energy-fill { background:linear-gradient(90deg,#FF3366,#FF6B35); animation:pvEnergyPulse 1s ease-in-out infinite; }
     @keyframes pvEnergyPulse { 0%,100%{opacity:1} 50%{opacity:.5} }
 
+    /* ── Shop & Top-10 ── */
+    .shop-item { display:flex; align-items:center; gap:12px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:10px; }
+    .shop-item-icon { font-size:28px; flex-shrink:0; }
+    .shop-item-info { flex:1; min-width:0; }
+    .shop-item-name { font-size:14px; font-weight:800; color:var(--text); }
+    .shop-owned { font-size:11px; font-weight:700; color:var(--green); }
+    .shop-item-desc { font-size:11.5px; color:var(--gray); margin-top:2px; line-height:1.4; }
+    .shop-buy-btn { background:linear-gradient(135deg,var(--green),var(--green-d)); border:none; border-radius:10px; padding:9px 14px; font-size:13px; font-weight:900; color:#04211d; cursor:pointer; font-family:inherit; white-space:nowrap; }
+    .shop-buy-btn:active { transform:scale(.95); }
+    .top10-list { display:flex; flex-direction:column; gap:6px; }
+    .top10-row { display:flex; align-items:center; gap:12px; background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:10px 14px; }
+    .top10-row.first { border-color:rgba(255,193,7,.4); background:linear-gradient(135deg,rgba(255,193,7,.08),var(--bg2)); }
+    .top10-rank { font-size:14px; font-weight:900; color:var(--text); min-width:36px; }
+    .top10-score { flex:1; font-size:15px; font-weight:800; color:var(--green); }
+    .top10-date { font-size:11px; color:var(--gray); }
+    .top10-empty { font-size:13px; color:var(--gray); font-style:italic; padding:8px 0; }
+
     /* ── Team Roster (Youth-Pharma-Referenz) ── */
     .team-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .team-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 10px; text-align:center; }
@@ -1104,7 +1121,7 @@
     <button class="home-menu-item" onclick="showScreen('Profile')">
       <span class="home-menu-icon">👤</span><div class="home-menu-label">Mein Profil</div>
     </button>
-    <button class="home-menu-item" onclick="openUpgrade()">
+    <button class="home-menu-item" onclick="showScreen('Shop');ShopSystem.render()">
       <span class="home-menu-icon">🛒</span><div class="home-menu-label">Shop</div>
     </button>
     <button class="home-menu-item" onclick="showScreen('Achievements')">
@@ -1202,7 +1219,10 @@
 
 <!-- ══ ACHIEVEMENTS ══ -->
 <div class="screen" id="screenAchievements">
-  <div class="screen-h">🏆 Erfolge</div>
+  <div class="screen-h">🏆 Rangliste & Erfolge</div>
+  <div class="section-title">🏅 TOP 10 RUNNER-HIGHSCORES</div>
+  <div id="top10List" class="top10-list"></div>
+  <div class="section-title" style="margin-top:24px">🏆 ERFOLGE</div>
   <div class="ach-list" id="achList"></div>
 </div>
 
@@ -1237,6 +1257,22 @@
 <!-- ══ HUB ══ -->
 <div class="screen" id="screenHub">
   <div id="hubContent"></div>
+</div>
+
+<!-- ══ SHOP ══ -->
+<div class="screen" id="screenShop">
+  <button class="back-btn" onclick="showScreen('Home')">← Zurück</button>
+  <h2 class="screen-h">🛒 Shop</h2>
+  <div class="section-title">⚡ POWER-UPS</div>
+  <div id="shopItems"></div>
+  <div class="section-title" style="margin-top:24px">🚀 PREMIUM</div>
+  <button class="home-menu-item" onclick="openUpgrade()">
+    <span class="home-menu-icon">⭐</span>
+    <div class="home-menu-text">
+      <div class="home-menu-label">Premium freischalten</div>
+      <div class="home-menu-sub">Alle Level & Welten ohne Limit</div>
+    </div>
+  </button>
 </div>
 
 <!-- ══ PHARMA PARK ══ -->
@@ -2207,6 +2243,14 @@ const ACHIEVEMENTS = [
 ];
 
 function renderAchievements() {
+  // Top-10 Runner-Highscores
+  const topEl = el('top10List');
+  if (topEl) {
+    let top10; try { top10 = JSON.parse(localStorage.getItem('pv_runner_top10')) || []; } catch { top10 = []; }
+    topEl.innerHTML = top10.length
+      ? top10.map((e, i) => `<div class="top10-row ${i===0?'first':''}"><span class="top10-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span><span class="top10-score">${e.score.toLocaleString('de-DE')}</span><span class="top10-date">${e.date}</span></div>`).join('')
+      : '<div class="top10-empty">Noch keine Runner-Runde gespielt.</div>';
+  }
   const list = el('achList');
   if (!list) return;
   list.innerHTML = '';
@@ -2239,7 +2283,15 @@ function load() {
   if (old && !raw) { S = { ...S, ...JSON.parse(old) }; save(); }
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
-  if (S.lastPlayed && S.lastPlayed !== today && S.lastPlayed !== yesterday) { S.streak = 0; save(); }
+  if (S.lastPlayed && S.lastPlayed !== today && S.lastPlayed !== yesterday) {
+    // Streak-Schild (aus dem Shop) rettet den Streak einmalig
+    if (ShopSystem.consumeShield()) {
+      S.lastPlayed = yesterday; save();
+      setTimeout(() => CharacterSystem.showBubble('🛡️ Streak-Schild eingesetzt – dein Streak ist gerettet!', 3500), 1200);
+    } else {
+      S.streak = 0; save();
+    }
+  }
   sm2Load();
   CharacterSystem.init();
   renderLevelCards();
@@ -2379,7 +2431,7 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el('screen' + name).classList.add('active');
-  const map = { Home:'navHome', Hub:'navHub', Park:'navHub', Achievements:'navAch', Profile:'navProf', Learn:'navHub', Result:'navHub', GameDesign:'navGD' };
+  const map = { Home:'navHome', Hub:'navHub', Park:'navHub', Shop:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navHub', Result:'navHub', GameDesign:'navGD' };
   if (map[name]) el(map[name]).classList.add('active');
   CharacterSystem.showAvatar();
   refreshUI();
@@ -2440,7 +2492,11 @@ function startLearn(lvId = 1) {
   const lv   = LEVELS.find(l => l.id === lvId);
   // SM-2: put overdue/new drugs first, then shuffle the rest
   const sorted = sm2SortMeds(pool);
-  Q = { meds: sorted.slice(0, 10), idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId };
+  Q = { meds: sorted.slice(0, 10), idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId, xpMult: 1 };
+  if (ShopSystem.consumeDoubleXp()) {
+    Q.xpMult = 2;
+    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Shekel!', 3000), 900);
+  }
   ResourceSystem.spendEnergy();
   setTimeout(() => CharacterSystem.showBubble(
     (CharacterSystem.getCurrent()?.msgs.start || ['Los geht\'s!'])[Math.floor(Math.random()*2)]
@@ -2519,7 +2575,8 @@ function pick(btn, correct, med) {
   const good = btn.dataset.correct === 'true';
   if (good) {
     btn.classList.add('good');
-    Q.correct++; Q.sessionXP += 10; S.xp += 10;
+    const gain = 10 * (Q.xpMult || 1);
+    Q.correct++; Q.sessionXP += gain; S.xp += gain;
     Q.streak = (Q.streak || 0) + 1;
     popXP();
     showFeedback(true, `✅ &nbsp;Richtig! &nbsp;${med.tip}`);
@@ -3198,6 +3255,14 @@ function rnGameOver() {
 
   const hs = Math.max(RG.score, parseInt(localStorage.getItem('pv_runner_hs') || '0'));
   localStorage.setItem('pv_runner_hs', hs);
+  // Top-10 Highscore-Liste pflegen
+  let top10; try { top10 = JSON.parse(localStorage.getItem('pv_runner_top10')) || []; } catch { top10 = []; }
+  if (RG.score > 0) {
+    top10.push({ score: RG.score, date: new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'}) });
+    top10.sort((a,b) => b.score - a.score);
+    top10 = top10.slice(0, 10);
+    localStorage.setItem('pv_runner_top10', JSON.stringify(top10));
+  }
   HubSystem._hookRunnerEnd(RG.score);
   DailyMissionSystem._hookRunnerEnd(RG.score);
   SmartLearnSystem._hookRunnerEnd(RG.score);
@@ -3209,7 +3274,8 @@ function rnGameOver() {
   rnEl('rnOvScore').style.display = 'block';
   rnEl('rnOvScore').textContent   = RG.score;
   rnEl('rnOvHs').style.display  = 'block';
-  rnEl('rnOvHs').textContent    = `🏅 Highscore: ${hs}`;
+  const rank = top10.findIndex(e => e.score === RG.score) + 1;
+  rnEl('rnOvHs').innerHTML = `🏅 Highscore: ${hs}${rank > 0 && rank <= 10 ? ` &nbsp;·&nbsp; Platz ${rank} in deinen Top 10` : ''}`;
   rnEl('rnOvBtn').textContent   = '🔄  Nochmal';
   rnEl('rnOvBtn').onclick       = rnStartGame;
 }
@@ -3925,6 +3991,75 @@ CharacterSystem.showBubble = function(text, dur) {
 
 
 // ══ PHARMA PARK (open-world hub) ════════════════════════════════════════
+// ══ SHOP SYSTEM (Power-Ups kaufen mit Shekel/Gems) ══════════════════════
+const ShopSystem = (() => {
+  const ITEMS = [
+    { id:'shield',  icon:'🛡️', name:'Streak-Schild',      desc:'Schützt deinen Streak, wenn du einen Tag verpasst.', cost:200, currency:'coins' },
+    { id:'energy',  icon:'⚡', name:'Energie-Auffüllung', desc:'Füllt deine Energie sofort auf 100 auf.',            cost:5,   currency:'gems'  },
+    { id:'dblxp',   icon:'✨', name:'Double-XP',           desc:'Nächste Lern-Session bringt doppelte Shekel.',       cost:150, currency:'coins' },
+  ];
+
+  function _getCount(id) { return parseInt(localStorage.getItem('pv_shop_' + id)) || 0; }
+  function _setCount(id, n) { localStorage.setItem('pv_shop_' + id, n); }
+
+  function buy(id) {
+    const item = ITEMS.find(i => i.id === id);
+    if (!item) return;
+    let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch {}
+    if (item.currency === 'coins') {
+      if ((pv2.xp || 0) < item.cost) { CharacterSystem.showBubble('Nicht genug Shekel! 🪙', 2500); return; }
+      pv2.xp -= item.cost; S.xp = pv2.xp;
+      localStorage.setItem('pv2', JSON.stringify(pv2));
+    } else {
+      if (ResourceSystem.getGems() < item.cost) { CharacterSystem.showBubble('Nicht genug Gems! 💎', 2500); return; }
+      ResourceSystem.addGems(-item.cost);
+    }
+    // Effekt anwenden
+    if (id === 'energy') {
+      localStorage.setItem('pv_energy', JSON.stringify({ value: 100, ts: Date.now() }));
+    } else {
+      _setCount(id, _getCount(id) + 1);
+    }
+    AudioSystem.playLevelUp(CharacterSystem.getLang());
+    CharacterSystem.showBubble(`${item.icon} ${item.name} gekauft!`, 2500);
+    refreshUI();
+    render();
+  }
+
+  // Double-XP-Verbrauch: von pick() abgefragt
+  function consumeDoubleXp() {
+    const n = _getCount('dblxp');
+    if (n > 0) { _setCount('dblxp', n - 1); return true; }
+    return false;
+  }
+  function hasDoubleXp() { return _getCount('dblxp') > 0; }
+  function hasShield()   { return _getCount('shield') > 0; }
+  function consumeShield() {
+    const n = _getCount('shield');
+    if (n > 0) { _setCount('shield', n - 1); return true; }
+    return false;
+  }
+
+  function render() {
+    const c = document.getElementById('shopItems');
+    if (!c) return;
+    c.innerHTML = ITEMS.map(item => {
+      const owned = item.id === 'energy' ? null : _getCount(item.id);
+      const curIcon = item.currency === 'coins' ? '🪙' : '💎';
+      return `<div class="shop-item">
+        <div class="shop-item-icon">${item.icon}</div>
+        <div class="shop-item-info">
+          <div class="shop-item-name">${item.name}${owned ? ` <span class="shop-owned">×${owned}</span>` : ''}</div>
+          <div class="shop-item-desc">${item.desc}</div>
+        </div>
+        <button class="shop-buy-btn" onclick="ShopSystem.buy('${item.id}')">${curIcon} ${item.cost}</button>
+      </div>`;
+    }).join('');
+  }
+
+  return { render, buy, consumeDoubleXp, hasDoubleXp, hasShield, consumeShield, ITEMS };
+})();
+
 // ══ RESOURCE SYSTEM (Youth-Pharma-Referenz: Coins/Gems/Energy HUD) ══════
 const ResourceSystem = (() => {
   const LS_ENERGY = 'pv_energy';
@@ -4396,6 +4531,61 @@ const HubSystem = (() => {
         { id:'i4', type:'quiz',   name:'Infekt-Quiz',             goal:4,   xp:30 },
         { id:'i5', type:'runner', name:'Resistenz-Lauf',          goal:500, xp:55 },
         { id:'i6', type:'speak',  name:'Infektions-Profi',        goal:9,   xp:50 },
+      ]
+    },
+    {
+      id: 'schilddiab', name: 'Schilddrüse & Diabetes', icon: '🦋',
+      levels: [
+        { id:'d1', type:'speak',  name:'Hormon-Grundlagen',       goal:3,   xp:30 },
+        { id:'d2', type:'runner', name:'Insulin-Express',         goal:350, xp:45 },
+        { id:'d3', type:'speak',  name:'Thyroxin-Training',       goal:5,   xp:35 },
+        { id:'d4', type:'quiz',   name:'Diabetes-Quiz',           goal:4,   xp:30 },
+        { id:'d5', type:'runner', name:'Zucker-Sprint',           goal:500, xp:55 },
+        { id:'d6', type:'speak',  name:'Endokrin-Experte',        goal:8,   xp:50 },
+      ]
+    },
+    {
+      id: 'lunge', name: 'Lunge & Allergie', icon: '🫁',
+      levels: [
+        { id:'l1', type:'speak',  name:'Atemwegs-Basics',         goal:3,   xp:30 },
+        { id:'l2', type:'runner', name:'Pollen-Flucht',           goal:350, xp:45 },
+        { id:'l3', type:'speak',  name:'Antihistaminika',         goal:5,   xp:40 },
+        { id:'l4', type:'quiz',   name:'Allergie-Quiz',           goal:4,   xp:35 },
+        { id:'l5', type:'runner', name:'Asthma-Lauf',             goal:550, xp:60 },
+        { id:'l6', type:'speak',  name:'Pneumo-Profi',            goal:8,   xp:55 },
+      ]
+    },
+    {
+      id: 'magen', name: 'Magen-Darm-Station', icon: '🫃',
+      levels: [
+        { id:'m1', type:'speak',  name:'Magenschutz-Basics',      goal:3,   xp:35 },
+        { id:'m2', type:'runner', name:'Verdauungs-Sprint',       goal:400, xp:50 },
+        { id:'m3', type:'speak',  name:'Protonenpumpen-Hemmer',   goal:5,   xp:40 },
+        { id:'m4', type:'quiz',   name:'Gastro-Quiz',             goal:4,   xp:35 },
+        { id:'m5', type:'runner', name:'Enzym-Rallye',            goal:600, xp:65 },
+        { id:'m6', type:'speak',  name:'Gastro-Experte',          goal:9,   xp:55 },
+      ]
+    },
+    {
+      id: 'extrem', name: 'Extrem schwere Wirkstoffe', icon: '🔥',
+      levels: [
+        { id:'x1', type:'speak',  name:'Zungenbrecher I',         goal:3,   xp:45 },
+        { id:'x2', type:'runner', name:'Hydrochloro-Marathon',    goal:450, xp:55 },
+        { id:'x3', type:'speak',  name:'Zungenbrecher II',        goal:5,   xp:50 },
+        { id:'x4', type:'quiz',   name:'Experten-Quiz',           goal:5,   xp:45 },
+        { id:'x5', type:'runner', name:'Legenden-Lauf',           goal:700, xp:75 },
+        { id:'x6', type:'speak',  name:'Aussprache-Legende',      goal:10,  xp:70 },
+      ]
+    },
+    {
+      id: 'alltag', name: 'Apotheken-Alltag', icon: '🏥',
+      levels: [
+        { id:'a1', type:'speak',  name:'Kunden-Beratung',         goal:4,   xp:45 },
+        { id:'a2', type:'runner', name:'Stoßzeiten-Sprint',       goal:500, xp:60 },
+        { id:'a3', type:'speak',  name:'Rezeptur-Vokabeln',       goal:6,   xp:50 },
+        { id:'a4', type:'quiz',   name:'Alltags-Quiz',            goal:5,   xp:45 },
+        { id:'a5', type:'runner', name:'Feierabend-Rallye',       goal:800, xp:80 },
+        { id:'a6', type:'speak',  name:'Apotheken-Meister',       goal:10,  xp:75 },
       ]
     },
   ];
