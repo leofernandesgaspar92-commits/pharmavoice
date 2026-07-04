@@ -510,6 +510,9 @@
       pointer-events:none; transition:opacity .3s;
     }
     #charAvatar.hidden { opacity:0; pointer-events:none; }
+    /* Tamagotchi-Widget entfernt: Avatar + Stat-Balken ausgeblendet, nur die Sprechblase bleibt */
+    #avatarCanvas, #charAvatarImg, #tamaBars { display:none !important; }
+    #charBubble { max-width:220px; }
     #charAvatarImg {
       width:62px; height:62px; object-fit:contain; border-radius:50%;
       background:rgba(255,255,255,.08); border:2.5px solid var(--char-primary,var(--teal));
@@ -1089,7 +1092,7 @@
 
   <!-- Hero: logo + tagline + avatar illustration placeholder -->
   <div class="home-hero-panel">
-    <div class="home-hero-logo">
+    <div class="home-hero-logo" id="logoLongPress">
       <span class="home-hero-icon">💊</span>
       <span class="home-hero-title">PHARMA<span>VOICE</span></span>
     </div>
@@ -2504,7 +2507,6 @@ function startLearn(lvId = 1) {
   // Update learn chip
   el('learnChip').textContent = `${lv.icon}  ${lv.name} Level`;
   showScreen('Learn');
-  el('navLearn').classList.add('active');
   renderQ();
 }
 
