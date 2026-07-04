@@ -211,6 +211,34 @@
     .btn-next.show { display:block; }
     .btn-next:hover { background:var(--green-d); }
 
+    /* ── Kompakter Lern-Screen: alles ohne Scrollen erreichbar ── */
+    #screenLearn { padding-top:12px; padding-bottom:96px; }
+    #screenLearn .back-btn { margin-bottom:8px; }
+    #screenLearn .prog-row { margin-bottom:4px; }
+    #screenLearn .q-dots-row { margin-top:6px; }
+    #screenLearn .quiz-stat-strip { margin-top:8px; }
+    #screenLearn .quiz-stat-pill { padding:5px 8px; }
+    #screenLearn .quiz-stat-val { font-size:13px; }
+    #screenLearn .level-chip { margin-bottom:8px; padding:3px 10px; font-size:11px; }
+    #screenLearn .med-card { padding:14px 16px 12px; margin-bottom:10px; }
+    #screenLearn .med-cat { margin-bottom:8px; padding:3px 10px; font-size:11px; }
+    #screenLearn .med-name-big { font-size:24px; margin-bottom:4px; }
+    #screenLearn .phonetic { font-size:12px; margin-bottom:8px; }
+    #screenLearn .syl-item { font-size:16px; }
+    #screenLearn .syl-item.stressed { font-size:19px; }
+    #screenLearn .q-label { margin-bottom:8px; font-size:12px; }
+    #screenLearn .options { gap:8px; margin-bottom:10px; }
+    #screenLearn .opt { min-height:46px; padding:8px 8px; font-size:11px; }
+    #screenLearn .mic-wrap { margin-bottom:8px; gap:4px; }
+    #screenLearn .mic-btn { width:56px; height:56px; }
+    #screenLearn .mic-btn svg { width:24px; height:24px; }
+    #screenLearn .mic-result { min-height:16px; font-size:12px; }
+    #screenLearn .btn-next { padding:13px; font-size:15px; }
+    /* Zusatzinfos hinter Toggle statt immer sichtbar */
+    #screenLearn .med-extra { margin-top:8px; padding-top:8px; gap:6px; display:none; }
+    #screenLearn .med-extra.open { display:flex; }
+    .med-extra-toggle { background:none; border:1px solid var(--border); border-radius:10px; padding:4px 12px; font-size:10.5px; font-weight:700; color:var(--gray); cursor:pointer; font-family:inherit; margin-top:8px; }
+
     /* XP POP */
     .xp-pop { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); background:var(--green); color:#fff; font-size:28px; font-weight:900; padding:16px 34px; border-radius:18px; z-index:999; pointer-events:none; opacity:0; box-shadow:0 8px 24px rgba(0,168,107,.4); }
     @keyframes xpAnim { 0%{transform:translate(-50%,-50%) scale(0);opacity:0} 25%{transform:translate(-50%,-50%) scale(1.1);opacity:1} 70%{transform:translate(-50%,-50%) scale(1);opacity:1} 100%{transform:translate(-50%,-75%) scale(1);opacity:0} }
@@ -1187,6 +1215,7 @@
     <div class="med-name-big" id="medName">Medikament</div>
     <div class="phonetic" id="medPhonetic">/phonetik/</div>
     <div class="syl-row" id="sylRow"></div>
+    <button class="med-extra-toggle" id="medExtraToggle" onclick="toggleMedExtra()">ℹ️ Details anzeigen</button>
     <div class="med-extra" id="medExtra"></div>
   </div>
   <div class="q-label">Welche Silbe wird betont?</div>
@@ -2550,6 +2579,10 @@ function renderQ() {
   if (info.formula   && info.formula   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">Summenformel</div><div class="med-extra-text">${info.formula}</div></div>`;
   if (info.atcCode   && info.atcCode   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">ATC-Code</div><div class="med-extra-text">${info.atcCode}</div></div>`;
   extra.innerHTML = xhtml;
+  // Details standardmäßig eingeklappt, Toggle nur zeigen wenn Inhalte da sind
+  extra.classList.remove('open');
+  const tgl = el('medExtraToggle');
+  if (tgl) { tgl.style.display = xhtml ? '' : 'none'; tgl.textContent = 'ℹ️ Details anzeigen'; }
   // Feedback reset
   const fb = el('feedbackBox');
   fb.className = 'feedback-box';
@@ -2606,6 +2639,12 @@ function pick(btn, correct, med) {
   refreshUI();
   renderAchievements();
   el('btnNext').classList.add('show');
+}
+
+function toggleMedExtra() {
+  const extra = el('medExtra'), tgl = el('medExtraToggle');
+  const open = extra.classList.toggle('open');
+  if (tgl) tgl.textContent = open ? 'ℹ️ Details ausblenden' : 'ℹ️ Details anzeigen';
 }
 
 function showLearnHint() {
