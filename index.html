@@ -1478,7 +1478,7 @@
   <button class="back-btn" onclick="showScreen('Home')" data-i18n="back">← Zurück</button>
   <h2 class="screen-h" data-i18n="sh_lexikon">📚 Wirkstoff-Lexikon</h2>
   <div class="lex-progress" id="lexProgress"></div>
-  <input type="text" class="lex-search" id="lexSearch" placeholder="🔍 Wirkstoff oder Kategorie suchen …" oninput="LexikonSystem.render()">
+  <input type="text" class="lex-search" id="lexSearch" placeholder="🔍 Wirkstoff oder Kategorie suchen …" data-i18n-ph="lex_search" oninput="LexikonSystem.render()">
   <div id="lexList"></div>
 </div>
 
@@ -2422,12 +2422,18 @@ const UI_I18N = {
   prof_level:    { de:'Aktuelles Level', en:'Current level', pt:'Nível atual' },
   prof_nextlvl:  { de:'Nächstes Level', en:'Next level', pt:'Próximo nível' },
   prof_team:     { de:'👥 Mein Team', en:'👥 My team', pt:'👥 Minha equipe' },
+  lex_search:    { de:'🔍 Wirkstoff oder Kategorie suchen …', en:'🔍 Search drug or category …', pt:'🔍 Buscar fármaco ou categoria …' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const entry = UI_I18N[el.getAttribute('data-i18n')];
     if (entry) el.textContent = entry[lang] || entry.de;
+  });
+  // Placeholder-Übersetzung (Inputs)
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const entry = UI_I18N[el.getAttribute('data-i18n-ph')];
+    if (entry) el.setAttribute('placeholder', entry[lang] || entry.de);
   });
   document.documentElement.setAttribute('lang', lang);
 }
@@ -4863,13 +4869,13 @@ const LexikonSystem = (() => {
     const pct = Math.round(learnedCount / total * 100);
     const prog = document.getElementById('lexProgress');
     if (prog) prog.innerHTML = `
-      <div class="lex-prog-row"><span>Gelernt</span><span>${learnedCount} / ${total}</span></div>
+      <div class="lex-prog-row"><span>${L('Gelernt','Learned','Aprendido')}</span><span>${learnedCount} / ${total}</span></div>
       <div class="lex-prog-bar"><div class="lex-prog-fill" style="width:${pct}%"></div></div>`;
 
     // Nach Kategorie gruppieren, gefiltert
     const filtered = MEDS.filter(m =>
       !q || m.name.toLowerCase().includes(q) || (m.category || '').toLowerCase().includes(q));
-    if (!filtered.length) { listEl.innerHTML = '<p class="lex-empty">Keine Treffer für deine Suche.</p>'; return; }
+    if (!filtered.length) { listEl.innerHTML = `<p class="lex-empty">${L('Keine Treffer für deine Suche.','No results for your search.','Nenhum resultado para sua busca.')}</p>`; return; }
 
     const byCat = {};
     filtered.forEach(m => { (byCat[m.category || 'Sonstige'] ||= []).push(m); });
