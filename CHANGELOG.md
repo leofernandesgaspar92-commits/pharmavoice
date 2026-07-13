@@ -1,3 +1,5 @@
+- i18n Wirkstoff-Lexikon: Such-Placeholder (neuer data-i18n-ph-Support für Inputs), „Gelernt"-Label und „Keine Treffer"-Meldung in DE/EN/PT
+
 - i18n Profil-Screen: Rolle, Stat-Labels, Team-Titel und dynamische Fortschritts-Labels (Level benötigt…, Streak-Tage) in DE/EN/PT; switchLang aktualisiert dynamische Labels live. Nebenfix: profProgLabel zeigte literale <strong>-Tags (set() nutzt textContent) — jetzt reintext
 
 - UI-Mehrsprachigkeit erweitert: Screen-Titel (Shop/Lexikon/Park/Rangliste), Zurück-Buttons, Result-Buttons (Nochmal/Startseite), Level-Auswahl-Modal, Shop-Sektionen & Premium-Button übersetzen jetzt in DE/EN/PT
