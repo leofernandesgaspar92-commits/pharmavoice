@@ -1,3 +1,5 @@
+- UI-Mehrsprachigkeit erweitert: Screen-Titel (Shop/Lexikon/Park/Rangliste), Zurück-Buttons, Result-Buttons (Nochmal/Startseite), Level-Auswahl-Modal, Shop-Sektionen & Premium-Button übersetzen jetzt in DE/EN/PT
+
 - UI-Mehrsprachigkeit erweitert: Bottom-Navigation (Home/Hub/Erfolge/Profil/Design) übersetzt jetzt ebenfalls live in DE/EN/PT über das i18n-System
 
 - UI-Mehrsprachigkeit (Fundament): leichtgewichtiges i18n-System (data-i18n + Übersetzungstabelle); Home-Menü, Taglines und Home-Sektionen übersetzen jetzt live in DE/EN/PT und nach Reload — vorher blieb die UI immer deutsch, nur Charakter/Audio folgten der Sprache. Erweiterbar für weitere Screens; untaggte Elemente bleiben unverändert
