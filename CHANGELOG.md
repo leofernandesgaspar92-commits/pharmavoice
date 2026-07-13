@@ -1,3 +1,5 @@
+- Achievement-Texte korrigiert: „Profi-Aussprecher" (400) und „Pharma-Legende" (600) behaupteten fälschlich „Level 3 freigeschaltet" bzw. „Alle Level abgeschlossen" — Level 3 erfordert aber 1000 Shekel. Beschreibungen jetzt korrekt (reine Shekel-Meilensteine)
+
 - Achievement-Fix: „Auf die Piste!" (Runner gespielt) konnte nie freigeschaltet werden — pv_runner_total wurde nur gelesen, nie geschrieben; wird jetzt bei jedem Runner-Start hochgezählt. Zusätzlich 2 neue Achievements: „Wirkstoff-Kenner" (30 versch. Wirkstoffe) und „Shekel-Millionär" (1000 Shekel) — jetzt 15 Erfolge
 
 - Wirkstoff-Datenbank: 8 weitere häufige Wirkstoffe ergänzt (Tamsulosin, Finasterid, Citalopram, Amitriptylin, Warfarin, Salmeterol, Sildenafil, Melatonin) — je mit IPA, Silbenbetonung & vollständigem MED_INFO (jetzt 110 Wirkstoffe, alle validiert: keine Duplikate/Datenfehler)
