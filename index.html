@@ -83,6 +83,21 @@
     .pay-alt { flex:1; padding:11px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; font-size:13px; font-weight:800; color:var(--text); cursor:pointer; font-family:inherit; }
     .pay-secure-note { font-size:10.5px; color:var(--gray2); text-align:center; line-height:1.5; margin-bottom:8px; }
 
+    /* ── Belohnungs-Truhe ── */
+    .res-chest-btn { width:100%; padding:15px; background:linear-gradient(135deg,#FFC107,#FF9800); border:none; border-radius:14px; color:#3a2500; font-size:15px; font-weight:900; cursor:pointer; font-family:inherit; margin-bottom:12px; box-shadow:0 4px 16px rgba(255,193,7,.3); animation:chestBtnGlow 1.8s ease-in-out infinite; }
+    @keyframes chestBtnGlow { 0%,100%{ box-shadow:0 4px 16px rgba(255,193,7,.3); } 50%{ box-shadow:0 4px 22px rgba(255,193,7,.6); } }
+    .res-chest-btn:active { transform:scale(.98); }
+    .chest-stage { padding:20px 0 10px; cursor:pointer; }
+    .chest-emoji { font-size:88px; display:inline-block; transition:transform .2s; }
+    .chest-emoji:active { transform:scale(.92); }
+    .chest-emoji.shaking { animation:chestShake .7s ease; }
+    @keyframes chestShake { 0%,100%{transform:rotate(0)} 15%{transform:rotate(-12deg) scale(1.05)} 30%{transform:rotate(12deg) scale(1.05)} 45%{transform:rotate(-10deg)} 60%{transform:rotate(10deg)} 75%{transform:rotate(-6deg) scale(1.1)} 90%{transform:rotate(4deg)} }
+    .chest-hint { font-size:13px; color:var(--gray); margin-bottom:12px; }
+    .chest-reward { min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+    .chest-reward-icon { font-size:52px; animation:chestReveal .5s cubic-bezier(.2,1.4,.4,1); }
+    @keyframes chestReveal { 0%{opacity:0;transform:scale(0) rotate(-20deg)} 60%{transform:scale(1.3) rotate(6deg)} 100%{opacity:1;transform:scale(1)} }
+    .chest-reward-text { font-size:18px; font-weight:900; color:var(--green); }
+
     /* ── Kinetic Typography (befriedigende Text-Bursts bei Richtig) ── */
     #kineticBurst { position:fixed; top:38%; left:50%; transform:translate(-50%,-50%); z-index:998; pointer-events:none; display:flex; gap:1px; }
     #kineticBurst .kb-letter { font-size:44px; font-weight:900; letter-spacing:.5px; color:var(--green); text-shadow:0 4px 18px rgba(23,217,196,.5); opacity:0; transform:translateY(20px) scale(.5); display:inline-block; }
@@ -1378,8 +1393,21 @@
     <div class="res-stat"><div class="res-val" id="resStreak">0 🔥</div><div class="res-lbl">Tage Streak</div></div>
     <div class="res-stat"><div class="res-val" id="resTotal">0</div><div class="res-lbl">Gesamt Shekel</div></div>
   </div>
+  <div id="resChestArea"></div>
   <button class="btn-start" onclick="openModal()">🔄 &nbsp;Nochmal spielen</button>
   <button class="btn-ghost" onclick="goHome()">🏠 &nbsp;Zur Startseite</button>
+</div>
+
+<!-- ══ BELOHNUNGS-TRUHE MODAL ══ -->
+<div class="upgrade-modal-bg" id="chestBg" onclick="ChestSystem.closeIfBackdrop(event)">
+  <div class="upgrade-modal" onclick="event.stopPropagation()" style="text-align:center">
+    <div class="chest-stage" id="chestStage">
+      <div class="chest-emoji" id="chestEmoji">🎁</div>
+    </div>
+    <div class="chest-hint" id="chestHint">Tippe die Truhe, um sie zu öffnen!</div>
+    <div class="chest-reward" id="chestReward"></div>
+    <button class="upgrade-close" id="chestCloseBtn" onclick="ChestSystem.close()" style="display:none">Weiter</button>
+  </div>
 </div>
 
 <!-- ══ ACHIEVEMENTS ══ -->
@@ -2923,6 +2951,16 @@ function showResult() {
   DailyMissionSystem._hookLearnEnd(Q.correct);
   SmartLearnSystem._hookLearnEnd(Q.correct, Q.meds.length);
   localStorage.setItem('pv_last_learn_date', new Date().toISOString().slice(0,10));
+  // Belohnungs-Truhe ab 6/10 richtigen (Perfekt = 2 Truhen)
+  const chestArea = el('resChestArea');
+  if (chestArea) {
+    chestArea.innerHTML = '';
+    if (s >= 6) {
+      const earned = (s === t) ? 2 : 1;
+      ChestSystem.earn(earned);
+      chestArea.innerHTML = `<button class="res-chest-btn" onclick="ChestSystem.openModal()">🎁 &nbsp;${earned > 1 ? earned + ' Belohnungs-Truhen' : 'Belohnungs-Truhe'} öffnen</button>`;
+    }
+  }
   showScreen('Result');
 }
 
@@ -4535,6 +4573,94 @@ const ShopSystem = (() => {
   return { render, buy, consumeDoubleXp, hasDoubleXp, hasShield, consumeShield, ITEMS };
 })();
 
+// ══ BELOHNUNGS-TRUHE (Chest/Loot – variable Belohnungen) ════════════════
+const ChestSystem = (() => {
+  // Gewichtete Zufalls-Belohnungen (variable reward schedule)
+  const REWARDS = [
+    { type:'coins', min:30, max:80,  weight:40, icon:'🪙', label:'Shekel' },
+    { type:'gems',  min:2,  max:6,   weight:30, icon:'💎', label:'Gems' },
+    { type:'coins', min:100,max:200, weight:15, icon:'🪙', label:'Shekel' },
+    { type:'shield',                 weight:8,  icon:'🛡️', label:'Streak-Schild' },
+    { type:'dblxp',                  weight:5,  icon:'✨', label:'Double-XP' },
+    { type:'gems',  min:10, max:20,  weight:2,  icon:'💎', label:'Gems (Jackpot!)' },
+  ];
+
+  function count() { return parseInt(localStorage.getItem('pv_chests')) || 0; }
+  function _set(n) { localStorage.setItem('pv_chests', Math.max(0, n)); ResourceSystem.renderTopbar(); }
+  function earn(n = 1) { _set(count() + n); }
+
+  function _roll() {
+    const total = REWARDS.reduce((s, r) => s + r.weight, 0);
+    let r = Math.random() * total;
+    for (const rw of REWARDS) { if ((r -= rw.weight) <= 0) return rw; }
+    return REWARDS[0];
+  }
+
+  function _grant(rw) {
+    const amt = rw.min != null ? rw.min + Math.floor(Math.random() * (rw.max - rw.min + 1)) : 1;
+    if (rw.type === 'coins') {
+      const d = JSON.parse(localStorage.getItem('pv2') || '{}'); d.xp = (d.xp || 0) + amt;
+      localStorage.setItem('pv2', JSON.stringify(d)); S.xp = d.xp; save();
+    } else if (rw.type === 'gems') {
+      ResourceSystem.addGems(amt);
+    } else if (rw.type === 'shield') {
+      localStorage.setItem('pv_shop_shield', (parseInt(localStorage.getItem('pv_shop_shield')) || 0) + 1);
+    } else if (rw.type === 'dblxp') {
+      localStorage.setItem('pv_shop_dblxp', (parseInt(localStorage.getItem('pv_shop_dblxp')) || 0) + 1);
+    }
+    refreshUI();
+    return { icon: rw.icon, label: rw.label, amt: rw.min != null ? amt : null };
+  }
+
+  let _opening = false;
+
+  function openModal() {
+    if (count() <= 0) return;
+    _opening = false;
+    document.getElementById('chestEmoji').textContent = '🎁';
+    document.getElementById('chestEmoji').className = 'chest-emoji';
+    document.getElementById('chestStage').onclick = _openOne;
+    document.getElementById('chestHint').textContent = 'Tippe die Truhe, um sie zu öffnen!';
+    document.getElementById('chestHint').style.display = '';
+    document.getElementById('chestReward').innerHTML = '';
+    document.getElementById('chestCloseBtn').style.display = 'none';
+    document.getElementById('chestBg').classList.add('open');
+  }
+
+  function _openOne() {
+    if (_opening || count() <= 0) return;
+    _opening = true;
+    _set(count() - 1);
+    const stage = document.getElementById('chestStage');
+    const emoji = document.getElementById('chestEmoji');
+    emoji.classList.add('shaking');
+    AudioSystem.playClick();
+    setTimeout(() => {
+      emoji.classList.remove('shaking');
+      emoji.textContent = '📦';
+      const reward = _grant(_roll());
+      AudioSystem.playLevelUp(CharacterSystem.getLang());
+      document.getElementById('chestHint').style.display = 'none';
+      const amtStr = reward.amt != null ? `+${reward.amt} ` : '';
+      document.getElementById('chestReward').innerHTML =
+        `<div class="chest-reward-icon">${reward.icon}</div><div class="chest-reward-text">${amtStr}${reward.label}</div>`;
+      // Weitere Truhen? sonst Schließen-Button
+      const btn = document.getElementById('chestCloseBtn');
+      if (count() > 0) {
+        btn.textContent = `Nächste Truhe öffnen (${count()})`;
+        btn.style.display = ''; btn.onclick = openModal;
+      } else {
+        btn.textContent = 'Weiter'; btn.style.display = ''; btn.onclick = close;
+      }
+    }, 700);
+  }
+
+  function close() { document.getElementById('chestBg').classList.remove('open'); }
+  function closeIfBackdrop(e) { if (e.target === document.getElementById('chestBg') && !_opening) close(); }
+
+  return { earn, count, openModal, close, closeIfBackdrop };
+})();
+
 // ══ WIRKSTOFF-LEXIKON (Collection/Compendium – Langzeitfortschritt sichtbar) ══
 const LexikonSystem = (() => {
   // Ein Wirkstoff gilt als "gelernt", sobald er in SM-2 mindestens einmal
@@ -5559,7 +5685,7 @@ const TrendAnalyzer = (() => {
     { title:'Seasonal Events', status:'missing', priority:'hoch', desc:'Royal Match und Monopoly GO! erzeugen FOMO. PharmaVoice hat nur den täglichen Challenge-Seed.' },
     { title:'Kinetic Typography', status:'done', priority:'erledigt', desc:'Animierte Text-Bursts (RICHTIG!/COMBO!) mit Buchstaben-Stagger bei richtigen Antworten, mehrsprachig, Combo-Variante ab 5er-Serie (kineticBurst).' },
     { title:'Collection / Compendium', status:'done', priority:'erledigt', desc:'Wirkstoff-Lexikon umgesetzt (LexikonSystem): alle 94 Wirkstoffe nach Kategorie, Suche/Filter, Gelernt-Status aus SM-2, Anhören pro Eintrag, Fortschrittsbalken.' },
-    { title:'Variable Reward (Chest)', status:'partial', priority:'mittel', desc:'Münzen im Runner variieren, aber kein echtes Chest/Loot-System.' },
+    { title:'Variable Reward (Chest)', status:'done', priority:'erledigt', desc:'Belohnungs-Truhen (ChestSystem): ab 6/10 richtigen, gewichtete Zufalls-Loot (Shekel/Gems/Power-Ups/Jackpot) mit Öffnungs-Animation.' },
     { title:'Spaced Repetition', status:'done', priority:'erledigt', desc:'SM-2 vollständig. Kompetitiver Vorteil — kaum ein Lern-Spiel hat das.' },
     { title:'NPC Characters', status:'done', priority:'erledigt', desc:'Beatrice, Victor, Fin, Ari mit Tamagotchi + Canvas-Avatare. Besser als Duolingo.' },
     { title:'Audio Feedback', status:'done', priority:'erledigt', desc:'Web Audio + Speech Synthesis in 3 Sprachen. Vollständig.' },
