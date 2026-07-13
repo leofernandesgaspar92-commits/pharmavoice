@@ -1,3 +1,5 @@
+- Belohnungs-Truhe (Chest/Loot): nach Sessions ab 6/10 richtigen (Perfekt = 2 Truhen), gewichtete Zufalls-Belohnung (Shekel/Gems/Power-Ups/Jackpot) mit Öffnungs-Animation — schließt die letzte Gap-Analyse-Lücke (variable rewards)
+
 - Kinetic Typography: animierte Text-Bursts (RICHTIG!/COMBO!) mit Buchstaben-Stagger bei richtigen Antworten, mehrsprachig (DE/EN/PT), goldene Combo-Variante ab 5er-Serie — schließt die Kinetic-Typography-Lücke der Gap-Analyse
 
 - Wirkstoff-Lexikon: durchsuchbare Sammlung aller 94 Wirkstoffe nach Kategorie, mit Gelernt-Status (aus SM-2), Anhören-Button pro Eintrag und Fortschrittsbalken — schließt die Collection/Compendium-Lücke der Gap-Analyse
