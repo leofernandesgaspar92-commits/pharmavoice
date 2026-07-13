@@ -1111,38 +1111,38 @@
   <div class="upgrade-modal">
     <div class="upgrade-modal-header">
       <div class="um-icon">🚀</div>
-      <h2>PharmaVoice upgraden</h2>
-      <p>Unlock alle 300+ Wirkstoffe & Features</p>
+      <h2 data-i18n="up_title">PharmaVoice upgraden</h2>
+      <p data-i18n="up_sub">Unlock alle 300+ Wirkstoffe & Features</p>
     </div>
     <div class="plan-card" onclick="PaymentService.subscribe('free')">
-      <div class="plan-card-head"><span class="plan-name">Free</span><span class="plan-price">Kostenlos</span></div>
+      <div class="plan-card-head"><span class="plan-name">Free</span><span class="plan-price" data-i18n="up_free">Kostenlos</span></div>
       <div class="plan-features">
-        <span>~50 Wirkstoffe (Basics Level)</span>
-        <span>Aussprachetraining mit KI</span>
-        <span>Session-Streak (kein Cloud-Speicher)</span>
+        <span data-i18n="up_f1">~50 Wirkstoffe (Basics Level)</span>
+        <span data-i18n="up_f2">Aussprachetraining mit KI</span>
+        <span data-i18n="up_f3">Session-Streak (kein Cloud-Speicher)</span>
       </div>
     </div>
     <div class="plan-card recommended" onclick="PaymentService.subscribe('normal')">
       <div class="plan-card-head">
         <span class="plan-name">Normal</span>
-        <span class="rec-chip">Empfohlen</span>
-        <span class="plan-price">€4,99 / Monat</span>
+        <span class="rec-chip" data-i18n="up_rec">Empfohlen</span>
+        <span class="plan-price" data-i18n="up_pnormal">€4,99 / Monat</span>
       </div>
       <div class="plan-features">
-        <span>Alle 300+ Wirkstoffe & Level</span>
-        <span>Dauerhafter Streak & Achievements</span>
-        <span>Indikation, ATC-Code & Chemie sichtbar</span>
+        <span data-i18n="up_n1">Alle 300+ Wirkstoffe & Level</span>
+        <span data-i18n="up_n2">Dauerhafter Streak & Achievements</span>
+        <span data-i18n="up_n3">Indikation, ATC-Code & Chemie sichtbar</span>
       </div>
     </div>
     <div class="plan-card" onclick="PaymentService.subscribe('premium')">
-      <div class="plan-card-head"><span class="plan-name">Premium (Apotheke)</span><span class="plan-price">€19 / Monat</span></div>
+      <div class="plan-card-head"><span class="plan-name" data-i18n="up_premium">Premium (Apotheke)</span><span class="plan-price" data-i18n="up_pprem">€19 / Monat</span></div>
       <div class="plan-features">
-        <span>Alle Normal-Features</span>
-        <span>Lehrer-Dashboard & Team-Statistiken</span>
-        <span>API-Zugang für Apotheken-Integration</span>
+        <span data-i18n="up_p1">Alle Normal-Features</span>
+        <span data-i18n="up_p2">Lehrer-Dashboard & Team-Statistiken</span>
+        <span data-i18n="up_p3">API-Zugang für Apotheken-Integration</span>
       </div>
     </div>
-    <button class="upgrade-close" onclick="closeUpgrade()">Nicht jetzt</button>
+    <button class="upgrade-close" onclick="closeUpgrade()" data-i18n="up_notnow">Nicht jetzt</button>
   </div>
 </div>
 
@@ -2452,6 +2452,23 @@ const UI_I18N = {
   pay_note:      { de:'🔒 Demo-Modus: Es wird nichts abgebucht. Verschlüsselte Übertragung, keine Kartendaten werden gespeichert.', en:'🔒 Demo mode: nothing is charged. Encrypted transfer, no card data is stored.', pt:'🔒 Modo demo: nada é cobrado. Transferência criptografada, nenhum dado do cartão é armazenado.' },
   char_title:    { de:'Dein Begleiter', en:'Your companion', pt:'Seu companheiro' },
   char_sub:      { de:'Wähle einen Charakter – er färbt die ganze App ein!', en:'Choose a character – it colors the whole app!', pt:'Escolha um personagem – ele colore o app todo!' },
+  up_title:      { de:'PharmaVoice upgraden', en:'Upgrade PharmaVoice', pt:'Fazer upgrade do PharmaVoice' },
+  up_sub:        { de:'Unlock alle 300+ Wirkstoffe & Features', en:'Unlock all 300+ drugs & features', pt:'Desbloqueie 300+ fármacos e recursos' },
+  up_free:       { de:'Kostenlos', en:'Free', pt:'Grátis' },
+  up_f1:         { de:'~50 Wirkstoffe (Basics Level)', en:'~50 drugs (Basics level)', pt:'~50 fármacos (nível Básico)' },
+  up_f2:         { de:'Aussprachetraining mit KI', en:'AI pronunciation training', pt:'Treino de pronúncia com IA' },
+  up_f3:         { de:'Session-Streak (kein Cloud-Speicher)', en:'Session streak (no cloud sync)', pt:'Sequência local (sem nuvem)' },
+  up_rec:        { de:'Empfohlen', en:'Recommended', pt:'Recomendado' },
+  up_pnormal:    { de:'€4,99 / Monat', en:'€4.99 / month', pt:'€4,99 / mês' },
+  up_n1:         { de:'Alle 300+ Wirkstoffe & Level', en:'All 300+ drugs & levels', pt:'Todos os 300+ fármacos e níveis' },
+  up_n2:         { de:'Dauerhafter Streak & Achievements', en:'Permanent streak & achievements', pt:'Sequência permanente e conquistas' },
+  up_n3:         { de:'Indikation, ATC-Code & Chemie sichtbar', en:'Indication, ATC code & chemistry shown', pt:'Indicação, código ATC e química visíveis' },
+  up_premium:    { de:'Premium (Apotheke)', en:'Premium (Pharmacy)', pt:'Premium (Farmácia)' },
+  up_pprem:      { de:'€19 / Monat', en:'€19 / month', pt:'€19 / mês' },
+  up_p1:         { de:'Alle Normal-Features', en:'All Normal features', pt:'Todos os recursos Normal' },
+  up_p2:         { de:'Lehrer-Dashboard & Team-Statistiken', en:'Teacher dashboard & team stats', pt:'Painel do professor e estatísticas' },
+  up_p3:         { de:'API-Zugang für Apotheken-Integration', en:'API access for pharmacy integration', pt:'Acesso à API para integração' },
+  up_notnow:     { de:'Nicht jetzt', en:'Not now', pt:'Agora não' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
