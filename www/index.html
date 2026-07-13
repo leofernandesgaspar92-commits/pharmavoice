@@ -1273,7 +1273,7 @@
       <span class="home-hero-icon">💊</span>
       <span class="home-hero-title">PHARMA<span>VOICE</span></span>
     </div>
-    <div class="home-hero-tagline">Lerne. Verstehe. Sprich. Heile.</div>
+    <div class="home-hero-tagline" data-i18n="tagline">Lerne. Verstehe. Sprich. Heile.</div>
     <div class="home-greet" id="homeGreet" onclick="openCharModal()">
       <div class="home-greet-avatar" id="homeGreetAvatar">
         <img id="homeGreetImg" src="" alt="" onerror="this.style.display='none'">
@@ -1288,27 +1288,27 @@
     <button class="home-menu-item primary" onclick="unifiedHub.startLearning()">
       <span class="home-menu-icon">▶️</span>
       <div class="home-menu-text">
-        <div class="home-menu-label">Weiter lernen</div>
+        <div class="home-menu-label" data-i18n="menu_continue">Weiter lernen</div>
         <div class="home-menu-sub" id="homeCtaSub">🔥 Bereit für deine nächste Session</div>
       </div>
     </button>
     <button class="home-menu-item" onclick="showScreen('Hub');HubSystem.render()">
-      <span class="home-menu-icon">📖</span><div class="home-menu-label">Lektionen</div>
+      <span class="home-menu-icon">📖</span><div class="home-menu-label" data-i18n="menu_lessons">Lektionen</div>
     </button>
     <button class="home-menu-item" onclick="openModal()">
-      <span class="home-menu-icon">🎤</span><div class="home-menu-label">Sprachpraxis</div>
+      <span class="home-menu-icon">🎤</span><div class="home-menu-label" data-i18n="menu_practice">Sprachpraxis</div>
     </button>
     <button class="home-menu-item" onclick="showScreen('Profile')">
-      <span class="home-menu-icon">👤</span><div class="home-menu-label">Mein Profil</div>
+      <span class="home-menu-icon">👤</span><div class="home-menu-label" data-i18n="menu_profile">Mein Profil</div>
     </button>
     <button class="home-menu-item" onclick="showScreen('Shop');ShopSystem.render()">
-      <span class="home-menu-icon">🛒</span><div class="home-menu-label">Shop</div>
+      <span class="home-menu-icon">🛒</span><div class="home-menu-label" data-i18n="menu_shop">Shop</div>
     </button>
     <button class="home-menu-item" onclick="showScreen('Achievements')">
-      <span class="home-menu-icon">🏆</span><div class="home-menu-label">Rangliste</div>
+      <span class="home-menu-icon">🏆</span><div class="home-menu-label" data-i18n="menu_ranking">Rangliste</div>
     </button>
     <button class="home-menu-item" onclick="showScreen('Lexikon');LexikonSystem.render()">
-      <span class="home-menu-icon">📚</span><div class="home-menu-label">Wirkstoff-Lexikon</div>
+      <span class="home-menu-icon">📚</span><div class="home-menu-label" data-i18n="menu_lexikon">Wirkstoff-Lexikon</div>
     </button>
   </div>
 
@@ -1318,7 +1318,7 @@
   <div id="homeMissionCard"></div>
 
   <!-- Progress -->
-  <div class="section-title">📊 DEIN FORTSCHRITT</div>
+  <div class="section-title" data-i18n="sec_progress">📊 DEIN FORTSCHRITT</div>
   <div class="home-progress-card">
     <div class="home-progress-row">
       <span id="homeProgLevel">Level 1/30</span>
@@ -1329,7 +1329,7 @@
   </div>
 
   <!-- World progress -->
-  <div class="section-title">🌍 WELT-FORTSCHRITT</div>
+  <div class="section-title" data-i18n="sec_world">🌍 WELT-FORTSCHRITT</div>
   <div id="homeWorldCard"></div>
 
   <div class="home-lang-row" role="group" aria-label="Sprache und Audio">
@@ -2382,7 +2382,31 @@ const CharacterSystem = (() => {
            getCurrent: () => cur };
 })();
 
-function switchLang(l) { CharacterSystem.setLang(l); }
+// ── UI-Übersetzung (leichtgewichtiges i18n über data-i18n) ──
+// Erweiterbar: neue Strings taggen + hier ergänzen. Untaggte Elemente bleiben
+// unverändert, sodass eine Teil-Übersetzung nichts kaputtmacht.
+const UI_I18N = {
+  menu_continue: { de:'Weiter lernen',      en:'Keep learning',     pt:'Continuar' },
+  menu_lessons:  { de:'Lektionen',          en:'Lessons',           pt:'Lições' },
+  menu_practice: { de:'Sprachpraxis',       en:'Speaking practice', pt:'Prática de fala' },
+  menu_profile:  { de:'Mein Profil',        en:'My profile',        pt:'Meu perfil' },
+  menu_shop:     { de:'Shop',               en:'Shop',              pt:'Loja' },
+  menu_ranking:  { de:'Rangliste',          en:'Leaderboard',       pt:'Ranking' },
+  menu_lexikon:  { de:'Wirkstoff-Lexikon',  en:'Drug dictionary',   pt:'Dicionário de fármacos' },
+  tagline:       { de:'Lerne. Verstehe. Sprich. Heile.', en:'Learn. Understand. Speak. Heal.', pt:'Aprenda. Entenda. Fale. Cure.' },
+  sec_progress:  { de:'📊 DEIN FORTSCHRITT', en:'📊 YOUR PROGRESS',  pt:'📊 SEU PROGRESSO' },
+  sec_world:     { de:'🌍 WELT-FORTSCHRITT', en:'🌍 WORLD PROGRESS', pt:'🌍 PROGRESSO DO MUNDO' },
+};
+function applyI18n() {
+  const lang = CharacterSystem.getLang();
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const entry = UI_I18N[el.getAttribute('data-i18n')];
+    if (entry) el.textContent = entry[lang] || entry.de;
+  });
+  document.documentElement.setAttribute('lang', lang);
+}
+
+function switchLang(l) { CharacterSystem.setLang(l); applyI18n(); }
 
 function openAudioSettings() {
   const m = document.getElementById('audioSettingsModal');
@@ -6255,6 +6279,7 @@ load();
 refreshTierUI();
 setTimeout(() => gameDesigner.checkForUpdate(), 1500);
 MusicSystem.initFromPrefs();
+applyI18n();
 </script>
 </body>
 </html>
