@@ -1,3 +1,5 @@
+- Achievement-Fix: „Auf die Piste!" (Runner gespielt) konnte nie freigeschaltet werden — pv_runner_total wurde nur gelesen, nie geschrieben; wird jetzt bei jedem Runner-Start hochgezählt. Zusätzlich 2 neue Achievements: „Wirkstoff-Kenner" (30 versch. Wirkstoffe) und „Shekel-Millionär" (1000 Shekel) — jetzt 15 Erfolge
+
 - Wirkstoff-Datenbank: 8 weitere häufige Wirkstoffe ergänzt (Tamsulosin, Finasterid, Citalopram, Amitriptylin, Warfarin, Salmeterol, Sildenafil, Melatonin) — je mit IPA, Silbenbetonung & vollständigem MED_INFO (jetzt 110 Wirkstoffe, alle validiert: keine Duplikate/Datenfehler)
 
 - Pharma Park: die 4 Zonen verhalten sich jetzt wirklich unterschiedlich statt alle gleich — Regal=Bereichswahl, Laufband=Runner, Kunde=gezielte Schwachwort-Session (Fallback Bereichswahl), Labor=schnelle Zufalls-Übung; irreführende Texte korrigiert. Zusatzfix: Avatar (pointer-events:none) blockierte nicht mehr den nächsten Zonen-Tap
