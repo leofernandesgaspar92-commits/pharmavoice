@@ -230,6 +230,8 @@
     /* ── Level tile grid (Youth-Pharma-Referenz: Arzneimittel-Kategorien) ── */
     .modal-lvl-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
     .modal-lvl-tile { background:var(--bg2); border:1.5px solid var(--border); border-radius:14px; padding:16px 10px; text-align:center; cursor:pointer; transition:.15s; }
+    .modal-lvl-tile.lvl-tile-weak { grid-column:1 / -1; border-color:#FF9800; background:linear-gradient(135deg,rgba(255,152,0,.12),var(--bg2)); }
+    .modal-lvl-tile.lvl-tile-weak .tile-badge { color:#FF9800; }
     .modal-lvl-tile:active { transform:scale(.97); }
     .modal-lvl-tile.locked { opacity:.45; cursor:default; }
     .tile-icon { font-size:30px; margin-bottom:8px; }
@@ -2710,6 +2712,21 @@ function openModal() {
   c.innerHTML = '';
   const totalMeds = MEDS.length;
   const learnedCount = Math.min(S.learned || 0, totalMeds);
+  // Schwache-Wörter-Kachel oben, wenn es Fehlerwörter gibt
+  const weakCount = getWeakWords(10).length;
+  if (weakCount >= 1) {
+    const wt = document.createElement('div');
+    wt.className = 'modal-lvl-tile lvl-tile-weak';
+    wt.setAttribute('role', 'button');
+    wt.setAttribute('tabindex', '0');
+    wt.setAttribute('aria-label', `Schwache Wörter üben, ${weakCount} Wörter`);
+    wt.innerHTML = `
+      <div class="tile-icon">🎯</div>
+      <div class="tile-name">Schwache Wörter</div>
+      <div class="tile-badge">${weakCount} zu üben</div>`;
+    wt.onclick = () => startWeakWords();
+    c.appendChild(wt);
+  }
   LEVELS.forEach(lv => {
     const status = canPlay(lv.id);
     const count = MEDS.filter(m => m.lv === lv.id).length;
@@ -2765,6 +2782,36 @@ function startLearn(lvId = 1) {
   ), 400);
   // Update learn chip
   el('learnChip').textContent = `${lv.icon}  ${lv.name} Level`;
+  showScreen('Learn');
+  renderQ();
+}
+
+// Sammelt die schwächsten Wörter (niedriger SM-2 Easiness-Faktor = früher falsch)
+// aus allen freigeschalteten Leveln, schwächstes zuerst.
+function getWeakWords(limit = 10) {
+  const playable = MEDS.filter(m => canPlay(m.lv) === true);
+  return playable
+    .map(m => ({ m, ef: (SM2[m.name] && SM2[m.name].reps !== undefined) ? SM2[m.name].ef : null }))
+    .filter(x => x.ef !== null && x.ef < 2.5)   // < 2.5 = mindestens einmal falsch beantwortet
+    .sort((a, b) => a.ef - b.ef)
+    .slice(0, limit)
+    .map(x => x.m);
+}
+
+function startWeakWords() {
+  const weak = getWeakWords(10);
+  if (weak.length < 1) {
+    CharacterSystem.showBubble('Super – aktuell keine Schwachstellen! 🎉', 2800);
+    return;
+  }
+  closeModal();
+  Q = { meds: weak, idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId: 1, xpMult: 1 };
+  if (ShopSystem.consumeDoubleXp()) {
+    Q.xpMult = 2;
+    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Shekel!', 3000), 900);
+  }
+  ResourceSystem.spendEnergy();
+  el('learnChip').textContent = `🎯  Schwache Wörter (${weak.length})`;
   showScreen('Learn');
   renderQ();
 }
