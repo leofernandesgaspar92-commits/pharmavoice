@@ -1354,9 +1354,9 @@
 
   <!-- Points / Streak / Hint strip -->
   <div class="quiz-stat-strip">
-    <div class="quiz-stat-pill"><span class="quiz-stat-lbl">PUNKTE</span><span class="quiz-stat-val" id="quizPoints">0</span></div>
-    <div class="quiz-stat-pill"><span class="quiz-stat-lbl">SERIE</span><span class="quiz-stat-val" id="quizStreak">x0</span></div>
-    <button class="quiz-hint-btn" onclick="showLearnHint()">💡 Hinweis</button>
+    <div class="quiz-stat-pill"><span class="quiz-stat-lbl" data-i18n="learn_points">PUNKTE</span><span class="quiz-stat-val" id="quizPoints">0</span></div>
+    <div class="quiz-stat-pill"><span class="quiz-stat-lbl" data-i18n="learn_streak">SERIE</span><span class="quiz-stat-val" id="quizStreak">x0</span></div>
+    <button class="quiz-hint-btn" onclick="showLearnHint()" data-i18n="learn_hint">💡 Hinweis</button>
   </div>
 
   <div style="margin-top:12px;">
@@ -1367,11 +1367,11 @@
     <div class="med-name-big" id="medName">Medikament</div>
     <div class="phonetic" id="medPhonetic">/phonetik/</div>
     <div class="syl-row" id="sylRow"></div>
-    <button class="med-listen-btn" id="medListenBtn" onclick="playMedWord()">🔊 Anhören</button>
+    <button class="med-listen-btn" id="medListenBtn" onclick="playMedWord()" data-i18n="learn_listen">🔊 Anhören</button>
     <button class="med-extra-toggle" id="medExtraToggle" onclick="toggleMedExtra()">ℹ️ Details anzeigen</button>
     <div class="med-extra" id="medExtra"></div>
   </div>
-  <div class="q-label">Welche Silbe wird betont?</div>
+  <div class="q-label" data-i18n="learn_q">Welche Silbe wird betont?</div>
   <div class="feedback-box" id="feedbackBox"></div>
   <div class="options" id="optGrid"></div>
   <div class="mic-wrap">
@@ -1384,7 +1384,7 @@
     <div class="mic-lbl" id="micLbl">Aussprache üben</div>
     <div class="mic-result" id="micResult" aria-live="polite"></div>
   </div>
-  <button class="btn-next" id="btnNext" onclick="nextQ()">Weiter →</button>
+  <button class="btn-next" id="btnNext" onclick="nextQ()" data-i18n="learn_next">Weiter →</button>
 </div>
 
 <!-- ══ RESULT ══ -->
@@ -2423,6 +2423,12 @@ const UI_I18N = {
   prof_nextlvl:  { de:'Nächstes Level', en:'Next level', pt:'Próximo nível' },
   prof_team:     { de:'👥 Mein Team', en:'👥 My team', pt:'👥 Minha equipe' },
   lex_search:    { de:'🔍 Wirkstoff oder Kategorie suchen …', en:'🔍 Search drug or category …', pt:'🔍 Buscar fármaco ou categoria …' },
+  learn_points:  { de:'PUNKTE', en:'POINTS', pt:'PONTOS' },
+  learn_streak:  { de:'SERIE', en:'STREAK', pt:'SÉRIE' },
+  learn_hint:    { de:'💡 Hinweis', en:'💡 Hint', pt:'💡 Dica' },
+  learn_listen:  { de:'🔊 Anhören', en:'🔊 Listen', pt:'🔊 Ouvir' },
+  learn_q:       { de:'Welche Silbe wird betont?', en:'Which syllable is stressed?', pt:'Qual sílaba é acentuada?' },
+  learn_next:    { de:'Weiter →', en:'Next →', pt:'Próximo →' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
@@ -2942,7 +2948,7 @@ function renderQ() {
   // Details standardmäßig eingeklappt, Toggle nur zeigen wenn Inhalte da sind
   extra.classList.remove('open');
   const tgl = el('medExtraToggle');
-  if (tgl) { tgl.style.display = xhtml ? '' : 'none'; tgl.textContent = 'ℹ️ Details anzeigen'; }
+  if (tgl) { tgl.style.display = xhtml ? '' : 'none'; tgl.textContent = L('ℹ️ Details anzeigen','ℹ️ Show details','ℹ️ Mostrar detalhes'); }
   // Feedback reset
   const fb = el('feedbackBox');
   fb.className = 'feedback-box';
@@ -3012,7 +3018,7 @@ function pick(btn, correct, med) {
 function toggleMedExtra() {
   const extra = el('medExtra'), tgl = el('medExtraToggle');
   const open = extra.classList.toggle('open');
-  if (tgl) tgl.textContent = open ? 'ℹ️ Details ausblenden' : 'ℹ️ Details anzeigen';
+  if (tgl) tgl.textContent = open ? L('ℹ️ Details ausblenden','ℹ️ Hide details','ℹ️ Ocultar detalhes') : L('ℹ️ Details anzeigen','ℹ️ Show details','ℹ️ Mostrar detalhes');
 }
 
 // Spricht den aktuellen Wirkstoffnamen langsam vor (Lernhilfe vor dem Selbst-Üben)
@@ -3145,7 +3151,7 @@ function startMic() {
   recognition.onstart = () => {
     micActive = true;
     el('micBtn').classList.add('active');
-    el('micLbl').textContent = 'Höre zu …';
+    el('micLbl').textContent = L('Höre zu …','Listening …','Ouvindo …');
     el('micResult').textContent = '';
   };
 
@@ -3170,14 +3176,14 @@ function startMic() {
   recognition.onend = () => {
     micActive = false;
     if (el('micBtn')) el('micBtn').classList.remove('active');
-    if (el('micLbl')) el('micLbl').textContent = 'Aussprache üben';
+    if (el('micLbl')) el('micLbl').textContent = L('Aussprache üben','Practice pronunciation','Praticar pronúncia');
     recognition = null;
   };
 
   recognition.onerror = (event) => {
     micActive = false;
     if (el('micBtn')) el('micBtn').classList.remove('active');
-    if (el('micLbl')) el('micLbl').textContent = 'Aussprache üben';
+    if (el('micLbl')) el('micLbl').textContent = L('Aussprache üben','Practice pronunciation','Praticar pronúncia');
     recognition = null;
     if (event.error !== 'no-speech') {
       el('micResult').textContent = '⚠️ Fehler: ' + event.error;
@@ -3191,7 +3197,7 @@ function stopMic() {
   if (recognition) { try { recognition.stop(); } catch(_) {} recognition = null; }
   micActive = false;
   if (el('micBtn')) el('micBtn').classList.remove('active');
-  if (el('micLbl')) el('micLbl').textContent = 'Aussprache üben';
+  if (el('micLbl')) el('micLbl').textContent = L('Aussprache üben','Practice pronunciation','Praticar pronúncia');
 }
 
 // ═══════════════════════════════════════════════
