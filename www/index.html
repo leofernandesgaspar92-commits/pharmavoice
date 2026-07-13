@@ -3651,7 +3651,9 @@ function rnGameOver() {
   clearTimeout(RG.milestoneTimer);
   rnStopMic();
 
-  const hs = Math.max(RG.score, parseInt(localStorage.getItem('pv_runner_hs') || '0'));
+  const prevHs = parseInt(localStorage.getItem('pv_runner_hs') || '0');
+  const isNewBest = RG.score > prevHs;
+  const hs = Math.max(RG.score, prevHs);
   localStorage.setItem('pv_runner_hs', hs);
   // Top-10 Highscore-Liste pflegen
   let top10; try { top10 = JSON.parse(localStorage.getItem('pv_runner_top10')) || []; } catch { top10 = []; }
@@ -3661,14 +3663,24 @@ function rnGameOver() {
     top10 = top10.slice(0, 10);
     localStorage.setItem('pv_runner_top10', JSON.stringify(top10));
   }
+  // Runner speist jetzt die Haupt-Progression: Shekel proportional zum Score
+  const earnedCoins = Math.round(RG.score / 20);
+  if (earnedCoins > 0) {
+    const d = JSON.parse(localStorage.getItem('pv2') || '{}');
+    d.xp = (d.xp || 0) + earnedCoins; localStorage.setItem('pv2', JSON.stringify(d));
+    S.xp = d.xp; save();
+  }
+  // Neuer persönlicher Rekord → Gems als Bonus
+  if (isNewBest && RG.score > 0) ResourceSystem.addGems(3);
+  refreshUI();
   HubSystem._hookRunnerEnd(RG.score);
   DailyMissionSystem._hookRunnerEnd(RG.score);
   SmartLearnSystem._hookRunnerEnd(RG.score);
 
   rnEl('rnOverlay').classList.remove('hidden');
   rnEl('rnOvIcon').textContent  = RG.score >= 1000 ? '🏆' : '💀';
-  rnEl('rnOvTitle').textContent = RG.score >= 1000 ? 'Ausgezeichnet!' : 'Game Over';
-  rnEl('rnOvSub').textContent   = `Du hast ${RG.curIdx} Wirkstoffe geschafft.`;
+  rnEl('rnOvTitle').textContent = isNewBest && RG.score > 0 ? '🎉 Neuer Rekord!' : (RG.score >= 1000 ? 'Ausgezeichnet!' : 'Game Over');
+  rnEl('rnOvSub').innerHTML     = `Du hast ${RG.curIdx} Wirkstoffe geschafft.<br>💰 +${earnedCoins} Shekel verdient${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 Rekord-Bonus' : ''}`;
   rnEl('rnOvScore').style.display = 'block';
   rnEl('rnOvScore').textContent   = RG.score;
   rnEl('rnOvHs').style.display  = 'block';
