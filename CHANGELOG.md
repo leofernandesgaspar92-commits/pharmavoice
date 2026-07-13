@@ -1,3 +1,5 @@
+- Daily-Login-Bonus: einmal pro Tag Gems + Shekel (Belohnung steigt mit dem Streak), gefeiert mit Toast + Level-Up-Sound — schließt eine von der Gap-Analyse markierte Engagement-Lücke
+
 - Lern-Screen: „🔊 Anhören"-Button spricht den Wirkstoffnamen langsam & deutlich vor (Speech Synthesis, folgt App-Sprache) — Lernhilfe vor dem Selbst-Üben
 
 # Changelog — PharmaVoice

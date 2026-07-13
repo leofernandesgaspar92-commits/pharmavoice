@@ -83,6 +83,13 @@
     .pay-alt { flex:1; padding:11px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; font-size:13px; font-weight:800; color:var(--text); cursor:pointer; font-family:inherit; }
     .pay-secure-note { font-size:10.5px; color:var(--gray2); text-align:center; line-height:1.5; margin-bottom:8px; }
 
+    /* ── Daily-Login-Bonus Toast ── */
+    .daily-bonus-toast { position:fixed; top:64px; left:50%; transform:translateX(-50%) translateY(-16px); z-index:950; display:flex; align-items:center; gap:12px; background:linear-gradient(135deg,#1a2540,#0d1424); border:1.5px solid var(--green); border-radius:16px; padding:12px 18px; box-shadow:0 8px 28px rgba(0,0,0,.5); opacity:0; transition:all .35s cubic-bezier(.34,1.56,.64,1); max-width:90%; }
+    .daily-bonus-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .db-icon { font-size:30px; }
+    .db-title { font-size:14px; font-weight:900; color:#fff; }
+    .db-sub { font-size:12px; font-weight:700; color:var(--green); margin-top:2px; }
+
     /* ── Musik-Button in Topbar ── */
     .pv-music-btn { background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:5px 10px; font-size:13px; cursor:pointer; font-family:inherit; line-height:1; flex-shrink:0; }
     .pv-music-btn.off { opacity:.4; filter:grayscale(1); }
@@ -2435,6 +2442,36 @@ function load() {
   const pool = greets[lang] || greets['de'];
   setTimeout(() => CharacterSystem.showBubble(pool[Math.floor(Math.random()*pool.length)], 3000), 800);
   setTimeout(() => avatarAnimate('anim-wave'), 900);
+  setTimeout(checkDailyBonus, 1600);
+}
+
+// Täglicher Login-Bonus: einmal pro Kalendertag, Belohnung steigt mit dem Streak.
+// (Engagement-Mechanik, die die eigene Gap-Analyse als fehlend markiert hat.)
+function checkDailyBonus() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (localStorage.getItem('pv_last_bonus') === today) return;
+  localStorage.setItem('pv_last_bonus', today);
+  const streak = Math.max(1, S.streak || 1);
+  const gems  = Math.min(3 + Math.floor(streak / 2), 15);   // 3–15 Gems je nach Streak
+  const coins = 20 + streak * 5;                             // Shekel steigen mit Streak
+  ResourceSystem.addGems(gems);
+  const data = JSON.parse(localStorage.getItem('pv2') || '{}');
+  data.xp = (data.xp || 0) + coins; S.xp = data.xp;
+  localStorage.setItem('pv2', JSON.stringify(data));
+  save();
+  refreshUI();
+  AudioSystem.playLevelUp(CharacterSystem.getLang());
+  const el2 = document.getElementById('dailyBonusToast');
+  if (el2) el2.remove();
+  const toast = document.createElement('div');
+  toast.id = 'dailyBonusToast';
+  toast.className = 'daily-bonus-toast';
+  toast.innerHTML = `<div class="db-icon">🎁</div>
+    <div class="db-body"><div class="db-title">Täglicher Bonus!</div>
+    <div class="db-sub">+${coins} 🪙 &nbsp;·&nbsp; +${gems} 💎 &nbsp;·&nbsp; Tag ${streak} 🔥</div></div>`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add('show'), 50);
+  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4200);
 }
 
 // ═══════════════════════════════════════════════
