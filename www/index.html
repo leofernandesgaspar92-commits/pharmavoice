@@ -273,6 +273,10 @@
     #screenLearn .med-extra { margin-top:8px; padding-top:8px; gap:6px; display:none; }
     #screenLearn .med-extra.open { display:flex; }
     .med-extra-toggle { background:none; border:1px solid var(--border); border-radius:10px; padding:4px 12px; font-size:10.5px; font-weight:700; color:var(--gray); cursor:pointer; font-family:inherit; margin-top:8px; }
+    .med-listen-btn { background:rgba(23,217,196,.12); border:1px solid var(--green); border-radius:20px; padding:7px 18px; font-size:13px; font-weight:800; color:var(--green); cursor:pointer; font-family:inherit; margin-top:12px; transition:.15s; }
+    .med-listen-btn:active { transform:scale(.95); }
+    .med-listen-btn.playing { animation:medListenPulse .6s ease-in-out infinite; }
+    @keyframes medListenPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(23,217,196,.4); } 55%{ box-shadow:0 0 0 8px rgba(23,217,196,0); } }
 
     /* XP POP */
     .xp-pop { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); background:var(--green); color:#fff; font-size:28px; font-weight:900; padding:16px 34px; border-radius:18px; z-index:999; pointer-events:none; opacity:0; box-shadow:0 8px 24px rgba(0,168,107,.4); }
@@ -1306,6 +1310,7 @@
     <div class="med-name-big" id="medName">Medikament</div>
     <div class="phonetic" id="medPhonetic">/phonetik/</div>
     <div class="syl-row" id="sylRow"></div>
+    <button class="med-listen-btn" id="medListenBtn" onclick="playMedWord()">🔊 Anhören</button>
     <button class="med-extra-toggle" id="medExtraToggle" onclick="toggleMedExtra()">ℹ️ Details anzeigen</button>
     <div class="med-extra" id="medExtra"></div>
   </div>
@@ -2746,6 +2751,16 @@ function toggleMedExtra() {
   if (tgl) tgl.textContent = open ? 'ℹ️ Details ausblenden' : 'ℹ️ Details anzeigen';
 }
 
+// Spricht den aktuellen Wirkstoffnamen langsam vor (Lernhilfe vor dem Selbst-Üben)
+function playMedWord() {
+  const med = Q.meds[Q.idx];
+  if (!med) return;
+  const btn = el('medListenBtn');
+  const ok = AudioSystem.speakWord(med.name, CharacterSystem.getLang());
+  if (!ok && btn) { btn.textContent = '⚠️ Nicht verfügbar'; setTimeout(() => { btn.textContent = '🔊 Anhören'; }, 1500); return; }
+  if (btn) { btn.classList.add('playing'); setTimeout(() => btn.classList.remove('playing'), 1200); }
+}
+
 function showLearnHint() {
   const med = Q.meds[Q.idx];
   if (!med) return;
@@ -4113,6 +4128,19 @@ const AudioSystem = (() => {
   function playClick()       { click(); }
   function playGameOver()    { gameOver(); }
 
+  // Spricht einen beliebigen Text (z.B. den Wirkstoffnamen) langsam & deutlich vor.
+  // Nutzt die Sprachausgabe unabhängig vom Speech-Feedback-Schalter, da es eine
+  // bewusst angeforderte Lernhilfe ist.
+  function speakWord(text, lang) {
+    if (!window.speechSynthesis || !text) return false;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-BR' : 'de-DE';
+    utt.rate = 0.75; utt.pitch = 1.0; utt.volume = Math.max(_speechVol, 0.6);
+    window.speechSynthesis.speak(utt);
+    return true;
+  }
+
   // ── Toggles ──
   function toggleSound()  { _soundEnabled  = !_soundEnabled;  savePrefs(); return _soundEnabled; }
   function toggleSpeech() { _speechEnabled = !_speechEnabled; savePrefs(); return _speechEnabled; }
@@ -4125,7 +4153,7 @@ const AudioSystem = (() => {
   function getSoundVol() { return _soundVol; }
   function getSpeechVol(){ return _speechVol; }
 
-  return { playCorrect, playWrong, playLevelUp, playStreak, playPerfect, playClick, playGameOver,
+  return { playCorrect, playWrong, playLevelUp, playStreak, playPerfect, playClick, playGameOver, speakWord,
            toggleSound, toggleSpeech, toggleVib, setSoundVol, setSpeechVol,
            isSoundOn, isSpeechOn, isVibOn, getSoundVol, getSpeechVol };
 })();
