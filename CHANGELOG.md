@@ -1,3 +1,5 @@
+- Lern-Screen: „🔊 Anhören"-Button spricht den Wirkstoffnamen langsam & deutlich vor (Speech Synthesis, folgt App-Sprache) — Lernhilfe vor dem Selbst-Üben
+
 # Changelog — PharmaVoice
 
 Alle wesentlichen Änderungen, chronologisch (neueste zuerst).
