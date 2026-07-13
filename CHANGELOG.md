@@ -1,3 +1,5 @@
+- Pharma Runner Spracherkennung: folgt jetzt der App-Sprache (DE/EN/PT statt fest Deutsch), prüft alle Erkennungs-Alternativen und nutzt dieselbe Schwelle (0,72) wie der Lern-Modus — behebt Sprach-Inkonsistenz für EN/PT-Nutzer
+
 - „Schwache Wörter üben": gezielte Lern-Session mit genau den Wirkstoffen, bei denen Fehler gemacht wurden (niedriger SM-2 Easiness-Faktor) — erscheint als hervorgehobene Kachel oben in der Level-Auswahl, sobald Fehlerwörter existieren
 
 - Barrierefreiheit: Bottom-Nav & Icon-Buttons per Tastatur bedienbar (role/tabindex, Enter/Leertaste), Screenreader-Labels (aria-label), aria-current am aktiven Tab, aria-pressed am Musik-Button, aria-live an der Mikrofon-Ausgabe, sichtbarer Fokus-Rahmen (WCAG)

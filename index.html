@@ -3756,10 +3756,11 @@ function rnStartMic(word) {
   if (RG.recog) { try { RG.recog.stop(); } catch(_){} }
 
   const r = new SR();
-  r.lang = 'de-DE';
+  const RN_LANG = { de:'de-DE', en:'en-US', pt:'pt-BR' };
+  r.lang = RN_LANG[CharacterSystem.getLang()] || 'de-DE';
   r.continuous = false;
   r.interimResults = true;
-  r.maxAlternatives = 1;
+  r.maxAlternatives = 3;
   RG.recog = r;
 
   r.onstart = () => {
@@ -3770,19 +3771,31 @@ function rnStartMic(word) {
 
   r.onresult = (evt) => {
     let interim = '', final = '';
+    const alternatives = [];
     for (let i = evt.resultIndex; i < evt.results.length; i++) {
-      const t = evt.results[i][0].transcript;
-      if (evt.results[i].isFinal) final += t; else interim += t;
+      const res = evt.results[i];
+      if (res.isFinal) {
+        final += res[0].transcript;
+        for (let k = 0; k < res.length; k++) alternatives.push(res[k].transcript);
+      } else {
+        interim += res[0].transcript;
+      }
     }
     const heard = final || interim;
     rnEl('rnHeard').textContent = heard;
     if (final && RG.active && !RG.paused) {
       const target = normalize(word.word);
-      const said   = normalize(final.trim());
-      const maxLen = Math.max(target.length, said.length);
-      const sim    = maxLen === 0 ? 1 : 1 - levenshtein(target, said) / maxLen;
-      if (sim >= 0.8) rnCorrectAnswer(word);
-      else            rnWrongAnswer(word, final.trim());
+      // Beste Übereinstimmung über alle Erkennungs-Alternativen (Fachbegriffe
+      // landen oft nur in einer Nebenvariante)
+      let best = 0;
+      [final.trim(), ...alternatives].forEach(c => {
+        const said = normalize(c);
+        const maxLen = Math.max(target.length, said.length);
+        const sim = maxLen === 0 ? 1 : 1 - levenshtein(target, said) / maxLen;
+        if (sim > best) best = sim;
+      });
+      if (best >= 0.72) rnCorrectAnswer(word);
+      else              rnWrongAnswer(word, final.trim());
     }
   };
 
