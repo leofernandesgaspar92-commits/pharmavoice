@@ -2694,24 +2694,16 @@ function renderQ() {
   el('btnNext').classList.remove('show');
 }
 
-function pick(btn, correct, med) {
-  if (Q.answered) return;
+// Gemeinsame Bewertungslogik – genutzt von Antwort-Button UND Mikrofon-Aussprache
+function scoreAnswer(good, med) {
   Q.answered = true;
   document.querySelectorAll('.opt').forEach(b => b.disabled = true);
-  const good = btn.dataset.correct === 'true';
   if (good) {
-    btn.classList.add('good');
     const gain = 10 * (Q.xpMult || 1);
     Q.correct++; Q.sessionXP += gain; S.xp += gain;
     Q.streak = (Q.streak || 0) + 1;
     popXP();
-    showFeedback(true, `✅ &nbsp;Richtig! &nbsp;${med.tip}`);
   } else {
-    btn.classList.add('bad');
-    btn.classList.add('shake');
-    setTimeout(() => btn.classList.remove('shake'), 380);
-    document.querySelectorAll('.opt').forEach(b => { if (b.dataset.correct === 'true') b.classList.add('good'); });
-    showFeedback(false, `❌ &nbsp;Fast! Richtige Antwort: <strong>${correct}</strong><br>${med.tip}`);
     Q.streak = 0;
   }
   if (el('quizPoints')) el('quizPoints').textContent = Q.sessionXP;
@@ -2730,6 +2722,22 @@ function pick(btn, correct, med) {
   refreshUI();
   renderAchievements();
   el('btnNext').classList.add('show');
+}
+
+function pick(btn, correct, med) {
+  if (Q.answered) return;
+  const good = btn.dataset.correct === 'true';
+  if (good) {
+    btn.classList.add('good');
+    showFeedback(true, `✅ &nbsp;Richtig! &nbsp;${med.tip}`);
+  } else {
+    btn.classList.add('bad');
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 380);
+    document.querySelectorAll('.opt').forEach(b => { if (b.dataset.correct === 'true') b.classList.add('good'); });
+    showFeedback(false, `❌ &nbsp;Fast! Richtige Antwort: <strong>${correct}</strong><br>${med.tip}`);
+  }
+  scoreAnswer(good, med);
 }
 
 function toggleMedExtra() {
@@ -2816,10 +2824,11 @@ function startMic() {
     return;
   }
   recognition = new SR();
-  recognition.lang = 'de-DE';
+  const LANG_MAP = { de:'de-DE', en:'en-US', pt:'pt-BR' };
+  recognition.lang = LANG_MAP[CharacterSystem.getLang()] || 'de-DE';
   recognition.continuous = false;
   recognition.interimResults = true;
-  recognition.maxAlternatives = 1;
+  recognition.maxAlternatives = 3;
 
   recognition.onstart = () => {
     micActive = true;
@@ -2830,13 +2839,20 @@ function startMic() {
 
   recognition.onresult = (event) => {
     let interim = '', final = '';
+    const alternatives = [];
     for (let i = event.resultIndex; i < event.results.length; i++) {
-      const t = event.results[i][0].transcript;
-      if (event.results[i].isFinal) final += t;
-      else interim += t;
+      const res = event.results[i];
+      if (res.isFinal) {
+        final += res[0].transcript;
+        // Alle Erkennungs-Alternativen sammeln – Spracherkennung liegt bei
+        // Fachbegriffen oft nur in einer der Alternativen richtig
+        for (let k = 0; k < res.length; k++) alternatives.push(res[k].transcript);
+      } else {
+        interim += res[0].transcript;
+      }
     }
     el('micResult').textContent = final || interim;
-    if (final) checkPronunciation(final.trim());
+    if (final) checkPronunciation(final.trim(), alternatives);
   };
 
   recognition.onend = () => {
@@ -2884,31 +2900,40 @@ function normalize(s) {
   return s.toLowerCase().replace(/[\s\-\.\,\/\(\)]/g, '');
 }
 
-function checkPronunciation(spoken) {
+function checkPronunciation(spoken, alternatives) {
   if (Q.answered) return;
   const med = Q.meds[Q.idx];
   if (!med) return;
 
   const target = normalize(med.name);
-  const said   = normalize(spoken);
-  const maxLen = Math.max(target.length, said.length);
-  const sim    = maxLen === 0 ? 1 : 1 - levenshtein(target, said) / maxLen;
+  // Beste Übereinstimmung über alle Erkennungs-Alternativen ermitteln
+  const candidates = [spoken, ...(alternatives || [])];
+  let best = 0, bestText = spoken;
+  candidates.forEach(c => {
+    const said = normalize(c);
+    const maxLen = Math.max(target.length, said.length);
+    const sim = maxLen === 0 ? 1 : 1 - levenshtein(target, said) / maxLen;
+    if (sim > best) { best = sim; bestText = c; }
+  });
 
   if (micFeedbackTimer) { clearTimeout(micFeedbackTimer); micFeedbackTimer = null; }
 
   const fb = el('feedbackBox');
-  if (sim >= 0.8) {
-    fb.innerHTML = `✅ &nbsp;Richtig ausgesprochen! &nbsp;<strong style="color:var(--teal)">${spoken}</strong>`;
+  if (best >= 0.72) {
+    // Korrekte Aussprache zählt als richtige Antwort – Punkte, Sound, Weiter
+    stopMic();
+    document.querySelectorAll('.opt').forEach(b => { if (b.dataset.correct === 'true') b.classList.add('good'); });
+    fb.innerHTML = `✅ &nbsp;Perfekt ausgesprochen! &nbsp;<strong style="color:var(--teal)">${med.name}</strong>`;
     fb.className = 'feedback-box show';
+    scoreAnswer(true, med);
   } else {
-    fb.innerHTML = `🎤 &nbsp;Du hast <strong>"${spoken}"</strong> gesagt — versuch's nochmal mit <strong>"${med.name}"</strong>`;
+    fb.innerHTML = `🎤 &nbsp;Du hast <strong>"${bestText}"</strong> gesagt — versuch's nochmal mit <strong>"${med.name}"</strong>`;
     fb.className = 'feedback-box show bad';
+    micFeedbackTimer = setTimeout(() => {
+      if (!Q.answered) { fb.className = 'feedback-box'; fb.innerHTML = ''; }
+      micFeedbackTimer = null;
+    }, 3000);
   }
-
-  micFeedbackTimer = setTimeout(() => {
-    if (!Q.answered) { fb.className = 'feedback-box'; fb.innerHTML = ''; }
-    micFeedbackTimer = null;
-  }, 3000);
 }
 
 // ═══════════════════════════════════════════════
