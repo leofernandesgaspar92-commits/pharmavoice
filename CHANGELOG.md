@@ -1,3 +1,5 @@
+- i18n Result-Screen: Ergebnis-Titel (Perfekt/Sehr gut/Gut/Weiter üben/Nicht aufgeben), Untertitel „X von Y richtig — Level" und Stat-Labels (Richtige Antworten/verdient/Streak/Gesamt) in DE/EN/PT
+
 - i18n Lern-Screen: „Welche Silbe wird betont?", PUNKTE/SERIE, Hinweis, Anhören, Weiter sowie dynamische Labels (Mikrofon-Status, Details-Toggle) in DE/EN/PT
 
 - i18n Wirkstoff-Lexikon: Such-Placeholder (neuer data-i18n-ph-Support für Inputs), „Gelernt"-Label und „Keine Treffer"-Meldung in DE/EN/PT

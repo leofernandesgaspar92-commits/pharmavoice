@@ -1393,10 +1393,10 @@
   <div class="res-title" id="resTitle">Gut gemacht!</div>
   <div class="res-sub"   id="resSub">Du hast alle 10 Fragen beantwortet</div>
   <div class="res-grid">
-    <div class="res-stat"><div class="res-val" id="resScore">0/10</div><div class="res-lbl">Richtige Antworten</div></div>
-    <div class="res-stat"><div class="res-val" id="resXP">+0</div><div class="res-lbl">Shekel verdient 🪙</div></div>
-    <div class="res-stat"><div class="res-val" id="resStreak">0 🔥</div><div class="res-lbl">Tage Streak</div></div>
-    <div class="res-stat"><div class="res-val" id="resTotal">0</div><div class="res-lbl">Gesamt Shekel</div></div>
+    <div class="res-stat"><div class="res-val" id="resScore">0/10</div><div class="res-lbl" data-i18n="res_correct">Richtige Antworten</div></div>
+    <div class="res-stat"><div class="res-val" id="resXP">+0</div><div class="res-lbl" data-i18n="res_earned">Shekel verdient 🪙</div></div>
+    <div class="res-stat"><div class="res-val" id="resStreak">0 🔥</div><div class="res-lbl" data-i18n="res_streak">Tage Streak</div></div>
+    <div class="res-stat"><div class="res-val" id="resTotal">0</div><div class="res-lbl" data-i18n="res_total">Gesamt Shekel</div></div>
   </div>
   <div id="resChestArea"></div>
   <button class="btn-start" onclick="openModal()" data-i18n="res_again">🔄 &nbsp;Nochmal spielen</button>
@@ -2429,6 +2429,10 @@ const UI_I18N = {
   learn_listen:  { de:'🔊 Anhören', en:'🔊 Listen', pt:'🔊 Ouvir' },
   learn_q:       { de:'Welche Silbe wird betont?', en:'Which syllable is stressed?', pt:'Qual sílaba é acentuada?' },
   learn_next:    { de:'Weiter →', en:'Next →', pt:'Próximo →' },
+  res_correct:   { de:'Richtige Antworten', en:'Correct answers', pt:'Respostas certas' },
+  res_earned:    { de:'Shekel verdient 🪙', en:'Shekel earned 🪙', pt:'Shekel ganhos 🪙' },
+  res_streak:    { de:'Tage Streak', en:'Day streak', pt:'Dias seguidos' },
+  res_total:     { de:'Gesamt Shekel', en:'Total Shekel', pt:'Shekel total' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
@@ -3094,14 +3098,14 @@ function showResult() {
   save();
   const s = Q.correct, t = Q.meds.length;
   let emoji, title;
-  if (s === t)   { emoji='🏆'; title='Perfekt! Ausgezeichnet!'; }
-  else if(s>=8)  { emoji='🎉'; title='Sehr gut gemacht!'; }
-  else if(s>=6)  { emoji='👍'; title='Gut gemacht!'; }
-  else if(s>=4)  { emoji='📚'; title='Weiter üben!'; }
-  else           { emoji='💪'; title='Nicht aufgeben!'; }
+  if (s === t)   { emoji='🏆'; title=L('Perfekt! Ausgezeichnet!','Perfect! Excellent!','Perfeito! Excelente!'); }
+  else if(s>=8)  { emoji='🎉'; title=L('Sehr gut gemacht!','Very well done!','Muito bem!'); }
+  else if(s>=6)  { emoji='👍'; title=L('Gut gemacht!','Well done!','Bom trabalho!'); }
+  else if(s>=4)  { emoji='📚'; title=L('Weiter üben!','Keep practicing!','Continue praticando!'); }
+  else           { emoji='💪'; title=L('Nicht aufgeben!','Don\'t give up!','Não desista!'); }
   set('resEmoji',  emoji);
   set('resTitle',  title);
-  set('resSub',    `${s} von ${t} richtig — Level: ${LEVELS.find(l=>l.id===Q.lvId).name}`);
+  set('resSub',    L(`${s} von ${t} richtig — Level: ${LEVELS.find(l=>l.id===Q.lvId).name}`,`${s} of ${t} correct — Level: ${LEVELS.find(l=>l.id===Q.lvId).name}`,`${s} de ${t} corretas — Nível: ${LEVELS.find(l=>l.id===Q.lvId).name}`));
   set('resScore',  `${s}/${t}`);
   set('resXP',     `+${Q.sessionXP}`);
   set('resStreak', `${S.streak} 🔥`);
