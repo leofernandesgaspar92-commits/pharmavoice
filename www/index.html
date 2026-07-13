@@ -1098,7 +1098,7 @@
     <div class="modal-sub" data-i18n="modal_lvlsub">Welchen Bereich möchtest du üben?</div>
     <div id="modalLevels" class="modal-lvl-grid"></div>
     <div class="modal-overall-row">
-      <span>GESAMTFORTSCHRITT</span>
+      <span data-i18n="overall_prog">GESAMTFORTSCHRITT</span>
       <span id="modalOverallProg">0 / 0</span>
     </div>
     <div class="modal-overall-bar"><div class="modal-overall-fill" id="modalOverallFill" style="width:0%"></div></div>
@@ -1510,7 +1510,7 @@
     </div>
     <div class="park-avatar" id="parkAvatar">🧑</div>
   </div>
-  <div class="park-hint" id="parkHint">Tippe auf eine Station, um dort zu üben.</div>
+  <div class="park-hint" id="parkHint" data-i18n="park_hint">Tippe auf eine Station, um dort zu üben.</div>
 </div>
 
 <!-- ══ NAV ══ -->
@@ -2433,6 +2433,8 @@ const UI_I18N = {
   res_earned:    { de:'Shekel verdient 🪙', en:'Shekel earned 🪙', pt:'Shekel ganhos 🪙' },
   res_streak:    { de:'Tage Streak', en:'Day streak', pt:'Dias seguidos' },
   res_total:     { de:'Gesamt Shekel', en:'Total Shekel', pt:'Shekel total' },
+  park_hint:     { de:'Tippe auf eine Station, um dort zu üben.', en:'Tap a station to practice there.', pt:'Toque numa estação para praticar.' },
+  overall_prog:  { de:'GESAMTFORTSCHRITT', en:'OVERALL PROGRESS', pt:'PROGRESSO TOTAL' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
@@ -2815,8 +2817,8 @@ function openModal() {
     wt.setAttribute('aria-label', `Schwache Wörter üben, ${weakCount} Wörter`);
     wt.innerHTML = `
       <div class="tile-icon">🎯</div>
-      <div class="tile-name">Schwache Wörter</div>
-      <div class="tile-badge">${weakCount} zu üben</div>`;
+      <div class="tile-name">${L('Schwache Wörter','Weak words','Palavras fracas')}</div>
+      <div class="tile-badge">${weakCount} ${L('zu üben','to practice','para praticar')}</div>`;
     wt.onclick = () => startWeakWords();
     c.appendChild(wt);
   }
@@ -2904,7 +2906,7 @@ function startWeakWords() {
     setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Shekel!', 3000), 900);
   }
   ResourceSystem.spendEnergy();
-  el('learnChip').textContent = `🎯  Schwache Wörter (${weak.length})`;
+  el('learnChip').textContent = `🎯  ${L('Schwache Wörter','Weak words','Palavras fracas')} (${weak.length})`;
   showScreen('Learn');
   renderQ();
 }
@@ -5241,9 +5243,9 @@ const DailyMissionSystem = (() => {
 
   // Mission template: 5 Wirkstoffe → 1 Runner-Runde → 5 Wirkstoffe
   const STEPS = [
-    { type:'speak',  label:'5 Wirkstoffe aussprechen', goal:5 },
-    { type:'runner', label:'1 Runner-Runde spielen',    goal:1 },
-    { type:'speak',  label:'5 weitere Wirkstoffe',      goal:5 },
+    { type:'speak',  label:{de:'5 Wirkstoffe aussprechen', en:'Pronounce 5 drugs',   pt:'Pronuncie 5 fármacos'},   goal:5 },
+    { type:'runner', label:{de:'1 Runner-Runde spielen',   en:'Play 1 Runner round', pt:'Jogue 1 rodada do Runner'}, goal:1 },
+    { type:'speak',  label:{de:'5 weitere Wirkstoffe',     en:'5 more drugs',        pt:'Mais 5 fármacos'},        goal:5 },
   ];
   const BONUS_XP = 50;
 
@@ -5329,21 +5331,22 @@ const DailyMissionSystem = (() => {
     if (state.done) {
       return `
         <div class="mission-card mission-done">
-          <div class="mission-header"><span class="mission-icon">🎯</span><span class="mission-title">Tagesmission abgeschlossen!</span></div>
-          <div class="mission-body">+${BONUS_XP} Bonus-Shekel verdient. Komm morgen wieder!</div>
+          <div class="mission-header"><span class="mission-icon">🎯</span><span class="mission-title">${L('Tagesmission abgeschlossen!','Daily mission complete!','Missão diária concluída!')}</span></div>
+          <div class="mission-body">${L(`+${BONUS_XP} Bonus-Shekel verdient. Komm morgen wieder!`,`+${BONUS_XP} bonus Shekel earned. Come back tomorrow!`,`+${BONUS_XP} Shekel de bônus. Volte amanhã!`)}</div>
         </div>`;
     }
+    const _lbl = s => L(s.label.de, s.label.en, s.label.pt);
     const stepsHtml = STEPS.map((s,i) => {
       const cls = i < state.stepIdx ? 'mstep-done' : i === state.stepIdx ? 'mstep-current' : 'mstep-locked';
       const icon = i < state.stepIdx ? '✅' : i === state.stepIdx ? (s.type==='runner'?'🏃':'🎤') : '⚪';
-      return `<div class="mission-step ${cls}">${icon} ${s.label}</div>`;
+      return `<div class="mission-step ${cls}">${icon} ${_lbl(s)}</div>`;
     }).join('');
     return `
       <div class="mission-card">
-        <div class="mission-header"><span class="mission-icon">🎯</span><span class="mission-title">Tagesmission</span><span class="mission-xp">+${BONUS_XP} 🪙</span></div>
+        <div class="mission-header"><span class="mission-icon">🎯</span><span class="mission-title">${L('Tagesmission','Daily mission','Missão diária')}</span><span class="mission-xp">+${BONUS_XP} 🪙</span></div>
         <div class="mission-bar"><div class="mission-bar-fill" style="width:${pct}%"></div></div>
         <div class="mission-steps">${stepsHtml}</div>
-        <button class="mission-btn" onclick="DailyMissionSystem.start()">▶ &nbsp;${step.label}</button>
+        <button class="mission-btn" onclick="DailyMissionSystem.start()">▶ &nbsp;${_lbl(step)}</button>
       </div>`;
   }
 
