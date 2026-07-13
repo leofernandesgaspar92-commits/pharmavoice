@@ -2480,6 +2480,8 @@ const ACHIEVEMENTS = [
   { id:'runner500', icon:'⚡', name:'Speed Freak',       desc:'Highscore 500+ im Runner',             check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 500 },
   { id:'runner1k',  icon:'👑', name:'Runner Champion',   desc:'Highscore 1000+ im Runner',            check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 1000 },
   { id:'sm2_10',    icon:'🧠', name:'Gedächtniskünstler',desc:'10 Begriffe mit Spaced Repetition',    check: () => Object.keys(SM2).length >= 10 },
+  { id:'words30',   icon:'🔬', name:'Wirkstoff-Kenner',  desc:'30 verschiedene Wirkstoffe geübt',     check: () => Object.keys(SM2).length >= 30 },
+  { id:'xp1000',    icon:'💎', name:'Shekel-Millionär',  desc:'1000 Shekel gesammelt',                check: () => S.xp >= 1000 },
 ];
 
 function renderAchievements() {
@@ -3528,6 +3530,8 @@ function stopRunner() {
 function rnStartGame() {
   rnEl('rnOverlay').classList.add('hidden');
   ResourceSystem.spendEnergy();
+  // Runde zählen (für „Auf die Piste!"-Achievement)
+  localStorage.setItem('pv_runner_total', (parseInt(localStorage.getItem('pv_runner_total') || '0') + 1));
   // Shuffle words, weight by difficulty (harder words less frequent early)
   RG.wordQueue = [...RN_WORDS].sort(() => Math.random() - 0.5);
   RG.curIdx   = 0;
