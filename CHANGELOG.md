@@ -1,3 +1,5 @@
+- i18n Daily-Mission-Karte (Titel, Schritte, Abschluss-Text), Schwache-Wörter-Kachel, Park-Hinweis und Gesamtfortschritt-Label in DE/EN/PT
+
 - i18n Hub/Lernwelten: Titel, „X von Y Level abgeschlossen", Detail-Panel (FORTSCHRITT/BELOHNUNG/Lektion starten/Abgeschlossen + Level-Beschreibungen), „Pharma Park erkunden", „ALLE WELTEN" und Welten-Fortschritt in DE/EN/PT
 
 - i18n Pharma Runner: Overlay-Texte (Start-Anleitung, Game-Over inkl. Shekel-/Rekord-Bonus, Pause, Buttons Starten/Nochmal/Weiterspielen) in DE/EN/PT
