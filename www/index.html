@@ -5547,9 +5547,9 @@ const HubSystem = (() => {
     const meta = TYPE_META[lv.type];
     const status = state[lv.id]?.done ? 'done' : 'current';
     const descs = {
-      speak:  `Sprich ${lv.goal} Wirkstoffe korrekt aus.`,
-      runner: `Erreiche ${lv.goal} Punkte im Runner.`,
-      quiz:   `Beantworte ${lv.goal} Fragen richtig.`,
+      speak:  L(`Sprich ${lv.goal} Wirkstoffe korrekt aus.`,`Pronounce ${lv.goal} drugs correctly.`,`Pronuncie ${lv.goal} fármacos corretamente.`),
+      runner: L(`Erreiche ${lv.goal} Punkte im Runner.`,`Reach ${lv.goal} points in the Runner.`,`Alcance ${lv.goal} pontos no Runner.`),
+      quiz:   L(`Beantworte ${lv.goal} Fragen richtig.`,`Answer ${lv.goal} questions correctly.`,`Responda ${lv.goal} perguntas corretamente.`),
     };
     const pct = status === 'done' ? 100 : 0;
     const gems = Math.max(1, Math.round(lv.xp / 10));
@@ -5558,16 +5558,16 @@ const HubSystem = (() => {
         <div class="hub-detail-label">${meta.label.toUpperCase()}</div>
         <div class="hub-detail-title">${lv.name}</div>
         <div class="hub-detail-desc">${descs[lv.type] || ''}</div>
-        <div class="hub-detail-prog-lbl">FORTSCHRITT</div>
+        <div class="hub-detail-prog-lbl">${L('FORTSCHRITT','PROGRESS','PROGRESSO')}</div>
         <div class="hub-detail-bar"><div class="hub-detail-bar-fill" style="width:${pct}%"></div></div>
-        <div class="hub-detail-reward-lbl">BELOHNUNG</div>
+        <div class="hub-detail-reward-lbl">${L('BELOHNUNG','REWARD','RECOMPENSA')}</div>
         <div class="hub-detail-rewards">
           <span class="hub-reward-pill">🪙 ${lv.xp}</span>
           <span class="hub-reward-pill">💎 ${gems}</span>
         </div>
         ${status === 'done'
-          ? `<button class="hub-detail-btn done" disabled>✅ Abgeschlossen</button>`
-          : `<button class="hub-detail-btn" onclick="HubSystem._launchById('${lv.id}')">Lektion starten</button>`}
+          ? `<button class="hub-detail-btn done" disabled>${L('✅ Abgeschlossen','✅ Completed','✅ Concluído')}</button>`
+          : `<button class="hub-detail-btn" onclick="HubSystem._launchById('${lv.id}')">${L('Lektion starten','Start lesson','Iniciar lição')}</button>`}
       </div>`;
   }
 
@@ -5602,8 +5602,8 @@ const HubSystem = (() => {
     let html = `
       <div class="hub-header">
         <div>
-          <div class="hub-title">🌍 Lernwelten</div>
-          <div class="hub-sub">${doneLevels} von ${totalLevels} Level abgeschlossen</div>
+          <div class="hub-title">${L('🌍 Lernwelten','🌍 Learning worlds','🌍 Mundos de aprendizado')}</div>
+          <div class="hub-sub">${L(`${doneLevels} von ${totalLevels} Level abgeschlossen`,`${doneLevels} of ${totalLevels} levels completed`,`${doneLevels} de ${totalLevels} níveis concluídos`)}</div>
         </div>
       </div>
       ${DailyMissionSystem.isDone() ? SmartLearnSystem.renderCard() : DailyMissionSystem.renderCard()}
@@ -5614,9 +5614,9 @@ const HubSystem = (() => {
       </div>
       ${_detailPanel(next ? next.level : currentWorld.levels[currentWorld.levels.length-1], state)}
 
-      <button class="hub-cta" style="background:linear-gradient(135deg,#5B4DFF,#8B7FFF);box-shadow:0 6px 20px rgba(91,77,255,.35);margin-bottom:24px" onclick="showScreen('Park')">🏞️ &nbsp;Pharma Park erkunden</button>
+      <button class="hub-cta" style="background:linear-gradient(135deg,#5B4DFF,#8B7FFF);box-shadow:0 6px 20px rgba(91,77,255,.35);margin-bottom:24px" onclick="showScreen('Park')">🏞️ &nbsp;${L('Pharma Park erkunden','Explore Pharma Park','Explorar o Pharma Park')}</button>
 
-      <div class="section-title" style="margin-top:8px">ALLE WELTEN</div>
+      <div class="section-title" style="margin-top:8px">${L('ALLE WELTEN','ALL WORLDS','TODOS OS MUNDOS')}</div>
     `;
 
     for (const world of WORLDS) {
@@ -5629,7 +5629,7 @@ const HubSystem = (() => {
             <div class="hub-world-icon">${world.icon}</div>
             <div>
               <div class="hub-world-name">${world.name}</div>
-              <div class="hub-world-prog">${worldDone}/${world.levels.length} Level · ${pct}%</div>
+              <div class="hub-world-prog">${worldDone}/${world.levels.length} ${L('Level','levels','níveis')} · ${pct}%</div>
             </div>
           </div>
           <div class="hub-world-bar"><div class="hub-world-fill" style="width:${pct}%"></div></div>
