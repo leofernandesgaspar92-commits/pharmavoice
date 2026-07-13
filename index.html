@@ -3586,10 +3586,10 @@ function startRunner() {
   rnEl('rnOverlay').classList.remove('hidden');
   rnEl('rnOvIcon').textContent = '🏃';
   rnEl('rnOvTitle').textContent = 'Pharma Runner';
-  rnEl('rnOvSub').textContent = 'Sprich die Wirkstoffnamen aus bevor die Zeit abläuft!\nJe länger die Combo, desto schneller wird es.';
+  rnEl('rnOvSub').textContent = L('Sprich die Wirkstoffnamen aus bevor die Zeit abläuft!\nJe länger die Combo, desto schneller wird es.','Say the drug names before time runs out!\nThe longer the combo, the faster it gets.','Diga os nomes dos fármacos antes do tempo acabar!\nQuanto maior o combo, mais rápido fica.');
   rnEl('rnOvScore').style.display = 'none';
   rnEl('rnOvHs').style.display = 'none';
-  rnEl('rnOvBtn').textContent = '🎮  Starten';
+  rnEl('rnOvBtn').textContent = L('🎮  Starten','🎮  Start','🎮  Começar');
   rnEl('rnOvBtn').onclick = rnStartGame;
 }
 
@@ -3774,14 +3774,14 @@ function rnGameOver() {
 
   rnEl('rnOverlay').classList.remove('hidden');
   rnEl('rnOvIcon').textContent  = RG.score >= 1000 ? '🏆' : '💀';
-  rnEl('rnOvTitle').textContent = isNewBest && RG.score > 0 ? '🎉 Neuer Rekord!' : (RG.score >= 1000 ? 'Ausgezeichnet!' : 'Game Over');
-  rnEl('rnOvSub').innerHTML     = `Du hast ${RG.curIdx} Wirkstoffe geschafft.<br>💰 +${earnedCoins} Shekel verdient${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 Rekord-Bonus' : ''}`;
+  rnEl('rnOvTitle').textContent = isNewBest && RG.score > 0 ? L('🎉 Neuer Rekord!','🎉 New record!','🎉 Novo recorde!') : (RG.score >= 1000 ? L('Ausgezeichnet!','Excellent!','Excelente!') : 'Game Over');
+  rnEl('rnOvSub').innerHTML     = L(`Du hast ${RG.curIdx} Wirkstoffe geschafft.<br>💰 +${earnedCoins} Shekel verdient${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 Rekord-Bonus' : ''}`,`You cleared ${RG.curIdx} drugs.<br>💰 +${earnedCoins} Shekel earned${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 record bonus' : ''}`,`Você acertou ${RG.curIdx} fármacos.<br>💰 +${earnedCoins} Shekel ganhos${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 bônus de recorde' : ''}`);
   rnEl('rnOvScore').style.display = 'block';
   rnEl('rnOvScore').textContent   = RG.score;
   rnEl('rnOvHs').style.display  = 'block';
   const rank = top10.findIndex(e => e.score === RG.score) + 1;
   rnEl('rnOvHs').innerHTML = `🏅 Highscore: ${hs}${rank > 0 && rank <= 10 ? ` &nbsp;·&nbsp; Platz ${rank} in deinen Top 10` : ''}`;
-  rnEl('rnOvBtn').textContent   = '🔄  Nochmal';
+  rnEl('rnOvBtn').textContent   = L('🔄  Nochmal','🔄  Again','🔄  De novo');
   rnEl('rnOvBtn').onclick       = rnStartGame;
 }
 
@@ -3798,11 +3798,11 @@ function rnPause() {
     rnStopMic();
     rnEl('rnOverlay').classList.remove('hidden');
     rnEl('rnOvIcon').textContent  = '⏸';
-    rnEl('rnOvTitle').textContent = 'Pause';
+    rnEl('rnOvTitle').textContent = L('Pause','Paused','Pausa');
     rnEl('rnOvSub').textContent   = `Score: ${RG.score} · Combo: ${RG.combo}`;
     rnEl('rnOvScore').style.display = 'none';
     rnEl('rnOvHs').style.display  = 'none';
-    rnEl('rnOvBtn').textContent   = '▶️  Weiterspielen';
+    rnEl('rnOvBtn').textContent   = L('▶️  Weiterspielen','▶️  Resume','▶️  Continuar');
     rnEl('rnOvBtn').onclick       = rnPause;
   }
 }
