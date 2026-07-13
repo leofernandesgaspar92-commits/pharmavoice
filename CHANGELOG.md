@@ -1,3 +1,5 @@
+- i18n Upgrade/Plan-Screen (Titel, Free/Normal/Premium-Pläne mit allen Features, Preisen, „Empfohlen", „Nicht jetzt") in DE/EN/PT — konsistenter Fluss bis zum bereits übersetzten Checkout
+
 - i18n Modals: Audio-Einstellungen, Checkout (inkl. dynamische Zahl-Button-Texte & „Nicht genug"-Meldungen) und Charakter-Auswahl in DE/EN/PT
 
 - i18n Daily-Mission-Karte (Titel, Schritte, Abschluss-Text), Schwache-Wörter-Kachel, Park-Hinweis und Gesamtfortschritt-Label in DE/EN/PT
