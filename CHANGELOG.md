@@ -1,3 +1,5 @@
+- Barrierefreiheit: Bottom-Nav & Icon-Buttons per Tastatur bedienbar (role/tabindex, Enter/Leertaste), Screenreader-Labels (aria-label), aria-current am aktiven Tab, aria-pressed am Musik-Button, aria-live an der Mikrofon-Ausgabe, sichtbarer Fokus-Rahmen (WCAG)
+
 - Wirkstoff-Datenbank: 8 häufige Wirkstoffe ergänzt (Paracetamol, Cetirizin, Enalapril, Torasemid, Allopurinol, Mirtazapin, Hydrochlorothiazid, Cholecalciferol) — je mit IPA, Silbenbetonung, Indikation, Klasse, Summenformel & ATC-Code (jetzt 102 Wirkstoffe)
 
 - Belohnungs-Truhe (Chest/Loot): nach Sessions ab 6/10 richtigen (Perfekt = 2 Truhen), gewichtete Zufalls-Belohnung (Shekel/Gems/Power-Ups/Jackpot) mit Öffnungs-Animation — schließt die letzte Gap-Analyse-Lücke (variable rewards)
