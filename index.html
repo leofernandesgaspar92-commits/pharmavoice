@@ -83,6 +83,13 @@
     .pay-alt { flex:1; padding:11px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; font-size:13px; font-weight:800; color:var(--text); cursor:pointer; font-family:inherit; }
     .pay-secure-note { font-size:10.5px; color:var(--gray2); text-align:center; line-height:1.5; margin-bottom:8px; }
 
+    /* ── Kinetic Typography (befriedigende Text-Bursts bei Richtig) ── */
+    #kineticBurst { position:fixed; top:38%; left:50%; transform:translate(-50%,-50%); z-index:998; pointer-events:none; display:flex; gap:1px; }
+    #kineticBurst .kb-letter { font-size:44px; font-weight:900; letter-spacing:.5px; color:var(--green); text-shadow:0 4px 18px rgba(23,217,196,.5); opacity:0; transform:translateY(20px) scale(.5); display:inline-block; }
+    #kineticBurst.combo .kb-letter { color:#FFC107; text-shadow:0 4px 22px rgba(255,193,7,.6); font-size:50px; }
+    #kineticBurst.go .kb-letter { animation:kbPop .7s cubic-bezier(.2,1.4,.4,1) forwards; }
+    @keyframes kbPop { 0%{opacity:0;transform:translateY(20px) scale(.5) rotate(-8deg)} 35%{opacity:1;transform:translateY(-6px) scale(1.25) rotate(3deg)} 60%{transform:translateY(0) scale(1) rotate(0)} 100%{opacity:0;transform:translateY(-30px) scale(1)} }
+
     /* ── Wirkstoff-Lexikon ── */
     .lex-progress { margin-bottom:14px; }
     .lex-prog-row { display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:var(--gray); margin-bottom:6px; }
@@ -2787,7 +2794,7 @@ function scoreAnswer(good, med) {
   trackAnswer(good);
   const lang = CharacterSystem.getLang();
   const comboType = good && Q.correct > 0 && Q.correct % 5 === 0 ? 'combo' : good ? 'correct' : 'wrong';
-  if (good) { AudioSystem.playCorrect(lang, comboType === 'combo'); avatarAnimate(comboType === 'combo' ? 'anim-bounce3' : 'anim-nod'); }
+  if (good) { AudioSystem.playCorrect(lang, comboType === 'combo'); avatarAnimate(comboType === 'combo' ? 'anim-bounce3' : 'anim-nod'); kineticBurst(comboType === 'combo'); }
   else      { AudioSystem.playWrong(lang); avatarAnimate('anim-shake'); }
   CharacterSystem.react(comboType);
   S.learned = Math.min(S.learned + 1, 9999);
@@ -2855,6 +2862,29 @@ function popXP() {
   void p.offsetWidth;
   p.className = 'xp-pop go';
   setTimeout(() => { p.className = 'xp-pop'; }, 960);
+}
+
+// Kinetic-Typography-Burst: fliegt bei richtigen Antworten mit Buchstaben-Stagger ein
+const KINETIC_WORDS = {
+  de: { correct:['RICHTIG!','SUPER!','STARK!','TOP!','GENAU!'], combo:['COMBO!','ON FIRE!','GENIAL!','PERFEKT!'] },
+  en: { correct:['CORRECT!','NICE!','GREAT!','YES!'],           combo:['COMBO!','ON FIRE!','AMAZING!'] },
+  pt: { correct:['CORRETO!','ÓTIMO!','BOA!','ISSO!'],           combo:['COMBO!','EM CHAMA!','INCRÍVEL!'] },
+};
+function kineticBurst(isCombo) {
+  const lang = CharacterSystem.getLang();
+  const pool = (KINETIC_WORDS[lang] || KINETIC_WORDS.de)[isCombo ? 'combo' : 'correct'];
+  const word = pool[Math.floor(Math.random() * pool.length)];
+  let el2 = document.getElementById('kineticBurst');
+  if (el2) el2.remove();
+  el2 = document.createElement('div');
+  el2.id = 'kineticBurst';
+  if (isCombo) el2.classList.add('combo');
+  el2.innerHTML = [...word].map((ch, i) =>
+    `<span class="kb-letter" style="animation-delay:${i * 45}ms">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('');
+  document.body.appendChild(el2);
+  void el2.offsetWidth;
+  el2.classList.add('go');
+  setTimeout(() => el2.remove(), 900 + word.length * 45);
 }
 
 // ═══════════════════════════════════════════════
@@ -5527,7 +5557,7 @@ const TrendAnalyzer = (() => {
   const GAP_ANALYSIS = [
     { title:'Soziale Features', status:'missing', priority:'hoch', desc:'Duolingo, Clash Royale zeigen: Soziale Verbindungen verdoppeln Retention. PharmaVoice hat KEINE sozialen Features.' },
     { title:'Seasonal Events', status:'missing', priority:'hoch', desc:'Royal Match und Monopoly GO! erzeugen FOMO. PharmaVoice hat nur den täglichen Challenge-Seed.' },
-    { title:'Kinetic Typography', status:'missing', priority:'mittel', desc:'Block Blast und Candy Crush haben befriedigende Animations-Reaktionen. Canvas-Bursts fehlen.' },
+    { title:'Kinetic Typography', status:'done', priority:'erledigt', desc:'Animierte Text-Bursts (RICHTIG!/COMBO!) mit Buchstaben-Stagger bei richtigen Antworten, mehrsprachig, Combo-Variante ab 5er-Serie (kineticBurst).' },
     { title:'Collection / Compendium', status:'done', priority:'erledigt', desc:'Wirkstoff-Lexikon umgesetzt (LexikonSystem): alle 94 Wirkstoffe nach Kategorie, Suche/Filter, Gelernt-Status aus SM-2, Anhören pro Eintrag, Fortschrittsbalken.' },
     { title:'Variable Reward (Chest)', status:'partial', priority:'mittel', desc:'Münzen im Runner variieren, aber kein echtes Chest/Loot-System.' },
     { title:'Spaced Repetition', status:'done', priority:'erledigt', desc:'SM-2 vollständig. Kompetitiver Vorteil — kaum ein Lern-Spiel hat das.' },

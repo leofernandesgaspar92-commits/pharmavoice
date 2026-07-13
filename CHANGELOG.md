@@ -1,3 +1,5 @@
+- Kinetic Typography: animierte Text-Bursts (RICHTIG!/COMBO!) mit Buchstaben-Stagger bei richtigen Antworten, mehrsprachig (DE/EN/PT), goldene Combo-Variante ab 5er-Serie — schließt die Kinetic-Typography-Lücke der Gap-Analyse
+
 - Wirkstoff-Lexikon: durchsuchbare Sammlung aller 94 Wirkstoffe nach Kategorie, mit Gelernt-Status (aus SM-2), Anhören-Button pro Eintrag und Fortschrittsbalken — schließt die Collection/Compendium-Lücke der Gap-Analyse
 
 - Daily-Login-Bonus: einmal pro Tag Gems + Shekel (Belohnung steigt mit dem Streak), gefeiert mit Toast + Level-Up-Sound — schließt eine von der Gap-Analyse markierte Engagement-Lücke
