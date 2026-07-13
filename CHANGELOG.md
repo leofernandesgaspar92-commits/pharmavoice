@@ -1,3 +1,5 @@
+- Wirkstoff-Datenbank: 8 weitere häufige Wirkstoffe ergänzt (Tamsulosin, Finasterid, Citalopram, Amitriptylin, Warfarin, Salmeterol, Sildenafil, Melatonin) — je mit IPA, Silbenbetonung & vollständigem MED_INFO (jetzt 110 Wirkstoffe, alle validiert: keine Duplikate/Datenfehler)
+
 - Pharma Park: die 4 Zonen verhalten sich jetzt wirklich unterschiedlich statt alle gleich — Regal=Bereichswahl, Laufband=Runner, Kunde=gezielte Schwachwort-Session (Fallback Bereichswahl), Labor=schnelle Zufalls-Übung; irreführende Texte korrigiert. Zusatzfix: Avatar (pointer-events:none) blockierte nicht mehr den nächsten Zonen-Tap
 
 - Hub-Fortschritt entblockt: Quiz-Level (jede Welt Position 4) wurden nie abgeschlossen, weil der Abschluss-Hook nur speak-Marker prüfte — dadurch war jede Welt an Level 4 blockiert. Hook schließt jetzt speak- UND quiz-Level ab; alle 6 Level pro Welt durchspielbar
