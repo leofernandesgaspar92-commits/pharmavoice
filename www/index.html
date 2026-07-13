@@ -1040,11 +1040,11 @@
 <!-- ══ AUDIO SETTINGS MODAL ══ -->
 <div id="audioSettingsModal" onclick="if(event.target===this)closeAudioSettings()">
   <div class="audio-sheet">
-    <h3>🔊 Audio-Einstellungen</h3>
+    <h3 data-i18n="au_title">🔊 Audio-Einstellungen</h3>
 
     <div class="audio-row">
       <span>🔊</span>
-      <label>Sound-Effekte</label>
+      <label data-i18n="au_sfx">Sound-Effekte</label>
       <label class="audio-toggle">
         <input type="checkbox" id="chkSound" onchange="audioSettingChange('sound',this.checked)">
         <span class="audio-toggle-track"></span>
@@ -1052,7 +1052,7 @@
     </div>
     <div class="audio-row">
       <span>🎚️</span>
-      <label>Lautstärke</label>
+      <label data-i18n="au_vol">Lautstärke</label>
       <input class="audio-slider" type="range" id="sliderSound" min="0" max="1" step="0.05"
              oninput="AudioSystem.setSoundVol(+this.value)">
     </div>
@@ -1061,7 +1061,7 @@
 
     <div class="audio-row">
       <span>🗣️</span>
-      <label>Sprachausgabe</label>
+      <label data-i18n="au_speech">Sprachausgabe</label>
       <label class="audio-toggle">
         <input type="checkbox" id="chkSpeech" onchange="audioSettingChange('speech',this.checked)">
         <span class="audio-toggle-track"></span>
@@ -1069,7 +1069,7 @@
     </div>
     <div class="audio-row">
       <span>🎚️</span>
-      <label>Stimmlautstärke</label>
+      <label data-i18n="au_voicevol">Stimmlautstärke</label>
       <input class="audio-slider" type="range" id="sliderSpeech" min="0" max="1" step="0.05"
              oninput="AudioSystem.setSpeechVol(+this.value)">
     </div>
@@ -1078,14 +1078,14 @@
 
     <div class="audio-row">
       <span>📳</span>
-      <label>Vibration bei Fehler</label>
+      <label data-i18n="au_vib">Vibration bei Fehler</label>
       <label class="audio-toggle">
         <input type="checkbox" id="chkVib" onchange="audioSettingChange('vib',this.checked)">
         <span class="audio-toggle-track"></span>
       </label>
     </div>
 
-    <button class="audio-close-btn" onclick="closeAudioSettings()">Schließen</button>
+    <button class="audio-close-btn" onclick="closeAudioSettings()" data-i18n="close">Schließen</button>
   </div>
 </div>
 <div class="xp-pop" id="xpPop">+10 Shekel 🪙</div>
@@ -1151,7 +1151,7 @@
   <div class="upgrade-modal" onclick="event.stopPropagation()">
     <div class="upgrade-modal-header">
       <div class="um-icon">💳</div>
-      <h2>Bezahlung</h2>
+      <h2 data-i18n="pay_title">Bezahlung</h2>
       <p id="checkoutSummary">Normal – €4,99 / Monat</p>
     </div>
 
@@ -1162,7 +1162,7 @@
     </div>
     <button class="pay-express paypal" onclick="CheckoutSystem.pay('paypal')"><span class="pp-p">Pay</span><span class="pp-p2">Pal</span></button>
 
-    <div class="pay-divider"><span>oder mit Karte zahlen</span></div>
+    <div class="pay-divider"><span data-i18n="pay_orcard">oder mit Karte zahlen</span></div>
 
     <!-- Kartenformular -->
     <div class="pay-card-brands">
@@ -1171,16 +1171,16 @@
       <span class="pay-brand amex">AMEX</span>
     </div>
     <div class="pay-field">
-      <label>Karteninhaber</label>
+      <label data-i18n="pay_name">Karteninhaber</label>
       <input type="text" id="ccName" placeholder="Max Mustermann" autocomplete="cc-name">
     </div>
     <div class="pay-field">
-      <label>Kartennummer</label>
+      <label data-i18n="pay_num">Kartennummer</label>
       <input type="text" id="ccNumber" placeholder="1234 5678 9012 3456" inputmode="numeric" maxlength="19" autocomplete="cc-number" oninput="CheckoutSystem.formatCard(this)">
     </div>
     <div class="pay-field-row">
       <div class="pay-field">
-        <label>Gültig bis</label>
+        <label data-i18n="pay_exp">Gültig bis</label>
         <input type="text" id="ccExpiry" placeholder="MM/JJ" inputmode="numeric" maxlength="5" autocomplete="cc-exp" oninput="CheckoutSystem.formatExpiry(this)">
       </div>
       <div class="pay-field">
@@ -1189,14 +1189,14 @@
       </div>
     </div>
     <div class="pay-error" id="payError"></div>
-    <button class="pay-submit-btn" id="paySubmitBtn" onclick="CheckoutSystem.pay('card')">🔒 Jetzt bezahlen</button>
+    <button class="pay-submit-btn" id="paySubmitBtn" onclick="CheckoutSystem.pay('card')" data-i18n="pay_submit">🔒 Jetzt bezahlen</button>
 
     <div class="pay-alt-row">
-      <button class="pay-alt" onclick="CheckoutSystem.pay('sepa')">🏦 SEPA-Lastschrift</button>
+      <button class="pay-alt" onclick="CheckoutSystem.pay('sepa')" data-i18n="pay_sepa">🏦 SEPA-Lastschrift</button>
       <button class="pay-alt" onclick="CheckoutSystem.pay('klarna')">Klarna.</button>
     </div>
 
-    <div class="pay-secure-note">🔒 Demo-Modus: Es wird nichts abgebucht. Verschlüsselte Übertragung, keine Kartendaten werden gespeichert.</div>
+    <div class="pay-secure-note" data-i18n="pay_note">🔒 Demo-Modus: Es wird nichts abgebucht. Verschlüsselte Übertragung, keine Kartendaten werden gespeichert.</div>
     <button class="upgrade-close" onclick="CheckoutSystem.close()">Abbrechen</button>
   </div>
 </div>
@@ -1205,10 +1205,10 @@
 <div class="upgrade-modal-bg" id="charModalBg" onclick="closeCharModal()">
   <div class="upgrade-modal" onclick="event.stopPropagation()" style="border-radius:24px 24px 0 0;padding:28px 20px 40px">
     <div style="text-align:center;margin-bottom:6px;font-size:28px">🐾</div>
-    <h2 style="text-align:center;font-size:20px;font-weight:900;color:var(--text);margin-bottom:6px">Dein Begleiter</h2>
-    <p style="text-align:center;font-size:13px;color:var(--gray);margin-bottom:20px">Wähle einen Charakter – er färbt die ganze App ein!</p>
+    <h2 style="text-align:center;font-size:20px;font-weight:900;color:var(--text);margin-bottom:6px" data-i18n="char_title">Dein Begleiter</h2>
+    <p style="text-align:center;font-size:13px;color:var(--gray);margin-bottom:20px" data-i18n="char_sub">Wähle einen Charakter – er färbt die ganze App ein!</p>
     <div class="char-grid" id="charGrid"></div>
-    <button class="upgrade-close" onclick="closeCharModal()" style="margin-top:20px">Schließen</button>
+    <button class="upgrade-close" onclick="closeCharModal()" style="margin-top:20px" data-i18n="close">Schließen</button>
   </div>
 </div>
 
@@ -2435,6 +2435,23 @@ const UI_I18N = {
   res_total:     { de:'Gesamt Shekel', en:'Total Shekel', pt:'Shekel total' },
   park_hint:     { de:'Tippe auf eine Station, um dort zu üben.', en:'Tap a station to practice there.', pt:'Toque numa estação para praticar.' },
   overall_prog:  { de:'GESAMTFORTSCHRITT', en:'OVERALL PROGRESS', pt:'PROGRESSO TOTAL' },
+  close:         { de:'Schließen', en:'Close', pt:'Fechar' },
+  au_title:      { de:'🔊 Audio-Einstellungen', en:'🔊 Audio settings', pt:'🔊 Configurações de áudio' },
+  au_sfx:        { de:'Sound-Effekte', en:'Sound effects', pt:'Efeitos sonoros' },
+  au_vol:        { de:'Lautstärke', en:'Volume', pt:'Volume' },
+  au_speech:     { de:'Sprachausgabe', en:'Voice output', pt:'Saída de voz' },
+  au_voicevol:   { de:'Stimmlautstärke', en:'Voice volume', pt:'Volume da voz' },
+  au_vib:        { de:'Vibration bei Fehler', en:'Vibrate on error', pt:'Vibrar em erro' },
+  pay_title:     { de:'Bezahlung', en:'Payment', pt:'Pagamento' },
+  pay_orcard:    { de:'oder mit Karte zahlen', en:'or pay by card', pt:'ou pague com cartão' },
+  pay_name:      { de:'Karteninhaber', en:'Cardholder', pt:'Titular do cartão' },
+  pay_num:       { de:'Kartennummer', en:'Card number', pt:'Número do cartão' },
+  pay_exp:       { de:'Gültig bis', en:'Expiry', pt:'Validade' },
+  pay_submit:    { de:'🔒 Jetzt bezahlen', en:'🔒 Pay now', pt:'🔒 Pagar agora' },
+  pay_sepa:      { de:'🏦 SEPA-Lastschrift', en:'🏦 SEPA direct debit', pt:'🏦 Débito SEPA' },
+  pay_note:      { de:'🔒 Demo-Modus: Es wird nichts abgebucht. Verschlüsselte Übertragung, keine Kartendaten werden gespeichert.', en:'🔒 Demo mode: nothing is charged. Encrypted transfer, no card data is stored.', pt:'🔒 Modo demo: nada é cobrado. Transferência criptografada, nenhum dado do cartão é armazenado.' },
+  char_title:    { de:'Dein Begleiter', en:'Your companion', pt:'Seu companheiro' },
+  char_sub:      { de:'Wähle einen Charakter – er färbt die ganze App ein!', en:'Choose a character – it colors the whole app!', pt:'Escolha um personagem – ele colore o app todo!' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
@@ -4591,12 +4608,12 @@ const CheckoutSystem = (() => {
     }
     if (err) err.textContent = '';
     const btn = document.getElementById('paySubmitBtn');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Verarbeite Zahlung …'; }
+    if (btn) { btn.disabled = true; btn.textContent = L('⏳ Verarbeite Zahlung …','⏳ Processing payment …','⏳ Processando pagamento …'); }
 
     // Demo: simulierte Zahlungsabwicklung. In Produktion hier
     // Stripe/PayPal/Payment-Request-API mit Backend-Session aufrufen.
     setTimeout(() => {
-      if (btn) { btn.disabled = false; btn.textContent = '🔒 Jetzt bezahlen'; }
+      if (btn) { btn.disabled = false; btn.textContent = L('🔒 Jetzt bezahlen','🔒 Pay now','🔒 Pagar agora'); }
       document.getElementById('checkoutBg').classList.remove('open');
       // Kartendaten sofort verwerfen (nichts speichern!)
       ['ccName','ccNumber','ccExpiry','ccCvc'].forEach(id => { const f = document.getElementById(id); if (f) f.value = ''; });
@@ -4719,11 +4736,11 @@ const ShopSystem = (() => {
     if (!item) return;
     let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch {}
     if (item.currency === 'coins') {
-      if ((pv2.xp || 0) < item.cost) { CharacterSystem.showBubble('Nicht genug Shekel! 🪙', 2500); return; }
+      if ((pv2.xp || 0) < item.cost) { CharacterSystem.showBubble(L('Nicht genug Shekel! 🪙','Not enough Shekel! 🪙','Shekel insuficiente! 🪙'), 2500); return; }
       pv2.xp -= item.cost; S.xp = pv2.xp;
       localStorage.setItem('pv2', JSON.stringify(pv2));
     } else {
-      if (ResourceSystem.getGems() < item.cost) { CharacterSystem.showBubble('Nicht genug Gems! 💎', 2500); return; }
+      if (ResourceSystem.getGems() < item.cost) { CharacterSystem.showBubble(L('Nicht genug Gems! 💎','Not enough Gems! 💎','Gems insuficientes! 💎'), 2500); return; }
       ResourceSystem.addGems(-item.cost);
     }
     // Effekt anwenden
