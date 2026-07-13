@@ -1,3 +1,5 @@
+- UI-Mehrsprachigkeit erweitert: Bottom-Navigation (Home/Hub/Erfolge/Profil/Design) übersetzt jetzt ebenfalls live in DE/EN/PT über das i18n-System
+
 - UI-Mehrsprachigkeit (Fundament): leichtgewichtiges i18n-System (data-i18n + Übersetzungstabelle); Home-Menü, Taglines und Home-Sektionen übersetzen jetzt live in DE/EN/PT und nach Reload — vorher blieb die UI immer deutsch, nur Charakter/Audio folgten der Sprache. Erweiterbar für weitere Screens; untaggte Elemente bleiben unverändert
 
 - Achievement-Texte korrigiert: „Profi-Aussprecher" (400) und „Pharma-Legende" (600) behaupteten fälschlich „Level 3 freigeschaltet" bzw. „Alle Level abgeschlossen" — Level 3 erfordert aber 1000 Shekel. Beschreibungen jetzt korrekt (reine Shekel-Meilensteine)

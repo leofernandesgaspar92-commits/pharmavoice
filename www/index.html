@@ -1516,19 +1516,19 @@
 <!-- ══ NAV ══ -->
 <nav class="nav" aria-label="Hauptnavigation">
   <div class="nav-item active" id="navHome" role="button" tabindex="0" aria-label="Home" aria-current="page" onclick="showScreen('Home')">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Home</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span data-i18n="nav_home">Home</span>
   </div>
   <div class="nav-item" id="navHub" role="button" tabindex="0" aria-label="Lernwelten-Hub" onclick="showScreen('Hub');HubSystem.render()">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7.5V2H9v5.5l3 3 3-3zM7.5 9H2v6h5.5l3-3-3-3zM9 16.5V22h6v-5.5l-3-3-3 3zM16.5 9l-3 3 3 3H22V9h-5.5z"/></svg><span>Hub</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7.5V2H9v5.5l3 3 3-3zM7.5 9H2v6h5.5l3-3-3-3zM9 16.5V22h6v-5.5l-3-3-3 3zM16.5 9l-3 3 3 3H22V9h-5.5z"/></svg><span data-i18n="nav_hub">Hub</span>
   </div>
   <div class="nav-item" id="navAch" role="button" tabindex="0" aria-label="Erfolge und Rangliste" onclick="showScreen('Achievements')">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1a5.01 5.01 0 003.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg><span>Erfolge</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1a5.01 5.01 0 003.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg><span data-i18n="nav_ach">Erfolge</span>
   </div>
   <div class="nav-item" id="navProf" role="button" tabindex="0" aria-label="Mein Profil" onclick="showScreen('Profile')">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Profil</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span data-i18n="nav_prof">Profil</span>
   </div>
   <div class="nav-item" id="navGD" role="button" tabindex="0" aria-label="Game Designer" onclick="showScreen('GameDesign');gameDesigner.render()">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7.5V2H9v5.5l3 3 3-3zM7.5 9H2v6h5.5l3-3-3-3zM9 16.5V22h6v-5.5l-3-3-3 3zM16.5 9l-3 3 3 3H22V9h-5.5z"/></svg><span>Design</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7.5V2H9v5.5l3 3 3-3zM7.5 9H2v6h5.5l3-3-3-3zM9 16.5V22h6v-5.5l-3-3-3 3zM16.5 9l-3 3 3 3H22V9h-5.5z"/></svg><span data-i18n="nav_design">Design</span>
   </div>
 </nav>
 
@@ -2396,6 +2396,11 @@ const UI_I18N = {
   tagline:       { de:'Lerne. Verstehe. Sprich. Heile.', en:'Learn. Understand. Speak. Heal.', pt:'Aprenda. Entenda. Fale. Cure.' },
   sec_progress:  { de:'📊 DEIN FORTSCHRITT', en:'📊 YOUR PROGRESS',  pt:'📊 SEU PROGRESSO' },
   sec_world:     { de:'🌍 WELT-FORTSCHRITT', en:'🌍 WORLD PROGRESS', pt:'🌍 PROGRESSO DO MUNDO' },
+  nav_home:      { de:'Home',    en:'Home',    pt:'Início' },
+  nav_hub:       { de:'Hub',     en:'Hub',     pt:'Hub' },
+  nav_ach:       { de:'Erfolge', en:'Awards',  pt:'Conquistas' },
+  nav_prof:      { de:'Profil',  en:'Profile', pt:'Perfil' },
+  nav_design:    { de:'Design',  en:'Design',  pt:'Design' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
