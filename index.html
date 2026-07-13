@@ -5577,16 +5577,21 @@ const HubSystem = (() => {
     }
   }
 
-  // Hook into learn/result end to auto-complete hub speak levels
+  // Hook into learn/result end to auto-complete hub speak- UND quiz-levels
+  // (Quiz-Level laufen aktuell ebenfalls als Aussprache-Session)
   function _hookLearnEnd(correct) {
-    const lvId = sessionStorage.getItem('hub_speak_level');
-    const goal  = parseInt(sessionStorage.getItem('hub_speak_goal') || '0');
-    if (lvId && correct >= goal) {
-      const stars = correct >= goal*2 ? 3 : correct >= goal*1.5 ? 2 : 1;
-      completeLevel(lvId, stars);
-      sessionStorage.removeItem('hub_speak_level');
-      sessionStorage.removeItem('hub_speak_goal');
-    }
+    ['speak', 'quiz'].forEach(kind => {
+      const lvId = sessionStorage.getItem('hub_' + kind + '_level');
+      if (!lvId) return;
+      const goal = parseInt(sessionStorage.getItem('hub_' + kind + '_goal') || '0');
+      if (correct >= goal) {
+        const stars = correct >= goal*2 ? 3 : correct >= goal*1.5 ? 2 : 1;
+        completeLevel(lvId, stars);
+      }
+      // Marker in jedem Fall entfernen, damit er nicht spätere Sessions fälschlich abschließt
+      sessionStorage.removeItem('hub_' + kind + '_level');
+      sessionStorage.removeItem('hub_' + kind + '_goal');
+    });
   }
 
   function getCurrentWorldSummary() {
