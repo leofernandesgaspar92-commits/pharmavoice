@@ -1,3 +1,5 @@
+- i18n Modals: Audio-Einstellungen, Checkout (inkl. dynamische Zahl-Button-Texte & „Nicht genug"-Meldungen) und Charakter-Auswahl in DE/EN/PT
+
 - i18n Daily-Mission-Karte (Titel, Schritte, Abschluss-Text), Schwache-Wörter-Kachel, Park-Hinweis und Gesamtfortschritt-Label in DE/EN/PT
 
 - i18n Hub/Lernwelten: Titel, „X von Y Level abgeschlossen", Detail-Panel (FORTSCHRITT/BELOHNUNG/Lektion starten/Abgeschlossen + Level-Beschreibungen), „Pharma Park erkunden", „ALLE WELTEN" und Welten-Fortschritt in DE/EN/PT
