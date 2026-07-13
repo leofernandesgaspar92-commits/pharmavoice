@@ -1,3 +1,5 @@
+- Hub-Fortschritt entblockt: Quiz-Level (jede Welt Position 4) wurden nie abgeschlossen, weil der Abschluss-Hook nur speak-Marker prüfte — dadurch war jede Welt an Level 4 blockiert. Hook schließt jetzt speak- UND quiz-Level ab; alle 6 Level pro Welt durchspielbar
+
 - Pharma Runner speist die Haupt-Progression: gespielte Runden bringen jetzt Shekel (Score/20) und bei neuem persönlichen Rekord +3 Gems — vorher war der Runner wirtschaftlich abgekoppelt (kein Beitrag zu Level/Shop)
 
 - Pharma Runner Spracherkennung: folgt jetzt der App-Sprache (DE/EN/PT statt fest Deutsch), prüft alle Erkennungs-Alternativen und nutzt dieselbe Schwelle (0,72) wie der Lern-Modus — behebt Sprach-Inkonsistenz für EN/PT-Nutzer
