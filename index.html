@@ -1427,23 +1427,23 @@
 <!-- ══ PROFILE ══ -->
 <div class="screen" id="screenProfile">
   <div class="prof-avatar">PV</div>
-  <div class="prof-name">Lernender</div>
-  <div class="prof-role">Apotheker-Lehrling 💊</div>
+  <div class="prof-name" data-i18n="prof_name">Lernender</div>
+  <div class="prof-role" data-i18n="prof_role">Apotheker-Lehrling 💊</div>
   <div style="text-align:center;margin-bottom:20px;"><span id="profTierBadge" class="tier-badge free" style="cursor:pointer" onclick="openUpgrade()">Free – Upgrade</span></div>
   <div class="prof-grid">
     <div class="prof-stat"><div class="prof-val" id="profXp">0</div><div class="prof-lbl">🪙 Shekel</div></div>
-    <div class="prof-stat"><div class="prof-val" id="profStreak">0 🔥</div><div class="prof-lbl">Tage Streak</div></div>
-    <div class="prof-stat"><div class="prof-val" id="profLearned">0</div><div class="prof-lbl">Begriffe gelernt</div></div>
-    <div class="prof-stat"><div class="prof-val" id="profLevel">1</div><div class="prof-lbl">Aktuelles Level</div></div>
+    <div class="prof-stat"><div class="prof-val" id="profStreak">0 🔥</div><div class="prof-lbl" data-i18n="prof_streak">Tage Streak</div></div>
+    <div class="prof-stat"><div class="prof-val" id="profLearned">0</div><div class="prof-lbl" data-i18n="prof_learned">Begriffe gelernt</div></div>
+    <div class="prof-stat"><div class="prof-val" id="profLevel">1</div><div class="prof-lbl" data-i18n="prof_level">Aktuelles Level</div></div>
   </div>
   <div class="lvl-prog-card">
-    <div class="lvl-prog-head">Nächstes Level</div>
+    <div class="lvl-prog-head" data-i18n="prof_nextlvl">Nächstes Level</div>
     <div class="lvl-prog-txt" id="profProgLabel">Level 2 benötigt <strong>200 Shekel</strong></div>
     <div class="prog-track"><div class="prog-fill" id="profProgFill" style="width:0%"></div></div>
     <div class="lvl-xp-row"><span id="profProgTxt">0 / 200 Shekel</span><span id="profProgPct">0%</span></div>
   </div>
 
-  <div class="section-title" style="margin-top:24px">👥 Mein Team</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="prof_team">👥 Mein Team</div>
   <div id="profTeamGrid"></div>
 </div>
 
@@ -2415,6 +2415,13 @@ const UI_I18N = {
   back:          { de:'← Zurück', en:'← Back', pt:'← Voltar' },
   back_hub:      { de:'← Zurück zum Hub', en:'← Back to hub', pt:'← Voltar ao hub' },
   premium_unlock:{ de:'Premium freischalten', en:'Unlock Premium', pt:'Desbloquear Premium' },
+  prof_role:     { de:'Apotheker-Lehrling 💊', en:'Pharmacy trainee 💊', pt:'Estagiário de farmácia 💊' },
+  prof_name:     { de:'Lernender', en:'Learner', pt:'Aprendiz' },
+  prof_streak:   { de:'Tage Streak', en:'Day streak', pt:'Dias seguidos' },
+  prof_learned:  { de:'Begriffe gelernt', en:'Terms learned', pt:'Termos aprendidos' },
+  prof_level:    { de:'Aktuelles Level', en:'Current level', pt:'Nível atual' },
+  prof_nextlvl:  { de:'Nächstes Level', en:'Next level', pt:'Próximo nível' },
+  prof_team:     { de:'👥 Mein Team', en:'👥 My team', pt:'👥 Minha equipe' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
@@ -2425,7 +2432,13 @@ function applyI18n() {
   document.documentElement.setAttribute('lang', lang);
 }
 
-function switchLang(l) { CharacterSystem.setLang(l); applyI18n(); }
+// Kleiner Helfer für dynamisch zusammengesetzte Strings (mit Zahlen etc.)
+function L(de, en, pt) {
+  const lang = CharacterSystem.getLang();
+  return lang === 'en' ? en : lang === 'pt' ? pt : de;
+}
+
+function switchLang(l) { CharacterSystem.setLang(l); applyI18n(); refreshUI(); }
 
 function openAudioSettings() {
   const m = document.getElementById('audioSettingsModal');
@@ -2649,7 +2662,10 @@ function refreshUI() {
   el('profProgFill').style.width = pct + '%';
   set('profProgTxt', `${inLvl} / ${xpPerLevel} Shekel`);
   set('profProgPct', pct + '%');
-  set('profProgLabel', `Level ${lvl+1} benötigt <strong>${(lvl)*xpPerLevel} Shekel</strong>`);
+  set('profProgLabel', L(
+    `Level ${lvl+1} benötigt ${(lvl)*xpPerLevel} Shekel`,
+    `Level ${lvl+1} needs ${(lvl)*xpPerLevel} Shekel`,
+    `Nível ${lvl+1} precisa de ${(lvl)*xpPerLevel} Shekel`));
   renderLevelCards();
   renderHomeDashboard();
   ResourceSystem.renderTopbar();
@@ -2667,7 +2683,7 @@ function renderHomeDashboard() {
   // Progress card
   set('homeProgLevel',  `Level ${Math.min(lvl,maxLvl)}/${maxLvl}`);
   set('homeProgXp',     `XP: ${S.xp.toLocaleString('de-DE')}`);
-  set('homeProgStreak', `🔥 Streak: ${S.streak} Tage`);
+  set('homeProgStreak', L(`🔥 Streak: ${S.streak} Tage`, `🔥 Streak: ${S.streak} days`, `🔥 Sequência: ${S.streak} dias`));
   el('homeProgFill').style.width = pct + '%';
 
   // Daily mission card (reuse existing renderer)
