@@ -83,6 +83,26 @@
     .pay-alt { flex:1; padding:11px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; font-size:13px; font-weight:800; color:var(--text); cursor:pointer; font-family:inherit; }
     .pay-secure-note { font-size:10.5px; color:var(--gray2); text-align:center; line-height:1.5; margin-bottom:8px; }
 
+    /* ── Wirkstoff-Lexikon ── */
+    .lex-progress { margin-bottom:14px; }
+    .lex-prog-row { display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:var(--gray); margin-bottom:6px; }
+    .lex-prog-bar { height:8px; background:var(--border); border-radius:8px; overflow:hidden; }
+    .lex-prog-fill { height:100%; background:linear-gradient(90deg,var(--green),#00E68A); border-radius:8px; transition:width .5s ease; }
+    .lex-search { width:100%; background:var(--bg2); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; font-size:14px; color:var(--text); font-family:inherit; outline:none; margin-bottom:16px; }
+    .lex-search:focus { border-color:var(--green); }
+    .lex-cat-title { font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin:18px 0 8px; display:flex; align-items:center; gap:8px; }
+    .lex-cat-count { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1px 8px; font-size:10px; color:var(--gray); }
+    .lex-card { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
+    .lex-card.learned { border-color:rgba(23,217,196,.35); }
+    .lex-card-main { flex:1; min-width:0; }
+    .lex-card-name { font-size:14px; font-weight:800; color:var(--text); }
+    .lex-check { color:var(--green); font-weight:900; }
+    .lex-card-ipa { font-size:12px; color:var(--gray); font-style:italic; margin-top:1px; }
+    .lex-card-ind { font-size:11.5px; color:var(--text2); line-height:1.45; margin-top:5px; }
+    .lex-listen { flex-shrink:0; width:40px; height:40px; border-radius:50%; background:rgba(23,217,196,.12); border:1px solid var(--green); color:var(--green); font-size:16px; cursor:pointer; }
+    .lex-listen:active { transform:scale(.9); }
+    .lex-empty { font-size:13px; color:var(--gray); font-style:italic; text-align:center; padding:24px 0; }
+
     /* ── Daily-Login-Bonus Toast ── */
     .daily-bonus-toast { position:fixed; top:64px; left:50%; transform:translateX(-50%) translateY(-16px); z-index:950; display:flex; align-items:center; gap:12px; background:linear-gradient(135deg,#1a2540,#0d1424); border:1.5px solid var(--green); border-radius:16px; padding:12px 18px; box-shadow:0 8px 28px rgba(0,0,0,.5); opacity:0; transition:all .35s cubic-bezier(.34,1.56,.64,1); max-width:90%; }
     .daily-bonus-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -1260,6 +1280,9 @@
     <button class="home-menu-item" onclick="showScreen('Achievements')">
       <span class="home-menu-icon">🏆</span><div class="home-menu-label">Rangliste</div>
     </button>
+    <button class="home-menu-item" onclick="showScreen('Lexikon');LexikonSystem.render()">
+      <span class="home-menu-icon">📚</span><div class="home-menu-label">Wirkstoff-Lexikon</div>
+    </button>
   </div>
 
   <div id="upgradeBannerHome"></div>
@@ -1408,6 +1431,15 @@
       <div class="home-menu-sub">Alle Level & Welten ohne Limit</div>
     </div>
   </button>
+</div>
+
+<!-- ══ WIRKSTOFF-LEXIKON ══ -->
+<div class="screen" id="screenLexikon">
+  <button class="back-btn" onclick="showScreen('Home')">← Zurück</button>
+  <h2 class="screen-h">📚 Wirkstoff-Lexikon</h2>
+  <div class="lex-progress" id="lexProgress"></div>
+  <input type="text" class="lex-search" id="lexSearch" placeholder="🔍 Wirkstoff oder Kategorie suchen …" oninput="LexikonSystem.render()">
+  <div id="lexList"></div>
 </div>
 
 <!-- ══ PHARMA PARK ══ -->
@@ -2596,7 +2628,7 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el('screen' + name).classList.add('active');
-  const map = { Home:'navHome', Hub:'navHub', Park:'navHub', Shop:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navHub', Result:'navHub', GameDesign:'navGD' };
+  const map = { Home:'navHome', Hub:'navHub', Park:'navHub', Shop:'navHome', Lexikon:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navHub', Result:'navHub', GameDesign:'navGD' };
   if (map[name]) el(map[name]).classList.add('active');
   CharacterSystem.showAvatar();
   refreshUI();
@@ -4473,6 +4505,61 @@ const ShopSystem = (() => {
   return { render, buy, consumeDoubleXp, hasDoubleXp, hasShield, consumeShield, ITEMS };
 })();
 
+// ══ WIRKSTOFF-LEXIKON (Collection/Compendium – Langzeitfortschritt sichtbar) ══
+const LexikonSystem = (() => {
+  // Ein Wirkstoff gilt als "gelernt", sobald er in SM-2 mindestens einmal
+  // korrekt beantwortet wurde (reps > 0).
+  function _isLearned(name) {
+    try {
+      const sm2 = JSON.parse(localStorage.getItem('pv_sm2') || '{}');
+      return sm2[name] && sm2[name].reps > 0;
+    } catch { return false; }
+  }
+
+  function render() {
+    const listEl = document.getElementById('lexList');
+    if (!listEl) return;
+    const q = (document.getElementById('lexSearch')?.value || '').trim().toLowerCase();
+
+    const learnedCount = MEDS.filter(m => _isLearned(m.name)).length;
+    const total = MEDS.length;
+    const pct = Math.round(learnedCount / total * 100);
+    const prog = document.getElementById('lexProgress');
+    if (prog) prog.innerHTML = `
+      <div class="lex-prog-row"><span>Gelernt</span><span>${learnedCount} / ${total}</span></div>
+      <div class="lex-prog-bar"><div class="lex-prog-fill" style="width:${pct}%"></div></div>`;
+
+    // Nach Kategorie gruppieren, gefiltert
+    const filtered = MEDS.filter(m =>
+      !q || m.name.toLowerCase().includes(q) || (m.category || '').toLowerCase().includes(q));
+    if (!filtered.length) { listEl.innerHTML = '<p class="lex-empty">Keine Treffer für deine Suche.</p>'; return; }
+
+    const byCat = {};
+    filtered.forEach(m => { (byCat[m.category || 'Sonstige'] ||= []).push(m); });
+
+    listEl.innerHTML = Object.entries(byCat).map(([cat, meds]) => `
+      <div class="lex-cat-title">${cat} <span class="lex-cat-count">${meds.length}</span></div>
+      ${meds.map(m => {
+        const learned = _isLearned(m.name);
+        const info = MED_INFO[m.name] || {};
+        return `<div class="lex-card ${learned ? 'learned' : ''}">
+          <div class="lex-card-main">
+            <div class="lex-card-name">${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''}</div>
+            <div class="lex-card-ipa">${m.phonetic || ''}</div>
+            ${info.indication ? `<div class="lex-card-ind">${info.indication}</div>` : ''}
+          </div>
+          <button class="lex-listen" onclick="LexikonSystem.listen('${m.name.replace(/'/g, "\\'")}')" aria-label="Anhören">🔊</button>
+        </div>`;
+      }).join('')}`).join('');
+  }
+
+  function listen(name) {
+    AudioSystem.speakWord(name, CharacterSystem.getLang());
+  }
+
+  return { render, listen };
+})();
+
 // ══ RESOURCE SYSTEM (Youth-Pharma-Referenz: Coins/Gems/Energy HUD) ══════
 const ResourceSystem = (() => {
   const LS_ENERGY = 'pv_energy';
@@ -5441,7 +5528,7 @@ const TrendAnalyzer = (() => {
     { title:'Soziale Features', status:'missing', priority:'hoch', desc:'Duolingo, Clash Royale zeigen: Soziale Verbindungen verdoppeln Retention. PharmaVoice hat KEINE sozialen Features.' },
     { title:'Seasonal Events', status:'missing', priority:'hoch', desc:'Royal Match und Monopoly GO! erzeugen FOMO. PharmaVoice hat nur den täglichen Challenge-Seed.' },
     { title:'Kinetic Typography', status:'missing', priority:'mittel', desc:'Block Blast und Candy Crush haben befriedigende Animations-Reaktionen. Canvas-Bursts fehlen.' },
-    { title:'Collection / Compendium', status:'missing', priority:'mittel', desc:'Spieler wollen Fortschritt sammeln. "Mein Wirkstoff-Lexikon" fehlt.' },
+    { title:'Collection / Compendium', status:'done', priority:'erledigt', desc:'Wirkstoff-Lexikon umgesetzt (LexikonSystem): alle 94 Wirkstoffe nach Kategorie, Suche/Filter, Gelernt-Status aus SM-2, Anhören pro Eintrag, Fortschrittsbalken.' },
     { title:'Variable Reward (Chest)', status:'partial', priority:'mittel', desc:'Münzen im Runner variieren, aber kein echtes Chest/Loot-System.' },
     { title:'Spaced Repetition', status:'done', priority:'erledigt', desc:'SM-2 vollständig. Kompetitiver Vorteil — kaum ein Lern-Spiel hat das.' },
     { title:'NPC Characters', status:'done', priority:'erledigt', desc:'Beatrice, Victor, Fin, Ari mit Tamagotchi + Canvas-Avatare. Besser als Duolingo.' },

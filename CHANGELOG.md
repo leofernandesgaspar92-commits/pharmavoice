@@ -1,3 +1,5 @@
+- Wirkstoff-Lexikon: durchsuchbare Sammlung aller 94 Wirkstoffe nach Kategorie, mit Gelernt-Status (aus SM-2), Anhören-Button pro Eintrag und Fortschrittsbalken — schließt die Collection/Compendium-Lücke der Gap-Analyse
+
 - Daily-Login-Bonus: einmal pro Tag Gems + Shekel (Belohnung steigt mit dem Streak), gefeiert mit Toast + Level-Up-Sound — schließt eine von der Gap-Analyse markierte Engagement-Lücke
 
 - Lern-Screen: „🔊 Anhören"-Button spricht den Wirkstoffnamen langsam & deutlich vor (Speech Synthesis, folgt App-Sprache) — Lernhilfe vor dem Selbst-Üben
