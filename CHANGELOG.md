@@ -1,3 +1,5 @@
+- Pharma Park: die 4 Zonen verhalten sich jetzt wirklich unterschiedlich statt alle gleich — Regal=Bereichswahl, Laufband=Runner, Kunde=gezielte Schwachwort-Session (Fallback Bereichswahl), Labor=schnelle Zufalls-Übung; irreführende Texte korrigiert. Zusatzfix: Avatar (pointer-events:none) blockierte nicht mehr den nächsten Zonen-Tap
+
 - Hub-Fortschritt entblockt: Quiz-Level (jede Welt Position 4) wurden nie abgeschlossen, weil der Abschluss-Hook nur speak-Marker prüfte — dadurch war jede Welt an Level 4 blockiert. Hook schließt jetzt speak- UND quiz-Level ab; alle 6 Level pro Welt durchspielbar
 
 - Pharma Runner speist die Haupt-Progression: gespielte Runden bringen jetzt Shekel (Score/20) und bei neuem persönlichen Rekord +3 Gems — vorher war der Runner wirtschaftlich abgekoppelt (kein Beitrag zu Level/Shop)

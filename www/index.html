@@ -768,7 +768,7 @@
     .park-zone-treadmill { top:8%;  right:6%; }
     .park-zone-customer  { bottom:10%; left:6%; }
     .park-zone-lab       { bottom:10%; right:6%; }
-    .park-avatar { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:40px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.25)); animation:parkIdle 2.4s ease-in-out infinite; }
+    .park-avatar { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:40px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.25)); animation:parkIdle 2.4s ease-in-out infinite; pointer-events:none; }
     @keyframes parkIdle { 0%,100%{transform:translate(-50%,-50%) translateY(0);} 50%{transform:translate(-50%,-50%) translateY(-6px);} }
     .park-hint { text-align:center; font-size:12px; color:var(--gray); }
 
@@ -4930,10 +4930,10 @@ const TeamSystem = (() => {
 
 const ParkSystem = (() => {
   const ZONE_MSG = {
-    shelf:     '📚 Du gehst zum Regal und übst die Aussprache …',
+    shelf:     '📚 Du gehst zum Regal – wähle einen Bereich zum Üben …',
     treadmill: '🏃 Ab aufs Laufband – Runner-Modus startet …',
-    customer:  '🧑‍⚕️ Ein Kunde hat eine Frage für dich – Quiz startet …',
-    lab:       '🧪 Willkommen im Labor – Rezeptur-Training startet …',
+    customer:  '🧑‍⚕️ Ein Kunde testet dich – deine schwachen Wörter …',
+    lab:       '🧪 Im Labor: schnelle Zufalls-Übung startet …',
   };
 
   function _moveAvatarTo(zoneEl) {
@@ -4956,10 +4956,19 @@ const ParkSystem = (() => {
     if (hint) hint.textContent = ZONE_MSG[zone] || '';
 
     setTimeout(() => {
-      if (zone === 'shelf' || zone === 'customer' || zone === 'lab') {
-        openModal(); // existing level-select → startLearn(); customer/lab reuse speak deck as MVP
+      if (zone === 'shelf') {
+        openModal();                 // Regal: Bereich frei wählen
       } else if (zone === 'treadmill') {
-        startRunner();
+        startRunner();               // Laufband: Runner
+      } else if (zone === 'customer') {
+        // Kunde testet dich: gezielt deine Schwachstellen; sonst freie Auswahl
+        if (typeof getWeakWords === 'function' && getWeakWords(10).length >= 1) startWeakWords();
+        else openModal();
+      } else if (zone === 'lab') {
+        // Labor: schnelle Zufalls-Übung aus einem freigeschalteten Level
+        const unlocked = LEVELS.filter(l => canPlay(l.id) === true);
+        if (unlocked.length) startLearn(unlocked[Math.floor(Math.random() * unlocked.length)].id);
+        else openModal();
       }
     }, 550);
   }
