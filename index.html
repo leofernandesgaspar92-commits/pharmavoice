@@ -317,7 +317,8 @@
     .feedback-box.bad  { background:rgba(229,62,62,.07); border-color:rgba(229,62,62,.3); color:#C0392B; }
     .feedback-box.show { display:block; }
     .options { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:22px; }
-    .opt { background:var(--bg); border:2px solid var(--border); border-radius:var(--r); padding:14px 10px; color:var(--text); font-size:12px; font-weight:700; cursor:pointer; transition:.2s; min-height:60px; display:flex; align-items:center; justify-content:center; text-align:center; letter-spacing:.5px; line-height:1.5; word-break:break-word; box-shadow:var(--shadow); font-family:inherit; }
+    .opt { position:relative; background:var(--bg); border:2px solid var(--border); border-radius:var(--r); padding:14px 10px; color:var(--text); font-size:12px; font-weight:700; cursor:pointer; transition:.2s; min-height:60px; display:flex; align-items:center; justify-content:center; text-align:center; letter-spacing:.5px; line-height:1.5; word-break:break-word; box-shadow:var(--shadow); font-family:inherit; }
+    .opt-key { position:absolute; top:5px; left:7px; font-size:10px; font-weight:800; color:var(--text2); opacity:.5; }
     .opt:hover:not(:disabled) { border-color:var(--green); background:var(--bg3); }
     .opt.good { background:rgba(0,168,107,.1); border-color:var(--green); color:var(--green); }
     .opt.bad  { background:rgba(229,62,62,.08); border-color:var(--red); color:#C0392B; }
@@ -2019,6 +2020,7 @@ const MED_INFO = {
 // ═══════════════════════════════════════════════
 let S = { xp:0, streak:0, lastPlayed:null, learned:0 };
 let Q = { meds:[], idx:0, correct:0, sessionXP:0, answered:false, lvId:1 };
+let _learnCtx = null; // aktuelle Frage-Kontext für Tastatur-Shortcuts (1–4)
 let recognition      = null;
 let micActive        = false;
 let micFeedbackTimer = null;
@@ -3245,14 +3247,16 @@ function renderQ() {
   const opts = shuffle([correct, ...med.wrong]);
   const grid = el('optGrid');
   grid.innerHTML = '';
-  opts.forEach(opt => {
+  opts.forEach((opt, i) => {
     const b = document.createElement('button');
     b.className = 'opt';
-    b.textContent = opt;
+    b.innerHTML = `<span class="opt-key" aria-hidden="true">${i + 1}</span><span class="opt-txt">${opt}</span>`;
     b.dataset.correct = String(opt === correct);
+    b.dataset.optidx = String(i);
     b.onclick = () => pick(b, correct, med);
     grid.appendChild(b);
   });
+  _learnCtx = { correct, med };
   el('btnNext').classList.remove('show');
 }
 
@@ -3304,6 +3308,23 @@ function pick(btn, correct, med) {
   }
   scoreAnswer(good, med);
 }
+
+// Tastatur-Shortcuts im Learn-Quiz: 1–4 wählt Option, Enter/Leertaste geht weiter
+document.addEventListener('keydown', (e) => {
+  const learnScreen = document.getElementById('screenLearn');
+  if (!learnScreen || !learnScreen.classList.contains('active')) return;
+  // In Eingabefeldern nicht abfangen
+  const tag = (e.target && e.target.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if (['1', '2', '3', '4'].includes(e.key)) {
+    if (Q.answered || !_learnCtx) return;
+    const btn = document.querySelector(`.opt[data-optidx="${+e.key - 1}"]`);
+    if (btn) { e.preventDefault(); pick(btn, _learnCtx.correct, _learnCtx.med); }
+  } else if ((e.key === 'Enter' || e.key === ' ') && Q.answered) {
+    const next = document.getElementById('btnNext');
+    if (next && next.classList.contains('show')) { e.preventDefault(); next.click(); }
+  }
+});
 
 function toggleMedExtra() {
   const extra = el('medExtra'), tgl = el('medExtraToggle');
