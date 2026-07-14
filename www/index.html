@@ -1486,27 +1486,27 @@
 <div class="screen" id="screenPark">
   <button class="back-btn" onclick="showScreen('Hub');HubSystem.render()" data-i18n="back_hub">← Zurück zum Hub</button>
   <h2 class="screen-h" data-i18n="sh_park">🏞️ Pharma Park</h2>
-  <div class="park-sub">Lauf frei durch die Apotheke und tippe eine Station an</div>
+  <div class="park-sub" data-i18n="park_sub">Lauf frei durch die Apotheke und tippe eine Station an</div>
   <div class="park-world" id="parkWorld">
     <div class="park-zone park-zone-shelf" id="parkShelf" onclick="ParkSystem.enter('shelf')">
       <div class="park-zone-icon">📚</div>
-      <div class="park-zone-label">Regal</div>
-      <div class="park-zone-tag">🎤 Aussprache</div>
+      <div class="park-zone-label" data-i18n="park_shelf">Regal</div>
+      <div class="park-zone-tag" data-i18n="park_speak">🎤 Aussprache</div>
     </div>
     <div class="park-zone park-zone-treadmill" id="parkTreadmill" onclick="ParkSystem.enter('treadmill')">
       <div class="park-zone-icon">🏃</div>
-      <div class="park-zone-label">Laufband</div>
+      <div class="park-zone-label" data-i18n="park_treadmill">Laufband</div>
       <div class="park-zone-tag">🏃 Runner</div>
     </div>
     <div class="park-zone park-zone-customer" id="parkCustomer" onclick="ParkSystem.enter('customer')">
       <div class="park-zone-icon">🧑‍⚕️</div>
-      <div class="park-zone-label">Kunde</div>
-      <div class="park-zone-tag">🧠 Quiz</div>
+      <div class="park-zone-label" data-i18n="park_customer">Kunde</div>
+      <div class="park-zone-tag" data-i18n="park_quiz">🧠 Quiz</div>
     </div>
     <div class="park-zone park-zone-lab" id="parkLab" onclick="ParkSystem.enter('lab')">
       <div class="park-zone-icon">🧪</div>
-      <div class="park-zone-label">Labor</div>
-      <div class="park-zone-tag">⚗️ Rezeptur</div>
+      <div class="park-zone-label" data-i18n="park_lab">Labor</div>
+      <div class="park-zone-tag" data-i18n="park_recipe">⚗️ Rezeptur</div>
     </div>
     <div class="park-avatar" id="parkAvatar">🧑</div>
   </div>
@@ -2469,6 +2469,14 @@ const UI_I18N = {
   up_p2:         { de:'Lehrer-Dashboard & Team-Statistiken', en:'Teacher dashboard & team stats', pt:'Painel do professor e estatísticas' },
   up_p3:         { de:'API-Zugang für Apotheken-Integration', en:'API access for pharmacy integration', pt:'Acesso à API para integração' },
   up_notnow:     { de:'Nicht jetzt', en:'Not now', pt:'Agora não' },
+  park_sub:      { de:'Lauf frei durch die Apotheke und tippe eine Station an', en:'Walk freely through the pharmacy and tap a station', pt:'Ande pela farmácia e toque numa estação' },
+  park_shelf:    { de:'Regal', en:'Shelf', pt:'Prateleira' },
+  park_speak:    { de:'🎤 Aussprache', en:'🎤 Pronunciation', pt:'🎤 Pronúncia' },
+  park_treadmill:{ de:'Laufband', en:'Treadmill', pt:'Esteira' },
+  park_customer: { de:'Kunde', en:'Customer', pt:'Cliente' },
+  park_quiz:     { de:'🧠 Quiz', en:'🧠 Quiz', pt:'🧠 Quiz' },
+  park_lab:      { de:'Labor', en:'Lab', pt:'Laboratório' },
+  park_recipe:   { de:'⚗️ Rezeptur', en:'⚗️ Compounding', pt:'⚗️ Formulação' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
