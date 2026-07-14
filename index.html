@@ -140,6 +140,13 @@
     .lex-listen:active { transform:scale(.9); }
     .lex-empty { font-size:13px; color:var(--gray); font-style:italic; text-align:center; padding:24px 0; }
 
+    /* ── Result Wort-Übersicht ── */
+    .res-review { margin:20px 0 4px; text-align:left; }
+    .res-review-title { font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--gray2); text-transform:uppercase; margin-bottom:8px; }
+    .res-review-row { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:9px 12px; margin-bottom:6px; }
+    .res-review-row.bad { border-color:rgba(255,59,92,.35); }
+    .res-review-name { font-size:13.5px; font-weight:700; color:var(--text); }
+
     /* ── Seasonal Event Karte ── */
     .season-card { background:linear-gradient(135deg,#3a1a5e,#1a1a3e); border:1.5px solid rgba(180,120,255,.4); border-radius:16px; padding:14px 16px; margin-bottom:14px; }
     .season-card.done { background:linear-gradient(135deg,#0a3d2e,#0d2137); border-color:rgba(0,168,107,.4); }
@@ -1432,6 +1439,7 @@
     <div class="res-stat"><div class="res-val" id="resStreak">0 🔥</div><div class="res-lbl" data-i18n="res_streak">Tage Streak</div></div>
     <div class="res-stat"><div class="res-val" id="resTotal">0</div><div class="res-lbl" data-i18n="res_total">Gesamt Shekel</div></div>
   </div>
+  <div id="resReview" class="res-review"></div>
   <div id="resChestArea"></div>
   <button class="btn-start" onclick="openModal()" data-i18n="res_again">🔄 &nbsp;Nochmal spielen</button>
   <button class="btn-ghost" onclick="goHome()" data-i18n="res_home">🏠 &nbsp;Zur Startseite</button>
@@ -3210,6 +3218,8 @@ function renderQ() {
 function scoreAnswer(good, med) {
   Q.answered = true;
   document.querySelectorAll('.opt').forEach(b => b.disabled = true);
+  // Wort-Ergebnis für die Result-Übersicht merken
+  (Q.results = Q.results || []).push({ name: med.name, good });
   if (good) {
     const gain = 10 * (Q.xpMult || 1);
     Q.correct++; Q.sessionXP += gain; S.xp += gain;
@@ -3340,6 +3350,15 @@ function showResult() {
   set('resEmoji',  emoji);
   set('resTitle',  title);
   set('resSub',    L(`${s} von ${t} richtig — Level: ${LEVELS.find(l=>l.id===Q.lvId).name}`,`${s} of ${t} correct — Level: ${LEVELS.find(l=>l.id===Q.lvId).name}`,`${s} de ${t} corretas — Nível: ${LEVELS.find(l=>l.id===Q.lvId).name}`));
+  // Wort-für-Wort-Übersicht (falsche zuerst, damit man sofort sieht, was zu wiederholen ist)
+  const rev = el('resReview');
+  if (rev) {
+    const results = (Q.results || []).slice().sort((a, b) => a.good - b.good);
+    rev.innerHTML = results.length
+      ? `<div class="res-review-title">${L('Wort-Übersicht','Word review','Revisão de palavras')}</div>` +
+        results.map(r => `<div class="res-review-row ${r.good ? 'ok' : 'bad'}"><span>${r.good ? '✅' : '❌'}</span><span class="res-review-name">${r.name}</span></div>`).join('')
+      : '';
+  }
   set('resScore',  `${s}/${t}`);
   set('resXP',     `+${Q.sessionXP}`);
   set('resStreak', `${S.streak} 🔥`);

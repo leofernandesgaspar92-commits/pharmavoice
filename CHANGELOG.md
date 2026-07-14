@@ -1,3 +1,5 @@
+- Result-Screen Wort-Übersicht: nach jeder Session eine Liste aller Wörter mit ✅/❌ (falsche zuerst) — man sieht sofort, was zu wiederholen ist; dreisprachig
+
 - Wirkstoff-Datenbank: 7 OTC/Primärversorgungs-Wirkstoffe ergänzt (Xylometazolin, Ambroxol, Dextromethorphan, Dimenhydrinat, Macrogol, Simeticon, Fluconazol) mit IPA/Silben & MED_INFO — jetzt 139 Wirkstoffe (Runner 146), alle validiert
 
 - Event-Abzeichen-Sammlung im Rangliste-Screen: zeigt alle 6 Seasonal-Events als Sammelabzeichen (verdiente hervorgehoben mit Icon, offene gesperrt) — macht die Seasonal Events zum sammelbaren Langzeitziel; dreisprachig
