@@ -1,3 +1,5 @@
+- Result-Screen „Fehler wiederholen"-Button: startet direkt eine Session mit genau den Wörtern, die man in der letzten Runde falsch hatte — schließt die Lern-Schleife (Fehler sehen → sofort nacharbeiten); erscheint nur bei Fehlern, dreisprachig
+
 - Result-Screen Wort-Übersicht: nach jeder Session eine Liste aller Wörter mit ✅/❌ (falsche zuerst) — man sieht sofort, was zu wiederholen ist; dreisprachig
 
 - Wirkstoff-Datenbank: 7 OTC/Primärversorgungs-Wirkstoffe ergänzt (Xylometazolin, Ambroxol, Dextromethorphan, Dimenhydrinat, Macrogol, Simeticon, Fluconazol) mit IPA/Silben & MED_INFO — jetzt 139 Wirkstoffe (Runner 146), alle validiert

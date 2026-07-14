@@ -1440,6 +1440,7 @@
     <div class="res-stat"><div class="res-val" id="resTotal">0</div><div class="res-lbl" data-i18n="res_total">Gesamt Shekel</div></div>
   </div>
   <div id="resReview" class="res-review"></div>
+  <button class="btn-start" id="resRetryBtn" style="display:none;background:linear-gradient(135deg,#FF9800,#FF6B35);box-shadow:0 4px 14px rgba(255,152,0,.3)" onclick="retryWrongWords()"></button>
   <div id="resChestArea"></div>
   <button class="btn-start" onclick="openModal()" data-i18n="res_again">🔄 &nbsp;Nochmal spielen</button>
   <button class="btn-ghost" onclick="goHome()" data-i18n="res_home">🏠 &nbsp;Zur Startseite</button>
@@ -3113,6 +3114,18 @@ function getWeakWords(limit = 10) {
     .map(x => x.m);
 }
 
+// Wiederholt genau die Wörter, die in der letzten Session falsch waren
+let _lastWrongWords = [];
+function retryWrongWords() {
+  const meds = _lastWrongWords.map(n => MEDS.find(m => m.name === n)).filter(Boolean);
+  if (!meds.length) return;
+  Q = { meds, idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId: 1, xpMult: 1, results: [] };
+  ResourceSystem.spendEnergy();
+  el('learnChip').textContent = `❌  ${L('Fehler wiederholen','Retry mistakes','Repetir erros')} (${meds.length})`;
+  showScreen('Learn');
+  renderQ();
+}
+
 // Startet eine gezielte Übung für einen Wirkstoff aus dem Lexikon:
 // das getappte Wort zuerst, dann bis zu 4 weitere aus derselben Kategorie.
 function practiceWord(name) {
@@ -3358,6 +3371,17 @@ function showResult() {
       ? `<div class="res-review-title">${L('Wort-Übersicht','Word review','Revisão de palavras')}</div>` +
         results.map(r => `<div class="res-review-row ${r.good ? 'ok' : 'bad'}"><span>${r.good ? '✅' : '❌'}</span><span class="res-review-name">${r.name}</span></div>`).join('')
       : '';
+  }
+  // Fehler-Wiederholen-Button, wenn es falsche Wörter gab
+  _lastWrongWords = (Q.results || []).filter(r => !r.good).map(r => r.name);
+  const retryBtn = el('resRetryBtn');
+  if (retryBtn) {
+    if (_lastWrongWords.length) {
+      retryBtn.style.display = '';
+      retryBtn.textContent = `❌ ${L('Fehler wiederholen','Retry mistakes','Repetir erros')} (${_lastWrongWords.length})`;
+    } else {
+      retryBtn.style.display = 'none';
+    }
   }
   set('resScore',  `${s}/${t}`);
   set('resXP',     `+${Q.sessionXP}`);
