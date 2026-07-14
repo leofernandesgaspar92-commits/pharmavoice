@@ -1,3 +1,5 @@
+- Wirkstoff-Lexikon: Kategorie-Filter-Chips (nach Häufigkeit sortiert, mit Anzahl) — schnelles Filtern durch die 132 Wirkstoffe nach Kategorie, kombinierbar mit der Textsuche; „Alle" als Standard
+
 - Wirkstoff-Datenbank: 8 Neurologie/Psychiatrie-Wirkstoffe ergänzt (Olanzapin, Lamotrigin, Carbamazepin, Valproinsäure, Donepezil, Memantin, Topiramat, +Levodopa-Batch) mit IPA/Silben & MED_INFO — jetzt 132 Wirkstoffe (Runner automatisch 139), alle validiert
 
 - i18n Erfolge/Rangliste-Screen: alle 15 Achievement-Namen & -Beschreibungen, Section-Titel (TOP 10 / ERFOLGE), Header und Empty-Message in DE/EN/PT; switchLang rendert die Liste live neu
