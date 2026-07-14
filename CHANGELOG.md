@@ -1,3 +1,5 @@
+- Sprach-Umschalter im Profil-Screen ergänzt: Sprache (DE/EN/PT) jetzt von überall über die Nav erreichbar, nicht mehr nur vom Home-Screen — aktiver Button in beiden Zeilen synchron markiert
+
 - Pharma Runner Content synchronisiert: RN_WORDS wird jetzt automatisch aus der MEDS-Datenbank angereichert (48 → 132 Wörter) — neue Wirkstoffe erscheinen künftig auch im Runner, kein separates Pflegen mehr. Nebenfix: pre-existing Duplikat (Rivaroxaban) in der Runner-Liste entfernt
 
 - Wirkstoff-Datenbank: 7 weitere Wirkstoffe (Diazepam, Lorazepam, Oxycodon, Tilidin, Codein, Sumatriptan, Levodopa) mit IPA/Silbenbetonung & MED_INFO — jetzt 125 Wirkstoffe, alle validiert
