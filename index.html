@@ -138,6 +138,19 @@
     .wod-listen { background:var(--bg); border:1px solid var(--border); color:var(--text); }
     .wod-practice { background:var(--green); color:#04211d; }
     .wod-btn:active { transform:scale(.97); }
+    .account-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:14px; margin-bottom:16px; box-shadow:var(--shadow); }
+    .acc-hint { font-size:13px; color:var(--text2); margin-bottom:10px; }
+    .acc-providers { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .acc-btn { display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 4px; border:1px solid var(--border); border-radius:12px; background:var(--bg); color:var(--text); font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .acc-btn span { font-size:20px; }
+    .acc-btn:active { transform:scale(.96); }
+    .acc-signedin { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .acc-ident { display:flex; align-items:center; gap:10px; min-width:0; }
+    .acc-prov-icon { font-size:26px; flex:0 0 auto; }
+    .acc-id { font-size:14px; font-weight:800; color:var(--text); word-break:break-all; }
+    .acc-via { font-size:11px; color:var(--text2); }
+    .acc-signout { flex:0 0 auto; border:1px solid var(--border); background:var(--bg); color:var(--text2); border-radius:10px; padding:8px 12px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .acc-note { font-size:11px; color:var(--text2); margin-top:10px; opacity:.85; }
     .lex-cat-title { font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin:18px 0 8px; display:flex; align-items:center; gap:8px; }
     .lex-cat-count { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1px 8px; font-size:10px; color:var(--gray); }
     .lex-card { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
@@ -1494,6 +1507,10 @@
   <div class="prof-name" data-i18n="prof_name">Lernender</div>
   <div class="prof-role" data-i18n="prof_role">Apotheker-Lehrling 💊</div>
   <div style="text-align:center;margin-bottom:20px;"><span id="profTierBadge" class="tier-badge free" style="cursor:pointer" onclick="openUpgrade()">Free – Upgrade</span></div>
+
+  <div class="section-title" data-i18n="acc_title">🔐 Mein Konto</div>
+  <div id="accountCard" class="account-card"></div>
+
   <div class="prof-grid">
     <div class="prof-stat"><div class="prof-val" id="profXp">0</div><div class="prof-lbl">🪙 Shekel</div></div>
     <div class="prof-stat"><div class="prof-val" id="profStreak">0 🔥</div><div class="prof-lbl" data-i18n="prof_streak">Tage Streak</div></div>
@@ -2604,6 +2621,10 @@ const UI_I18N = {
   ach_events:    { de:'🗓️ EVENT-ABZEICHEN', en:'🗓️ EVENT BADGES', pt:'🗓️ EMBLEMAS DE EVENTO' },
   lex_search:    { de:'🔍 Wirkstoff, Kategorie oder Anwendung suchen …', en:'🔍 Search drug, category or use …', pt:'🔍 Buscar fármaco, categoria ou uso …' },
   lex_only_unlearned: { de:'Nur ungelernte anzeigen', en:'Show only unlearned', pt:'Mostrar só não aprendidos' },
+  acc_title:     { de:'🔐 Mein Konto', en:'🔐 My account', pt:'🔐 Minha conta' },
+  acc_hint:      { de:'Melde dich an, um deinen Fortschritt zu sichern:', en:'Sign in to secure your progress:', pt:'Entre para salvar seu progresso:' },
+  acc_signout:   { de:'Abmelden', en:'Sign out', pt:'Sair' },
+  acc_note_local:{ de:'🔒 Nur auf diesem Gerät gespeichert – keine Datenübertragung.', en:'🔒 Stored on this device only – no data leaves it.', pt:'🔒 Salvo só neste dispositivo – nenhum dado é enviado.' },
   learn_points:  { de:'PUNKTE', en:'POINTS', pt:'PONTOS' },
   learn_streak:  { de:'SERIE', en:'STREAK', pt:'SÉRIE' },
   learn_hint:    { de:'💡 Hinweis', en:'💡 Hint', pt:'💡 Dica' },
@@ -2938,6 +2959,7 @@ function refreshUI() {
   renderHomeDashboard();
   ResourceSystem.renderTopbar();
   if (el('profTeamGrid')) el('profTeamGrid').innerHTML = TeamSystem.renderGrid();
+  if (el('accountCard')) AccountSystem.render();
   renderProfileStats();
 }
 
@@ -2993,6 +3015,67 @@ function renderHomeDashboard() {
     if (el('homeCtaSub')) el('homeCtaSub').textContent = `🔥 Empfohlen: ${modeLbl.toUpperCase()}`;
   } catch (e) { /* gameDesigner/unifiedHub not yet initialized on first paint */ }
 }
+
+// ══ ACCOUNT SYSTEM (lokal, DSGVO-konform) ═══════════════════════════════════
+// Speichert ein Konto ausschließlich im Gerät (localStorage). KEIN echtes
+// OAuth-Login und KEINE Datenübertragung – das bräuchte einen Server. Das Konto
+// verknüpft den lokalen Fortschritt mit einer selbstgewählten Identität.
+const AccountSystem = (() => {
+  const LS = 'pv_account';
+  const PROVIDERS = [
+    { id:'email',     label:'E-Mail',     icon:'✉️', ask:{ de:'Deine E-Mail-Adresse:', en:'Your email address:', pt:'Seu e-mail:' } },
+    { id:'google',    label:'Google',     icon:'🅶', ask:{ de:'Google-Konto (E-Mail):', en:'Google account (email):', pt:'Conta Google (e-mail):' } },
+    { id:'facebook',  label:'Facebook',   icon:'📘', ask:{ de:'Facebook-Name oder E-Mail:', en:'Facebook name or email:', pt:'Nome ou e-mail do Facebook:' } },
+    { id:'instagram', label:'Instagram',  icon:'📷', ask:{ de:'Instagram-Handle (@name):', en:'Instagram handle (@name):', pt:'Usuário do Instagram (@nome):' } },
+    { id:'tiktok',    label:'TikTok',     icon:'🎵', ask:{ de:'TikTok-Handle (@name):', en:'TikTok handle (@name):', pt:'Usuário do TikTok (@nome):' } },
+    { id:'snapchat',  label:'Snapchat',   icon:'👻', ask:{ de:'Snapchat-Name:', en:'Snapchat username:', pt:'Usuário do Snapchat:' } },
+  ];
+  function get() { try { return JSON.parse(localStorage.getItem(LS)) || null; } catch { return null; } }
+  function _save(acc) { localStorage.setItem(LS, JSON.stringify(acc)); }
+  function signIn(providerId) {
+    const prov = PROVIDERS.find(p => p.id === providerId);
+    if (!prov) return;
+    const id = (prompt(L(prov.ask.de, prov.ask.en, prov.ask.pt)) || '').trim();
+    if (!id) return;
+    if (prov.id === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(id)) {
+      alert(L('Bitte eine gültige E-Mail-Adresse eingeben.','Please enter a valid email address.','Digite um e-mail válido.'));
+      return;
+    }
+    _save({ method: prov.id, id, since: Date.now() });
+    render();
+    if (typeof toast === 'function') toast(L('Angemeldet – dein Fortschritt ist gespeichert.','Signed in – your progress is saved.','Conectado – seu progresso foi salvo.'));
+  }
+  function signOut() {
+    if (!confirm(L('Wirklich abmelden? Dein Lernfortschritt bleibt auf dem Gerät erhalten.','Really sign out? Your progress stays on this device.','Sair mesmo? Seu progresso continua no dispositivo.'))) return;
+    localStorage.removeItem(LS);
+    render();
+  }
+  function render() {
+    const box = document.getElementById('accountCard');
+    if (!box) return;
+    const acc = get();
+    if (acc) {
+      const prov = PROVIDERS.find(p => p.id === acc.method) || { icon:'👤', label:acc.method };
+      box.innerHTML = `
+        <div class="acc-signedin">
+          <div class="acc-ident"><span class="acc-prov-icon">${prov.icon}</span>
+            <div><div class="acc-id">${acc.id}</div>
+            <div class="acc-via">${L('angemeldet über','signed in via','conectado via')} ${prov.label}</div></div>
+          </div>
+          <button class="acc-signout" onclick="AccountSystem.signOut()" data-i18n="acc_signout">Abmelden</button>
+        </div>
+        <div class="acc-note" data-i18n="acc_note_local">🔒 Nur auf diesem Gerät gespeichert – keine Datenübertragung.</div>`;
+    } else {
+      box.innerHTML = `
+        <div class="acc-hint" data-i18n="acc_hint">Melde dich an, um deinen Fortschritt zu sichern:</div>
+        <div class="acc-providers">${PROVIDERS.map(p =>
+          `<button class="acc-btn acc-${p.id}" onclick="AccountSystem.signIn('${p.id}')"><span>${p.icon}</span>${p.label}</button>`).join('')}</div>
+        <div class="acc-note" data-i18n="acc_note_local">🔒 Nur auf diesem Gerät gespeichert – keine Datenübertragung.</div>`;
+    }
+    if (typeof applyI18n === 'function') applyI18n();
+  }
+  return { get, signIn, signOut, render };
+})();
 
 // Lern-Statistik aus vorhandenen Daten: Trefferquote (pv_smart_sessions),
 // gemeisterte Wörter & stärkste Kategorie (pv_sm2). Keine neue Erfassung nötig.
