@@ -126,6 +126,8 @@
     .lex-chip.active { background:var(--green); border-color:var(--green); color:#04211d; }
     .lex-chip:active { transform:scale(.95); }
     .lex-chip-more { background:transparent; border-style:dashed; color:var(--text2); }
+    .lex-unlearned { display:flex; align-items:center; gap:8px; margin:8px 2px 4px; font-size:13px; font-weight:600; color:var(--text2); cursor:pointer; user-select:none; }
+    .lex-unlearned input { width:16px; height:16px; accent-color:var(--green); cursor:pointer; }
     .lex-cat-title { font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin:18px 0 8px; display:flex; align-items:center; gap:8px; }
     .lex-cat-count { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1px 8px; font-size:10px; color:var(--gray); }
     .lex-card { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
@@ -1540,6 +1542,7 @@
   <h2 class="screen-h" data-i18n="sh_lexikon">📚 Wirkstoff-Lexikon</h2>
   <div class="lex-progress" id="lexProgress"></div>
   <input type="text" class="lex-search" id="lexSearch" placeholder="🔍 Wirkstoff, Kategorie oder Anwendung suchen …" data-i18n-ph="lex_search" oninput="LexikonSystem.render()">
+  <label class="lex-unlearned"><input type="checkbox" id="lexUnlearned" onchange="LexikonSystem.render()"><span data-i18n="lex_only_unlearned">Nur ungelernte anzeigen</span></label>
   <div id="lexChips" class="lex-chips"></div>
   <div id="lexList"></div>
 </div>
@@ -2589,6 +2592,7 @@ const UI_I18N = {
   ach_section:   { de:'🏆 ERFOLGE', en:'🏆 ACHIEVEMENTS', pt:'🏆 CONQUISTAS' },
   ach_events:    { de:'🗓️ EVENT-ABZEICHEN', en:'🗓️ EVENT BADGES', pt:'🗓️ EMBLEMAS DE EVENTO' },
   lex_search:    { de:'🔍 Wirkstoff, Kategorie oder Anwendung suchen …', en:'🔍 Search drug, category or use …', pt:'🔍 Buscar fármaco, categoria ou uso …' },
+  lex_only_unlearned: { de:'Nur ungelernte anzeigen', en:'Show only unlearned', pt:'Mostrar só não aprendidos' },
   learn_points:  { de:'PUNKTE', en:'POINTS', pt:'PONTOS' },
   learn_streak:  { de:'SERIE', en:'STREAK', pt:'SÉRIE' },
   learn_hint:    { de:'💡 Hinweis', en:'💡 Hint', pt:'💡 Dica' },
@@ -5403,9 +5407,16 @@ const LexikonSystem = (() => {
       }
       return false;
     };
+    const onlyUnlearned = !!document.getElementById('lexUnlearned')?.checked;
     const filtered = MEDS.filter(m =>
-      (!_activeCat || (m.category || 'Sonstige') === _activeCat) && matches(m));
-    if (!filtered.length) { listEl.innerHTML = `<p class="lex-empty">${L('Keine Treffer für deine Suche.','No results for your search.','Nenhum resultado para sua busca.')}</p>`; return; }
+      (!_activeCat || (m.category || 'Sonstige') === _activeCat) && matches(m) &&
+      (!onlyUnlearned || !_isLearned(m.name)));
+    if (!filtered.length) {
+      const msg = onlyUnlearned
+        ? L('Alles in dieser Ansicht gelernt – stark! 🎉','Everything here learned – great! 🎉','Tudo aprendido aqui – ótimo! 🎉')
+        : L('Keine Treffer für deine Suche.','No results for your search.','Nenhum resultado para sua busca.');
+      listEl.innerHTML = `<p class="lex-empty">${msg}</p>`; return;
+    }
 
     const byCat = {};
     filtered.forEach(m => { (byCat[m.category || 'Sonstige'] ||= []).push(m); });
