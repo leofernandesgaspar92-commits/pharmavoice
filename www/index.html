@@ -115,6 +115,10 @@
     .lex-prog-fill { height:100%; background:linear-gradient(90deg,var(--green),#00E68A); border-radius:8px; transition:width .5s ease; }
     .lex-search { width:100%; background:var(--bg2); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; font-size:14px; color:var(--text); font-family:inherit; outline:none; margin-bottom:16px; }
     .lex-search:focus { border-color:var(--green); }
+    .lex-chips { display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:12px; -webkit-overflow-scrolling:touch; }
+    .lex-chip { flex:0 0 auto; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:6px 12px; font-size:12px; font-weight:700; color:var(--text2); cursor:pointer; font-family:inherit; white-space:nowrap; }
+    .lex-chip.active { background:var(--green); border-color:var(--green); color:#04211d; }
+    .lex-chip:active { transform:scale(.95); }
     .lex-cat-title { font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin:18px 0 8px; display:flex; align-items:center; gap:8px; }
     .lex-cat-count { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1px 8px; font-size:10px; color:var(--gray); }
     .lex-card { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
@@ -1486,6 +1490,7 @@
   <h2 class="screen-h" data-i18n="sh_lexikon">📚 Wirkstoff-Lexikon</h2>
   <div class="lex-progress" id="lexProgress"></div>
   <input type="text" class="lex-search" id="lexSearch" placeholder="🔍 Wirkstoff oder Kategorie suchen …" data-i18n-ph="lex_search" oninput="LexikonSystem.render()">
+  <div id="lexChips" class="lex-chips"></div>
   <div id="lexList"></div>
 </div>
 
@@ -5017,6 +5022,9 @@ const LexikonSystem = (() => {
     } catch { return false; }
   }
 
+  let _activeCat = null; // null = alle Kategorien
+  function setCat(cat) { _activeCat = cat; render(); }
+
   function render() {
     const listEl = document.getElementById('lexList');
     if (!listEl) return;
@@ -5030,9 +5038,22 @@ const LexikonSystem = (() => {
       <div class="lex-prog-row"><span>${L('Gelernt','Learned','Aprendido')}</span><span>${learnedCount} / ${total}</span></div>
       <div class="lex-prog-bar"><div class="lex-prog-fill" style="width:${pct}%"></div></div>`;
 
-    // Nach Kategorie gruppieren, gefiltert
+    // Kategorie-Filter-Chips (nach Häufigkeit sortiert)
+    const chipsEl = document.getElementById('lexChips');
+    if (chipsEl) {
+      const counts = {};
+      MEDS.forEach(m => { const c = m.category || 'Sonstige'; counts[c] = (counts[c] || 0) + 1; });
+      const cats = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+      if (_activeCat && !counts[_activeCat]) _activeCat = null;
+      chipsEl.innerHTML =
+        `<button class="lex-chip ${_activeCat === null ? 'active' : ''}" onclick="LexikonSystem.setCat(null)">${L('Alle','All','Todos')} ${total}</button>` +
+        cats.map(c => `<button class="lex-chip ${_activeCat === c ? 'active' : ''}" onclick="LexikonSystem.setCat('${c.replace(/'/g, "\\'")}')">${c} ${counts[c]}</button>`).join('');
+    }
+
+    // Nach Kategorie gruppieren, gefiltert (Suche UND aktive Kategorie)
     const filtered = MEDS.filter(m =>
-      !q || m.name.toLowerCase().includes(q) || (m.category || '').toLowerCase().includes(q));
+      (!_activeCat || (m.category || 'Sonstige') === _activeCat) &&
+      (!q || m.name.toLowerCase().includes(q) || (m.category || '').toLowerCase().includes(q)));
     if (!filtered.length) { listEl.innerHTML = `<p class="lex-empty">${L('Keine Treffer für deine Suche.','No results for your search.','Nenhum resultado para sua busca.')}</p>`; return; }
 
     const byCat = {};
@@ -5058,7 +5079,7 @@ const LexikonSystem = (() => {
     AudioSystem.speakWord(name, CharacterSystem.getLang());
   }
 
-  return { render, listen };
+  return { render, listen, setCat };
 })();
 
 // ══ RESOURCE SYSTEM (Youth-Pharma-Referenz: Coins/Gems/Energy HUD) ══════
