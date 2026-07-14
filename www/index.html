@@ -2960,6 +2960,17 @@ function refreshUI() {
   ResourceSystem.renderTopbar();
   if (el('profTeamGrid')) el('profTeamGrid').innerHTML = TeamSystem.renderGrid();
   if (el('accountCard')) AccountSystem.render();
+  // Profil-Kopf an angemeldetes Konto anpassen (sonst Standard aus i18n)
+  const acc = AccountSystem.get();
+  const nameEl = document.querySelector('.prof-name');
+  const avatarEl = document.querySelector('.prof-avatar');
+  if (acc && nameEl) {
+    const dn = AccountSystem.displayName();
+    nameEl.textContent = dn;
+    if (avatarEl) avatarEl.textContent = dn.replace(/^@/, '').slice(0, 2).toUpperCase();
+  } else if (avatarEl) {
+    avatarEl.textContent = 'PV';
+  }
   renderProfileStats();
 }
 
@@ -3031,6 +3042,15 @@ const AccountSystem = (() => {
     { id:'snapchat',  label:'Snapchat',   icon:'👻', ask:{ de:'Snapchat-Name:', en:'Snapchat username:', pt:'Usuário do Snapchat:' } },
   ];
   function get() { try { return JSON.parse(localStorage.getItem(LS)) || null; } catch { return null; } }
+  // Anzeigename aus dem Konto ableiten: E-Mail → Teil vor @, Handles bleiben wie sie sind
+  function displayName() {
+    const acc = get();
+    if (!acc || !acc.id) return '';
+    if (acc.method === 'email' || acc.id.includes('@') && acc.id.includes('.')) {
+      return acc.id.split('@')[0] || acc.id;
+    }
+    return acc.id;
+  }
   function _save(acc) { localStorage.setItem(LS, JSON.stringify(acc)); }
   function signIn(providerId) {
     const prov = PROVIDERS.find(p => p.id === providerId);
@@ -3042,13 +3062,13 @@ const AccountSystem = (() => {
       return;
     }
     _save({ method: prov.id, id, since: Date.now() });
-    render();
+    if (typeof refreshUI === 'function') refreshUI(); else render();
     if (typeof toast === 'function') toast(L('Angemeldet – dein Fortschritt ist gespeichert.','Signed in – your progress is saved.','Conectado – seu progresso foi salvo.'));
   }
   function signOut() {
     if (!confirm(L('Wirklich abmelden? Dein Lernfortschritt bleibt auf dem Gerät erhalten.','Really sign out? Your progress stays on this device.','Sair mesmo? Seu progresso continua no dispositivo.'))) return;
     localStorage.removeItem(LS);
-    render();
+    if (typeof refreshUI === 'function') refreshUI(); else render();
   }
   function render() {
     const box = document.getElementById('accountCard');
@@ -3074,7 +3094,7 @@ const AccountSystem = (() => {
     }
     if (typeof applyI18n === 'function') applyI18n();
   }
-  return { get, signIn, signOut, render };
+  return { get, signIn, signOut, render, displayName };
 })();
 
 // Lern-Statistik aus vorhandenen Daten: Trefferquote (pv_smart_sessions),
