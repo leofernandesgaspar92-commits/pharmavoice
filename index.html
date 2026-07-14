@@ -140,6 +140,19 @@
     .lex-listen:active { transform:scale(.9); }
     .lex-empty { font-size:13px; color:var(--gray); font-style:italic; text-align:center; padding:24px 0; }
 
+    /* ── Seasonal Event Karte ── */
+    .season-card { background:linear-gradient(135deg,#3a1a5e,#1a1a3e); border:1.5px solid rgba(180,120,255,.4); border-radius:16px; padding:14px 16px; margin-bottom:14px; }
+    .season-card.done { background:linear-gradient(135deg,#0a3d2e,#0d2137); border-color:rgba(0,168,107,.4); }
+    .season-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+    .season-icon { font-size:20px; }
+    .season-title { font-size:14px; font-weight:900; color:#fff; flex:1; }
+    .season-timer { font-size:11px; font-weight:700; color:#d0a8ff; background:rgba(180,120,255,.15); border-radius:10px; padding:2px 8px; }
+    .season-badge { font-size:16px; }
+    .season-sub { font-size:12px; color:rgba(255,255,255,.75); line-height:1.4; margin-bottom:8px; }
+    .season-bar { height:6px; background:rgba(255,255,255,.14); border-radius:6px; overflow:hidden; }
+    .season-fill { height:100%; background:linear-gradient(90deg,#b478ff,#8b5cf6); border-radius:6px; transition:width .5s ease; }
+    .season-prog { font-size:11px; font-weight:700; color:#d0a8ff; text-align:right; margin-top:4px; }
+
     /* ── Daily-Login-Bonus Toast ── */
     .daily-bonus-toast { position:fixed; top:64px; left:50%; transform:translateX(-50%) translateY(-16px); z-index:950; display:flex; align-items:center; gap:12px; background:linear-gradient(135deg,#1a2540,#0d1424); border:1.5px solid var(--green); border-radius:16px; padding:12px 18px; box-shadow:0 8px 28px rgba(0,0,0,.5); opacity:0; transition:all .35s cubic-bezier(.34,1.56,.64,1); max-width:90%; }
     .daily-bonus-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -1327,6 +1340,7 @@
   <div id="upgradeBannerHome"></div>
 
   <!-- Daily challenge -->
+  <div id="homeSeasonCard"></div>
   <div id="homeMissionCard"></div>
 
   <!-- Progress -->
@@ -2843,6 +2857,7 @@ function renderHomeDashboard() {
   el('homeProgFill').style.width = pct + '%';
 
   // Daily mission card (reuse existing renderer)
+  if (el('homeSeasonCard')) el('homeSeasonCard').innerHTML = SeasonalEventSystem.renderCard();
   if (el('homeMissionCard')) el('homeMissionCard').innerHTML = DailyMissionSystem.renderCard();
 
   // World progress card
@@ -3172,6 +3187,7 @@ function scoreAnswer(good, med) {
     Q.correct++; Q.sessionXP += gain; S.xp += gain;
     Q.streak = (Q.streak || 0) + 1;
     popXP();
+    SeasonalEventSystem.recordCorrect(med);
   } else {
     Q.streak = 0;
   }
@@ -3904,6 +3920,7 @@ function rnCorrectAnswer(w) {
   const mult = COMBO_MULT[tier];
   const pts  = Math.round(100 * mult);
   RG.score  += pts;
+  SeasonalEventSystem.recordCorrect(w);
 
   rnEl('rnCard').classList.add('correct');
   rnEl('rnFeedback').className = 'rn-feedback ok';
@@ -5074,6 +5091,94 @@ const ChestSystem = (() => {
   return { earn, count, openModal, close, closeIfBackdrop };
 })();
 
+// ══ SEASONAL EVENTS (wöchentlich rotierende Themen-Challenge, client-seitig) ══
+// Schließt die letzte lokal umsetzbare Gap-Analyse-Lücke: zeitbegrenzte Events
+// mit exklusiver Belohnung erzeugen FOMO. Rotation deterministisch per ISO-Woche.
+const SeasonalEventSystem = (() => {
+  const EVENTS = [
+    { id:'antibio', icon:'🦠', cat:'Antibiotikum',    goal:8, gems:6, coins:250, de:'Antibiotika-Woche',  en:'Antibiotics week',    pt:'Semana dos antibióticos' },
+    { id:'diab',    icon:'🩸', cat:'Diabetes',        goal:6, gems:6, coins:250, de:'Diabetes-Woche',     en:'Diabetes week',       pt:'Semana do diabetes' },
+    { id:'epi',     icon:'⚡', cat:'Antiepileptikum', goal:6, gems:6, coins:250, de:'Epilepsie-Woche',    en:'Epilepsy week',       pt:'Semana da epilepsia' },
+    { id:'psy',     icon:'🧠', cat:'Antidepressivum', goal:6, gems:6, coins:250, de:'Psyche-Woche',       en:'Mental health week',  pt:'Semana da saúde mental' },
+    { id:'diur',    icon:'💧', cat:'Diuretikum',      goal:5, gems:6, coins:250, de:'Entwässerungs-Woche',en:'Diuretics week',      pt:'Semana dos diuréticos' },
+    { id:'lung',    icon:'🫁', cat:'Bronchodilatator',goal:5, gems:6, coins:250, de:'Atemwegs-Woche',     en:'Airways week',        pt:'Semana das vias aéreas' },
+  ];
+
+  function _isoWeek(d) {
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - day);
+    const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+    const week = Math.ceil(((t - yearStart) / 86400000 + 1) / 7);
+    return t.getUTCFullYear() * 100 + week;
+  }
+  function _weekKey() { return _isoWeek(new Date()); }
+  function current() { const wk = _weekKey(); return EVENTS[wk % EVENTS.length]; }
+
+  function _load() {
+    let s; try { s = JSON.parse(localStorage.getItem('pv_season')); } catch { s = null; }
+    const wk = _weekKey();
+    if (!s || s.week !== wk) { s = { week: wk, ids: [], claimed: false }; _save(s); }
+    return s;
+  }
+  function _save(s) { localStorage.setItem('pv_season', JSON.stringify(s)); }
+
+  // Bei richtiger Antwort: zählt, wenn der Wirkstoff zur Event-Kategorie gehört
+  function recordCorrect(med) {
+    if (!med) return;
+    const cat  = med.category || med.cat;   // MEDS-Objekt oder Runner-Wort
+    const name = med.name || med.word;
+    if (!cat || !name) return;
+    const ev = current();
+    if (cat !== ev.cat) return;
+    const s = _load();
+    if (s.claimed || s.ids.includes(name)) return;
+    s.ids.push(name);
+    _save(s);
+    if (s.ids.length >= ev.goal) _complete(ev, s);
+  }
+
+  function _complete(ev, s) {
+    s.claimed = true; _save(s);
+    const data = JSON.parse(localStorage.getItem('pv2') || '{}');
+    data.xp = (data.xp || 0) + ev.coins; localStorage.setItem('pv2', JSON.stringify(data)); S.xp = data.xp; save();
+    ResourceSystem.addGems(ev.gems);
+    // Event-Abzeichen dauerhaft speichern
+    let badges; try { badges = JSON.parse(localStorage.getItem('pv_season_badges')) || []; } catch { badges = []; }
+    if (!badges.includes(ev.id)) { badges.push(ev.id); localStorage.setItem('pv_season_badges', JSON.stringify(badges)); }
+    refreshUI();
+    AudioSystem.playLevelUp(CharacterSystem.getLang());
+    CharacterSystem.showBubble(L(`🎉 ${ev.de} gemeistert! +${ev.coins} 🪙 +${ev.gems} 💎`, `🎉 ${ev.en} completed! +${ev.coins} 🪙 +${ev.gems} 💎`, `🎉 ${ev.pt} concluída! +${ev.coins} 🪙 +${ev.gems} 💎`), 4000);
+  }
+
+  function _daysLeft() {
+    const now = new Date();
+    const day = now.getUTCDay() || 7;
+    return 7 - day + 1; // Tage bis inkl. Sonntag
+  }
+
+  function renderCard() {
+    const ev = current();
+    const s = _load();
+    const title = L(ev.de, ev.en, ev.pt);
+    const pct = Math.min(100, Math.round(s.ids.length / ev.goal * 100));
+    if (s.claimed) {
+      return `<div class="season-card done">
+        <div class="season-head"><span class="season-icon">${ev.icon}</span><span class="season-title">${title}</span><span class="season-badge">✅</span></div>
+        <div class="season-sub">${L('Abgeschlossen! Nächste Woche neues Event.','Completed! New event next week.','Concluído! Novo evento na próxima semana.')}</div>
+      </div>`;
+    }
+    return `<div class="season-card">
+      <div class="season-head"><span class="season-icon">${ev.icon}</span><span class="season-title">${title}</span><span class="season-timer">⏳ ${_daysLeft()}${L('T','d','d')}</span></div>
+      <div class="season-sub">${L(`Übe ${ev.goal} Wirkstoffe dieser Kategorie`,`Practice ${ev.goal} drugs of this category`,`Pratique ${ev.goal} fármacos desta categoria`)} · 🪙 ${ev.coins} +${ev.gems} 💎</div>
+      <div class="season-bar"><div class="season-fill" style="width:${pct}%"></div></div>
+      <div class="season-prog">${s.ids.length} / ${ev.goal}</div>
+    </div>`;
+  }
+
+  return { current, recordCorrect, renderCard };
+})();
+
 // ══ WIRKSTOFF-LEXIKON (Collection/Compendium – Langzeitfortschritt sichtbar) ══
 const LexikonSystem = (() => {
   // Ein Wirkstoff gilt als "gelernt", sobald er in SM-2 mindestens einmal
@@ -6127,7 +6232,7 @@ const TrendAnalyzer = (() => {
 
   const GAP_ANALYSIS = [
     { title:'Soziale Features', status:'missing', priority:'hoch', desc:'Duolingo, Clash Royale zeigen: Soziale Verbindungen verdoppeln Retention. PharmaVoice hat KEINE sozialen Features.' },
-    { title:'Seasonal Events', status:'missing', priority:'hoch', desc:'Royal Match und Monopoly GO! erzeugen FOMO. PharmaVoice hat nur den täglichen Challenge-Seed.' },
+    { title:'Seasonal Events', status:'done', priority:'erledigt', desc:'Wöchentlich rotierende Themen-Challenge (SeasonalEventSystem): pro ISO-Woche eine Wirkstoff-Kategorie, Fortschritt aus Learn+Runner, Countdown, exklusive Belohnung (Shekel+Gems+Abzeichen) — erzeugt FOMO, client-seitig ohne Backend.' },
     { title:'Kinetic Typography', status:'done', priority:'erledigt', desc:'Animierte Text-Bursts (RICHTIG!/COMBO!) mit Buchstaben-Stagger bei richtigen Antworten, mehrsprachig, Combo-Variante ab 5er-Serie (kineticBurst).' },
     { title:'Collection / Compendium', status:'done', priority:'erledigt', desc:'Wirkstoff-Lexikon umgesetzt (LexikonSystem): alle 94 Wirkstoffe nach Kategorie, Suche/Filter, Gelernt-Status aus SM-2, Anhören pro Eintrag, Fortschrittsbalken.' },
     { title:'Variable Reward (Chest)', status:'done', priority:'erledigt', desc:'Belohnungs-Truhen (ChestSystem): ab 6/10 richtigen, gewichtete Zufalls-Loot (Shekel/Gems/Power-Ups/Jackpot) mit Öffnungs-Animation.' },
