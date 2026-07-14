@@ -1,3 +1,5 @@
+- Profil „Deine Statistik": Trefferquote (aus letzten Sessions), gemeisterte Wörter (SM-2 reps≥3) und stärkste Kategorie — berechnet aus vorhandenen Daten, keine neue Erfassung, dreisprachig
+
 - Lexikon → Üben: Tap auf eine Wirkstoff-Karte startet eine gezielte Übungssession (das Wort zuerst + bis zu 4 weitere aus derselben Kategorie) — verbindet Browsen und Üben; Anhören-Button bleibt separat, voll barrierefrei (role/tabindex/aria)
 
 - Wirkstoff-Lexikon: Kategorie-Filter-Chips (nach Häufigkeit sortiert, mit Anzahl) — schnelles Filtern durch die 132 Wirkstoffe nach Kategorie, kombinierbar mit der Textsuche; „Alle" als Standard
