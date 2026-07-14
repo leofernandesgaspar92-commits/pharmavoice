@@ -128,6 +128,16 @@
     .lex-chip-more { background:transparent; border-style:dashed; color:var(--text2); }
     .lex-unlearned { display:flex; align-items:center; gap:8px; margin:8px 2px 4px; font-size:13px; font-weight:600; color:var(--text2); cursor:pointer; user-select:none; }
     .lex-unlearned input { width:16px; height:16px; accent-color:var(--green); cursor:pointer; }
+    .wod-card { background:linear-gradient(135deg, var(--bg2), var(--bg3)); border:1px solid var(--border); border-radius:var(--r); padding:14px; margin-bottom:12px; box-shadow:var(--shadow); }
+    .wod-badge { font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--green); }
+    .wod-name { font-size:20px; font-weight:800; color:var(--text); margin-top:6px; word-break:break-word; }
+    .wod-ipa { font-size:13px; color:var(--text2); margin-top:2px; }
+    .wod-ind { font-size:12px; color:var(--text2); margin-top:6px; line-height:1.45; }
+    .wod-actions { display:flex; gap:8px; margin-top:12px; }
+    .wod-btn { flex:1; border:none; border-radius:12px; padding:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .wod-listen { background:var(--bg); border:1px solid var(--border); color:var(--text); }
+    .wod-practice { background:var(--green); color:#04211d; }
+    .wod-btn:active { transform:scale(.97); }
     .lex-cat-title { font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin:18px 0 8px; display:flex; align-items:center; gap:8px; }
     .lex-cat-count { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1px 8px; font-size:10px; color:var(--gray); }
     .lex-card { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
@@ -1363,6 +1373,7 @@
   <div id="upgradeBannerHome"></div>
 
   <!-- Daily challenge -->
+  <div id="homeWordCard"></div>
   <div id="homeSeasonCard"></div>
   <div id="homeMissionCard"></div>
 
@@ -2944,6 +2955,9 @@ function renderHomeDashboard() {
   set('homeProgStreak', L(`🔥 Streak: ${S.streak} Tage`, `🔥 Streak: ${S.streak} days`, `🔥 Sequência: ${S.streak} dias`));
   el('homeProgFill').style.width = pct + '%';
 
+  // Wort des Tages (deterministisch pro Kalendertag)
+  if (el('homeWordCard')) el('homeWordCard').innerHTML = renderWordOfDay();
+
   // Daily mission card (reuse existing renderer)
   if (el('homeSeasonCard')) el('homeSeasonCard').innerHTML = SeasonalEventSystem.renderCard();
   if (el('homeMissionCard')) el('homeMissionCard').innerHTML = DailyMissionSystem.renderCard();
@@ -3179,6 +3193,28 @@ function retryWrongWords() {
 
 // Startet eine gezielte Übung für einen Wirkstoff aus dem Lexikon:
 // das getappte Wort zuerst, dann bis zu 4 weitere aus derselben Kategorie.
+// Wort des Tages: deterministisch anhand des Kalendertags gewählt, wechselt täglich
+function renderWordOfDay() {
+  if (!Array.isArray(MEDS) || !MEDS.length) return '';
+  const now = new Date();
+  const dayNum = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+  const med = MEDS[dayNum % MEDS.length];
+  const info = MED_INFO[med.name] || {};
+  const safe = med.name.replace(/'/g, "\\'");
+  return `<div class="wod-card">
+    <div class="wod-head"><span class="wod-badge">${L('Wort des Tages','Word of the day','Palavra do dia')}</span></div>
+    <div class="wod-body">
+      <div class="wod-name">${med.name}</div>
+      <div class="wod-ipa">${med.phonetic || ''}</div>
+      ${info.indication ? `<div class="wod-ind">${info.indication}</div>` : ''}
+    </div>
+    <div class="wod-actions">
+      <button class="wod-btn wod-listen" onclick="AudioSystem.speakWord('${safe}', CharacterSystem.getLang())" aria-label="${L('Anhören','Listen','Ouvir')}">🔊 ${L('Anhören','Listen','Ouvir')}</button>
+      <button class="wod-btn wod-practice" onclick="practiceWord('${safe}')">▶ ${L('Üben','Practice','Praticar')}</button>
+    </div>
+  </div>`;
+}
+
 function practiceWord(name) {
   const med = MEDS.find(m => m.name === name);
   if (!med) return;
