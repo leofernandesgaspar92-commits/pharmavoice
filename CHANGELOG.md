@@ -1,3 +1,17 @@
+- Wirkstoff-Datenbank: 8 Neurologie/Psychiatrie-Wirkstoffe ergänzt (Olanzapin, Lamotrigin, Carbamazepin, Valproinsäure, Donepezil, Memantin, Topiramat, +Levodopa-Batch) mit IPA/Silben & MED_INFO — jetzt 132 Wirkstoffe (Runner automatisch 139), alle validiert
+
+- i18n Erfolge/Rangliste-Screen: alle 15 Achievement-Namen & -Beschreibungen, Section-Titel (TOP 10 / ERFOLGE), Header und Empty-Message in DE/EN/PT; switchLang rendert die Liste live neu
+
+- Sprach-Umschalter im Profil-Screen ergänzt: Sprache (DE/EN/PT) jetzt von überall über die Nav erreichbar, nicht mehr nur vom Home-Screen — aktiver Button in beiden Zeilen synchron markiert
+
+- Pharma Runner Content synchronisiert: RN_WORDS wird jetzt automatisch aus der MEDS-Datenbank angereichert (48 → 132 Wörter) — neue Wirkstoffe erscheinen künftig auch im Runner, kein separates Pflegen mehr. Nebenfix: pre-existing Duplikat (Rivaroxaban) in der Runner-Liste entfernt
+
+- Wirkstoff-Datenbank: 7 weitere Wirkstoffe (Diazepam, Lorazepam, Oxycodon, Tilidin, Codein, Sumatriptan, Levodopa) mit IPA/Silbenbetonung & MED_INFO — jetzt 125 Wirkstoffe, alle validiert
+
+- Wirkstoff-Datenbank: 8 weitere Wirkstoffe ergänzt (Loratadin, Zolpidem, Baclofen, Prednison, Fentanyl, Naloxon, Bisacodyl, Morphin) mit IPA/Silbenbetonung & vollständigem MED_INFO — jetzt 118 Wirkstoffe, alle validiert
+
+- i18n Pharma Park: Zonen-Labels (Regal/Laufband/Kunde/Labor), Tags (Aussprache/Runner/Quiz/Rezeptur) und Untertitel in DE/EN/PT — damit ist die gesamte sichtbare Kern-UI dreisprachig
+
 - i18n Upgrade/Plan-Screen (Titel, Free/Normal/Premium-Pläne mit allen Features, Preisen, „Empfohlen", „Nicht jetzt") in DE/EN/PT — konsistenter Fluss bis zum bereits übersetzten Checkout
 
 - i18n Modals: Audio-Einstellungen, Checkout (inkl. dynamische Zahl-Button-Texte & „Nicht genug"-Meldungen) und Charakter-Auswahl in DE/EN/PT

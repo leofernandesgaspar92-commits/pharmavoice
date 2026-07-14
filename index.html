@@ -1418,9 +1418,9 @@
 <!-- ══ ACHIEVEMENTS ══ -->
 <div class="screen" id="screenAchievements">
   <div class="screen-h" data-i18n="sh_ranking">🏆 Rangliste & Erfolge</div>
-  <div class="section-title">🏅 TOP 10 RUNNER-HIGHSCORES</div>
+  <div class="section-title" data-i18n="ach_top10">🏅 TOP 10 RUNNER-HIGHSCORES</div>
   <div id="top10List" class="top10-list"></div>
-  <div class="section-title" style="margin-top:24px">🏆 ERFOLGE</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="ach_section">🏆 ERFOLGE</div>
   <div class="ach-list" id="achList"></div>
 </div>
 
@@ -1445,6 +1445,13 @@
 
   <div class="section-title" style="margin-top:24px" data-i18n="prof_team">👥 Mein Team</div>
   <div id="profTeamGrid"></div>
+
+  <div class="section-title" style="margin-top:24px" data-i18n="prof_lang">🌐 Sprache</div>
+  <div class="home-lang-row" role="group" aria-label="Sprache">
+    <button class="lang-btn" data-lang="de" onclick="switchLang('de')" aria-label="Deutsch" lang="de">🇩🇪</button>
+    <button class="lang-btn" data-lang="en" onclick="switchLang('en')" aria-label="English" lang="en">🇬🇧</button>
+    <button class="lang-btn" data-lang="pt" onclick="switchLang('pt')" aria-label="Português" lang="pt">🇵🇹</button>
+  </div>
 </div>
 
 <!-- ══ GAME DESIGNER SCREEN ══ -->
@@ -1486,27 +1493,27 @@
 <div class="screen" id="screenPark">
   <button class="back-btn" onclick="showScreen('Hub');HubSystem.render()" data-i18n="back_hub">← Zurück zum Hub</button>
   <h2 class="screen-h" data-i18n="sh_park">🏞️ Pharma Park</h2>
-  <div class="park-sub">Lauf frei durch die Apotheke und tippe eine Station an</div>
+  <div class="park-sub" data-i18n="park_sub">Lauf frei durch die Apotheke und tippe eine Station an</div>
   <div class="park-world" id="parkWorld">
     <div class="park-zone park-zone-shelf" id="parkShelf" onclick="ParkSystem.enter('shelf')">
       <div class="park-zone-icon">📚</div>
-      <div class="park-zone-label">Regal</div>
-      <div class="park-zone-tag">🎤 Aussprache</div>
+      <div class="park-zone-label" data-i18n="park_shelf">Regal</div>
+      <div class="park-zone-tag" data-i18n="park_speak">🎤 Aussprache</div>
     </div>
     <div class="park-zone park-zone-treadmill" id="parkTreadmill" onclick="ParkSystem.enter('treadmill')">
       <div class="park-zone-icon">🏃</div>
-      <div class="park-zone-label">Laufband</div>
+      <div class="park-zone-label" data-i18n="park_treadmill">Laufband</div>
       <div class="park-zone-tag">🏃 Runner</div>
     </div>
     <div class="park-zone park-zone-customer" id="parkCustomer" onclick="ParkSystem.enter('customer')">
       <div class="park-zone-icon">🧑‍⚕️</div>
-      <div class="park-zone-label">Kunde</div>
-      <div class="park-zone-tag">🧠 Quiz</div>
+      <div class="park-zone-label" data-i18n="park_customer">Kunde</div>
+      <div class="park-zone-tag" data-i18n="park_quiz">🧠 Quiz</div>
     </div>
     <div class="park-zone park-zone-lab" id="parkLab" onclick="ParkSystem.enter('lab')">
       <div class="park-zone-icon">🧪</div>
-      <div class="park-zone-label">Labor</div>
-      <div class="park-zone-tag">⚗️ Rezeptur</div>
+      <div class="park-zone-label" data-i18n="park_lab">Labor</div>
+      <div class="park-zone-tag" data-i18n="park_recipe">⚗️ Rezeptur</div>
     </div>
     <div class="park-avatar" id="parkAvatar">🧑</div>
   </div>
@@ -1684,6 +1691,28 @@ const MEDS = [
   { lv:1, name:"Salmeterol",      phonetic:"/zal·ˈmeː·te·rɔl/",         syllables:["Sal","ME","te","rol"],          si:1, category:"Bronchodilatator", tip:'Zweite Silbe "ME" betonen.',          wrong:["SAL·me·te·rol","sal·me·TE·rol","sal·me·te·ROL"] },
   { lv:1, name:"Sildenafil",      phonetic:"/zil·ˈdeː·na·fil/",         syllables:["Sil","DE","na","fil"],          si:1, category:"Urologikum",       tip:'Zweite Silbe "DE" betonen.',          wrong:["SIL·de·na·fil","sil·de·NA·fil","sil·de·na·FIL"] },
   { lv:1, name:"Melatonin",       phonetic:"/me·la·to·ˈniːn/",          syllables:["Me","la","to","NIN"],           si:3, category:"Schlafmittel",     tip:'Letzte Silbe "NIN" betonen.',         wrong:["ME·la·to·nin","me·LA·to·nin","me·la·TO·nin"] },
+  { lv:1, name:"Loratadin",       phonetic:"/lo·ra·ta·ˈdiːn/",          syllables:["Lo","ra","ta","DIN"],           si:3, category:"Antihistaminikum",  tip:'Letzte Silbe "DIN" betonen.',         wrong:["LO·ra·ta·din","lo·RA·ta·din","lo·ra·TA·din"] },
+  { lv:1, name:"Zolpidem",        phonetic:"/ˈtsɔl·pi·dɛm/",           syllables:["ZOL","pi","dem"],               si:0, category:"Schlafmittel",     tip:'Erste Silbe "ZOL" betonen.',          wrong:["zol·PI·dem","zol·pi·DEM","ZOL·PI·dem"] },
+  { lv:1, name:"Baclofen",        phonetic:"/ba·klo·ˈfeːn/",           syllables:["Ba","clo","FEN"],               si:2, category:"Muskelrelaxans",    tip:'Letzte Silbe "FEN" betonen.',         wrong:["BA·clo·fen","ba·CLO·fen","BAC·lo·fen"] },
+  { lv:1, name:"Prednison",       phonetic:"/ˈpʁɛd·ni·zɔn/",           syllables:["PRED","ni","son"],              si:0, category:"Kortikosteroid",   tip:'Erste Silbe "PRED" betonen.',         wrong:["pred·NI·son","pred·ni·SON","PRED·NI·son"] },
+  { lv:1, name:"Fentanyl",        phonetic:"/ˈfɛn·ta·nyːl/",           syllables:["FEN","ta","nyl"],               si:0, category:"Opioid-Analgetikum",tip:'Erste Silbe "FEN" betonen.',          wrong:["fen·TA·nyl","fen·ta·NYL","FEN·TA·nyl"] },
+  { lv:1, name:"Naloxon",         phonetic:"/na·ˈlɔk·son/",            syllables:["Na","LOX","on"],                si:1, category:"Opioid-Antagonist", tip:'Zweite Silbe "LOX" betonen.',         wrong:["NA·lox·on","na·lox·ON","NAL·ox·on"] },
+  { lv:1, name:"Bisacodyl",       phonetic:"/bi·za·ko·ˈdyːl/",         syllables:["Bi","sa","co","DYL"],           si:3, category:"Laxans",           tip:'Letzte Silbe "DYL" betonen.',         wrong:["BI·sa·co·dyl","bi·SA·co·dyl","bi·sa·CO·dyl"] },
+  { lv:1, name:"Morphin",         phonetic:"/mɔʁ·ˈfiːn/",              syllables:["Mor","FIN"],                    si:1, category:"Opioid-Analgetikum",tip:'Zweite Silbe "FIN" betonen.',         wrong:["MOR·fin","MOR·FIN","mor·fin"] },
+  { lv:1, name:"Diazepam",        phonetic:"/di·ˈaː·tse·pam/",         syllables:["Di","A","ze","pam"],            si:1, category:"Benzodiazepin",    tip:'Zweite Silbe "A" betonen.',           wrong:["DI·a·ze·pam","di·a·ZE·pam","di·a·ze·PAM"] },
+  { lv:1, name:"Lorazepam",       phonetic:"/lo·ˈraː·tse·pam/",        syllables:["Lo","RA","ze","pam"],           si:1, category:"Benzodiazepin",    tip:'Zweite Silbe "RA" betonen.',          wrong:["LO·ra·ze·pam","lo·ra·ZE·pam","lo·ra·ze·PAM"] },
+  { lv:1, name:"Oxycodon",        phonetic:"/ɔ·ksy·ˈkoː·dɔn/",         syllables:["O","xy","CO","don"],            si:2, category:"Opioid-Analgetikum",tip:'Dritte Silbe "CO" betonen.',          wrong:["O·xy·co·DON","o·XY·co·don","OX·y·co·don"] },
+  { lv:1, name:"Tilidin",         phonetic:"/ti·li·ˈdiːn/",            syllables:["Ti","li","DIN"],                si:2, category:"Opioid-Analgetikum",tip:'Letzte Silbe "DIN" betonen.',         wrong:["TI·li·din","ti·LI·din","TIL·i·din"] },
+  { lv:1, name:"Codein",          phonetic:"/ko·de·ˈiːn/",             syllables:["Co","de","IN"],                 si:2, category:"Opioid-Antitussivum",tip:'Letzte Silbe "IN" betonen.',         wrong:["CO·de·in","co·DE·in","COD·e·in"] },
+  { lv:1, name:"Sumatriptan",     phonetic:"/zu·ma·ˈtʁip·tan/",        syllables:["Su","ma","TRIP","tan"],         si:2, category:"Migränemittel",    tip:'Dritte Silbe "TRIP" betonen.',        wrong:["SU·ma·trip·tan","su·MA·trip·tan","su·ma·trip·TAN"] },
+  { lv:1, name:"Levodopa",        phonetic:"/le·vo·ˈdoː·pa/",          syllables:["Le","vo","DO","pa"],            si:2, category:"Parkinsonmittel",  tip:'Dritte Silbe "DO" betonen.',          wrong:["LE·vo·do·pa","le·VO·do·pa","le·vo·do·PA"] },
+  { lv:1, name:"Olanzapin",       phonetic:"/o·lan·ˈtsaː·piːn/",       syllables:["O","lan","ZA","pin"],           si:2, category:"Antipsychotikum",   tip:'Dritte Silbe "ZA" betonen.',          wrong:["O·lan·za·PIN","o·LAN·za·pin","OL·an·za·pin"] },
+  { lv:1, name:"Lamotrigin",      phonetic:"/la·mo·tri·ˈɡiːn/",        syllables:["La","mo","tri","GIN"],          si:3, category:"Antiepileptikum",   tip:'Letzte Silbe "GIN" betonen.',         wrong:["LA·mo·tri·gin","la·MO·tri·gin","la·mo·TRI·gin"] },
+  { lv:1, name:"Carbamazepin",    phonetic:"/kaʁ·ba·ma·tse·ˈpiːn/",    syllables:["Car","ba","ma","ze","PIN"],     si:4, category:"Antiepileptikum",   tip:'Letzte Silbe "PIN" betonen.',         wrong:["CAR·ba·ma·ze·pin","car·BA·ma·ze·pin","car·ba·MA·ze·pin"] },
+  { lv:1, name:"Valproinsäure",   phonetic:"/val·pro·ˈiːn·zɔɪ̯·ʁə/",    syllables:["Val","pro","IN","säu","re"],    si:2, category:"Antiepileptikum",   tip:'Dritte Silbe "IN" betonen.',          wrong:["VAL·pro·in·säu·re","val·PRO·in·säu·re","val·pro·in·SÄU·re"] },
+  { lv:1, name:"Donepezil",       phonetic:"/do·ne·ˈpeː·tsil/",        syllables:["Do","ne","PE","zil"],           si:2, category:"Antidementivum",    tip:'Dritte Silbe "PE" betonen.',          wrong:["DO·ne·pe·zil","do·NE·pe·zil","do·ne·pe·ZIL"] },
+  { lv:1, name:"Memantin",        phonetic:"/me·man·ˈtiːn/",           syllables:["Me","man","TIN"],               si:2, category:"Antidementivum",    tip:'Letzte Silbe "TIN" betonen.',         wrong:["ME·man·tin","me·MAN·tin","MEM·an·tin"] },
+  { lv:1, name:"Topiramat",       phonetic:"/to·pi·ra·ˈmaːt/",         syllables:["To","pi","ra","MAT"],           si:3, category:"Antiepileptikum",   tip:'Letzte Silbe "MAT" betonen.',         wrong:["TO·pi·ra·mat","to·PI·ra·mat","to·pi·RA·mat"] },
 
   // ── LEVEL 2: FORTGESCHRITTEN (32) ─────────────
   // Herz & Blutdruck
@@ -1774,6 +1803,28 @@ const MED_INFO = {
   "Salmeterol":             { indication:"Langwirksames Mittel zur Erweiterung der Atemwege. Eingesetzt bei Asthma und COPD (Dauertherapie).",                                              drugClass:"Langwirksamer Beta-2-Agonist (LABA)",                   formula:"C₂₅H₃₇NO₄",             atcCode:"R03AC12" },
   "Sildenafil":             { indication:"Fördert die Durchblutung. Eingesetzt bei erektiler Dysfunktion und pulmonaler Hypertonie.",                                                       drugClass:"PDE-5-Hemmer",                                          formula:"C₂₂H₃₀N₆O₄S",           atcCode:"G04BE03" },
   "Melatonin":              { indication:"Körpereigenes Schlafhormon. Eingesetzt bei Schlafstörungen und zur Regulierung des Schlaf-Wach-Rhythmus (z.B. Jetlag).",                          drugClass:"Hormon (Melatonin-Rezeptor-Agonist)",                   formula:"C₁₃H₁₆N₂O₂",            atcCode:"N05CH01" },
+  "Loratadin":              { indication:"Antiallergikum gegen Heuschnupfen und Nesselsucht. Wenig sedierend, einmal täglich.",                                                            drugClass:"H1-Antihistaminikum (2. Generation)",                   formula:"C₂₂H₂₃ClN₂O₂",          atcCode:"R06AX13" },
+  "Zolpidem":               { indication:"Kurzwirksames Schlafmittel bei Ein- und Durchschlafstörungen. Nur zur Kurzzeitanwendung.",                                                       drugClass:"Z-Substanz (Non-Benzodiazepin-Hypnotikum)",             formula:"C₁₉H₂₁N₃O",             atcCode:"N05CF02" },
+  "Baclofen":               { indication:"Muskelentspannend bei Spastik, z.B. bei Multipler Sklerose oder nach Rückenmarksverletzungen.",                                                  drugClass:"Zentrales Muskelrelaxans (GABA-B-Agonist)",             formula:"C₁₀H₁₂ClNO₂",           atcCode:"M03BX01" },
+  "Prednison":              { indication:"Entzündungshemmendes Kortison. Eingesetzt bei Autoimmunerkrankungen, Allergien und Entzündungen.",                                               drugClass:"Glukokortikoid",                                        formula:"C₂₁H₂₆O₅",              atcCode:"H02AB07" },
+  "Fentanyl":               { indication:"Sehr starkes Opioid-Schmerzmittel. Eingesetzt bei starken Schmerzen (z.B. als Pflaster in der Palliativmedizin).",                              drugClass:"Opioid-Analgetikum",                                    formula:"C₂₂H₂₈N₂O",             atcCode:"N02AB03" },
+  "Naloxon":                { indication:"Gegenmittel bei Opioid-Überdosierung. Hebt die Wirkung von Opioiden schnell auf.",                                                              drugClass:"Opioid-Rezeptor-Antagonist",                            formula:"C₁₉H₂₁NO₄",             atcCode:"V03AB15" },
+  "Bisacodyl":              { indication:"Abführmittel bei Verstopfung. Regt die Darmbewegung an.",                                                                                       drugClass:"Stimulierendes Laxans",                                 formula:"C₂₂H₁₉NO₄",             atcCode:"A06AB02" },
+  "Morphin":                { indication:"Starkes Opioid-Schmerzmittel bei sehr starken Schmerzen, z.B. nach Operationen oder in der Palliativmedizin.",                                   drugClass:"Opioid-Analgetikum",                                    formula:"C₁₇H₁₉NO₃",             atcCode:"N02AA01" },
+  "Diazepam":               { indication:"Beruhigungs- und Angstlösemittel, auch krampflösend. Eingesetzt bei Angst, Krampfanfällen und Muskelverspannungen.",                             drugClass:"Benzodiazepin",                                         formula:"C₁₆H₁₃ClN₂O",           atcCode:"N05BA01" },
+  "Lorazepam":              { indication:"Angstlösend und beruhigend. Eingesetzt bei akuten Angst- und Erregungszuständen sowie Schlafstörungen.",                                          drugClass:"Benzodiazepin",                                         formula:"C₁₅H₁₀Cl₂N₂O₂",         atcCode:"N05BA06" },
+  "Oxycodon":               { indication:"Starkes Opioid-Schmerzmittel bei mäßigen bis starken Schmerzen.",                                                                               drugClass:"Opioid-Analgetikum",                                    formula:"C₁₈H₂₁NO₄",             atcCode:"N02AA05" },
+  "Tilidin":                { indication:"Opioid-Schmerzmittel bei mäßigen bis starken Schmerzen, meist mit Naloxon kombiniert.",                                                        drugClass:"Opioid-Analgetikum",                                    formula:"C₁₇H₂₃NO₂",             atcCode:"N02AX01" },
+  "Codein":                 { indication:"Hustenstiller und schwaches Schmerzmittel. Eingesetzt bei Reizhusten und leichten Schmerzen.",                                                   drugClass:"Opioid (Antitussivum/Analgetikum)",                     formula:"C₁₈H₂₁NO₃",             atcCode:"R05DA04" },
+  "Sumatriptan":            { indication:"Akutmittel gegen Migräne und Cluster-Kopfschmerz. Verengt die erweiterten Blutgefäße im Gehirn.",                                                drugClass:"Triptan (5-HT1-Agonist)",                               formula:"C₁₄H₂₁N₃O₂S",           atcCode:"N02CC01" },
+  "Levodopa":               { indication:"Wichtigstes Mittel bei Parkinson. Wird im Gehirn zu Dopamin umgewandelt und lindert die Bewegungsstörungen.",                                    drugClass:"Dopamin-Vorstufe (Antiparkinsonmittel)",                formula:"C₉H₁₁NO₄",              atcCode:"N04BA01" },
+  "Olanzapin":              { indication:"Antipsychotikum bei Schizophrenie und bipolaren Störungen. Wirkt auf Dopamin- und Serotonin-Rezeptoren.",                                          drugClass:"Atypisches Antipsychotikum",                            formula:"C₁₇H₂₀N₄S",             atcCode:"N05AH03" },
+  "Lamotrigin":             { indication:"Antiepileptikum und Stimmungsstabilisierer. Eingesetzt bei Epilepsie und bipolaren Störungen.",                                                    drugClass:"Antiepileptikum (Natriumkanalblocker)",                 formula:"C₉H₇Cl₂N₅",             atcCode:"N03AX09" },
+  "Carbamazepin":           { indication:"Antiepileptikum, auch bei Trigeminusneuralgie und bipolaren Störungen.",                                                                         drugClass:"Antiepileptikum (Natriumkanalblocker)",                 formula:"C₁₅H₁₂N₂O",             atcCode:"N03AF01" },
+  "Valproinsäure":          { indication:"Breit wirksames Antiepileptikum bei verschiedenen Anfallsformen, auch bei bipolaren Störungen.",                                                  drugClass:"Antiepileptikum",                                       formula:"C₈H₁₆O₂",               atcCode:"N03AG01" },
+  "Donepezil":              { indication:"Mittel gegen Demenz. Verbessert die Gedächtnisleistung bei leichter bis mittelschwerer Alzheimer-Demenz.",                                        drugClass:"Acetylcholinesterase-Hemmer",                           formula:"C₂₄H₂₉NO₃",             atcCode:"N06DA02" },
+  "Memantin":               { indication:"Mittel gegen mittelschwere bis schwere Alzheimer-Demenz. Wirkt auf das Glutamat-System.",                                                        drugClass:"NMDA-Rezeptor-Antagonist",                              formula:"C₁₂H₂₁N",               atcCode:"N06DX01" },
+  "Topiramat":              { indication:"Antiepileptikum und zur Migräneprophylaxe eingesetzt.",                                                                                         drugClass:"Antiepileptikum",                                       formula:"C₁₂H₂₁NO₈S",            atcCode:"N03AX11" },
   "Amoxicillin":            { indication:"Breitspektrum-Antibiotikum gegen bakterielle Infektionen. Eingesetzt bei Atemwegs-, Harnwegs- und HNO-Infektionen.",                          drugClass:"Aminopenicillin (Beta-Lactam-Antibiotikum)",             formula:"C₁₆H₁₉N₃O₅S",          atcCode:"J01CA04" },
   "Pantoprazol":            { indication:"Hemmt die Magensäureproduktion. Eingesetzt bei Magengeschwüren, Sodbrennen und gastroösophagealer Refluxkrankheit.",                          drugClass:"Protonenpumpenhemmer (PPI)",                             formula:"C₁₆H₁₅F₂N₃O₄S",        atcCode:"A02BC02" },
   "Metronidazol":           { indication:"Antibiotikum gegen anaerobe Bakterien und Parasiten. Eingesetzt bei H. pylori-Infektionen, Trichomoniasis und Darminfektionen.",              drugClass:"Nitroimidazol-Antibiotikum",                             formula:"C₆H₉N₃O₃",              atcCode:"P01AB01" },
@@ -2422,6 +2473,9 @@ const UI_I18N = {
   prof_level:    { de:'Aktuelles Level', en:'Current level', pt:'Nível atual' },
   prof_nextlvl:  { de:'Nächstes Level', en:'Next level', pt:'Próximo nível' },
   prof_team:     { de:'👥 Mein Team', en:'👥 My team', pt:'👥 Minha equipe' },
+  prof_lang:     { de:'🌐 Sprache', en:'🌐 Language', pt:'🌐 Idioma' },
+  ach_top10:     { de:'🏅 TOP 10 RUNNER-HIGHSCORES', en:'🏅 TOP 10 RUNNER HIGHSCORES', pt:'🏅 TOP 10 RECORDES DO RUNNER' },
+  ach_section:   { de:'🏆 ERFOLGE', en:'🏆 ACHIEVEMENTS', pt:'🏆 CONQUISTAS' },
   lex_search:    { de:'🔍 Wirkstoff oder Kategorie suchen …', en:'🔍 Search drug or category …', pt:'🔍 Buscar fármaco ou categoria …' },
   learn_points:  { de:'PUNKTE', en:'POINTS', pt:'PONTOS' },
   learn_streak:  { de:'SERIE', en:'STREAK', pt:'SÉRIE' },
@@ -2469,6 +2523,14 @@ const UI_I18N = {
   up_p2:         { de:'Lehrer-Dashboard & Team-Statistiken', en:'Teacher dashboard & team stats', pt:'Painel do professor e estatísticas' },
   up_p3:         { de:'API-Zugang für Apotheken-Integration', en:'API access for pharmacy integration', pt:'Acesso à API para integração' },
   up_notnow:     { de:'Nicht jetzt', en:'Not now', pt:'Agora não' },
+  park_sub:      { de:'Lauf frei durch die Apotheke und tippe eine Station an', en:'Walk freely through the pharmacy and tap a station', pt:'Ande pela farmácia e toque numa estação' },
+  park_shelf:    { de:'Regal', en:'Shelf', pt:'Prateleira' },
+  park_speak:    { de:'🎤 Aussprache', en:'🎤 Pronunciation', pt:'🎤 Pronúncia' },
+  park_treadmill:{ de:'Laufband', en:'Treadmill', pt:'Esteira' },
+  park_customer: { de:'Kunde', en:'Customer', pt:'Cliente' },
+  park_quiz:     { de:'🧠 Quiz', en:'🧠 Quiz', pt:'🧠 Quiz' },
+  park_lab:      { de:'Labor', en:'Lab', pt:'Laboratório' },
+  park_recipe:   { de:'⚗️ Rezeptur', en:'⚗️ Compounding', pt:'⚗️ Formulação' },
 };
 function applyI18n() {
   const lang = CharacterSystem.getLang();
@@ -2490,7 +2552,7 @@ function L(de, en, pt) {
   return lang === 'en' ? en : lang === 'pt' ? pt : de;
 }
 
-function switchLang(l) { CharacterSystem.setLang(l); applyI18n(); refreshUI(); }
+function switchLang(l) { CharacterSystem.setLang(l); applyI18n(); refreshUI(); renderAchievements(); }
 
 function openAudioSettings() {
   const m = document.getElementById('audioSettingsModal');
@@ -2592,6 +2654,30 @@ const ACHIEVEMENTS = [
   { id:'xp1000',    icon:'💎', name:'Shekel-Millionär',  desc:'1000 Shekel gesammelt',                check: () => S.xp >= 1000 },
 ];
 
+// Achievement-Übersetzungen (Name + Beschreibung) je Sprache
+const ACH_I18N = {
+  first:    { en:{name:'First voice',desc:'Answered first question'}, pt:{name:'Primeira voz',desc:'Respondeu à primeira pergunta'} },
+  streak3:  { en:{name:'3 days going',desc:'Learned 3 days in a row'}, pt:{name:'3 dias seguidos',desc:'Aprendeu 3 dias seguidos'} },
+  streak7:  { en:{name:'7-day streak',desc:'Learned 7 days in a row'}, pt:{name:'Sequência de 7 dias',desc:'Aprendeu 7 dias seguidos'} },
+  terms20:  { en:{name:'First 20',desc:'Answered 20 questions'}, pt:{name:'Primeiros 20',desc:'Respondeu 20 perguntas'} },
+  terms50:  { en:{name:'50 terms',desc:'Answered 50 questions'}, pt:{name:'50 termos',desc:'Respondeu 50 perguntas'} },
+  terms150: { en:{name:'Bookworm',desc:'Answered 150 questions'}, pt:{name:'Rato de biblioteca',desc:'Respondeu 150 perguntas'} },
+  xp200:    { en:{name:'Advanced',desc:'200 Shekel collected'}, pt:{name:'Avançado',desc:'200 Shekel coletados'} },
+  xp400:    { en:{name:'Pro speaker',desc:'400 Shekel collected'}, pt:{name:'Locutor profissional',desc:'400 Shekel coletados'} },
+  xp600:    { en:{name:'Pharma legend',desc:'600 Shekel collected'}, pt:{name:'Lenda da farmácia',desc:'600 Shekel coletados'} },
+  runner:   { en:{name:'On the track!',desc:'Played Pharma Runner'}, pt:{name:'Na pista!',desc:'Jogou o Pharma Runner'} },
+  runner500:{ en:{name:'Speed freak',desc:'Highscore 500+ in Runner'}, pt:{name:'Fera da velocidade',desc:'Recorde 500+ no Runner'} },
+  runner1k: { en:{name:'Runner champion',desc:'Highscore 1000+ in Runner'}, pt:{name:'Campeão do Runner',desc:'Recorde 1000+ no Runner'} },
+  sm2_10:   { en:{name:'Memory artist',desc:'10 terms with spaced repetition'}, pt:{name:'Artista da memória',desc:'10 termos com repetição espaçada'} },
+  words30:  { en:{name:'Drug expert',desc:'Practiced 30 different drugs'}, pt:{name:'Especialista em fármacos',desc:'Praticou 30 fármacos diferentes'} },
+  xp1000:   { en:{name:'Shekel millionaire',desc:'1000 Shekel collected'}, pt:{name:'Milionário de Shekel',desc:'1000 Shekel coletados'} },
+};
+function _achTr(a) {
+  const lang = CharacterSystem.getLang();
+  if (lang !== 'de' && ACH_I18N[a.id] && ACH_I18N[a.id][lang]) return ACH_I18N[a.id][lang];
+  return { name: a.name, desc: a.desc };
+}
+
 function renderAchievements() {
   // Top-10 Runner-Highscores
   const topEl = el('top10List');
@@ -2599,7 +2685,7 @@ function renderAchievements() {
     let top10; try { top10 = JSON.parse(localStorage.getItem('pv_runner_top10')) || []; } catch { top10 = []; }
     topEl.innerHTML = top10.length
       ? top10.map((e, i) => `<div class="top10-row ${i===0?'first':''}"><span class="top10-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span><span class="top10-score">${e.score.toLocaleString('de-DE')}</span><span class="top10-date">${e.date}</span></div>`).join('')
-      : '<div class="top10-empty">Noch keine Runner-Runde gespielt.</div>';
+      : `<div class="top10-empty">${L('Noch keine Runner-Runde gespielt.','No Runner round played yet.','Nenhuma rodada do Runner ainda.')}</div>`;
   }
   const list = el('achList');
   if (!list) return;
@@ -2613,15 +2699,15 @@ function renderAchievements() {
     div.innerHTML = `
       <div class="ach-icon ${done?'on':'off'}">${a.icon}</div>
       <div class="ach-info">
-        <div class="ach-name">${a.name}</div>
-        <div class="ach-desc">${a.desc}</div>
+        <div class="ach-name">${_achTr(a).name}</div>
+        <div class="ach-desc">${_achTr(a).desc}</div>
       </div>
       <div class="ach-state">${done ? '✅' : '🔒'}</div>`;
     list.appendChild(div);
   });
   // Show progress header
   const hdr = document.querySelector('#screenAchievements .screen-h');
-  if (hdr) hdr.textContent = `🏆 Erfolge – ${unlocked}/${ACHIEVEMENTS.length}`;
+  if (hdr) hdr.textContent = `🏆 ${L('Erfolge','Awards','Conquistas')} – ${unlocked}/${ACHIEVEMENTS.length}`;
 }
 
 function save() { localStorage.setItem('pv2', JSON.stringify(S)); }
@@ -3581,6 +3667,32 @@ const RN_WORDS = [
   { word:"Defektur",           ipa:"defɛkˈtuːɐ̯",                  syl:"De·fek·tur",                indication:"Vorratsherstellung",             cat:"Apotheke",       diff:1 },
   { word:"Suppositorium",      ipa:"zupoziˈtoːʁiʊm",              syl:"Sup·po·si·to·ri·um",        indication:"Rektale Darreichungsform",       cat:"Apotheke",       diff:3 },
 ];
+
+// Runner-Wortliste automatisch aus der MEDS-Datenbank anreichern (dedupliziert),
+// damit der Runner alle Wirkstoffe kennt und mit dem Lern-Modus synchron bleibt.
+(function enrichRunnerWords() {
+  // Erst evtl. vorhandene Duplikate in der Original-Liste entfernen (erste Instanz behalten)
+  const have = new Set();
+  for (let i = 0; i < RN_WORDS.length; ) {
+    if (have.has(RN_WORDS[i].word)) RN_WORDS.splice(i, 1);
+    else { have.add(RN_WORDS[i].word); i++; }
+  }
+  MEDS.forEach(m => {
+    if (have.has(m.name)) return;
+    const info = MED_INFO[m.name] || {};
+    let ind = (info.indication || m.category || '').split('.')[0];
+    if (ind.length > 60) ind = ind.slice(0, 57) + '…';
+    RN_WORDS.push({
+      word: m.name,
+      ipa: (m.phonetic || '').replace(/\//g, ''),
+      syl: Array.isArray(m.syllables) ? m.syllables.join('·') : '',
+      indication: ind,
+      cat: m.category,
+      diff: Math.min(3, Math.max(1, Math.ceil((m.syllables ? m.syllables.length : 3) / 3))),
+    });
+    have.add(m.name);
+  });
+})();
 
 // ═══════════════════════════════════════════════
 //  PHARMA RUNNER – GAME ENGINE
