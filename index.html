@@ -1377,6 +1377,9 @@
     <button class="home-menu-item" onclick="openModal()">
       <span class="home-menu-icon">🎤</span><div class="home-menu-label" data-i18n="menu_practice">Sprachpraxis</div>
     </button>
+    <button class="home-menu-item" onclick="startQuickPractice()">
+      <span class="home-menu-icon">🎲</span><div class="home-menu-label" data-i18n="menu_quick">Schnellübung</div>
+    </button>
     <button class="home-menu-item" onclick="showScreen('Profile')">
       <span class="home-menu-icon">👤</span><div class="home-menu-label" data-i18n="menu_profile">Mein Profil</div>
     </button>
@@ -2615,6 +2618,7 @@ const UI_I18N = {
   menu_continue: { de:'Weiter lernen',      en:'Keep learning',     pt:'Continuar' },
   menu_lessons:  { de:'Lektionen',          en:'Lessons',           pt:'Lições' },
   menu_practice: { de:'Sprachpraxis',       en:'Speaking practice', pt:'Prática de fala' },
+  menu_quick:    { de:'Schnellübung',       en:'Quick practice',    pt:'Prática rápida' },
   menu_profile:  { de:'Mein Profil',        en:'My profile',        pt:'Meu perfil' },
   menu_shop:     { de:'Shop',               en:'Shop',              pt:'Loja' },
   menu_ranking:  { de:'Rangliste',          en:'Leaderboard',       pt:'Ranking' },
@@ -3353,6 +3357,18 @@ function startLearn(lvId = 1) {
   ), 400);
   // Update learn chip
   el('learnChip').textContent = `${lv.icon}  ${lv.name} Level`;
+  showScreen('Learn');
+  renderQ();
+}
+
+// Schnellübung: 7 zufällige Wirkstoffe aus allen freigeschalteten Leveln, sofort spielbar
+function startQuickPractice() {
+  const pool = MEDS.filter(m => canPlay(m.lv) === true);
+  const meds = shuffle(pool).slice(0, 7);
+  if (!meds.length) return;
+  Q = { meds, idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId: 1, xpMult: 1, results: [] };
+  ResourceSystem.spendEnergy();
+  el('learnChip').textContent = `🎲  ${L('Schnellübung','Quick practice','Prática rápida')}`;
   showScreen('Learn');
   renderQ();
 }
