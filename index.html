@@ -125,6 +125,7 @@
     .lex-chip { flex:0 0 auto; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:6px 12px; font-size:12px; font-weight:700; color:var(--text2); cursor:pointer; font-family:inherit; white-space:nowrap; }
     .lex-chip.active { background:var(--green); border-color:var(--green); color:#04211d; }
     .lex-chip:active { transform:scale(.95); }
+    .lex-chip-more { background:transparent; border-style:dashed; color:var(--text2); }
     .lex-cat-title { font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin:18px 0 8px; display:flex; align-items:center; gap:8px; }
     .lex-cat-count { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1px 8px; font-size:10px; color:var(--gray); }
     .lex-card { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
@@ -5307,7 +5308,10 @@ const LexikonSystem = (() => {
   }
 
   let _activeCat = null; // null = alle Kategorien
+  let _chipsExpanded = false;
+  const CHIP_LIMIT = 12; // eingeklappt nur die häufigsten Kategorien zeigen
   function setCat(cat) { _activeCat = cat; render(); }
+  function toggleChips() { _chipsExpanded = !_chipsExpanded; render(); }
 
   function render() {
     const listEl = document.getElementById('lexList');
@@ -5329,9 +5333,24 @@ const LexikonSystem = (() => {
       MEDS.forEach(m => { const c = m.category || 'Sonstige'; counts[c] = (counts[c] || 0) + 1; });
       const cats = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
       if (_activeCat && !counts[_activeCat]) _activeCat = null;
-      chipsEl.innerHTML =
+      // Eingeklappt: nur die häufigsten CHIP_LIMIT Kategorien; aktive Kategorie immer sichtbar halten
+      let shown = cats;
+      let hiddenCount = 0;
+      if (!_chipsExpanded && cats.length > CHIP_LIMIT) {
+        shown = cats.slice(0, CHIP_LIMIT);
+        if (_activeCat && !shown.includes(_activeCat)) shown.push(_activeCat);
+        hiddenCount = cats.length - CHIP_LIMIT;
+      }
+      const chipHtml = (c) => `<button class="lex-chip ${_activeCat === c ? 'active' : ''}" onclick="LexikonSystem.setCat('${c.replace(/'/g, "\\'")}')">${c} ${counts[c]}</button>`;
+      let html =
         `<button class="lex-chip ${_activeCat === null ? 'active' : ''}" onclick="LexikonSystem.setCat(null)">${L('Alle','All','Todos')} ${total}</button>` +
-        cats.map(c => `<button class="lex-chip ${_activeCat === c ? 'active' : ''}" onclick="LexikonSystem.setCat('${c.replace(/'/g, "\\'")}')">${c} ${counts[c]}</button>`).join('');
+        shown.map(chipHtml).join('');
+      if (hiddenCount > 0) {
+        html += `<button class="lex-chip lex-chip-more" onclick="LexikonSystem.toggleChips()">+${hiddenCount} ${L('mehr','more','mais')}</button>`;
+      } else if (_chipsExpanded && cats.length > CHIP_LIMIT) {
+        html += `<button class="lex-chip lex-chip-more" onclick="LexikonSystem.toggleChips()">${L('weniger','less','menos')}</button>`;
+      }
+      chipsEl.innerHTML = html;
     }
 
     // Nach Kategorie gruppieren, gefiltert (Suche UND aktive Kategorie)
@@ -5369,7 +5388,7 @@ const LexikonSystem = (() => {
     AudioSystem.speakWord(name, CharacterSystem.getLang());
   }
 
-  return { render, listen, setCat };
+  return { render, listen, setCat, toggleChips };
 })();
 
 // ══ RESOURCE SYSTEM (Youth-Pharma-Referenz: Coins/Gems/Energy HUD) ══════
