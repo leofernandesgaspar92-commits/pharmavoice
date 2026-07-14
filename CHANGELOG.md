@@ -1,3 +1,5 @@
+- Wirkstoff-Datenbank: 7 Herz-Kreislauf-Wirkstoffe ergänzt (Carvedilol, Nebivolol, Verapamil, Diltiazem, Amiodaron, Digoxin, Ticagrelor) mit IPA/Silben & MED_INFO — jetzt 146 Wirkstoffe (Runner 153), alle validiert
+
 - Lexikon Schwierigkeits-Indikator: farbiger Punkt pro Wirkstoff (grün=leicht ≤3 Silben, gelb=mittel 4-5, rot=schwer 6+) — Lernende erkennen knifflige Wörter auf einen Blick; barrierefrei (aria-label) & dreisprachig
 
 - Pharma Runner Fairness: die Antwortzeit skaliert jetzt mit der Silbenzahl (Basis 3 Silben, +18% je weitere, gedeckelt 1,9×) — lange Wirkstoffe wie Hydrochlorothiazid bleiben spielbar, kurze bleiben schnell. Behebt die durch die Runner-Content-Anreicherung entstandene Unfairness bei langen Wörtern
