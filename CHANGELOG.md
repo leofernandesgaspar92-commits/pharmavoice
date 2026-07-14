@@ -1,3 +1,5 @@
+- i18n Erfolge/Rangliste-Screen: alle 15 Achievement-Namen & -Beschreibungen, Section-Titel (TOP 10 / ERFOLGE), Header und Empty-Message in DE/EN/PT; switchLang rendert die Liste live neu
+
 - Sprach-Umschalter im Profil-Screen ergänzt: Sprache (DE/EN/PT) jetzt von überall über die Nav erreichbar, nicht mehr nur vom Home-Screen — aktiver Button in beiden Zeilen synchron markiert
 
 - Pharma Runner Content synchronisiert: RN_WORDS wird jetzt automatisch aus der MEDS-Datenbank angereichert (48 → 132 Wörter) — neue Wirkstoffe erscheinen künftig auch im Runner, kein separates Pflegen mehr. Nebenfix: pre-existing Duplikat (Rivaroxaban) in der Runner-Liste entfernt

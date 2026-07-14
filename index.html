@@ -1418,9 +1418,9 @@
 <!-- ══ ACHIEVEMENTS ══ -->
 <div class="screen" id="screenAchievements">
   <div class="screen-h" data-i18n="sh_ranking">🏆 Rangliste & Erfolge</div>
-  <div class="section-title">🏅 TOP 10 RUNNER-HIGHSCORES</div>
+  <div class="section-title" data-i18n="ach_top10">🏅 TOP 10 RUNNER-HIGHSCORES</div>
   <div id="top10List" class="top10-list"></div>
-  <div class="section-title" style="margin-top:24px">🏆 ERFOLGE</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="ach_section">🏆 ERFOLGE</div>
   <div class="ach-list" id="achList"></div>
 </div>
 
@@ -2460,6 +2460,8 @@ const UI_I18N = {
   prof_nextlvl:  { de:'Nächstes Level', en:'Next level', pt:'Próximo nível' },
   prof_team:     { de:'👥 Mein Team', en:'👥 My team', pt:'👥 Minha equipe' },
   prof_lang:     { de:'🌐 Sprache', en:'🌐 Language', pt:'🌐 Idioma' },
+  ach_top10:     { de:'🏅 TOP 10 RUNNER-HIGHSCORES', en:'🏅 TOP 10 RUNNER HIGHSCORES', pt:'🏅 TOP 10 RECORDES DO RUNNER' },
+  ach_section:   { de:'🏆 ERFOLGE', en:'🏆 ACHIEVEMENTS', pt:'🏆 CONQUISTAS' },
   lex_search:    { de:'🔍 Wirkstoff oder Kategorie suchen …', en:'🔍 Search drug or category …', pt:'🔍 Buscar fármaco ou categoria …' },
   learn_points:  { de:'PUNKTE', en:'POINTS', pt:'PONTOS' },
   learn_streak:  { de:'SERIE', en:'STREAK', pt:'SÉRIE' },
@@ -2536,7 +2538,7 @@ function L(de, en, pt) {
   return lang === 'en' ? en : lang === 'pt' ? pt : de;
 }
 
-function switchLang(l) { CharacterSystem.setLang(l); applyI18n(); refreshUI(); }
+function switchLang(l) { CharacterSystem.setLang(l); applyI18n(); refreshUI(); renderAchievements(); }
 
 function openAudioSettings() {
   const m = document.getElementById('audioSettingsModal');
@@ -2638,6 +2640,30 @@ const ACHIEVEMENTS = [
   { id:'xp1000',    icon:'💎', name:'Shekel-Millionär',  desc:'1000 Shekel gesammelt',                check: () => S.xp >= 1000 },
 ];
 
+// Achievement-Übersetzungen (Name + Beschreibung) je Sprache
+const ACH_I18N = {
+  first:    { en:{name:'First voice',desc:'Answered first question'}, pt:{name:'Primeira voz',desc:'Respondeu à primeira pergunta'} },
+  streak3:  { en:{name:'3 days going',desc:'Learned 3 days in a row'}, pt:{name:'3 dias seguidos',desc:'Aprendeu 3 dias seguidos'} },
+  streak7:  { en:{name:'7-day streak',desc:'Learned 7 days in a row'}, pt:{name:'Sequência de 7 dias',desc:'Aprendeu 7 dias seguidos'} },
+  terms20:  { en:{name:'First 20',desc:'Answered 20 questions'}, pt:{name:'Primeiros 20',desc:'Respondeu 20 perguntas'} },
+  terms50:  { en:{name:'50 terms',desc:'Answered 50 questions'}, pt:{name:'50 termos',desc:'Respondeu 50 perguntas'} },
+  terms150: { en:{name:'Bookworm',desc:'Answered 150 questions'}, pt:{name:'Rato de biblioteca',desc:'Respondeu 150 perguntas'} },
+  xp200:    { en:{name:'Advanced',desc:'200 Shekel collected'}, pt:{name:'Avançado',desc:'200 Shekel coletados'} },
+  xp400:    { en:{name:'Pro speaker',desc:'400 Shekel collected'}, pt:{name:'Locutor profissional',desc:'400 Shekel coletados'} },
+  xp600:    { en:{name:'Pharma legend',desc:'600 Shekel collected'}, pt:{name:'Lenda da farmácia',desc:'600 Shekel coletados'} },
+  runner:   { en:{name:'On the track!',desc:'Played Pharma Runner'}, pt:{name:'Na pista!',desc:'Jogou o Pharma Runner'} },
+  runner500:{ en:{name:'Speed freak',desc:'Highscore 500+ in Runner'}, pt:{name:'Fera da velocidade',desc:'Recorde 500+ no Runner'} },
+  runner1k: { en:{name:'Runner champion',desc:'Highscore 1000+ in Runner'}, pt:{name:'Campeão do Runner',desc:'Recorde 1000+ no Runner'} },
+  sm2_10:   { en:{name:'Memory artist',desc:'10 terms with spaced repetition'}, pt:{name:'Artista da memória',desc:'10 termos com repetição espaçada'} },
+  words30:  { en:{name:'Drug expert',desc:'Practiced 30 different drugs'}, pt:{name:'Especialista em fármacos',desc:'Praticou 30 fármacos diferentes'} },
+  xp1000:   { en:{name:'Shekel millionaire',desc:'1000 Shekel collected'}, pt:{name:'Milionário de Shekel',desc:'1000 Shekel coletados'} },
+};
+function _achTr(a) {
+  const lang = CharacterSystem.getLang();
+  if (lang !== 'de' && ACH_I18N[a.id] && ACH_I18N[a.id][lang]) return ACH_I18N[a.id][lang];
+  return { name: a.name, desc: a.desc };
+}
+
 function renderAchievements() {
   // Top-10 Runner-Highscores
   const topEl = el('top10List');
@@ -2645,7 +2671,7 @@ function renderAchievements() {
     let top10; try { top10 = JSON.parse(localStorage.getItem('pv_runner_top10')) || []; } catch { top10 = []; }
     topEl.innerHTML = top10.length
       ? top10.map((e, i) => `<div class="top10-row ${i===0?'first':''}"><span class="top10-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span><span class="top10-score">${e.score.toLocaleString('de-DE')}</span><span class="top10-date">${e.date}</span></div>`).join('')
-      : '<div class="top10-empty">Noch keine Runner-Runde gespielt.</div>';
+      : `<div class="top10-empty">${L('Noch keine Runner-Runde gespielt.','No Runner round played yet.','Nenhuma rodada do Runner ainda.')}</div>`;
   }
   const list = el('achList');
   if (!list) return;
@@ -2659,15 +2685,15 @@ function renderAchievements() {
     div.innerHTML = `
       <div class="ach-icon ${done?'on':'off'}">${a.icon}</div>
       <div class="ach-info">
-        <div class="ach-name">${a.name}</div>
-        <div class="ach-desc">${a.desc}</div>
+        <div class="ach-name">${_achTr(a).name}</div>
+        <div class="ach-desc">${_achTr(a).desc}</div>
       </div>
       <div class="ach-state">${done ? '✅' : '🔒'}</div>`;
     list.appendChild(div);
   });
   // Show progress header
   const hdr = document.querySelector('#screenAchievements .screen-h');
-  if (hdr) hdr.textContent = `🏆 Erfolge – ${unlocked}/${ACHIEVEMENTS.length}`;
+  if (hdr) hdr.textContent = `🏆 ${L('Erfolge','Awards','Conquistas')} – ${unlocked}/${ACHIEVEMENTS.length}`;
 }
 
 function save() { localStorage.setItem('pv2', JSON.stringify(S)); }
