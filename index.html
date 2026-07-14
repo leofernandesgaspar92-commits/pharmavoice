@@ -1538,7 +1538,7 @@
   <button class="back-btn" onclick="showScreen('Home')" data-i18n="back">← Zurück</button>
   <h2 class="screen-h" data-i18n="sh_lexikon">📚 Wirkstoff-Lexikon</h2>
   <div class="lex-progress" id="lexProgress"></div>
-  <input type="text" class="lex-search" id="lexSearch" placeholder="🔍 Wirkstoff oder Kategorie suchen …" data-i18n-ph="lex_search" oninput="LexikonSystem.render()">
+  <input type="text" class="lex-search" id="lexSearch" placeholder="🔍 Wirkstoff, Kategorie oder Anwendung suchen …" data-i18n-ph="lex_search" oninput="LexikonSystem.render()">
   <div id="lexChips" class="lex-chips"></div>
   <div id="lexList"></div>
 </div>
@@ -2570,7 +2570,7 @@ const UI_I18N = {
   ach_top10:     { de:'🏅 TOP 10 RUNNER-HIGHSCORES', en:'🏅 TOP 10 RUNNER HIGHSCORES', pt:'🏅 TOP 10 RECORDES DO RUNNER' },
   ach_section:   { de:'🏆 ERFOLGE', en:'🏆 ACHIEVEMENTS', pt:'🏆 CONQUISTAS' },
   ach_events:    { de:'🗓️ EVENT-ABZEICHEN', en:'🗓️ EVENT BADGES', pt:'🗓️ EMBLEMAS DE EVENTO' },
-  lex_search:    { de:'🔍 Wirkstoff oder Kategorie suchen …', en:'🔍 Search drug or category …', pt:'🔍 Buscar fármaco ou categoria …' },
+  lex_search:    { de:'🔍 Wirkstoff, Kategorie oder Anwendung suchen …', en:'🔍 Search drug, category or use …', pt:'🔍 Buscar fármaco, categoria ou uso …' },
   learn_points:  { de:'PUNKTE', en:'POINTS', pt:'PONTOS' },
   learn_streak:  { de:'SERIE', en:'STREAK', pt:'SÉRIE' },
   learn_hint:    { de:'💡 Hinweis', en:'💡 Hint', pt:'💡 Dica' },
@@ -5354,9 +5354,20 @@ const LexikonSystem = (() => {
     }
 
     // Nach Kategorie gruppieren, gefiltert (Suche UND aktive Kategorie)
+    // Suche berücksichtigt Name, Kategorie sowie Indikation & Wirkstoffklasse (z.B. "Allergie", "Blutdruck")
+    const matches = (m) => {
+      if (!q) return true;
+      if (m.name.toLowerCase().includes(q)) return true;
+      if ((m.category || '').toLowerCase().includes(q)) return true;
+      const info = MED_INFO[m.name];
+      if (info) {
+        if ((info.indication || '').toLowerCase().includes(q)) return true;
+        if ((info.drugClass || '').toLowerCase().includes(q)) return true;
+      }
+      return false;
+    };
     const filtered = MEDS.filter(m =>
-      (!_activeCat || (m.category || 'Sonstige') === _activeCat) &&
-      (!q || m.name.toLowerCase().includes(q) || (m.category || '').toLowerCase().includes(q)));
+      (!_activeCat || (m.category || 'Sonstige') === _activeCat) && matches(m));
     if (!filtered.length) { listEl.innerHTML = `<p class="lex-empty">${L('Keine Treffer für deine Suche.','No results for your search.','Nenhum resultado para sua busca.')}</p>`; return; }
 
     const byCat = {};
