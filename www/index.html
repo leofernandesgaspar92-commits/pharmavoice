@@ -131,6 +131,10 @@
     .lex-card.learned { border-color:rgba(23,217,196,.35); }
     .lex-card-main { flex:1; min-width:0; cursor:pointer; }
     .lex-practice-hint { color:var(--green); font-size:11px; opacity:.7; }
+    .lex-diff { font-size:10px; vertical-align:middle; }
+    .lex-diff-easy { color:#2ECC71; }
+    .lex-diff-med  { color:#FFC107; }
+    .lex-diff-hard { color:#FF3B5C; }
     .lex-card-main:active { opacity:.7; }
     .lex-card-name { font-size:14px; font-weight:800; color:var(--text); }
     .lex-check { color:var(--green); font-weight:900; }
@@ -5321,9 +5325,14 @@ const LexikonSystem = (() => {
         const learned = _isLearned(m.name);
         const info = MED_INFO[m.name] || {};
         const safe = m.name.replace(/'/g, "\\'");
+        // Schwierigkeit aus Silbenzahl: 1-3 leicht, 4-5 mittel, 6+ schwer
+        const syl = Array.isArray(m.syllables) ? m.syllables.length : 3;
+        const diff = syl >= 6 ? 'hard' : syl >= 4 ? 'med' : 'easy';
+        const diffLabel = diff === 'hard' ? L('Schwer','Hard','Difícil') : diff === 'med' ? L('Mittel','Medium','Médio') : L('Leicht','Easy','Fácil');
+        const diffDot = `<span class="lex-diff lex-diff-${diff}" title="${diffLabel}" aria-label="${diffLabel}">●</span>`;
         return `<div class="lex-card ${learned ? 'learned' : ''}">
-          <div class="lex-card-main" role="button" tabindex="0" onclick="practiceWord('${safe}')" aria-label="${L('Üben','Practice','Praticar')}: ${m.name}">
-            <div class="lex-card-name">${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''} <span class="lex-practice-hint">▶</span></div>
+          <div class="lex-card-main" role="button" tabindex="0" onclick="practiceWord('${safe}')" aria-label="${L('Üben','Practice','Praticar')}: ${m.name} (${diffLabel})">
+            <div class="lex-card-name">${diffDot} ${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''} <span class="lex-practice-hint">▶</span></div>
             <div class="lex-card-ipa">${m.phonetic || ''}</div>
             ${info.indication ? `<div class="lex-card-ind">${info.indication}</div>` : ''}
           </div>
