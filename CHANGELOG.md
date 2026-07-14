@@ -1,3 +1,5 @@
+- Wirkstoff-Datenbank: 8 weitere Wirkstoffe ergänzt (Loratadin, Zolpidem, Baclofen, Prednison, Fentanyl, Naloxon, Bisacodyl, Morphin) mit IPA/Silbenbetonung & vollständigem MED_INFO — jetzt 118 Wirkstoffe, alle validiert
+
 - i18n Pharma Park: Zonen-Labels (Regal/Laufband/Kunde/Labor), Tags (Aussprache/Runner/Quiz/Rezeptur) und Untertitel in DE/EN/PT — damit ist die gesamte sichtbare Kern-UI dreisprachig
 
 - i18n Upgrade/Plan-Screen (Titel, Free/Normal/Premium-Pläne mit allen Features, Preisen, „Empfohlen", „Nicht jetzt") in DE/EN/PT — konsistenter Fluss bis zum bereits übersetzten Checkout
