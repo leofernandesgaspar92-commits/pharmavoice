@@ -1,3 +1,5 @@
+- Lexikon Schwierigkeits-Indikator: farbiger Punkt pro Wirkstoff (grün=leicht ≤3 Silben, gelb=mittel 4-5, rot=schwer 6+) — Lernende erkennen knifflige Wörter auf einen Blick; barrierefrei (aria-label) & dreisprachig
+
 - Pharma Runner Fairness: die Antwortzeit skaliert jetzt mit der Silbenzahl (Basis 3 Silben, +18% je weitere, gedeckelt 1,9×) — lange Wirkstoffe wie Hydrochlorothiazid bleiben spielbar, kurze bleiben schnell. Behebt die durch die Runner-Content-Anreicherung entstandene Unfairness bei langen Wörtern
 
 - Result-Screen „Fehler wiederholen"-Button: startet direkt eine Session mit genau den Wörtern, die man in der letzten Runde falsch hatte — schließt die Lern-Schleife (Fehler sehen → sofort nacharbeiten); erscheint nur bei Fehlern, dreisprachig
