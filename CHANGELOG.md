@@ -1,3 +1,5 @@
+- Event-Abzeichen-Sammlung im Rangliste-Screen: zeigt alle 6 Seasonal-Events als Sammelabzeichen (verdiente hervorgehoben mit Icon, offene gesperrt) — macht die Seasonal Events zum sammelbaren Langzeitziel; dreisprachig
+
 - Seasonal Events (wöchentlich rotierende Themen-Challenge, client-seitig): pro ISO-Woche eine Wirkstoff-Kategorie (Antibiotika/Diabetes/Epilepsie/Psyche/Diuretika/Atemwege), Fortschritt aus Learn UND Runner, Countdown bis Wochenende, exklusive Belohnung (250 Shekel + 6 Gems + Abzeichen). Karte auf Home. Schließt die letzte lokal umsetzbare Gap-Analyse-Lücke (FOMO/Retention)
 
 - Profil „Deine Statistik": Trefferquote (aus letzten Sessions), gemeisterte Wörter (SM-2 reps≥3) und stärkste Kategorie — berechnet aus vorhandenen Daten, keine neue Erfassung, dreisprachig

@@ -153,6 +153,14 @@
     .season-fill { height:100%; background:linear-gradient(90deg,#b478ff,#8b5cf6); border-radius:6px; transition:width .5s ease; }
     .season-prog { font-size:11px; font-weight:700; color:#d0a8ff; text-align:right; margin-top:4px; }
 
+    /* ── Seasonal Event Abzeichen-Sammlung ── */
+    .season-badges { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .season-badge-item { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px 6px; text-align:center; }
+    .season-badge-item.earned { border-color:rgba(180,120,255,.4); background:linear-gradient(135deg,rgba(180,120,255,.1),var(--bg2)); }
+    .season-badge-item.locked { opacity:.5; }
+    .season-badge-icon { font-size:26px; margin-bottom:4px; }
+    .season-badge-name { font-size:10px; font-weight:700; color:var(--text2); line-height:1.2; }
+
     /* ── Daily-Login-Bonus Toast ── */
     .daily-bonus-toast { position:fixed; top:64px; left:50%; transform:translateX(-50%) translateY(-16px); z-index:950; display:flex; align-items:center; gap:12px; background:linear-gradient(135deg,#1a2540,#0d1424); border:1.5px solid var(--green); border-radius:16px; padding:12px 18px; box-shadow:0 8px 28px rgba(0,0,0,.5); opacity:0; transition:all .35s cubic-bezier(.34,1.56,.64,1); max-width:90%; }
     .daily-bonus-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -1446,6 +1454,8 @@
   <div class="screen-h" data-i18n="sh_ranking">🏆 Rangliste & Erfolge</div>
   <div class="section-title" data-i18n="ach_top10">🏅 TOP 10 RUNNER-HIGHSCORES</div>
   <div id="top10List" class="top10-list"></div>
+  <div class="section-title" style="margin-top:24px" data-i18n="ach_events">🗓️ EVENT-ABZEICHEN</div>
+  <div id="seasonBadges"></div>
   <div class="section-title" style="margin-top:24px" data-i18n="ach_section">🏆 ERFOLGE</div>
   <div class="ach-list" id="achList"></div>
 </div>
@@ -2507,6 +2517,7 @@ const UI_I18N = {
   prof_stats:    { de:'📈 Deine Statistik', en:'📈 Your stats', pt:'📈 Suas estatísticas' },
   ach_top10:     { de:'🏅 TOP 10 RUNNER-HIGHSCORES', en:'🏅 TOP 10 RUNNER HIGHSCORES', pt:'🏅 TOP 10 RECORDES DO RUNNER' },
   ach_section:   { de:'🏆 ERFOLGE', en:'🏆 ACHIEVEMENTS', pt:'🏆 CONQUISTAS' },
+  ach_events:    { de:'🗓️ EVENT-ABZEICHEN', en:'🗓️ EVENT BADGES', pt:'🗓️ EMBLEMAS DE EVENTO' },
   lex_search:    { de:'🔍 Wirkstoff oder Kategorie suchen …', en:'🔍 Search drug or category …', pt:'🔍 Buscar fármaco ou categoria …' },
   learn_points:  { de:'PUNKTE', en:'POINTS', pt:'PONTOS' },
   learn_streak:  { de:'SERIE', en:'STREAK', pt:'SÉRIE' },
@@ -2718,6 +2729,9 @@ function renderAchievements() {
       ? top10.map((e, i) => `<div class="top10-row ${i===0?'first':''}"><span class="top10-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span><span class="top10-score">${e.score.toLocaleString('de-DE')}</span><span class="top10-date">${e.date}</span></div>`).join('')
       : `<div class="top10-empty">${L('Noch keine Runner-Runde gespielt.','No Runner round played yet.','Nenhuma rodada do Runner ainda.')}</div>`;
   }
+  // Seasonal-Event-Abzeichen
+  const badgesEl = el('seasonBadges');
+  if (badgesEl) badgesEl.innerHTML = SeasonalEventSystem.renderBadges();
   const list = el('achList');
   if (!list) return;
   list.innerHTML = '';
@@ -5176,7 +5190,21 @@ const SeasonalEventSystem = (() => {
     </div>`;
   }
 
-  return { current, recordCorrect, renderCard };
+  function allEvents() { return EVENTS.slice(); }
+  function earnedBadges() { try { return JSON.parse(localStorage.getItem('pv_season_badges')) || []; } catch { return []; } }
+  function renderBadges() {
+    const earned = new Set(earnedBadges());
+    return `<div class="season-badges">${EVENTS.map(ev => {
+      const has = earned.has(ev.id);
+      const title = L(ev.de, ev.en, ev.pt);
+      return `<div class="season-badge-item ${has ? 'earned' : 'locked'}" title="${title}">
+        <div class="season-badge-icon">${has ? ev.icon : '🔒'}</div>
+        <div class="season-badge-name">${title}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  return { current, recordCorrect, renderCard, allEvents, earnedBadges, renderBadges };
 })();
 
 // ══ WIRKSTOFF-LEXIKON (Collection/Compendium – Langzeitfortschritt sichtbar) ══
