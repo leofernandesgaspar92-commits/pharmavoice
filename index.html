@@ -151,6 +151,12 @@
     .acc-via { font-size:11px; color:var(--text2); }
     .acc-signout { flex:0 0 auto; border:1px solid var(--border); background:var(--bg); color:var(--text2); border-radius:10px; padding:8px 12px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
     .acc-note { font-size:11px; color:var(--text2); margin-top:10px; opacity:.85; }
+    .backup-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:14px; box-shadow:var(--shadow); }
+    .backup-note { font-size:12px; color:var(--text2); margin-bottom:12px; line-height:1.45; }
+    .backup-actions { display:flex; flex-direction:column; gap:8px; }
+    .backup-btn { border:1px solid var(--border); border-radius:12px; padding:11px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; background:var(--bg); color:var(--text); }
+    .backup-export { background:var(--green); color:#04211d; border-color:var(--green); }
+    .backup-btn:active { transform:scale(.98); }
     .lex-cat-title { font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--green); text-transform:uppercase; margin:18px 0 8px; display:flex; align-items:center; gap:8px; }
     .lex-cat-count { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1px 8px; font-size:10px; color:var(--gray); }
     .lex-card { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
@@ -1536,6 +1542,16 @@
     <button class="lang-btn" data-lang="en" onclick="switchLang('en')" aria-label="English" lang="en">🇬🇧</button>
     <button class="lang-btn" data-lang="pt" onclick="switchLang('pt')" aria-label="Português" lang="pt">🇵🇹</button>
   </div>
+
+  <div class="section-title" style="margin-top:24px" data-i18n="backup_title">💾 Datensicherung</div>
+  <div class="backup-card">
+    <div class="backup-note" data-i18n="backup_note">Dein Fortschritt liegt nur auf diesem Gerät. Sichere ihn als Datei oder stelle ihn wieder her.</div>
+    <div class="backup-actions">
+      <button class="backup-btn backup-export" onclick="BackupSystem.exportBackup()" data-i18n="backup_export">⬇️ Sicherung exportieren</button>
+      <button class="backup-btn backup-import" onclick="document.getElementById('backupFile').click()" data-i18n="backup_import">⬆️ Sicherung importieren</button>
+      <input type="file" id="backupFile" accept="application/json,.json" style="display:none" onchange="BackupSystem.importBackup(this.files[0])">
+    </div>
+  </div>
 </div>
 
 <!-- ══ GAME DESIGNER SCREEN ══ -->
@@ -2625,6 +2641,10 @@ const UI_I18N = {
   acc_hint:      { de:'Melde dich an, um deinen Fortschritt zu sichern:', en:'Sign in to secure your progress:', pt:'Entre para salvar seu progresso:' },
   acc_signout:   { de:'Abmelden', en:'Sign out', pt:'Sair' },
   acc_note_local:{ de:'🔒 Nur auf diesem Gerät gespeichert – keine Datenübertragung.', en:'🔒 Stored on this device only – no data leaves it.', pt:'🔒 Salvo só neste dispositivo – nenhum dado é enviado.' },
+  backup_title:  { de:'💾 Datensicherung', en:'💾 Data backup', pt:'💾 Backup de dados' },
+  backup_note:   { de:'Dein Fortschritt liegt nur auf diesem Gerät. Sichere ihn als Datei oder stelle ihn wieder her.', en:'Your progress is stored on this device only. Save it as a file or restore it.', pt:'Seu progresso está só neste dispositivo. Salve como arquivo ou restaure.' },
+  backup_export: { de:'⬇️ Sicherung exportieren', en:'⬇️ Export backup', pt:'⬇️ Exportar backup' },
+  backup_import: { de:'⬆️ Sicherung importieren', en:'⬆️ Import backup', pt:'⬆️ Importar backup' },
   learn_points:  { de:'PUNKTE', en:'POINTS', pt:'PONTOS' },
   learn_streak:  { de:'SERIE', en:'STREAK', pt:'SÉRIE' },
   learn_hint:    { de:'💡 Hinweis', en:'💡 Hint', pt:'💡 Dica' },
@@ -3095,6 +3115,55 @@ const AccountSystem = (() => {
     if (typeof applyI18n === 'function') applyI18n();
   }
   return { get, signIn, signOut, render, displayName };
+})();
+
+// ══ BACKUP SYSTEM (Fortschritt als Datei sichern/wiederherstellen) ═══════════
+// Exportiert/importiert alle lokalen 'pv'-Schlüssel. Reine Client-Funktion,
+// keine Datenübertragung – die Datei bleibt beim Nutzer.
+const BackupSystem = (() => {
+  function _collect() {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf('pv') === 0) data[k] = localStorage.getItem(k);
+    }
+    return data;
+  }
+  function exportBackup() {
+    const payload = { app: 'pharmavoice', version: 1, exportedAt: new Date().toISOString(), data: _collect() };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pharmavoice-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    if (typeof toast === 'function') toast(L('Sicherung exportiert.','Backup exported.','Backup exportado.'));
+  }
+  function importBackup(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      let parsed;
+      try { parsed = JSON.parse(e.target.result); } catch { parsed = null; }
+      if (!parsed || parsed.app !== 'pharmavoice' || typeof parsed.data !== 'object') {
+        alert(L('Ungültige Sicherungsdatei.','Invalid backup file.','Arquivo de backup inválido.'));
+        return;
+      }
+      if (!confirm(L('Sicherung jetzt einspielen? Dein aktueller Fortschritt auf diesem Gerät wird ersetzt.',
+                     'Restore this backup now? Your current progress on this device will be replaced.',
+                     'Restaurar este backup? Seu progresso atual neste dispositivo será substituído.'))) return;
+      // Bestehende pv-Schlüssel entfernen, dann Sicherung schreiben
+      const toRemove = [];
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('pv') === 0) toRemove.push(k); }
+      toRemove.forEach(k => localStorage.removeItem(k));
+      Object.entries(parsed.data).forEach(([k, v]) => { if (k.indexOf('pv') === 0) localStorage.setItem(k, v); });
+      alert(L('Sicherung wiederhergestellt. Die App wird neu geladen.','Backup restored. The app will reload.','Backup restaurado. O app será recarregado.'));
+      location.reload();
+    };
+    reader.readAsText(file);
+  }
+  return { exportBackup, importBackup };
 })();
 
 // Lern-Statistik aus vorhandenen Daten: Trefferquote (pv_smart_sessions),
