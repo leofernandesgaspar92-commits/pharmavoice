@@ -3620,6 +3620,32 @@ const RN_WORDS = [
   { word:"Suppositorium",      ipa:"zupoziˈtoːʁiʊm",              syl:"Sup·po·si·to·ri·um",        indication:"Rektale Darreichungsform",       cat:"Apotheke",       diff:3 },
 ];
 
+// Runner-Wortliste automatisch aus der MEDS-Datenbank anreichern (dedupliziert),
+// damit der Runner alle Wirkstoffe kennt und mit dem Lern-Modus synchron bleibt.
+(function enrichRunnerWords() {
+  // Erst evtl. vorhandene Duplikate in der Original-Liste entfernen (erste Instanz behalten)
+  const have = new Set();
+  for (let i = 0; i < RN_WORDS.length; ) {
+    if (have.has(RN_WORDS[i].word)) RN_WORDS.splice(i, 1);
+    else { have.add(RN_WORDS[i].word); i++; }
+  }
+  MEDS.forEach(m => {
+    if (have.has(m.name)) return;
+    const info = MED_INFO[m.name] || {};
+    let ind = (info.indication || m.category || '').split('.')[0];
+    if (ind.length > 60) ind = ind.slice(0, 57) + '…';
+    RN_WORDS.push({
+      word: m.name,
+      ipa: (m.phonetic || '').replace(/\//g, ''),
+      syl: Array.isArray(m.syllables) ? m.syllables.join('·') : '',
+      indication: ind,
+      cat: m.category,
+      diff: Math.min(3, Math.max(1, Math.ceil((m.syllables ? m.syllables.length : 3) / 3))),
+    });
+    have.add(m.name);
+  });
+})();
+
 // ═══════════════════════════════════════════════
 //  PHARMA RUNNER – GAME ENGINE
 // ═══════════════════════════════════════════════

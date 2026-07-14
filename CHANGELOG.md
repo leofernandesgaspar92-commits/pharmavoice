@@ -1,3 +1,5 @@
+- Pharma Runner Content synchronisiert: RN_WORDS wird jetzt automatisch aus der MEDS-Datenbank angereichert (48 → 132 Wörter) — neue Wirkstoffe erscheinen künftig auch im Runner, kein separates Pflegen mehr. Nebenfix: pre-existing Duplikat (Rivaroxaban) in der Runner-Liste entfernt
+
 - Wirkstoff-Datenbank: 7 weitere Wirkstoffe (Diazepam, Lorazepam, Oxycodon, Tilidin, Codein, Sumatriptan, Levodopa) mit IPA/Silbenbetonung & MED_INFO — jetzt 125 Wirkstoffe, alle validiert
 
 - Wirkstoff-Datenbank: 8 weitere Wirkstoffe ergänzt (Loratadin, Zolpidem, Baclofen, Prednison, Fentanyl, Naloxon, Bisacodyl, Morphin) mit IPA/Silbenbetonung & vollständigem MED_INFO — jetzt 118 Wirkstoffe, alle validiert
