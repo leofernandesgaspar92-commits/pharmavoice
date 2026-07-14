@@ -3945,9 +3945,12 @@ function rnNextWord() {
   const wEl = rnEl('rnWord');
   wEl.style.fontSize = w.word.length > 18 ? '18px' : w.word.length > 12 ? '24px' : '';
 
-  // Start timer
+  // Start timer — Zeit an die Wortlänge (Silbenzahl) anpassen, damit lange
+  // Wirkstoffe fair bleiben (Basis: 3 Silben; +18% je weitere Silbe, gedeckelt)
   const tier = getComboTier(RG.combo);
-  RG.totalTime = RUNNER_SPEEDS[tier];
+  const sylCount = w.syl ? w.syl.split('·').length : Math.max(1, Math.round(w.word.length / 3));
+  const lenFactor = Math.min(1.9, 1 + Math.max(0, sylCount - 3) * 0.18);
+  RG.totalTime = Math.round(RUNNER_SPEEDS[tier] * lenFactor);
   RG.timeLeft  = RG.totalTime;
 
   clearInterval(RG.tempoInt);
