@@ -1,3 +1,5 @@
+- Lexikon → Üben: Tap auf eine Wirkstoff-Karte startet eine gezielte Übungssession (das Wort zuerst + bis zu 4 weitere aus derselben Kategorie) — verbindet Browsen und Üben; Anhören-Button bleibt separat, voll barrierefrei (role/tabindex/aria)
+
 - Wirkstoff-Lexikon: Kategorie-Filter-Chips (nach Häufigkeit sortiert, mit Anzahl) — schnelles Filtern durch die 132 Wirkstoffe nach Kategorie, kombinierbar mit der Textsuche; „Alle" als Standard
 
 - Wirkstoff-Datenbank: 8 Neurologie/Psychiatrie-Wirkstoffe ergänzt (Olanzapin, Lamotrigin, Carbamazepin, Valproinsäure, Donepezil, Memantin, Topiramat, +Levodopa-Batch) mit IPA/Silben & MED_INFO — jetzt 132 Wirkstoffe (Runner automatisch 139), alle validiert

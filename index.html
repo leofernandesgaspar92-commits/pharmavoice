@@ -123,7 +123,9 @@
     .lex-cat-count { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1px 8px; font-size:10px; color:var(--gray); }
     .lex-card { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
     .lex-card.learned { border-color:rgba(23,217,196,.35); }
-    .lex-card-main { flex:1; min-width:0; }
+    .lex-card-main { flex:1; min-width:0; cursor:pointer; }
+    .lex-practice-hint { color:var(--green); font-size:11px; opacity:.7; }
+    .lex-card-main:active { opacity:.7; }
     .lex-card-name { font-size:14px; font-weight:800; color:var(--text); }
     .lex-check { color:var(--green); font-weight:900; }
     .lex-card-ipa { font-size:12px; color:var(--gray); font-style:italic; margin-top:1px; }
@@ -3018,6 +3020,25 @@ function getWeakWords(limit = 10) {
     .map(x => x.m);
 }
 
+// Startet eine gezielte Übung für einen Wirkstoff aus dem Lexikon:
+// das getappte Wort zuerst, dann bis zu 4 weitere aus derselben Kategorie.
+function practiceWord(name) {
+  const med = MEDS.find(m => m.name === name);
+  if (!med) return;
+  const sameCat = MEDS.filter(m => m.name !== name && m.category === med.category);
+  const extras = sameCat.sort(() => Math.random() - 0.5).slice(0, 4);
+  const meds = [med, ...extras];
+  Q = { meds, idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId: 1, xpMult: 1 };
+  if (ShopSystem.consumeDoubleXp()) {
+    Q.xpMult = 2;
+    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Shekel!', 3000), 900);
+  }
+  ResourceSystem.spendEnergy();
+  el('learnChip').textContent = `🎯  ${med.name}`;
+  showScreen('Learn');
+  renderQ();
+}
+
 function startWeakWords() {
   const weak = getWeakWords(10);
   if (weak.length < 1) {
@@ -5064,13 +5085,14 @@ const LexikonSystem = (() => {
       ${meds.map(m => {
         const learned = _isLearned(m.name);
         const info = MED_INFO[m.name] || {};
+        const safe = m.name.replace(/'/g, "\\'");
         return `<div class="lex-card ${learned ? 'learned' : ''}">
-          <div class="lex-card-main">
-            <div class="lex-card-name">${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''}</div>
+          <div class="lex-card-main" role="button" tabindex="0" onclick="practiceWord('${safe}')" aria-label="${L('Üben','Practice','Praticar')}: ${m.name}">
+            <div class="lex-card-name">${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''} <span class="lex-practice-hint">▶</span></div>
             <div class="lex-card-ipa">${m.phonetic || ''}</div>
             ${info.indication ? `<div class="lex-card-ind">${info.indication}</div>` : ''}
           </div>
-          <button class="lex-listen" onclick="LexikonSystem.listen('${m.name.replace(/'/g, "\\'")}')" aria-label="Anhören">🔊</button>
+          <button class="lex-listen" onclick="LexikonSystem.listen('${safe}')" aria-label="${L('Anhören','Listen','Ouvir')}">🔊</button>
         </div>`;
       }).join('')}`).join('');
   }
