@@ -144,6 +144,8 @@
     .lex-sort { display:flex; gap:4px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:3px; }
     .lex-sort-btn { border:none; background:transparent; color:var(--text2); font-size:12px; font-weight:700; padding:5px 12px; border-radius:16px; cursor:pointer; font-family:inherit; }
     .lex-sort-btn.active { background:var(--green); color:#04211d; }
+    .lex-legend { display:flex; gap:14px; margin:6px 2px 2px; font-size:11px; color:var(--text2); }
+    .lex-legend > span { display:inline-flex; align-items:center; gap:4px; }
     .due-card { display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:linear-gradient(135deg, #1a3a2e, var(--bg3)); border:1px solid var(--green); border-radius:var(--r); padding:14px; margin-bottom:12px; box-shadow:var(--shadow); cursor:pointer; font-family:inherit; color:var(--text); }
     .due-card:active { transform:scale(.99); }
     .due-icon { font-size:24px; flex:0 0 auto; }
@@ -1628,6 +1630,11 @@
     </div>
   </div>
   <div id="lexChips" class="lex-chips"></div>
+  <div class="lex-legend" aria-hidden="true">
+    <span><span class="lex-diff lex-diff-easy">●</span> <span data-i18n="diff_easy">Leicht</span></span>
+    <span><span class="lex-diff lex-diff-med">●</span> <span data-i18n="diff_med">Mittel</span></span>
+    <span><span class="lex-diff lex-diff-hard">●</span> <span data-i18n="diff_hard">Schwer</span></span>
+  </div>
   <div id="lexList"></div>
 </div>
 
@@ -2794,6 +2801,9 @@ const UI_I18N = {
   offline_note:  { de:'📴 Offline – du kannst weiterlernen, Fortschritt wird lokal gespeichert.', en:'📴 Offline – you can keep learning, progress is saved locally.', pt:'📴 Offline – você pode continuar, o progresso é salvo localmente.' },
   lex_sort_cat:  { de:'Kategorie', en:'Category', pt:'Categoria' },
   lex_sort_az:   { de:'A–Z', en:'A–Z', pt:'A–Z' },
+  diff_easy:     { de:'Leicht', en:'Easy', pt:'Fácil' },
+  diff_med:      { de:'Mittel', en:'Medium', pt:'Médio' },
+  diff_hard:     { de:'Schwer', en:'Hard', pt:'Difícil' },
   acc_title:     { de:'🔐 Mein Konto', en:'🔐 My account', pt:'🔐 Minha conta' },
   acc_hint:      { de:'Melde dich an, um deinen Fortschritt zu sichern:', en:'Sign in to secure your progress:', pt:'Entre para salvar seu progresso:' },
   acc_signout:   { de:'Abmelden', en:'Sign out', pt:'Sair' },
