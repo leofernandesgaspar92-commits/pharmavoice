@@ -35,6 +35,8 @@
       --char-glow:    rgba(23,217,196,.35);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .offline-bar { position:fixed; top:0; left:0; right:0; z-index:600; background:var(--gold); color:#2A1E00; font-size:12.5px; font-weight:700; text-align:center; padding:7px 12px; box-shadow:0 2px 10px rgba(0,0,0,.3); }
+    .offline-bar[hidden] { display:none; }
     /* Barrierefreiheit: klar sichtbarer Fokus-Rahmen für Tastatur-Navigation */
     :focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; border-radius: 4px; }
     :focus:not(:focus-visible) { outline: none; }
@@ -1105,6 +1107,10 @@
   </style>
 </head>
 <body>
+
+<div id="offlineBar" class="offline-bar" role="status" aria-live="polite" hidden>
+  <span data-i18n="offline_note">📴 Offline – du kannst weiterlernen, Fortschritt wird lokal gespeichert.</span>
+</div>
 
 <canvas id="confettiCanvas"></canvas>
 
@@ -2709,6 +2715,7 @@ const UI_I18N = {
   ach_events:    { de:'🗓️ EVENT-ABZEICHEN', en:'🗓️ EVENT BADGES', pt:'🗓️ EMBLEMAS DE EVENTO' },
   lex_search:    { de:'🔍 Wirkstoff, Kategorie oder Anwendung suchen …', en:'🔍 Search drug, category or use …', pt:'🔍 Buscar fármaco, categoria ou uso …' },
   lex_only_unlearned: { de:'Nur ungelernte anzeigen', en:'Show only unlearned', pt:'Mostrar só não aprendidos' },
+  offline_note:  { de:'📴 Offline – du kannst weiterlernen, Fortschritt wird lokal gespeichert.', en:'📴 Offline – you can keep learning, progress is saved locally.', pt:'📴 Offline – você pode continuar, o progresso é salvo localmente.' },
   lex_sort_cat:  { de:'Kategorie', en:'Category', pt:'Categoria' },
   lex_sort_az:   { de:'A–Z', en:'A–Z', pt:'A–Z' },
   acc_title:     { de:'🔐 Mein Konto', en:'🔐 My account', pt:'🔐 Minha conta' },
@@ -7201,6 +7208,15 @@ refreshTierUI();
 setTimeout(() => gameDesigner.checkForUpdate(), 1500);
 MusicSystem.initFromPrefs();
 applyI18n();
+
+// Offline-Hinweis ein-/ausblenden je nach Verbindungsstatus
+function _updateOfflineBar() {
+  const bar = document.getElementById('offlineBar');
+  if (bar) bar.hidden = navigator.onLine;
+}
+window.addEventListener('online', _updateOfflineBar);
+window.addEventListener('offline', _updateOfflineBar);
+_updateOfflineBar();
 
 // PWA: Service Worker registrieren (offline-fähig + installierbar)
 if ('serviceWorker' in navigator) {
