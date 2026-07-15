@@ -1485,6 +1485,7 @@
   <div id="resReview" class="res-review"></div>
   <button class="btn-start" id="resRetryBtn" style="display:none;background:linear-gradient(135deg,#FF9800,#FF6B35);box-shadow:0 4px 14px rgba(255,152,0,.3)" onclick="retryWrongWords()"></button>
   <div id="resChestArea"></div>
+  <button class="btn-ghost" id="resShareBtn" onclick="shareResult()" data-i18n="res_share">📤 &nbsp;Ergebnis teilen</button>
   <button class="btn-start" onclick="openModal()" data-i18n="res_again">🔄 &nbsp;Nochmal spielen</button>
   <button class="btn-ghost" onclick="goHome()" data-i18n="res_home">🏠 &nbsp;Zur Startseite</button>
 </div>
@@ -2657,6 +2658,7 @@ const UI_I18N = {
   modal_lvlsub:  { de:'Welchen Bereich möchtest du üben?', en:'Which area do you want to practice?', pt:'Qual área quer praticar?' },
   cancel:        { de:'Abbrechen', en:'Cancel', pt:'Cancelar' },
   res_again:     { de:'🔄  Nochmal spielen', en:'🔄  Play again', pt:'🔄  Jogar de novo' },
+  res_share:     { de:'📤  Ergebnis teilen', en:'📤  Share result', pt:'📤  Compartilhar resultado' },
   res_home:      { de:'🏠  Zur Startseite', en:'🏠  Back to home', pt:'🏠  Para o início' },
   back:          { de:'← Zurück', en:'← Back', pt:'← Voltar' },
   back_hub:      { de:'← Zurück zum Hub', en:'← Back to hub', pt:'← Voltar ao hub' },
@@ -3387,6 +3389,27 @@ function startQuickPractice() {
   el('learnChip').textContent = `🎲  ${L('Schnellübung','Quick practice','Prática rápida')}`;
   showScreen('Learn');
   renderQ();
+}
+
+// Ergebnis teilen: nutzt die Web-Share-API, mit Zwischenablage-Fallback
+function shareResult() {
+  const s = Q.correct || 0, t = (Q.meds || []).length || 0;
+  const text = L(
+    `Ich habe in PharmaVoice ${s}/${t} Wirkstoff-Aussprachen richtig gemeistert! 💊🔥`,
+    `I just nailed ${s}/${t} drug pronunciations in PharmaVoice! 💊🔥`,
+    `Acertei ${s}/${t} pronúncias de fármacos no PharmaVoice! 💊🔥`);
+  const url = location.origin + location.pathname;
+  if (navigator.share) {
+    navigator.share({ title: 'PharmaVoice', text, url }).catch(() => {});
+    return;
+  }
+  const payload = text + ' ' + url;
+  const done = () => { if (typeof toast === 'function') toast(L('In Zwischenablage kopiert.','Copied to clipboard.','Copiado para a área de transferência.')); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(payload).then(done).catch(() => alert(payload));
+  } else {
+    alert(payload);
+  }
 }
 
 // Sammelt die schwächsten Wörter (niedriger SM-2 Easiness-Faktor = früher falsch)
