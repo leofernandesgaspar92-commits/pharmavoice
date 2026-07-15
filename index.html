@@ -458,6 +458,9 @@
     .xp-pop { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); background:var(--green); color:#fff; font-size:28px; font-weight:900; padding:16px 34px; border-radius:18px; z-index:999; pointer-events:none; opacity:0; box-shadow:0 8px 24px rgba(0,168,107,.4); }
     @keyframes xpAnim { 0%{transform:translate(-50%,-50%) scale(0);opacity:0} 25%{transform:translate(-50%,-50%) scale(1.1);opacity:1} 70%{transform:translate(-50%,-50%) scale(1);opacity:1} 100%{transform:translate(-50%,-75%) scale(1);opacity:0} }
     .xp-pop.go { animation:xpAnim .9s ease forwards; }
+    .combo-pop { position:fixed; top:34%; left:50%; transform:translate(-50%,-50%) scale(0); background:linear-gradient(135deg,#FF6B35,#FFC107); color:#2A1500; font-size:20px; font-weight:900; padding:10px 22px; border-radius:16px; z-index:998; pointer-events:none; opacity:0; box-shadow:0 8px 24px rgba(255,107,53,.45); white-space:nowrap; }
+    .combo-pop .combo-bonus { font-size:15px; opacity:.85; }
+    .combo-pop.go { animation:xpAnim 1.05s ease forwards; }
 
     /* RESULT */
     #screenResult { text-align:center; }
@@ -1215,6 +1218,7 @@
   </div>
 </div>
 <div class="xp-pop" id="xpPop">+10 Shekel 🪙</div>
+<div class="combo-pop" id="comboPop" aria-hidden="true"></div>
 
 
 <!-- ══ LEVEL SELECT MODAL ══ -->
@@ -3889,6 +3893,12 @@ function scoreAnswer(good, med) {
     Q.correct++; Q.sessionXP += gain; S.xp += gain;
     Q.streak = (Q.streak || 0) + 1;
     popXP();
+    // Kombo-Bonus ab 3 richtigen in Folge
+    if (Q.streak >= 3) {
+      const bonus = 5;
+      Q.sessionXP += bonus; S.xp += bonus;
+      showCombo(Q.streak, bonus);
+    }
     SeasonalEventSystem.recordCorrect(med);
   } else {
     Q.streak = 0;
@@ -3985,6 +3995,17 @@ function popXP() {
   void p.offsetWidth;
   p.className = 'xp-pop go';
   setTimeout(() => { p.className = 'xp-pop'; }, 960);
+}
+
+// Kombo-Badge bei mehreren richtigen Antworten in Folge (Trend-Engagement-Element)
+function showCombo(streak, bonus) {
+  const c = el('comboPop');
+  if (!c) return;
+  c.innerHTML = `🔥 ${L('KOMBO','COMBO','COMBO')} ×${streak} <span class="combo-bonus">+${bonus}</span>`;
+  c.className = 'combo-pop';
+  void c.offsetWidth;
+  c.className = 'combo-pop go';
+  setTimeout(() => { c.className = 'combo-pop'; }, 1100);
 }
 
 // Kinetic-Typography-Burst: fliegt bei richtigen Antworten mit Buchstaben-Stagger ein
