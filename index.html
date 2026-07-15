@@ -146,6 +146,11 @@
     .lex-sort-btn.active { background:var(--green); color:#04211d; }
     .lex-legend { display:flex; gap:14px; margin:6px 2px 2px; font-size:11px; color:var(--text2); }
     .lex-legend > span { display:inline-flex; align-items:center; gap:4px; }
+    .prof-cat-title { font-size:12px; font-weight:800; letter-spacing:.03em; text-transform:uppercase; color:var(--text2); margin:14px 0 8px; }
+    .prof-cat-row { margin-bottom:8px; }
+    .prof-cat-head { display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text2); margin-bottom:3px; }
+    .prof-cat-bar { height:6px; background:var(--bg3); border-radius:3px; overflow:hidden; }
+    .prof-cat-fill { height:100%; background:var(--green); border-radius:3px; }
     .due-card { display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:linear-gradient(135deg, #1a3a2e, var(--bg3)); border:1px solid var(--green); border-radius:var(--r); padding:14px; margin-bottom:12px; box-shadow:var(--shadow); cursor:pointer; font-family:inherit; color:var(--text); }
     .due-card:active { transform:scale(.99); }
     .due-icon { font-size:24px; flex:0 0 auto; }
@@ -3374,12 +3379,32 @@ function renderProfileStats() {
   const bestCat = Object.keys(catScore).sort((a, b) => catScore[b] - catScore[a])[0] || '—';
 
   const accStr = accuracy == null ? '—' : accuracy + '%';
+
+  // Kategorie-Fortschritt: je Kategorie gelernte (reps>0) / gesamt, Top 5 nach Anteil gelernt
+  const learnedByCat = {}, totalByCat = {};
+  MEDS.forEach(m => {
+    const c = m.category || 'Sonstige';
+    totalByCat[c] = (totalByCat[c] || 0) + 1;
+    if (sm2[m.name] && sm2[m.name].reps > 0) learnedByCat[c] = (learnedByCat[c] || 0) + 1;
+  });
+  const catRows = Object.keys(learnedByCat)
+    .sort((a, b) => (learnedByCat[b] / totalByCat[b]) - (learnedByCat[a] / totalByCat[a]) || learnedByCat[b] - learnedByCat[a])
+    .slice(0, 5)
+    .map(c => {
+      const pct = Math.round(learnedByCat[c] / totalByCat[c] * 100);
+      return `<div class="prof-cat-row">
+        <div class="prof-cat-head"><span>${c}</span><span>${learnedByCat[c]}/${totalByCat[c]}</span></div>
+        <div class="prof-cat-bar"><div class="prof-cat-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+
   box.innerHTML = `
     <div class="prof-stat-row">
       <div class="prof-stat-item"><div class="prof-stat-big">${accStr}</div><div class="prof-stat-cap">${L('Trefferquote','Accuracy','Precisão')}</div></div>
       <div class="prof-stat-item"><div class="prof-stat-big">${mastered}</div><div class="prof-stat-cap">${L('Gemeistert','Mastered','Dominados')}</div></div>
     </div>
-    <div class="prof-stat-best">${L('Stärkste Kategorie','Strongest category','Categoria mais forte')}: <strong>${bestCat}</strong></div>`;
+    <div class="prof-stat-best">${L('Stärkste Kategorie','Strongest category','Categoria mais forte')}: <strong>${bestCat}</strong></div>
+    ${catRows ? `<div class="prof-cat-title">${L('Fortschritt nach Kategorie','Progress by category','Progresso por categoria')}</div>${catRows}` : ''}`;
 }
 
 function canPlay(lvId) {
