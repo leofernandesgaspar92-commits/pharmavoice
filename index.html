@@ -128,6 +128,10 @@
     .lex-chip-more { background:transparent; border-style:dashed; color:var(--text2); }
     .lex-unlearned { display:flex; align-items:center; gap:8px; margin:8px 2px 4px; font-size:13px; font-weight:600; color:var(--text2); cursor:pointer; user-select:none; }
     .lex-unlearned input { width:16px; height:16px; accent-color:var(--green); cursor:pointer; }
+    .lex-controls { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    .lex-sort { display:flex; gap:4px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:3px; }
+    .lex-sort-btn { border:none; background:transparent; color:var(--text2); font-size:12px; font-weight:700; padding:5px 12px; border-radius:16px; cursor:pointer; font-family:inherit; }
+    .lex-sort-btn.active { background:var(--green); color:#04211d; }
     .wod-card { background:linear-gradient(135deg, var(--bg2), var(--bg3)); border:1px solid var(--border); border-radius:var(--r); padding:14px; margin-bottom:12px; box-shadow:var(--shadow); }
     .wod-badge { font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--green); }
     .wod-name { font-size:20px; font-weight:800; color:var(--text); margin-top:6px; word-break:break-word; }
@@ -1592,7 +1596,13 @@
   <h2 class="screen-h" data-i18n="sh_lexikon">📚 Wirkstoff-Lexikon</h2>
   <div class="lex-progress" id="lexProgress"></div>
   <input type="text" class="lex-search" id="lexSearch" placeholder="🔍 Wirkstoff, Kategorie oder Anwendung suchen …" data-i18n-ph="lex_search" oninput="LexikonSystem.render()">
-  <label class="lex-unlearned"><input type="checkbox" id="lexUnlearned" onchange="LexikonSystem.render()"><span data-i18n="lex_only_unlearned">Nur ungelernte anzeigen</span></label>
+  <div class="lex-controls">
+    <label class="lex-unlearned"><input type="checkbox" id="lexUnlearned" onchange="LexikonSystem.render()"><span data-i18n="lex_only_unlearned">Nur ungelernte anzeigen</span></label>
+    <div class="lex-sort" role="group" aria-label="Sortierung">
+      <button class="lex-sort-btn active" id="lexSortCat" onclick="LexikonSystem.setSort('cat')" data-i18n="lex_sort_cat">Kategorie</button>
+      <button class="lex-sort-btn" id="lexSortAz" onclick="LexikonSystem.setSort('az')" data-i18n="lex_sort_az">A–Z</button>
+    </div>
+  </div>
   <div id="lexChips" class="lex-chips"></div>
   <div id="lexList"></div>
 </div>
@@ -2677,6 +2687,8 @@ const UI_I18N = {
   ach_events:    { de:'🗓️ EVENT-ABZEICHEN', en:'🗓️ EVENT BADGES', pt:'🗓️ EMBLEMAS DE EVENTO' },
   lex_search:    { de:'🔍 Wirkstoff, Kategorie oder Anwendung suchen …', en:'🔍 Search drug, category or use …', pt:'🔍 Buscar fármaco, categoria ou uso …' },
   lex_only_unlearned: { de:'Nur ungelernte anzeigen', en:'Show only unlearned', pt:'Mostrar só não aprendidos' },
+  lex_sort_cat:  { de:'Kategorie', en:'Category', pt:'Categoria' },
+  lex_sort_az:   { de:'A–Z', en:'A–Z', pt:'A–Z' },
   acc_title:     { de:'🔐 Mein Konto', en:'🔐 My account', pt:'🔐 Minha conta' },
   acc_hint:      { de:'Melde dich an, um deinen Fortschritt zu sichern:', en:'Sign in to secure your progress:', pt:'Entre para salvar seu progresso:' },
   acc_signout:   { de:'Abmelden', en:'Sign out', pt:'Sair' },
@@ -5631,9 +5643,17 @@ const LexikonSystem = (() => {
 
   let _activeCat = null; // null = alle Kategorien
   let _chipsExpanded = false;
+  let _sortMode = 'cat'; // 'cat' = nach Kategorie, 'az' = alphabetisch
   const CHIP_LIMIT = 12; // eingeklappt nur die häufigsten Kategorien zeigen
   function setCat(cat) { _activeCat = cat; render(); }
   function toggleChips() { _chipsExpanded = !_chipsExpanded; render(); }
+  function setSort(mode) {
+    _sortMode = mode;
+    const catBtn = document.getElementById('lexSortCat'), azBtn = document.getElementById('lexSortAz');
+    if (catBtn) catBtn.classList.toggle('active', mode === 'cat');
+    if (azBtn) azBtn.classList.toggle('active', mode === 'az');
+    render();
+  }
 
   function render() {
     const listEl = document.getElementById('lexList');
@@ -5699,36 +5719,45 @@ const LexikonSystem = (() => {
       listEl.innerHTML = `<p class="lex-empty">${msg}</p>`; return;
     }
 
-    const byCat = {};
-    filtered.forEach(m => { (byCat[m.category || 'Sonstige'] ||= []).push(m); });
+    const cardHtml = (m) => {
+      const learned = _isLearned(m.name);
+      const info = MED_INFO[m.name] || {};
+      const safe = m.name.replace(/'/g, "\\'");
+      // Schwierigkeit aus Silbenzahl: 1-3 leicht, 4-5 mittel, 6+ schwer
+      const syl = Array.isArray(m.syllables) ? m.syllables.length : 3;
+      const diff = syl >= 6 ? 'hard' : syl >= 4 ? 'med' : 'easy';
+      const diffLabel = diff === 'hard' ? L('Schwer','Hard','Difícil') : diff === 'med' ? L('Mittel','Medium','Médio') : L('Leicht','Easy','Fácil');
+      const diffDot = `<span class="lex-diff lex-diff-${diff}" title="${diffLabel}" aria-label="${diffLabel}">●</span>`;
+      return `<div class="lex-card ${learned ? 'learned' : ''}">
+        <div class="lex-card-main" role="button" tabindex="0" onclick="practiceWord('${safe}')" aria-label="${L('Üben','Practice','Praticar')}: ${m.name} (${diffLabel})">
+          <div class="lex-card-name">${diffDot} ${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''} <span class="lex-practice-hint">▶</span></div>
+          <div class="lex-card-ipa">${m.phonetic || ''}</div>
+          ${info.indication ? `<div class="lex-card-ind">${info.indication}</div>` : ''}
+        </div>
+        <button class="lex-listen" onclick="LexikonSystem.listen('${safe}')" aria-label="${L('Anhören','Listen','Ouvir')}">🔊</button>
+      </div>`;
+    };
 
-    listEl.innerHTML = Object.entries(byCat).map(([cat, meds]) => `
-      <div class="lex-cat-title">${cat} <span class="lex-cat-count">${meds.length}</span></div>
-      ${meds.map(m => {
-        const learned = _isLearned(m.name);
-        const info = MED_INFO[m.name] || {};
-        const safe = m.name.replace(/'/g, "\\'");
-        // Schwierigkeit aus Silbenzahl: 1-3 leicht, 4-5 mittel, 6+ schwer
-        const syl = Array.isArray(m.syllables) ? m.syllables.length : 3;
-        const diff = syl >= 6 ? 'hard' : syl >= 4 ? 'med' : 'easy';
-        const diffLabel = diff === 'hard' ? L('Schwer','Hard','Difícil') : diff === 'med' ? L('Mittel','Medium','Médio') : L('Leicht','Easy','Fácil');
-        const diffDot = `<span class="lex-diff lex-diff-${diff}" title="${diffLabel}" aria-label="${diffLabel}">●</span>`;
-        return `<div class="lex-card ${learned ? 'learned' : ''}">
-          <div class="lex-card-main" role="button" tabindex="0" onclick="practiceWord('${safe}')" aria-label="${L('Üben','Practice','Praticar')}: ${m.name} (${diffLabel})">
-            <div class="lex-card-name">${diffDot} ${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''} <span class="lex-practice-hint">▶</span></div>
-            <div class="lex-card-ipa">${m.phonetic || ''}</div>
-            ${info.indication ? `<div class="lex-card-ind">${info.indication}</div>` : ''}
-          </div>
-          <button class="lex-listen" onclick="LexikonSystem.listen('${safe}')" aria-label="${L('Anhören','Listen','Ouvir')}">🔊</button>
-        </div>`;
-      }).join('')}`).join('');
+    if (_sortMode === 'az') {
+      // Flache A–Z-Liste, gruppiert nach Anfangsbuchstabe
+      const sorted = filtered.slice().sort((a, b) => a.name.localeCompare(b.name, 'de'));
+      const byLetter = {};
+      sorted.forEach(m => { const l = m.name[0].toUpperCase(); (byLetter[l] ||= []).push(m); });
+      listEl.innerHTML = Object.entries(byLetter).map(([letter, meds]) =>
+        `<div class="lex-cat-title">${letter} <span class="lex-cat-count">${meds.length}</span></div>${meds.map(cardHtml).join('')}`).join('');
+    } else {
+      const byCat = {};
+      filtered.forEach(m => { (byCat[m.category || 'Sonstige'] ||= []).push(m); });
+      listEl.innerHTML = Object.entries(byCat).map(([cat, meds]) =>
+        `<div class="lex-cat-title">${cat} <span class="lex-cat-count">${meds.length}</span></div>${meds.map(cardHtml).join('')}`).join('');
+    }
   }
 
   function listen(name) {
     AudioSystem.speakWord(name, CharacterSystem.getLang());
   }
 
-  return { render, listen, setCat, toggleChips };
+  return { render, listen, setCat, toggleChips, setSort };
 })();
 
 // ══ RESOURCE SYSTEM (Youth-Pharma-Referenz: Coins/Gems/Energy HUD) ══════
