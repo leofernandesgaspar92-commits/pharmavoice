@@ -144,6 +144,13 @@
     .lex-sort { display:flex; gap:4px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:3px; }
     .lex-sort-btn { border:none; background:transparent; color:var(--text2); font-size:12px; font-weight:700; padding:5px 12px; border-radius:16px; cursor:pointer; font-family:inherit; }
     .lex-sort-btn.active { background:var(--green); color:#04211d; }
+    .due-card { display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:linear-gradient(135deg, #1a3a2e, var(--bg3)); border:1px solid var(--green); border-radius:var(--r); padding:14px; margin-bottom:12px; box-shadow:var(--shadow); cursor:pointer; font-family:inherit; color:var(--text); }
+    .due-card:active { transform:scale(.99); }
+    .due-icon { font-size:24px; flex:0 0 auto; }
+    .due-text { display:flex; flex-direction:column; flex:1; min-width:0; }
+    .due-title { font-size:14px; font-weight:800; color:var(--text); }
+    .due-sub { font-size:12px; color:var(--text2); }
+    .due-go { font-size:16px; color:var(--green); flex:0 0 auto; }
     .wod-card { background:linear-gradient(135deg, var(--bg2), var(--bg3)); border:1px solid var(--border); border-radius:var(--r); padding:14px; margin-bottom:12px; box-shadow:var(--shadow); }
     .wod-badge { font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--green); }
     .wod-name { font-size:20px; font-weight:800; color:var(--text); margin-top:6px; word-break:break-word; }
@@ -1417,6 +1424,7 @@
   <div id="upgradeBannerHome"></div>
 
   <!-- Daily challenge -->
+  <div id="homeDueCard"></div>
   <div id="homeWordCard"></div>
   <div id="homeSeasonCard"></div>
   <div id="homeMissionCard"></div>
@@ -3141,6 +3149,8 @@ function renderHomeDashboard() {
   set('homeProgStreak', L(`🔥 Streak: ${S.streak} Tage`, `🔥 Streak: ${S.streak} days`, `🔥 Sequência: ${S.streak} dias`));
   el('homeProgFill').style.width = pct + '%';
 
+  // Fällige Wiederholungen (Spaced Repetition)
+  renderDueCard();
   // Wort des Tages (deterministisch pro Kalendertag)
   if (el('homeWordCard')) el('homeWordCard').innerHTML = renderWordOfDay();
 
@@ -3515,6 +3525,35 @@ function getWeakWords(limit = 10) {
     .sort((a, b) => a.ef - b.ef)
     .slice(0, limit)
     .map(x => x.m);
+}
+
+// Spaced Repetition: bereits gelernte Wörter (reps>0), deren Wiederholung fällig ist
+function getDueReviews(limit = 20) {
+  const today = new Date().toISOString().slice(0, 10);
+  return MEDS.filter(m => canPlay(m.lv) === true)
+    .filter(m => SM2[m.name] && SM2[m.name].reps > 0 && (SM2[m.name].nextReview || '2000-01-01') <= today)
+    .sort((a, b) => (SM2[a.name].nextReview || '').localeCompare(SM2[b.name].nextReview || ''))
+    .slice(0, limit);
+}
+function startDueReviews() {
+  const meds = getDueReviews(12);
+  if (!meds.length) return;
+  Q = { meds, idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId: 1, xpMult: 1, results: [] };
+  ResourceSystem.spendEnergy();
+  el('learnChip').textContent = `🔁  ${L('Wiederholung','Review','Revisão')}`;
+  showScreen('Learn');
+  renderQ();
+}
+function renderDueCard() {
+  const box = document.getElementById('homeDueCard');
+  if (!box) return;
+  const due = getDueReviews(99).length;
+  if (!due) { box.innerHTML = ''; return; }
+  box.innerHTML = `<button class="due-card" onclick="startDueReviews()">
+    <span class="due-icon">🔁</span>
+    <span class="due-text"><span class="due-title">${L('Wiederholung fällig','Reviews due','Revisões pendentes')}</span>
+    <span class="due-sub">${due} ${L('Wörter zum Auffrischen','words to refresh','palavras para revisar')}</span></span>
+    <span class="due-go">▶</span></button>`;
 }
 
 // Wiederholt genau die Wörter, die in der letzten Session falsch waren
