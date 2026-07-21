@@ -4101,7 +4101,7 @@ function renderQ() {
   Q.answered = false;
   const total = Q.meds.length;
   const cur   = Q.idx + 1;
-  set('progText', `Frage ${cur} von ${total}`);
+  set('progText', L(`Frage ${cur} von ${total}`, `Question ${cur} of ${total}`, `Pergunta ${cur} de ${total}`));
   set('progXp',   `${Q.sessionXP} Shekel`);
   el('progFill').style.width = ((cur - 1) / total * 100) + '%';
   const dotsEl = el('progDots');
@@ -4128,10 +4128,10 @@ function renderQ() {
   const info  = MED_INFO[med.name] || {};
   const extra = el('medExtra');
   let xhtml = '';
-  if (info.indication)                           xhtml += `<div class="med-extra-row"><div class="med-extra-label">Anwendung</div><div class="med-extra-text">${info.indication}</div></div>`;
-  if (info.drugClass && info.drugClass !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">Wirkstoffklasse</div><div class="med-extra-text">${info.drugClass}</div></div>`;
-  if (info.formula   && info.formula   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">Summenformel</div><div class="med-extra-text">${info.formula}</div></div>`;
-  if (info.atcCode   && info.atcCode   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">ATC-Code</div><div class="med-extra-text">${info.atcCode}</div></div>`;
+  if (info.indication)                           xhtml += `<div class="med-extra-row"><div class="med-extra-label">${L('Anwendung','Use','Indicação')}</div><div class="med-extra-text">${info.indication}</div></div>`;
+  if (info.drugClass && info.drugClass !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">${L('Wirkstoffklasse','Drug class','Classe')}</div><div class="med-extra-text">${info.drugClass}</div></div>`;
+  if (info.formula   && info.formula   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">${L('Summenformel','Formula','Fórmula')}</div><div class="med-extra-text">${info.formula}</div></div>`;
+  if (info.atcCode   && info.atcCode   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">${L('ATC-Code','ATC code','Código ATC')}</div><div class="med-extra-text">${info.atcCode}</div></div>`;
   extra.innerHTML = xhtml;
   // Details standardmäßig eingeklappt, Toggle nur zeigen wenn Inhalte da sind
   extra.classList.remove('open');
@@ -4204,13 +4204,13 @@ function pick(btn, correct, med) {
   const good = btn.dataset.correct === 'true';
   if (good) {
     btn.classList.add('good');
-    showFeedback(true, `✅ &nbsp;Richtig! &nbsp;${med.tip}`);
+    showFeedback(true, `✅ &nbsp;${L('Richtig!','Correct!','Correto!')} &nbsp;${med.tip}`);
   } else {
     btn.classList.add('bad');
     btn.classList.add('shake');
     setTimeout(() => btn.classList.remove('shake'), 380);
     document.querySelectorAll('.opt').forEach(b => { if (b.dataset.correct === 'true') b.classList.add('good'); });
-    showFeedback(false, `❌ &nbsp;Fast! Richtige Antwort: <strong>${correct}</strong><br>${med.tip}`);
+    showFeedback(false, `❌ &nbsp;${L('Fast! Richtige Antwort:','Almost! Correct answer:','Quase! Resposta correta:')} <strong>${correct}</strong><br>${med.tip}`);
   }
   scoreAnswer(good, med);
 }
