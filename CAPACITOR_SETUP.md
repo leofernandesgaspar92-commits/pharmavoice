@@ -147,6 +147,10 @@ Signiertes Release-Bundle für Play:
 - **Service Worker** ist in der nativen App überflüssig – schadet i. d. R. nicht,
   kann aber für die App-Variante deaktiviert werden.
 - `www/manifest.json` bleibt für die PWA relevant, für die native App irrelevant.
+- **Bundle-Hygiene:** `webDir` ist `www` – nur dieser Ordner landet im APK/AAB.
+  `store-assets/`, `runner.html`, `*.md`, `feature-graphic.html` u. Ä. liegen bewusst
+  **außerhalb** `www/` und werden NICHT mitgebündelt. `www/` enthält nur:
+  `index.html`, `fonts/`, `icon-192/512.png`, `manifest.json`, `sw.js`.
 - Data-Safety-Formular in der Play Console wahrheitsgemäß ausfüllen
   (bei reiner Web-Speech/lokal: keine Server-Übertragung; nach Firebase: anpassen).
 
