@@ -4411,74 +4411,93 @@ function showResult() {
   showScreen('Result');
 }
 
+// ═══════════════════════════════════════════════
+//  SPEECH ENGINE  (Kapselung – Capacitor-ready)
+//  Die gesamte Spracherkennung liegt hinter diesem Interface (isSupported /
+//  start / stop + Callbacks). In der nativen App wird NUR diese Sektion auf
+//  @capacitor-community/speech-recognition umgestellt – der übrige Code
+//  (startMic, checkPronunciation …) bleibt unverändert.
+//  Grund: window.SpeechRecognition existiert im Capacitor-WebView (v.a. iOS)
+//  nicht zuverlässig → dort das native Plugin einhängen.
+// ═══════════════════════════════════════════════
+const SpeechEngine = (() => {
+  const WEB = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let _rec = null;
+  function isSupported() { return !!WEB; }
+  function start(opts) {
+    opts = opts || {};
+    if (!WEB) { if (opts.onUnsupported) opts.onUnsupported(); return false; }
+    _rec = new WEB();
+    _rec.lang = opts.lang || 'de-DE';
+    _rec.continuous = false;
+    _rec.interimResults = true;
+    _rec.maxAlternatives = 3;
+    _rec.onstart = () => { if (opts.onStart) opts.onStart(); };
+    _rec.onresult = (event) => {
+      let interim = '', final = ''; const alternatives = [];
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const res = event.results[i];
+        if (res.isFinal) {
+          final += res[0].transcript;
+          // Fachbegriffe liegen oft nur in einer der Alternativen richtig
+          for (let k = 0; k < res.length; k++) alternatives.push(res[k].transcript);
+        } else { interim += res[0].transcript; }
+      }
+      if (opts.onResult) opts.onResult({ final: final.trim(), interim: interim, alternatives: alternatives });
+    };
+    _rec.onend = () => { _rec = null; if (opts.onEnd) opts.onEnd(); };
+    _rec.onerror = (e) => { _rec = null; if (opts.onError) opts.onError(e.error); };
+    try { _rec.start(); return true; } catch (_) { return false; }
+  }
+  function stop() { if (_rec) { try { _rec.stop(); } catch (_) {} _rec = null; } }
+  return { isSupported, start, stop };
+})();
+
 function toggleMic() {
   if (micActive) { stopMic(); return; }
   startMic();
 }
 
-function startMic() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    el('micResult').textContent = '⚠️ Spracherkennung wird von diesem Browser nicht unterstützt.';
-    return;
-  }
-  recognition = new SR();
-  const LANG_MAP = { de:'de-DE', en:'en-US', pt:'pt-BR' };
-  recognition.lang = LANG_MAP[CharacterSystem.getLang()] || 'de-DE';
-  recognition.continuous = false;
-  recognition.interimResults = true;
-  recognition.maxAlternatives = 3;
-
-  recognition.onstart = () => {
-    micActive = true;
-    el('micBtn').classList.add('active');
-    el('micLbl').textContent = L('Höre zu …','Listening …','Ouvindo …');
-    el('micResult').textContent = '';
-  };
-
-  recognition.onresult = (event) => {
-    let interim = '', final = '';
-    const alternatives = [];
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      const res = event.results[i];
-      if (res.isFinal) {
-        final += res[0].transcript;
-        // Alle Erkennungs-Alternativen sammeln – Spracherkennung liegt bei
-        // Fachbegriffen oft nur in einer der Alternativen richtig
-        for (let k = 0; k < res.length; k++) alternatives.push(res[k].transcript);
-      } else {
-        interim += res[0].transcript;
-      }
-    }
-    el('micResult').textContent = final || interim;
-    if (final) checkPronunciation(final.trim(), alternatives);
-  };
-
-  recognition.onend = () => {
-    micActive = false;
-    if (el('micBtn')) el('micBtn').classList.remove('active');
-    if (el('micLbl')) el('micLbl').textContent = L('Aussprache üben','Practice pronunciation','Praticar pronúncia');
-    recognition = null;
-  };
-
-  recognition.onerror = (event) => {
-    micActive = false;
-    if (el('micBtn')) el('micBtn').classList.remove('active');
-    if (el('micLbl')) el('micLbl').textContent = L('Aussprache üben','Practice pronunciation','Praticar pronúncia');
-    recognition = null;
-    if (event.error !== 'no-speech') {
-      el('micResult').textContent = '⚠️ Fehler: ' + event.error;
-    }
-  };
-
-  recognition.start();
-}
-
-function stopMic() {
-  if (recognition) { try { recognition.stop(); } catch(_) {} recognition = null; }
+function _micReset() {
   micActive = false;
   if (el('micBtn')) el('micBtn').classList.remove('active');
   if (el('micLbl')) el('micLbl').textContent = L('Aussprache üben','Practice pronunciation','Praticar pronúncia');
+}
+
+function startMic() {
+  const LANG_MAP = { de:'de-DE', en:'en-US', pt:'pt-BR' };
+  SpeechEngine.start({
+    lang: LANG_MAP[CharacterSystem.getLang()] || 'de-DE',
+    onUnsupported: () => {
+      // Graceful fallback: in Umgebungen ohne Erkennung (iOS-WebView, alte
+      // Browser) die korrekte Aussprache vorsprechen statt einfach zu blockieren.
+      el('micResult').textContent = L(
+        '⚠️ Spracherkennung hier nicht verfügbar – hör dir die Aussprache an und sprich sie nach.',
+        '⚠️ Speech recognition unavailable here – listen and repeat instead.',
+        '⚠️ Reconhecimento de voz indisponível – ouça e repita.');
+      if (typeof playMedWord === 'function') playMedWord();
+    },
+    onStart: () => {
+      micActive = true;
+      if (el('micBtn')) el('micBtn').classList.add('active');
+      if (el('micLbl')) el('micLbl').textContent = L('Höre zu …','Listening …','Ouvindo …');
+      if (el('micResult')) el('micResult').textContent = '';
+    },
+    onResult: (r) => {
+      if (el('micResult')) el('micResult').textContent = r.final || r.interim;
+      if (r.final) checkPronunciation(r.final, r.alternatives);
+    },
+    onEnd: _micReset,
+    onError: (err) => {
+      _micReset();
+      if (err !== 'no-speech' && el('micResult')) el('micResult').textContent = '⚠️ ' + err;
+    },
+  });
+}
+
+function stopMic() {
+  SpeechEngine.stop();
+  _micReset();
 }
 
 // ═══════════════════════════════════════════════
