@@ -4549,6 +4549,35 @@ const SpeechEngine = (() => {
   return { isSupported, start, stop };
 })();
 
+// ═══════════════════════════════════════════════
+//  TTS ENGINE  (Sprachausgabe – Capacitor-ready)
+//  Das Vorsprechen von Wirkstoffnamen liegt hinter diesem Interface.
+//  In der nativen App NUR diese Sektion auf @capacitor-community/text-to-speech
+//  umstellen (window.Capacitor.Plugins.TextToSpeech.speak) – der Web-Zweig bleibt,
+//  damit dieselbe index.html als PWA weiterläuft. Grund: window.speechSynthesis ist
+//  im Capacitor-WebView (v.a. iOS) unzuverlässig.
+// ═══════════════════════════════════════════════
+const TtsEngine = (() => {
+  const SYN = window.speechSynthesis;
+  function isSupported() { return !!SYN; }
+  function speak(text, opts) {
+    opts = opts || {};
+    if (!SYN || !text) return false;
+    try {
+      SYN.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang   = opts.lang || 'de-DE';
+      u.rate   = opts.rate   != null ? opts.rate   : 0.9;
+      u.pitch  = opts.pitch  != null ? opts.pitch  : 1.0;
+      u.volume = opts.volume != null ? opts.volume : 1.0;
+      SYN.speak(u);
+      return true;
+    } catch (_) { return false; }
+  }
+  function stop() { if (SYN) { try { SYN.cancel(); } catch (_) {} } }
+  return { isSupported, speak, stop };
+})();
+
 function toggleMic() {
   if (micActive) { stopMic(); return; }
   startMic();
@@ -5893,13 +5922,8 @@ const AudioSystem = (() => {
   // Nutzt die Sprachausgabe unabhängig vom Speech-Feedback-Schalter, da es eine
   // bewusst angeforderte Lernhilfe ist.
   function speakWord(text, lang) {
-    if (!window.speechSynthesis || !text) return false;
-    window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-BR' : 'de-DE';
-    utt.rate = 0.75; utt.pitch = 1.0; utt.volume = Math.max(_speechVol, 0.6);
-    window.speechSynthesis.speak(utt);
-    return true;
+    const l = lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-BR' : 'de-DE';
+    return TtsEngine.speak(text, { lang: l, rate: 0.75, pitch: 1.0, volume: Math.max(_speechVol, 0.6) });
   }
 
   // ── Toggles ──
