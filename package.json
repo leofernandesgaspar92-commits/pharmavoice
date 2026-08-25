@@ -1,14 +1,19 @@
 {
   "name": "pharmavoice",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "PharmaVoice – gamifizierte Lern-App für die Aussprache medizinischer Wirkstoffnamen (DE/EN/PT).",
+  "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "cap:sync": "cap sync",
+    "cap:add:android": "cap add android",
+    "cap:open:android": "cap open android",
+    "cap:copy": "cap copy",
+    "test": "echo \"E2E-Tests laufen via Playwright gegen www/index.html\" && exit 0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["pharma", "lernen", "aussprache", "capacitor", "pwa"],
+  "author": "Leo Fernandes Gaspar",
+  "license": "UNLICENSED",
+  "private": true,
   "type": "commonjs",
   "dependencies": {
     "@capacitor/android": "^8.3.1",
