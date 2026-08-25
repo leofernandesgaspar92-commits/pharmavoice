@@ -1122,6 +1122,9 @@
     @keyframes pop { 0%{transform:scale(.6);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
     .ob-title { font-family:'Fredoka','Inter',sans-serif; font-size:26px; font-weight:700; color:var(--text); margin-bottom:12px; line-height:1.2; }
     .ob-text { font-size:15px; color:var(--text2); line-height:1.55; }
+    .ob-langs { display:flex; gap:10px; margin-bottom:18px; }
+    .ob-lang { width:46px; height:46px; border-radius:14px; border:2px solid var(--border); background:var(--bg2); font-size:22px; cursor:pointer; transition:.15s; line-height:1; }
+    .ob-lang.active { border-color:var(--green); background:rgba(23,217,196,.12); transform:scale(1.05); }
     .ob-dots { display:flex; gap:8px; margin-bottom:20px; }
     .ob-dot { width:9px; height:9px; border-radius:50%; background:var(--bg3); transition:.2s; }
     .ob-dot.active { background:var(--green); width:24px; border-radius:5px; }
@@ -1210,6 +1213,11 @@
     <div class="ob-emoji" id="obEmoji">💊</div>
     <h2 class="ob-title" id="obTitle"></h2>
     <p class="ob-text" id="obText"></p>
+  </div>
+  <div class="ob-langs" id="obLangs" role="group" aria-label="Sprache / Language">
+    <button class="ob-lang" data-lang="de" onclick="obSetLang('de')" aria-label="Deutsch" lang="de">🇩🇪</button>
+    <button class="ob-lang" data-lang="en" onclick="obSetLang('en')" aria-label="English" lang="en">🇬🇧</button>
+    <button class="ob-lang" data-lang="pt" onclick="obSetLang('pt')" aria-label="Português" lang="pt">🇵🇹</button>
   </div>
   <div class="ob-dots" id="obDots"></div>
   <button class="btn-start ob-next" onclick="OnboardingSystem.next()" id="obNext"></button>
@@ -3202,6 +3210,9 @@ const OnboardingSystem = (() => {
     if (dots) dots.innerHTML = SLIDES.map((_, k) => `<span class="ob-dot ${k === _i ? 'active' : ''}"></span>`).join('');
     const last = _i === SLIDES.length - 1;
     if (el('obNext')) el('obNext').textContent = last ? L('Los geht’s! 🚀','Let’s go! 🚀','Vamos! 🚀') : L('Weiter','Next','Próximo');
+    // aktive Sprache markieren
+    const lang = (CharacterSystem.getLang && CharacterSystem.getLang()) || 'de';
+    document.querySelectorAll('#obLangs .ob-lang').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
     // Re-animate emoji
     if (el('obEmoji')) { el('obEmoji').style.animation = 'none'; void el('obEmoji').offsetWidth; el('obEmoji').style.animation = ''; }
   }
@@ -3219,8 +3230,14 @@ const OnboardingSystem = (() => {
     try { localStorage.setItem(LS, '1'); } catch {}
     if (el('onboarding')) el('onboarding').hidden = true;
   }
-  return { maybeShow, next, finish };
+  return { maybeShow, next, finish, refresh: _render };
 })();
+
+// Sprache im Onboarding wechseln: setzt die App-Sprache und rendert die Slides neu
+function obSetLang(l) {
+  switchLang(l);
+  try { OnboardingSystem.refresh(); } catch (e) {}
+}
 
 function openAudioSettings() {
   const m = document.getElementById('audioSettingsModal');
