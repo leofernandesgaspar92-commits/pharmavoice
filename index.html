@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="icon-192.png" />
   <title>PharmaVoice</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg:      #0A0F1C;
@@ -396,6 +396,10 @@
     .level-chip { display:inline-flex; align-items:center; gap:6px; background:var(--bg3); color:var(--green); font-size:12px; font-weight:600; padding:5px 12px; border-radius:20px; margin-bottom:20px; border:1px solid rgba(0,168,107,.2); }
     .med-card   { background:var(--bg2); border-radius:16px; padding:28px 22px 22px; text-align:center; margin-bottom:20px; box-shadow:var(--shadow); border:1px solid var(--border); }
     .med-cat    { display:inline-block; background:var(--bg3); color:var(--green); font-size:12px; font-weight:600; padding:4px 14px; border-radius:20px; margin-bottom:16px; border:1px solid rgba(0,168,107,.2); }
+    /* Verspielte, runde Display-Schrift nur für grosse Überschriften (Juicy-UI) */
+    .home-hero-title, .screen-h, .res-title, .prof-name, .wod-name, .med-name-big {
+      font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
+    }
     .med-name-big { font-size:34px; font-weight:900; letter-spacing:.3px; margin-bottom:10px; line-height:1.15; transition:font-size .1s; color:var(--text); }
     .phonetic   { font-size:14px; color:var(--gray); font-style:italic; margin-bottom:18px; }
     .syl-row    { display:flex; align-items:baseline; justify-content:center; flex-wrap:wrap; gap:1px; }
