@@ -323,6 +323,9 @@
       display: flex; padding: 10px 0 env(safe-area-inset-bottom,14px); z-index: 200;
     }
     .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; }
+    /* Interner Game-Designer-Tab: nur im Dev-Modus sichtbar (Logo lang drücken) */
+    #navGD { display:none; }
+    body.dev-on #navGD { display:flex; }
     .nav-item svg  { width:24px; height:24px; fill:var(--gray2); transition:fill .2s; }
     .nav-item span { font-size:11px; color:var(--gray2); transition:color .2s; font-weight:500; }
     .nav-item.active svg  { fill:var(--green); }
@@ -4831,6 +4834,9 @@ const ResearchAgent = (() => {
 //  DEV PANEL CONTROLS
 // ═══════════════════════════════════════════════
 function toggleDevPanel() {
+  // Logo lang drücken = Dev-Modus dauerhaft freischalten (blendet den Design-Tab ein)
+  try { localStorage.setItem('pv_dev', '1'); } catch (e) {}
+  document.body.classList.add('dev-on');
   el('devPanel').classList.toggle('open');
   // Sync tier buttons
   const plan = PaymentService.getPlan();
@@ -7678,6 +7684,8 @@ const AutoUpdateSystem = (() => {
   }
 
   function _notify(feat, count) {
+    // Interne Empfehlungs-Leiste nur im Dev-Modus – nie für Endnutzer
+    if (!document.body.classList.contains('dev-on')) return;
     const old = document.getElementById('gdNotifBanner');
     if (old) old.remove();
     const b = document.createElement('div');
@@ -7930,6 +7938,9 @@ refreshTierUI();
 setTimeout(() => gameDesigner.checkForUpdate(), 1500);
 MusicSystem.initFromPrefs();
 applyI18n();
+
+// Dev-Modus wiederherstellen (Game-Designer-Tab/Banner nur für Entwickler)
+try { if (localStorage.getItem('pv_dev') === '1') document.body.classList.add('dev-on'); } catch (e) {}
 
 // Onboarding beim ersten Start zeigen
 try { OnboardingSystem.maybeShow(); } catch (e) {}
