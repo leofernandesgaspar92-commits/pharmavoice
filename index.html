@@ -1113,6 +1113,20 @@
     .audio-divider { border:none; border-top:1px solid rgba(255,255,255,.1); margin:12px 0; }
     .audio-close-btn { width:100%; padding:13px; background:rgba(255,255,255,.08); border:none; border-radius:12px; color:#fff; font-size:15px; font-weight:600; cursor:pointer; margin-top:8px; }
 
+    /* ── Onboarding ── */
+    .ob-overlay { position:fixed; inset:0; z-index:1400; background:radial-gradient(ellipse at top, #101A32 0%, var(--bg) 60%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 26px; text-align:center; }
+    .ob-overlay[hidden] { display:none; }
+    .ob-skip { position:absolute; top:16px; right:18px; background:none; border:none; color:var(--text2); font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .ob-body { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; max-width:340px; }
+    .ob-emoji { font-size:76px; margin-bottom:18px; animation:pop .4s ease-out both; }
+    @keyframes pop { 0%{transform:scale(.6);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+    .ob-title { font-family:'Fredoka','Inter',sans-serif; font-size:26px; font-weight:700; color:var(--text); margin-bottom:12px; line-height:1.2; }
+    .ob-text { font-size:15px; color:var(--text2); line-height:1.55; }
+    .ob-dots { display:flex; gap:8px; margin-bottom:20px; }
+    .ob-dot { width:9px; height:9px; border-radius:50%; background:var(--bg3); transition:.2s; }
+    .ob-dot.active { background:var(--green); width:24px; border-radius:5px; }
+    .ob-next { max-width:340px; }
+
     /* ── Confetti Canvas ── */
     #confettiCanvas {
       position:fixed; top:0; left:0; width:100%; height:100%;
@@ -1187,6 +1201,18 @@
 
 <div id="offlineBar" class="offline-bar" role="status" aria-live="polite" hidden>
   <span data-i18n="offline_note">📴 Offline – du kannst weiterlernen, Fortschritt wird lokal gespeichert.</span>
+</div>
+
+<!-- ══ ONBOARDING (First Launch) ══ -->
+<div id="onboarding" class="ob-overlay" hidden>
+  <button class="ob-skip" onclick="OnboardingSystem.finish()" data-i18n="ob_skip">Überspringen</button>
+  <div class="ob-body">
+    <div class="ob-emoji" id="obEmoji">💊</div>
+    <h2 class="ob-title" id="obTitle"></h2>
+    <p class="ob-text" id="obText"></p>
+  </div>
+  <div class="ob-dots" id="obDots"></div>
+  <button class="btn-start ob-next" onclick="OnboardingSystem.next()" id="obNext"></button>
 </div>
 
 <canvas id="confettiCanvas"></canvas>
@@ -3154,6 +3180,47 @@ function L(de, en, pt) {
 }
 
 function switchLang(l) { CharacterSystem.setLang(l); applyI18n(); refreshUI(); renderAchievements(); }
+
+// ══ ONBOARDING SYSTEM (First-Launch-Willkommen, einmalig) ══
+const OnboardingSystem = (() => {
+  const LS = 'pv_onboarded';
+  let _i = 0;
+  const SLIDES = [
+    { emoji:'💊', title:{de:'Willkommen bei PharmaVoice',en:'Welcome to PharmaVoice',pt:'Bem-vindo ao PharmaVoice'},
+      text:{de:'Lerne die korrekte Aussprache von 300 medizinischen Wirkstoffen – spielerisch.',en:'Learn to correctly pronounce 300 medical drug names – the fun way.',pt:'Aprenda a pronunciar corretamente 300 fármacos – de forma divertida.'} },
+    { emoji:'🎤', title:{de:'Hören. Nachsprechen. Meistern.',en:'Listen. Repeat. Master.',pt:'Ouça. Repita. Domine.'},
+      text:{de:'Hör dir die Aussprache an, sprich sie nach und übe die richtige Betonung – Silbe für Silbe.',en:'Listen to the pronunciation, repeat it and practice the right stress – syllable by syllable.',pt:'Ouça a pronúncia, repita e treine a sílaba tônica correta.'} },
+    { emoji:'🔥', title:{de:'Bleib am Ball',en:'Keep your streak',pt:'Mantenha a sequência'},
+      text:{de:'Sammle XP, halte deine Tagesserie und meistere Level für Level – dein Fortschritt bleibt auf dem Gerät.',en:'Earn XP, keep your daily streak and master level by level – your progress stays on your device.',pt:'Ganhe XP, mantenha sua sequência diária e domine nível a nível.'} },
+  ];
+  function _render() {
+    const s = SLIDES[_i];
+    if (el('obEmoji')) el('obEmoji').textContent = s.emoji;
+    if (el('obTitle')) el('obTitle').textContent = L(s.title.de, s.title.en, s.title.pt);
+    if (el('obText'))  el('obText').textContent  = L(s.text.de, s.text.en, s.text.pt);
+    const dots = el('obDots');
+    if (dots) dots.innerHTML = SLIDES.map((_, k) => `<span class="ob-dot ${k === _i ? 'active' : ''}"></span>`).join('');
+    const last = _i === SLIDES.length - 1;
+    if (el('obNext')) el('obNext').textContent = last ? L('Los geht’s! 🚀','Let’s go! 🚀','Vamos! 🚀') : L('Weiter','Next','Próximo');
+    // Re-animate emoji
+    if (el('obEmoji')) { el('obEmoji').style.animation = 'none'; void el('obEmoji').offsetWidth; el('obEmoji').style.animation = ''; }
+  }
+  function maybeShow() {
+    let done = false; try { done = localStorage.getItem(LS) === '1'; } catch {}
+    if (done) return;
+    _i = 0; _render();
+    if (el('onboarding')) el('onboarding').hidden = false;
+  }
+  function next() {
+    if (_i < SLIDES.length - 1) { _i++; _render(); }
+    else finish();
+  }
+  function finish() {
+    try { localStorage.setItem(LS, '1'); } catch {}
+    if (el('onboarding')) el('onboarding').hidden = true;
+  }
+  return { maybeShow, next, finish };
+})();
 
 function openAudioSettings() {
   const m = document.getElementById('audioSettingsModal');
@@ -7846,6 +7913,9 @@ refreshTierUI();
 setTimeout(() => gameDesigner.checkForUpdate(), 1500);
 MusicSystem.initFromPrefs();
 applyI18n();
+
+// Onboarding beim ersten Start zeigen
+try { OnboardingSystem.maybeShow(); } catch (e) {}
 
 // Offline-Hinweis ein-/ausblenden je nach Verbindungsstatus
 function _updateOfflineBar() {
