@@ -494,9 +494,16 @@
     .res-title { font-size:26px; font-weight:900; margin-bottom:6px; color:var(--text); }
     .res-sub   { color:var(--gray); font-size:14px; margin-bottom:28px; }
     .res-grid  { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:28px; }
-    .res-stat  { background:var(--bg2); border-radius:var(--r); padding:20px 14px; box-shadow:var(--shadow); border:1px solid var(--border); }
+    .res-stat  { background:var(--bg2); border-radius:var(--r); padding:18px 14px 16px; box-shadow:var(--shadow); border:1px solid var(--border); border-top:4px solid var(--green); }
     .res-val   { font-size:34px; font-weight:900; color:var(--green); line-height:1; }
-    .res-lbl   { font-size:12px; color:var(--gray); margin-top:6px; font-weight:500; }
+    .res-lbl   { font-size:11px; color:var(--gray); margin-top:6px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+    /* Farbige Akzente je Kachel (Reihenfolge: Richtige · XP · Streak · Gesamt) */
+    .res-stat:nth-child(2) { border-top-color:var(--gold); }
+    .res-stat:nth-child(2) .res-val { color:var(--gold); }
+    .res-stat:nth-child(3) { border-top-color:#FF9600; }
+    .res-stat:nth-child(3) .res-val { color:#FF9600; }
+    .res-stat:nth-child(4) { border-top-color:var(--cyan); }
+    .res-stat:nth-child(4) .res-val { color:var(--cyan); }
     .btn-ghost { width:100%; padding:16px; background:var(--bg2); color:var(--text); border:1.5px solid var(--border); border-radius:var(--r); font-size:16px; font-weight:700; cursor:pointer; margin-top:12px; transition:.2s; font-family:inherit; }
     .btn-ghost:hover { background:var(--border); }
 
