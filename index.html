@@ -1236,7 +1236,7 @@
     <span class="pv-topbar-level" id="topbarLevel">1</span>
   </div>
   <div class="pv-topbar-res">
-    <div class="pv-res-pill" title="Shekel">🪙 <span id="topbarCoins">0</span></div>
+    <div class="pv-res-pill" title="Punkte">🪙 <span id="topbarCoins">0</span></div>
     <div class="pv-res-pill" title="Gems">💎 <span id="topbarGems">0</span></div>
     <div class="pv-res-pill pv-energy-pill" title="Energie">
       ⚡ <span id="topbarEnergy">100</span>/100
@@ -1297,7 +1297,7 @@
     <button class="audio-close-btn" onclick="closeAudioSettings()" data-i18n="close">Schließen</button>
   </div>
 </div>
-<div class="xp-pop" id="xpPop">+10 Shekel 🪙</div>
+<div class="xp-pop" id="xpPop">+10 Punkte 🪙</div>
 <div class="combo-pop" id="comboPop" aria-hidden="true"></div>
 <div class="levelup-overlay" id="levelupOverlay" hidden onclick="this.hidden=true">
   <div class="levelup-card">
@@ -1574,7 +1574,7 @@
     <button class="back-btn" onclick="goHome()" data-i18n="back">← Zurück</button>
     <div class="prog-row">
       <span id="progText">Frage 1 von 10</span>
-      <span id="progXp" style="color:var(--teal);font-weight:700;">0 Shekel</span>
+      <span id="progXp" style="color:var(--teal);font-weight:700;">0 Punkte</span>
     </div>
     <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
     <div class="q-dots-row" id="progDots"></div>
@@ -1622,9 +1622,9 @@
   <div class="res-sub"   id="resSub">Du hast alle 10 Fragen beantwortet</div>
   <div class="res-grid">
     <div class="res-stat"><div class="res-val" id="resScore">0/10</div><div class="res-lbl" data-i18n="res_correct">Richtige Antworten</div></div>
-    <div class="res-stat"><div class="res-val" id="resXP">+0</div><div class="res-lbl" data-i18n="res_earned">Shekel verdient 🪙</div></div>
+    <div class="res-stat"><div class="res-val" id="resXP">+0</div><div class="res-lbl" data-i18n="res_earned">Punkte verdient 🪙</div></div>
     <div class="res-stat"><div class="res-val" id="resStreak">0 🔥</div><div class="res-lbl" data-i18n="res_streak">Tage Streak</div></div>
-    <div class="res-stat"><div class="res-val" id="resTotal">0</div><div class="res-lbl" data-i18n="res_total">Gesamt Shekel</div></div>
+    <div class="res-stat"><div class="res-val" id="resTotal">0</div><div class="res-lbl" data-i18n="res_total">Gesamt Punkte</div></div>
   </div>
   <div id="resReview" class="res-review"></div>
   <button class="btn-start" id="resRetryBtn" style="display:none;background:linear-gradient(135deg,#FF9800,#FF6B35);box-shadow:0 4px 14px rgba(255,152,0,.3)" onclick="retryWrongWords()"></button>
@@ -1668,16 +1668,16 @@
   <div id="accountCard" class="account-card"></div>
 
   <div class="prof-grid">
-    <div class="prof-stat"><div class="prof-val" id="profXp">0</div><div class="prof-lbl">🪙 Shekel</div></div>
+    <div class="prof-stat"><div class="prof-val" id="profXp">0</div><div class="prof-lbl">🪙 Punkte</div></div>
     <div class="prof-stat"><div class="prof-val" id="profStreak">0 🔥</div><div class="prof-lbl" data-i18n="prof_streak">Tage Streak</div></div>
     <div class="prof-stat"><div class="prof-val" id="profLearned">0</div><div class="prof-lbl" data-i18n="prof_learned">Begriffe gelernt</div></div>
     <div class="prof-stat"><div class="prof-val" id="profLevel">1</div><div class="prof-lbl" data-i18n="prof_level">Aktuelles Level</div></div>
   </div>
   <div class="lvl-prog-card">
     <div class="lvl-prog-head" data-i18n="prof_nextlvl">Nächstes Level</div>
-    <div class="lvl-prog-txt" id="profProgLabel">Level 2 benötigt <strong>200 Shekel</strong></div>
+    <div class="lvl-prog-txt" id="profProgLabel">Level 2 benötigt <strong>200 Punkte</strong></div>
     <div class="prog-track"><div class="prog-fill" id="profProgFill" style="width:0%"></div></div>
-    <div class="lvl-xp-row"><span id="profProgTxt">0 / 200 Shekel</span><span id="profProgPct">0%</span></div>
+    <div class="lvl-xp-row"><span id="profProgTxt">0 / 200 Punkte</span><span id="profProgPct">0%</span></div>
   </div>
 
   <div class="section-title" style="margin-top:24px" data-i18n="prof_stats">📈 Deine Statistik</div>
@@ -3122,9 +3122,9 @@ const UI_I18N = {
   learn_q:       { de:'Welche Silbe wird betont?', en:'Which syllable is stressed?', pt:'Qual sílaba é acentuada?' },
   learn_next:    { de:'Weiter →', en:'Next →', pt:'Próximo →' },
   res_correct:   { de:'Richtige Antworten', en:'Correct answers', pt:'Respostas certas' },
-  res_earned:    { de:'Shekel verdient 🪙', en:'Shekel earned 🪙', pt:'Shekel ganhos 🪙' },
+  res_earned:    { de:'Punkte verdient 🪙', en:'Points earned 🪙', pt:'Pontos ganhos 🪙' },
   res_streak:    { de:'Tage Streak', en:'Day streak', pt:'Dias seguidos' },
-  res_total:     { de:'Gesamt Shekel', en:'Total Shekel', pt:'Shekel total' },
+  res_total:     { de:'Gesamt Punkte', en:'Total Points', pt:'Pontos total' },
   park_hint:     { de:'Tippe auf eine Station, um dort zu üben.', en:'Tap a station to practice there.', pt:'Toque numa estação para praticar.' },
   overall_prog:  { de:'GESAMTFORTSCHRITT', en:'OVERALL PROGRESS', pt:'PROGRESSO TOTAL' },
   close:         { de:'Schließen', en:'Close', pt:'Fechar' },
@@ -3331,15 +3331,15 @@ const ACHIEVEMENTS = [
   { id:'terms20',   icon:'📗', name:'Erste 20',          desc:'20 Fragen beantwortet',                check: () => S.learned >= 20 },
   { id:'terms50',   icon:'💊', name:'50 Begriffe',       desc:'50 Fragen beantwortet',                check: () => S.learned >= 50 },
   { id:'terms150',  icon:'📚', name:'Bücherwurm',        desc:'150 Fragen beantwortet',               check: () => S.learned >= 150 },
-  { id:'xp200',     icon:'🧬', name:'Fortgeschrittener', desc:'200 Shekel – Level 2 freigeschaltet',  check: () => S.xp >= 200 },
-  { id:'xp400',     icon:'🔬', name:'Profi-Aussprecher', desc:'400 Shekel gesammelt',                 check: () => S.xp >= 400 },
-  { id:'xp600',     icon:'🏆', name:'Pharma-Legende',    desc:'600 Shekel gesammelt',                 check: () => S.xp >= 600 },
+  { id:'xp200',     icon:'🧬', name:'Fortgeschrittener', desc:'200 Punkte – Level 2 freigeschaltet',  check: () => S.xp >= 200 },
+  { id:'xp400',     icon:'🔬', name:'Profi-Aussprecher', desc:'400 Punkte gesammelt',                 check: () => S.xp >= 400 },
+  { id:'xp600',     icon:'🏆', name:'Pharma-Legende',    desc:'600 Punkte gesammelt',                 check: () => S.xp >= 600 },
   { id:'runner',    icon:'🏃', name:'Auf die Piste!',    desc:'Pharma Runner gespielt',               check: () => parseInt(localStorage.getItem('pv_runner_total')||'0') > 0 },
   { id:'runner500', icon:'⚡', name:'Speed Freak',       desc:'Highscore 500+ im Runner',             check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 500 },
   { id:'runner1k',  icon:'👑', name:'Runner Champion',   desc:'Highscore 1000+ im Runner',            check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 1000 },
   { id:'sm2_10',    icon:'🧠', name:'Gedächtniskünstler',desc:'10 Begriffe mit Spaced Repetition',    check: () => Object.keys(SM2).length >= 10 },
   { id:'words30',   icon:'🔬', name:'Wirkstoff-Kenner',  desc:'30 verschiedene Wirkstoffe geübt',     check: () => Object.keys(SM2).length >= 30 },
-  { id:'xp1000',    icon:'💎', name:'Shekel-Millionär',  desc:'1000 Shekel gesammelt',                check: () => S.xp >= 1000 },
+  { id:'xp1000',    icon:'💎', name:'Punkte-Millionär',  desc:'1000 Punkte gesammelt',                check: () => S.xp >= 1000 },
 ];
 
 // Achievement-Übersetzungen (Name + Beschreibung) je Sprache
@@ -3350,15 +3350,15 @@ const ACH_I18N = {
   terms20:  { en:{name:'First 20',desc:'Answered 20 questions'}, pt:{name:'Primeiros 20',desc:'Respondeu 20 perguntas'} },
   terms50:  { en:{name:'50 terms',desc:'Answered 50 questions'}, pt:{name:'50 termos',desc:'Respondeu 50 perguntas'} },
   terms150: { en:{name:'Bookworm',desc:'Answered 150 questions'}, pt:{name:'Rato de biblioteca',desc:'Respondeu 150 perguntas'} },
-  xp200:    { en:{name:'Advanced',desc:'200 Shekel collected'}, pt:{name:'Avançado',desc:'200 Shekel coletados'} },
-  xp400:    { en:{name:'Pro speaker',desc:'400 Shekel collected'}, pt:{name:'Locutor profissional',desc:'400 Shekel coletados'} },
-  xp600:    { en:{name:'Pharma legend',desc:'600 Shekel collected'}, pt:{name:'Lenda da farmácia',desc:'600 Shekel coletados'} },
+  xp200:    { en:{name:'Advanced',desc:'200 Points collected'}, pt:{name:'Avançado',desc:'200 Pontos coletados'} },
+  xp400:    { en:{name:'Pro speaker',desc:'400 Points collected'}, pt:{name:'Locutor profissional',desc:'400 Pontos coletados'} },
+  xp600:    { en:{name:'Pharma legend',desc:'600 Points collected'}, pt:{name:'Lenda da farmácia',desc:'600 Pontos coletados'} },
   runner:   { en:{name:'On the track!',desc:'Played Pharma Runner'}, pt:{name:'Na pista!',desc:'Jogou o Pharma Runner'} },
   runner500:{ en:{name:'Speed freak',desc:'Highscore 500+ in Runner'}, pt:{name:'Fera da velocidade',desc:'Recorde 500+ no Runner'} },
   runner1k: { en:{name:'Runner champion',desc:'Highscore 1000+ in Runner'}, pt:{name:'Campeão do Runner',desc:'Recorde 1000+ no Runner'} },
   sm2_10:   { en:{name:'Memory artist',desc:'10 terms with spaced repetition'}, pt:{name:'Artista da memória',desc:'10 termos com repetição espaçada'} },
   words30:  { en:{name:'Drug expert',desc:'Practiced 30 different drugs'}, pt:{name:'Especialista em fármacos',desc:'Praticou 30 fármacos diferentes'} },
-  xp1000:   { en:{name:'Shekel millionaire',desc:'1000 Shekel collected'}, pt:{name:'Milionário de Shekel',desc:'1000 Shekel coletados'} },
+  xp1000:   { en:{name:'Points millionaire',desc:'1000 Points collected'}, pt:{name:'Milionário de Pontos',desc:'1000 Pontos coletados'} },
 };
 function _achTr(a) {
   const lang = CharacterSystem.getLang();
@@ -3445,7 +3445,7 @@ function checkDailyBonus() {
   localStorage.setItem('pv_last_bonus', today);
   const streak = Math.max(1, S.streak || 1);
   const gems  = Math.min(3 + Math.floor(streak / 2), 15);   // 3–15 Gems je nach Streak
-  const coins = 20 + streak * 5;                             // Shekel steigen mit Streak
+  const coins = 20 + streak * 5;                             // Punkte steigen mit Streak
   ResourceSystem.addGems(gems);
   const data = JSON.parse(localStorage.getItem('pv2') || '{}');
   data.xp = (data.xp || 0) + coins; S.xp = data.xp;
@@ -3489,12 +3489,12 @@ function refreshUI() {
   set('profLearned', S.learned);
   set('profLevel',   lvl);
   el('profProgFill').style.width = pct + '%';
-  set('profProgTxt', `${inLvl} / ${xpPerLevel} Shekel`);
+  set('profProgTxt', `${inLvl} / ${xpPerLevel} Punkte`);
   set('profProgPct', pct + '%');
   set('profProgLabel', L(
-    `Level ${lvl+1} benötigt ${(lvl)*xpPerLevel} Shekel`,
-    `Level ${lvl+1} needs ${(lvl)*xpPerLevel} Shekel`,
-    `Nível ${lvl+1} precisa de ${(lvl)*xpPerLevel} Shekel`));
+    `Level ${lvl+1} benötigt ${(lvl)*xpPerLevel} Punkte`,
+    `Level ${lvl+1} needs ${(lvl)*xpPerLevel} Points`,
+    `Nível ${lvl+1} precisa de ${(lvl)*xpPerLevel} Pontos`));
   renderLevelCards();
   renderHomeDashboard();
   ResourceSystem.renderTopbar();
@@ -3765,7 +3765,7 @@ function renderLevelCards() {
     let badge;
     if (status === true)        badge = `<div class="lvl-badge on">Aktiv</div>`;
     else if (status === 'upgrade') badge = `<div class="lvl-badge off">🚀 Upgrade</div>`;
-    else                        badge = `<div class="lvl-badge off">🔒 ${lv.xpReq} Shekel</div>`;
+    else                        badge = `<div class="lvl-badge off">🔒 ${lv.xpReq} Punkte</div>`;
     div.innerHTML = `
       <div class="lvl-icon ${lv.color}">${lv.icon}</div>
       <div class="lvl-info">
@@ -3875,7 +3875,7 @@ function startLearn(lvId = 1) {
   Q = { meds: sorted.slice(0, 10), idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId, xpMult: 1 };
   if (ShopSystem.consumeDoubleXp()) {
     Q.xpMult = 2;
-    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Shekel!', 3000), 900);
+    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Punkte!', 3000), 900);
   }
   ResourceSystem.spendEnergy();
   setTimeout(() => CharacterSystem.showBubble(
@@ -4175,7 +4175,7 @@ function practiceWord(name) {
   Q = { meds, idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId: 1, xpMult: 1 };
   if (ShopSystem.consumeDoubleXp()) {
     Q.xpMult = 2;
-    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Shekel!', 3000), 900);
+    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Punkte!', 3000), 900);
   }
   ResourceSystem.spendEnergy();
   el('learnChip').textContent = `🎯  ${med.name}`;
@@ -4193,7 +4193,7 @@ function startWeakWords() {
   Q = { meds: weak, idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId: 1, xpMult: 1 };
   if (ShopSystem.consumeDoubleXp()) {
     Q.xpMult = 2;
-    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Shekel!', 3000), 900);
+    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Punkte!', 3000), 900);
   }
   ResourceSystem.spendEnergy();
   el('learnChip').textContent = `🎯  ${L('Schwache Wörter','Weak words','Palavras fracas')} (${weak.length})`;
@@ -4210,7 +4210,7 @@ function renderQ() {
   const total = Q.meds.length;
   const cur   = Q.idx + 1;
   set('progText', L(`Frage ${cur} von ${total}`, `Question ${cur} of ${total}`, `Pergunta ${cur} de ${total}`));
-  set('progXp',   `${Q.sessionXP} Shekel`);
+  set('progXp',   `${Q.sessionXP} Punkte`);
   el('progFill').style.width = ((cur - 1) / total * 100) + '%';
   const dotsEl = el('progDots');
   if (dotsEl) dotsEl.innerHTML = Q.meds.map((_, i) => `<span class="q-dot ${i < cur-1 ? 'done' : i === cur-1 ? 'current' : ''}"></span>`).join('');
@@ -4299,7 +4299,7 @@ function scoreAnswer(good, med) {
   else      { AudioSystem.playWrong(lang); avatarAnimate('anim-shake'); }
   CharacterSystem.react(comboType);
   S.learned = Math.min(S.learned + 1, 9999);
-  set('progXp', `${Q.sessionXP} Shekel`);
+  set('progXp', `${Q.sessionXP} Punkte`);
   checkLevelUp();
   save();
   refreshUI();
@@ -5212,7 +5212,7 @@ function rnGameOver() {
     top10 = top10.slice(0, 10);
     localStorage.setItem('pv_runner_top10', JSON.stringify(top10));
   }
-  // Runner speist jetzt die Haupt-Progression: Shekel proportional zum Score
+  // Runner speist jetzt die Haupt-Progression: Punkte proportional zum Score
   const earnedCoins = Math.round(RG.score / 20);
   if (earnedCoins > 0) {
     const d = JSON.parse(localStorage.getItem('pv2') || '{}');
@@ -5229,7 +5229,7 @@ function rnGameOver() {
   rnEl('rnOverlay').classList.remove('hidden');
   rnEl('rnOvIcon').textContent  = RG.score >= 1000 ? '🏆' : '💀';
   rnEl('rnOvTitle').textContent = isNewBest && RG.score > 0 ? L('🎉 Neuer Rekord!','🎉 New record!','🎉 Novo recorde!') : (RG.score >= 1000 ? L('Ausgezeichnet!','Excellent!','Excelente!') : 'Game Over');
-  rnEl('rnOvSub').innerHTML     = L(`Du hast ${RG.curIdx} Wirkstoffe geschafft.<br>💰 +${earnedCoins} Shekel verdient${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 Rekord-Bonus' : ''}`,`You cleared ${RG.curIdx} drugs.<br>💰 +${earnedCoins} Shekel earned${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 record bonus' : ''}`,`Você acertou ${RG.curIdx} fármacos.<br>💰 +${earnedCoins} Shekel ganhos${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 bônus de recorde' : ''}`);
+  rnEl('rnOvSub').innerHTML     = L(`Du hast ${RG.curIdx} Wirkstoffe geschafft.<br>💰 +${earnedCoins} Punkte verdient${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 Rekord-Bonus' : ''}`,`You cleared ${RG.curIdx} drugs.<br>💰 +${earnedCoins} Points earned${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 record bonus' : ''}`,`Você acertou ${RG.curIdx} fármacos.<br>💰 +${earnedCoins} Pontos ganhos${isNewBest && RG.score > 0 ? ' &nbsp;·&nbsp; +3 💎 bônus de recorde' : ''}`);
   rnEl('rnOvScore').style.display = 'block';
   rnEl('rnOvScore').textContent   = RG.score;
   rnEl('rnOvHs').style.display  = 'block';
@@ -6152,12 +6152,12 @@ const MusicSystem = (() => {
   return { start, stop, toggle, isOn, initFromPrefs };
 })();
 
-// ══ SHOP SYSTEM (Power-Ups kaufen mit Shekel/Gems) ══════════════════════
+// ══ SHOP SYSTEM (Power-Ups kaufen mit Punkte/Gems) ══════════════════════
 const ShopSystem = (() => {
   const ITEMS = [
     { id:'shield',  icon:'🛡️', name:'Streak-Schild',      desc:'Schützt deinen Streak, wenn du einen Tag verpasst.', cost:200, currency:'coins' },
     { id:'energy',  icon:'⚡', name:'Energie-Auffüllung', desc:'Füllt deine Energie sofort auf 100 auf.',            cost:5,   currency:'gems'  },
-    { id:'dblxp',   icon:'✨', name:'Double-XP',           desc:'Nächste Lern-Session bringt doppelte Shekel.',       cost:150, currency:'coins' },
+    { id:'dblxp',   icon:'✨', name:'Double-XP',           desc:'Nächste Lern-Session bringt doppelte Punkte.',       cost:150, currency:'coins' },
   ];
 
   function _getCount(id) { return parseInt(localStorage.getItem('pv_shop_' + id)) || 0; }
@@ -6168,7 +6168,7 @@ const ShopSystem = (() => {
     if (!item) return;
     let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch {}
     if (item.currency === 'coins') {
-      if ((pv2.xp || 0) < item.cost) { CharacterSystem.showBubble(L('Nicht genug Shekel! 🪙','Not enough Shekel! 🪙','Shekel insuficiente! 🪙'), 2500); return; }
+      if ((pv2.xp || 0) < item.cost) { CharacterSystem.showBubble(L('Nicht genug Punkte! 🪙','Not enough Points! 🪙','Pontos insuficiente! 🪙'), 2500); return; }
       pv2.xp -= item.cost; S.xp = pv2.xp;
       localStorage.setItem('pv2', JSON.stringify(pv2));
     } else {
@@ -6225,9 +6225,9 @@ const ShopSystem = (() => {
 const ChestSystem = (() => {
   // Gewichtete Zufalls-Belohnungen (variable reward schedule)
   const REWARDS = [
-    { type:'coins', min:30, max:80,  weight:40, icon:'🪙', label:'Shekel' },
+    { type:'coins', min:30, max:80,  weight:40, icon:'🪙', label:'Punkte' },
     { type:'gems',  min:2,  max:6,   weight:30, icon:'💎', label:'Gems' },
-    { type:'coins', min:100,max:200, weight:15, icon:'🪙', label:'Shekel' },
+    { type:'coins', min:100,max:200, weight:15, icon:'🪙', label:'Punkte' },
     { type:'shield',                 weight:8,  icon:'🛡️', label:'Streak-Schild' },
     { type:'dblxp',                  weight:5,  icon:'✨', label:'Double-XP' },
     { type:'gems',  min:10, max:20,  weight:2,  icon:'💎', label:'Gems (Jackpot!)' },
@@ -6958,7 +6958,7 @@ const DailyMissionSystem = (() => {
       return `
         <div class="mission-card mission-done">
           <div class="mission-header"><span class="mission-icon">🎯</span><span class="mission-title">${L('Tagesmission abgeschlossen!','Daily mission complete!','Missão diária concluída!')}</span></div>
-          <div class="mission-body">${L(`+${BONUS_XP} Bonus-Shekel verdient. Komm morgen wieder!`,`+${BONUS_XP} bonus Shekel earned. Come back tomorrow!`,`+${BONUS_XP} Shekel de bônus. Volte amanhã!`)}</div>
+          <div class="mission-body">${L(`+${BONUS_XP} Bonus-Punkte verdient. Komm morgen wieder!`,`+${BONUS_XP} bonus Points earned. Come back tomorrow!`,`+${BONUS_XP} Pontos de bônus. Volte amanhã!`)}</div>
         </div>`;
     }
     const _lbl = s => L(s.label.de, s.label.en, s.label.pt);
@@ -7522,16 +7522,16 @@ const TrendAnalyzer = (() => {
 
   const GAP_ANALYSIS = [
     { title:'Soziale Features', status:'missing', priority:'hoch', desc:'Duolingo, Clash Royale zeigen: Soziale Verbindungen verdoppeln Retention. PharmaVoice hat KEINE sozialen Features.' },
-    { title:'Seasonal Events', status:'done', priority:'erledigt', desc:'Wöchentlich rotierende Themen-Challenge (SeasonalEventSystem): pro ISO-Woche eine Wirkstoff-Kategorie, Fortschritt aus Learn+Runner, Countdown, exklusive Belohnung (Shekel+Gems+Abzeichen) — erzeugt FOMO, client-seitig ohne Backend.' },
+    { title:'Seasonal Events', status:'done', priority:'erledigt', desc:'Wöchentlich rotierende Themen-Challenge (SeasonalEventSystem): pro ISO-Woche eine Wirkstoff-Kategorie, Fortschritt aus Learn+Runner, Countdown, exklusive Belohnung (Punkte+Gems+Abzeichen) — erzeugt FOMO, client-seitig ohne Backend.' },
     { title:'Kinetic Typography', status:'done', priority:'erledigt', desc:'Animierte Text-Bursts (RICHTIG!/COMBO!) mit Buchstaben-Stagger bei richtigen Antworten, mehrsprachig, Combo-Variante ab 5er-Serie (kineticBurst).' },
     { title:'Collection / Compendium', status:'done', priority:'erledigt', desc:'Wirkstoff-Lexikon umgesetzt (LexikonSystem): alle 94 Wirkstoffe nach Kategorie, Suche/Filter, Gelernt-Status aus SM-2, Anhören pro Eintrag, Fortschrittsbalken.' },
-    { title:'Variable Reward (Chest)', status:'done', priority:'erledigt', desc:'Belohnungs-Truhen (ChestSystem): ab 6/10 richtigen, gewichtete Zufalls-Loot (Shekel/Gems/Power-Ups/Jackpot) mit Öffnungs-Animation.' },
+    { title:'Variable Reward (Chest)', status:'done', priority:'erledigt', desc:'Belohnungs-Truhen (ChestSystem): ab 6/10 richtigen, gewichtete Zufalls-Loot (Punkte/Gems/Power-Ups/Jackpot) mit Öffnungs-Animation.' },
     { title:'Spaced Repetition', status:'done', priority:'erledigt', desc:'SM-2 vollständig. Kompetitiver Vorteil — kaum ein Lern-Spiel hat das.' },
     { title:'NPC Characters', status:'done', priority:'erledigt', desc:'Beatrice, Victor, Fin, Ari mit Tamagotchi + Canvas-Avatare. Besser als Duolingo.' },
     { title:'Audio Feedback', status:'done', priority:'erledigt', desc:'Web Audio + Speech Synthesis in 3 Sprachen. Vollständig.' },
-    { title:'Top Ressourcen-Leiste', status:'done', priority:'erledigt', desc:'Sticky Top-Bar mit Shekel/Gems/Energie auf allen Screens umgesetzt (ResourceSystem).' },
+    { title:'Top Ressourcen-Leiste', status:'done', priority:'erledigt', desc:'Sticky Top-Bar mit Punkte/Gems/Energie auf allen Screens umgesetzt (ResourceSystem).' },
     { title:'Team-Roster (mehrere Begleiter)', status:'done', priority:'erledigt', desc:'Team-Grid im Profil zeigt alle 4 Begleiter mit individuellem Level/Fortschrittsbalken (TeamSystem), XP gleichmäßig aus Gesamt-XP abgeleitet.' },
-    { title:'Daily Login Bonus', status:'done', priority:'erledigt', desc:'Täglicher Login-Bonus (Gems + Shekel, streak-gestaffelt, 1×/Tag) mit Toast + Sound umgesetzt (checkDailyBonus).' },
+    { title:'Daily Login Bonus', status:'done', priority:'erledigt', desc:'Täglicher Login-Bonus (Gems + Punkte, streak-gestaffelt, 1×/Tag) mit Toast + Sound umgesetzt (checkDailyBonus).' },
     { title:'Aussprache anhören', status:'done', priority:'erledigt', desc:'„Anhören"-Button spricht den Wirkstoffnamen langsam vor (AudioSystem.speakWord) — zentrale Lernhilfe für einen Aussprache-Trainer.' },
   ];
 
@@ -7596,7 +7596,7 @@ const DesignDocumentGenerator = (() => {
     friend_duel:   { inspiration:'Clash Royale PvP, Duolingo Friend Leagues', overview:'Asynchrones 1v1 per Link. Beide spielen dieselbe Wortliste.', mechanics:{rules:'Challenger generiert Link mit Seed. Gegner öffnet Link, spielt.',triggers:'• Link-Button in Profil  • Gegner: Link → gleiche Wortliste  • Ergebnis: URL-Hash',rewards:'• Gewinner: +300 Münzen + "Duell-Sieger"-Badge  • Verlierer: +50 Münzen'}, flow:['Profil: "Freund herausfordern"','Link generiert + kopiert','Freund öffnet Link → Duell','Ergebnis verglichen','Gewinner-Animation'], ux:{layout:'Duell-Screen mit beiden Avataren links/rechts',feedback:'VS-Intro; dramatische Sieges-Sequenz',states:['challenge-created','opponent-playing','result-done']}, technical:{storage:'URL-Hash: #duel=seed:score:char',seed:'Wortliste per Date+UUID deterministisch',files:'~150 Zeilen',noBackend:true}, metrics:{dau:'Viralität: jedes Duell = neuer Touchpoint',retention:'Kompetitiver Druck → tägl. Rückkehr',session:'Duell-Accept-Rate Ziel: >60%'}, roadmap:[{phase:'MVP',time:'6-8h',tasks:['URL-Schema','Duell-Screen','Ergebnis-Vergleich']},{phase:'V2',time:'+4h',tasks:['Avatar-VS-Animation','Münzen-Transfer']},{phase:'V3',time:'+6h',tasks:['Liga-System']}], effort:'6-8h', impact:'Sehr hoch (Viral)' },
     npc_mentor:    { inspiration:'Duolingo Characters, LLM-NPCs (GDC 2024)', overview:'Template-Engine erzeugt personalisierte Lehr-Gespräche wenn Wort 3x falsch.', mechanics:{rules:'Nach 3+ Fehlern am selben Wort → kontextuelle Erklärung per Template.',triggers:'• 3x falsches Wort  • Neues Level  • Perfekte Runde',rewards:'• Gefühl von persönlichem Tutor  • Merkfähigkeit ↑'}, flow:['Fehler-Zähler per Wort','Schwellenwert → Bubble erscheint','Erklärung mit Tipp','Option: "Mehr erklären" → 3 Variationen'], ux:{layout:'Erweiterter Chat-Bubble; Charakter zeigt Erklär-Emotion',feedback:'Wort-Highlight in Bubble; Silben-Trennung animiert',states:['normal','tip-triggered','explaining','understood']}, technical:{storage:'pv_sm2 Fehler-Zähler bereits vorhanden',seed:'TIP_TEMPLATES[wordName] oder generische Analogie',files:'~120 Zeilen',noBackend:true}, metrics:{dau:'Fehler-Rate nach Tipp: -25% erwartet',retention:'Charakterbindung ↑',session:'Spieler fragen mehr Tipps an'}, roadmap:[{phase:'MVP',time:'4-5h',tasks:['Template-Engine','Top-50-Wörter','Bubble-UI']},{phase:'V2',time:'+4h',tasks:['Alle 102 Wörter','3 Varianten je']},{phase:'V3',time:'+6h',tasks:['Charakter-spez. Lehr-Stil']}], effort:'4-5h', impact:'Hoch' },
     ar_scanner:    { inspiration:'Google Lens, Duolingo Camera Mode', overview:'Kamera → Packung → OCR-Match → sofortige Aussprache-Challenge.', mechanics:{rules:'getUserMedia + Canvas-OCR; Fuzzy-Match gegen WORDS (Levenshtein ≥ 0.6).',triggers:'• Match gefunden → Highlight-Box + "Aussprechen!"  • Kein Match → "Anderen Winkel"',rewards:'• Erster Scan: "AR-Pionier"-Badge  • 10 Scans: "Scan-Meister"  • Jeder Scan: +30 Münzen'}, flow:['Button "Scannen" in Home','Kamera öffnet (getUserMedia)','Rotes Fadenkreuz scannt','Wirkstoff erkannt → Karte','Challenge startet'], ux:{layout:'Vollbild-Kamera mit HUD-Overlay',feedback:'Grüne Bounding-Box; Kamera-Klick-Sound',states:['idle','scanning','found','challenge','no-match']}, technical:{storage:'pv_ar_scans; pv_ar_badges',seed:'Tesseract.js Browser-OCR + Levenshtein-Match',files:'~200 Zeilen',noBackend:true}, metrics:{dau:'Marketing-Hook: viral auf TikTok/LinkedIn',retention:'Reale Lernverknüpfung',session:'Sessions nach erstem Scan: länger'}, roadmap:[{phase:'MVP',time:'10-12h',tasks:['getUserMedia','Levenshtein-Match','Basic UI']},{phase:'V2',time:'+6h',tasks:['Tesseract.js OCR']},{phase:'V3',time:'+8h',tasks:['Packaging-Datenbank']}], effort:'10-12h', impact:'Marketing: Sehr hoch' },
-    resource_hud:  { inspiration:'Youth Pharma (UI-Referenz-Screenshot)', overview:'Permanente Top-Leiste (Shekel/Gems/Energie) auf jedem Screen + Team-Ansicht mit mehreren parallel levelnden Begleitern statt nur einem aktiven Avatar.', mechanics:{rules:'Energie regeneriert 1 Punkt / 5min (Cap 100); jede Lern-Session kostet 10 Energie. Team-XP verteilt sich anteilig auf alle aktiven Begleiter.',triggers:'• Energie leer → Sanftes Cooldown-Overlay statt Hardstop  • Team-Level-Up → Bounce-Animation auf Portrait',rewards:'• Volle Energie-Leiste: "Aufgeladen"-Badge  • Alle 4 Begleiter Lv.10: "Vollständiges Team"-Abzeichen'}, flow:['Top-Bar auf allen Screens sichtbar (Shekel/Gems/Energie)','Team-Tab in Profil: 4 Begleiter-Karten mit Level-Balken','Tap auf Begleiter → Mini-Stats + "Trainieren"-Button','Energie sinkt mit jeder Session, regeneriert passiv'], ux:{layout:'Fixe Top-Bar mit Glass-Panel-Optik über allen Screens; Team-Grid 2×2 im Profil',feedback:'Energie-Balken pulsiert bei <20%; Team-Karten-Glow bei Level-Up',states:['full-energy','low-energy','depleted','team-levelup']}, technical:{storage:'pv_energy (value, lastRegenTs); pv_team (Array von Begleiter-XP)',seed:'setInterval-freie Regeneration: Delta aus Date.now() beim Laden berechnen',files:'~150 Zeilen (Top-Bar-Komponente + Team-Grid)',noBackend:true}, metrics:{dau:'Session-Frequenz durch Energie-Timing gesteuert',retention:'Team-Sammel-Ziel verlängert Langzeitbindung',session:'Kürzere, häufigere Sessions statt langer Einzelsitzungen'}, roadmap:[{phase:'MVP',time:'3-4h',tasks:['Top-Bar-Komponente','Energie-System','Team-Grid UI']},{phase:'V2',time:'+3h',tasks:['Team-XP-Verteilung','Trainieren-Interaktion']},{phase:'V3',time:'+4h',tasks:['Gems als zweite Währung + Shop-Anbindung']}], effort:'3-4h', impact:'Mittel' },
+    resource_hud:  { inspiration:'Youth Pharma (UI-Referenz-Screenshot)', overview:'Permanente Top-Leiste (Punkte/Gems/Energie) auf jedem Screen + Team-Ansicht mit mehreren parallel levelnden Begleitern statt nur einem aktiven Avatar.', mechanics:{rules:'Energie regeneriert 1 Punkt / 5min (Cap 100); jede Lern-Session kostet 10 Energie. Team-XP verteilt sich anteilig auf alle aktiven Begleiter.',triggers:'• Energie leer → Sanftes Cooldown-Overlay statt Hardstop  • Team-Level-Up → Bounce-Animation auf Portrait',rewards:'• Volle Energie-Leiste: "Aufgeladen"-Badge  • Alle 4 Begleiter Lv.10: "Vollständiges Team"-Abzeichen'}, flow:['Top-Bar auf allen Screens sichtbar (Punkte/Gems/Energie)','Team-Tab in Profil: 4 Begleiter-Karten mit Level-Balken','Tap auf Begleiter → Mini-Stats + "Trainieren"-Button','Energie sinkt mit jeder Session, regeneriert passiv'], ux:{layout:'Fixe Top-Bar mit Glass-Panel-Optik über allen Screens; Team-Grid 2×2 im Profil',feedback:'Energie-Balken pulsiert bei <20%; Team-Karten-Glow bei Level-Up',states:['full-energy','low-energy','depleted','team-levelup']}, technical:{storage:'pv_energy (value, lastRegenTs); pv_team (Array von Begleiter-XP)',seed:'setInterval-freie Regeneration: Delta aus Date.now() beim Laden berechnen',files:'~150 Zeilen (Top-Bar-Komponente + Team-Grid)',noBackend:true}, metrics:{dau:'Session-Frequenz durch Energie-Timing gesteuert',retention:'Team-Sammel-Ziel verlängert Langzeitbindung',session:'Kürzere, häufigere Sessions statt langer Einzelsitzungen'}, roadmap:[{phase:'MVP',time:'3-4h',tasks:['Top-Bar-Komponente','Energie-System','Team-Grid UI']},{phase:'V2',time:'+3h',tasks:['Team-XP-Verteilung','Trainieren-Interaktion']},{phase:'V3',time:'+4h',tasks:['Gems als zweite Währung + Shop-Anbindung']}], effort:'3-4h', impact:'Mittel' },
   };
 
   function generateDocument(featureId) {
@@ -7795,7 +7795,7 @@ class GameDesignerAgent {
     const goals = [];
     if (playerData.streak > 0 && playerData.streak < 3)  goals.push(`Noch ${3 - playerData.streak} Tage bis zum 3-Tage-Streak-Abzeichen`);
     if (playerData.streak >= 3 && playerData.streak < 7) goals.push(`Noch ${7 - playerData.streak} Tage bis zum 7-Tage-Streak-Abzeichen`);
-    if (playerData.xp < 200) goals.push(`Noch ${200 - playerData.xp} Shekel bis Level 2`);
+    if (playerData.xp < 200) goals.push(`Noch ${200 - playerData.xp} Punkte bis Level 2`);
     return goals;
   }
 
