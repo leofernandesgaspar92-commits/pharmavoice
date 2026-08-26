@@ -4270,6 +4270,8 @@ function renderQ() {
     const b = document.createElement('button');
     b.className = 'opt';
     b.innerHTML = `<span class="opt-key" aria-hidden="true">${i + 1}</span><span class="opt-txt">${opt}</span>`;
+    // Barrierefreiheit: sauberes Label ohne „Mittelpunkt"-Vorlesen der Trennzeichen
+    b.setAttribute('aria-label', `${L('Antwortoption','Answer option','Opção')} ${i + 1}: ${opt.replace(/·/g, ' ')}`);
     b.dataset.correct = String(opt === correct);
     b.dataset.optidx = String(i);
     b.onclick = () => pick(b, correct, med);
