@@ -4651,8 +4651,19 @@ function levenshtein(a, b) {
   return dp[m][n];
 }
 
+// Phonetische Normalisierung: gleicht typische ASR-Schreibvarianten an, damit
+// Fachbegriffe trotz Erkennungs-Ungenauigkeit als korrekt gewertet werden.
+// (z.B. "Ibuprophen" → "ibuprofen", "Amoxicillin" mit Doppel-l robust, Umlaute)
 function normalize(s) {
-  return s.toLowerCase().replace(/[\s\-\.\,\/\(\)]/g, '');
+  return (s || '').toLowerCase()
+    .replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss')
+    .replace(/[^a-z]/g, '')      // Leerzeichen, Punkt, Ziffern, Emoji etc. entfernen
+    .replace(/sch/g, 's')
+    .replace(/ph/g, 'f')
+    .replace(/th/g, 't')
+    .replace(/y/g, 'i')
+    .replace(/v/g, 'f')
+    .replace(/(.)\1+/g, '$1');   // doppelte Buchstaben zusammenfassen (ll→l, mm→m …)
 }
 
 function checkPronunciation(spoken, alternatives) {
