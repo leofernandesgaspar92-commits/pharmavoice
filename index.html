@@ -7981,6 +7981,13 @@ try { if (localStorage.getItem('pv_dev') === '1') document.body.classList.add('d
 // Onboarding beim ersten Start zeigen
 try { OnboardingSystem.maybeShow(); } catch (e) {}
 
+// PWA-Shortcuts (?go=quick|lexikon) aus manifest.json auswerten
+try {
+  const go = new URLSearchParams(location.search).get('go');
+  if (go === 'quick' && typeof startQuickPractice === 'function') startQuickPractice();
+  else if (go === 'lexikon' && typeof LexikonSystem !== 'undefined') { showScreen('Lexikon'); LexikonSystem.render(); }
+} catch (e) {}
+
 // Offline-Hinweis ein-/ausblenden je nach Verbindungsstatus
 function _updateOfflineBar() {
   const bar = document.getElementById('offlineBar');
