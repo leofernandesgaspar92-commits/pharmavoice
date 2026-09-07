@@ -4470,13 +4470,13 @@ function pick(btn, correct, med) {
   const good = btn.dataset.correct === 'true';
   if (good) {
     btn.classList.add('good');
-    showFeedback(true, `✅ &nbsp;${L('Richtig!','Correct!','Correto!')} &nbsp;${med.tip}`);
+    showFeedback(true, `✅ &nbsp;${L('Richtig!','Correct!','Correto!')} &nbsp;${tipFor(med)}`);
   } else {
     btn.classList.add('bad');
     btn.classList.add('shake');
     setTimeout(() => btn.classList.remove('shake'), 380);
     document.querySelectorAll('.opt').forEach(b => { if (b.dataset.correct === 'true') b.classList.add('good'); });
-    showFeedback(false, `❌ &nbsp;${L('Fast! Richtige Antwort:','Almost! Correct answer:','Quase! Resposta correta:')} <strong>${correct}</strong><br>${med.tip}`);
+    showFeedback(false, `❌ &nbsp;${L('Fast! Richtige Antwort:','Almost! Correct answer:','Quase! Resposta correta:')} <strong>${correct}</strong><br>${tipFor(med)}`);
   }
   scoreAnswer(good, med);
 }
@@ -4514,11 +4514,32 @@ function playMedWord() {
   if (btn) { btn.classList.add('playing'); setTimeout(() => btn.classList.remove('playing'), 1200); }
 }
 
+// Betonungs-Tipp dynamisch & sprachbewusst aus den Silbendaten erzeugen (DE/EN/PT),
+// statt pro Wirkstoff einen deutschen Text zu speichern. Gilt für alle Wirkstoffe.
+function tipFor(med) {
+  if (!med || !Array.isArray(med.syllables)) return (med && med.tip) || '';
+  const i = typeof med.si === 'number' ? med.si : 0;
+  const syl = med.syllables[i] || '';
+  const idx = Math.min(Math.max(i, 0), 8);
+  const de = ['Erste','Zweite','Dritte','Vierte','Fünfte','Sechste','Siebte','Achte','Neunte'];
+  const en = ['first','second','third','fourth','fifth','sixth','seventh','eighth','ninth'];
+  const pt = ['primeira','segunda','terceira','quarta','quinta','sexta','sétima','oitava','nona'];
+  return L(
+    `${de[idx]} Silbe „${syl}" betonen.`,
+    `Stress the ${en[idx]} syllable: “${syl}”.`,
+    `Enfatize a ${pt[idx]} sílaba: “${syl}”.`
+  );
+}
+
 function showLearnHint() {
   const med = Q.meds[Q.idx];
   if (!med) return;
-  const stressedSyl = med.syllables[med.si];
-  CharacterSystem.showBubble(`💡 Tipp: Die betonte Silbe ist „${stressedSyl}"!`, 3200);
+  const syl = med.syllables[med.si];
+  CharacterSystem.showBubble(L(
+    `💡 Tipp: Die betonte Silbe ist „${syl}"!`,
+    `💡 Hint: The stressed syllable is “${syl}”!`,
+    `💡 Dica: A sílaba tônica é “${syl}”!`
+  ), 3200);
 }
 
 function showFeedback(ok, html) {
