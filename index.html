@@ -4372,7 +4372,7 @@ function renderQ() {
   if (dotsEl) dotsEl.innerHTML = Q.meds.map((_, i) => `<span class="q-dot ${i < cur-1 ? 'done' : i === cur-1 ? 'current' : ''}"></span>`).join('');
   if (el('quizPoints')) el('quizPoints').textContent = Q.sessionXP;
   if (el('quizStreak')) el('quizStreak').textContent = 'x' + (Q.streak || 0);
-  set('medCat', med.category);
+  set('medCat', catLabel(med.category));
   // Dynamic font size
   const nameEl = el('medName');
   nameEl.textContent = med.name;
@@ -4512,6 +4512,87 @@ function playMedWord() {
   const ok = AudioSystem.speakWord(med.name, CharacterSystem.getLang());
   if (!ok && btn) { btn.textContent = '⚠️ Nicht verfügbar'; setTimeout(() => { btn.textContent = '🔊 Anhören'; }, 1500); return; }
   if (btn) { btn.classList.add('playing'); setTimeout(() => btn.classList.remove('playing'), 1200); }
+}
+
+// Wirkstoff-Kategorien lokalisiert (DE-Schlüssel → EN/PT). Für EN/PT-Nutzer werden
+// so Quiz-Label, Lexikon-Überschriften und Filter-Chips übersetzt angezeigt.
+const CATEGORY_I18N = {
+  'ACE-Hemmer':['ACE inhibitor','Inibidor da ECA'],
+  'Abführmittel':['Laxative','Laxante'],
+  'Analgetikum':['Analgesic','Analgésico'],
+  'Anthelminthikum':['Anthelmintic','Anti-helmíntico'],
+  'Antiarrhythmikum':['Antiarrhythmic','Antiarrítmico'],
+  'Antibiotikum':['Antibiotic','Antibiótico'],
+  'Anticholinergikum':['Anticholinergic','Anticolinérgico'],
+  'Antidementivum':['Anti-dementia drug','Antidemencial'],
+  'Antidepressivum':['Antidepressant','Antidepressivo'],
+  'Antidiarrhoikum':['Antidiarrheal','Antidiarreico'],
+  'Antiemetikum':['Antiemetic','Antiemético'],
+  'Antiepileptikum':['Antiepileptic','Antiepiléptico'],
+  'Antihistaminikum':['Antihistamine','Anti-histamínico'],
+  'Antikoagulans':['Anticoagulant','Anticoagulante'],
+  'Antimalariamittel':['Antimalarial','Antimalárico'],
+  'Antimykotikum':['Antifungal','Antifúngico'],
+  'Antiparasitikum':['Antiparasitic','Antiparasitário'],
+  'Antipsychotikum':['Antipsychotic','Antipsicótico'],
+  'Antirheumatikum':['Antirheumatic','Antirreumático'],
+  'Antivertiginosum':['Anti-vertigo drug','Antivertiginoso'],
+  'Anxiolytikum':['Anxiolytic','Ansiolítico'],
+  'Asthma':['Asthma','Asma'],
+  'Benzodiazepin':['Benzodiazepine','Benzodiazepínico'],
+  'Betablocker':['Beta blocker','Betabloqueador'],
+  'Blutdruck':['Blood pressure','Pressão arterial'],
+  'Bronchodilatator':['Bronchodilator','Broncodilatador'],
+  'Cholesterin':['Cholesterol','Colesterol'],
+  'Darmentzündung':['Bowel inflammation','Inflamação intestinal'],
+  'Darreichungsform':['Dosage form','Forma farmacêutica'],
+  'Dermatikum':['Dermatological','Dermatológico'],
+  'Diabetes':['Diabetes','Diabetes'],
+  'Diuretikum':['Diuretic','Diurético'],
+  'Durchblutung':['Circulation','Circulação'],
+  'Entzündungshemmer':['Anti-inflammatory','Anti-inflamatório'],
+  'Gallenmittel':['Bile agent','Agente biliar'],
+  'Gichtmittel':['Gout medication','Antigotoso'],
+  'Herzglykosid':['Cardiac glycoside','Glicosídeo cardíaco'],
+  'Herzmittel':['Cardiac drug','Medicamento cardíaco'],
+  'Hormon':['Hormone','Hormônio'],
+  'Hustenstiller':['Cough suppressant','Antitússico'],
+  'Immunsuppressivum':['Immunosuppressant','Imunossupressor'],
+  'Kalziumantagonist':['Calcium channel blocker','Antagonista do cálcio'],
+  'Kortikoid':['Corticoid','Corticoide'],
+  'Kortikosteroid':['Corticosteroid','Corticosteroide'],
+  'Laxans':['Laxative','Laxante'],
+  'Magen-Darm':['Gastrointestinal','Gastrointestinal'],
+  'Magenschutz':['Gastric protection','Protetor gástrico'],
+  'Medizinprodukt':['Medical device','Dispositivo médico'],
+  'Migränemittel':['Migraine drug','Antienxaqueca'],
+  'Muskelrelaxans':['Muscle relaxant','Relaxante muscular'],
+  'Nasenmittel':['Nasal agent','Agente nasal'],
+  'Onkologie':['Oncology','Oncologia'],
+  'Ophthalmikum':['Ophthalmic','Oftálmico'],
+  'Opioid-Analgetikum':['Opioid analgesic','Analgésico opioide'],
+  'Opioid-Antagonist':['Opioid antagonist','Antagonista opioide'],
+  'Opioid-Antitussivum':['Opioid cough suppressant','Antitússico opioide'],
+  'Osteoporosemittel':['Osteoporosis drug','Antiosteoporótico'],
+  'PDE-5-Hemmer':['PDE-5 inhibitor','Inibidor da PDE-5'],
+  'Parkinsonmittel':["Parkinson's drug",'Antiparkinsoniano'],
+  'Phasenprophylaktikum':['Mood stabilizer','Estabilizador de humor'],
+  'Psychostimulans':['Psychostimulant','Psicoestimulante'],
+  'Schilddrüse':['Thyroid','Tireoide'],
+  'Schlafmittel':['Sleep aid','Sonífero'],
+  'Schleimlöser':['Mucolytic','Mucolítico'],
+  'Schmerzmittel':['Painkiller','Analgésico'],
+  'Spasmolytikum':['Antispasmodic','Antiespasmódico'],
+  'Thrombozytenhemmer':['Antiplatelet','Antiagregante plaquetário'],
+  'Tuberkulostatikum':['Antitubercular','Tuberculostático'],
+  'Urologikum':['Urological','Urológico'],
+  'Virostatikum':['Antiviral','Antiviral'],
+  'Vitamin':['Vitamin','Vitamina'],
+};
+function catLabel(cat) {
+  if (!cat) return '';
+  const t = CATEGORY_I18N[cat];
+  return t ? L(cat, t[0], t[1]) : cat;
 }
 
 // Betonungs-Tipp dynamisch & sprachbewusst aus den Silbendaten erzeugen (DE/EN/PT),
@@ -6654,7 +6735,7 @@ const LexikonSystem = (() => {
         if (_activeCat && !shown.includes(_activeCat)) shown.push(_activeCat);
         hiddenCount = cats.length - CHIP_LIMIT;
       }
-      const chipHtml = (c) => `<button class="lex-chip ${_activeCat === c ? 'active' : ''}" onclick="LexikonSystem.setCat('${c.replace(/'/g, "\\'")}')">${c} ${counts[c]}</button>`;
+      const chipHtml = (c) => `<button class="lex-chip ${_activeCat === c ? 'active' : ''}" onclick="LexikonSystem.setCat('${c.replace(/'/g, "\\'")}')">${catLabel(c)} ${counts[c]}</button>`;
       let html =
         `<button class="lex-chip ${_activeCat === null ? 'active' : ''}" onclick="LexikonSystem.setCat(null)">${L('Alle','All','Todos')} ${total}</button>` +
         shown.map(chipHtml).join('');
@@ -6672,6 +6753,7 @@ const LexikonSystem = (() => {
       if (!q) return true;
       if (m.name.toLowerCase().includes(q)) return true;
       if ((m.category || '').toLowerCase().includes(q)) return true;
+      if (catLabel(m.category).toLowerCase().includes(q)) return true;
       const info = MED_INFO[m.name];
       if (info) {
         if ((info.indication || '').toLowerCase().includes(q)) return true;
@@ -6720,7 +6802,7 @@ const LexikonSystem = (() => {
       const byCat = {};
       filtered.forEach(m => { (byCat[m.category || 'Sonstige'] ||= []).push(m); });
       listEl.innerHTML = Object.entries(byCat).map(([cat, meds]) =>
-        `<div class="lex-cat-title">${cat} <span class="lex-cat-count">${meds.length}</span></div>${meds.map(cardHtml).join('')}`).join('');
+        `<div class="lex-cat-title">${catLabel(cat)} <span class="lex-cat-count">${meds.length}</span></div>${meds.map(cardHtml).join('')}`).join('');
     }
   }
 
