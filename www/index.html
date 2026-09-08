@@ -4313,7 +4313,7 @@ function renderWordOfDay() {
     <div class="wod-body">
       <div class="wod-name">${med.name}</div>
       <div class="wod-ipa">${med.phonetic || ''}</div>
-      ${info.indication ? `<div class="wod-ind">${info.indication}</div>` : ''}
+      ${info.indication ? `<div class="wod-ind">${indFor(med.name, info)}</div>` : ''}
     </div>
     <div class="wod-actions">
       <button class="wod-btn wod-listen" onclick="AudioSystem.speakWord('${safe}', CharacterSystem.getLang())" aria-label="${L('Anhören','Listen','Ouvir')}">🔊 ${L('Anhören','Listen','Ouvir')}</button>
@@ -4392,7 +4392,7 @@ function renderQ() {
   const info  = MED_INFO[med.name] || {};
   const extra = el('medExtra');
   let xhtml = '';
-  if (info.indication)                           xhtml += `<div class="med-extra-row"><div class="med-extra-label">${L('Anwendung','Use','Indicação')}</div><div class="med-extra-text">${info.indication}</div></div>`;
+  if (info.indication)                           xhtml += `<div class="med-extra-row"><div class="med-extra-label">${L('Anwendung','Use','Indicação')}</div><div class="med-extra-text">${indFor(med.name, info)}</div></div>`;
   if (info.drugClass && info.drugClass !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">${L('Wirkstoffklasse','Drug class','Classe')}</div><div class="med-extra-text">${info.drugClass}</div></div>`;
   if (info.formula   && info.formula   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">${L('Summenformel','Formula','Fórmula')}</div><div class="med-extra-text">${info.formula}</div></div>`;
   if (info.atcCode   && info.atcCode   !== '—')  xhtml += `<div class="med-extra-row"><div class="med-extra-label">${L('ATC-Code','ATC code','Código ATC')}</div><div class="med-extra-text">${info.atcCode}</div></div>`;
@@ -4593,6 +4593,33 @@ function catLabel(cat) {
   if (!cat) return '';
   const t = CATEGORY_I18N[cat];
   return t ? L(cat, t[0], t[1]) : cat;
+}
+
+// Indikationstexte lokalisiert (EN/PT) für die häufigsten Wirkstoffe. Separate Map,
+// damit der grosse MED_INFO-Block unangetastet bleibt. Fallback: deutscher Text.
+const IND_I18N = {
+  'Ibuprofen':{en:'Painkiller and anti-inflammatory. Used for headaches, fever and joint or muscle pain.',pt:'Analgésico e anti-inflamatório. Usado em dores de cabeça, febre e dores articulares ou musculares.'},
+  'Paracetamol':{en:'Pain and fever reliever. Used for mild to moderate pain and fever, also during pregnancy.',pt:'Analgésico e antipirético. Usado em dores leves a moderadas e febre, inclusive na gravidez.'},
+  'Amoxicillin':{en:'Broad-spectrum antibiotic for bacterial infections. Used for respiratory, urinary and ENT infections.',pt:'Antibiótico de amplo espectro para infecções bacterianas. Usado em infecções respiratórias, urinárias e otorrinolaringológicas.'},
+  'Pantoprazol':{en:'Inhibits stomach acid production. Used for stomach ulcers, heartburn and gastro-oesophageal reflux disease.',pt:'Inibe a produção de ácido gástrico. Usado em úlceras, azia e doença do refluxo gastroesofágico.'},
+  'Metformin':{en:'Lowers blood sugar in type 2 diabetes. Improves insulin sensitivity and reduces glucose production in the liver.',pt:'Reduz a glicemia no diabetes tipo 2. Melhora a sensibilidade à insulina e reduz a produção de glicose no fígado.'},
+  'Ramipril':{en:'Lowers blood pressure and protects heart and kidneys. Used for hypertension, heart failure and after a heart attack.',pt:'Reduz a pressão arterial e protege coração e rins. Usado em hipertensão, insuficiência cardíaca e após infarto.'},
+  'Bisoprolol':{en:'Lowers heart rate and blood pressure. Used for hypertension, heart failure and arrhythmias.',pt:'Reduz a frequência cardíaca e a pressão arterial. Usado em hipertensão, insuficiência cardíaca e arritmias.'},
+  'Simvastatin':{en:'Lowers LDL cholesterol in the blood. Prevents heart attack and stroke when cholesterol is elevated.',pt:'Reduz o colesterol LDL no sangue. Previne infarto e AVC em caso de colesterol elevado.'},
+  'Metoprolol':{en:'Beta-1-selective beta blocker for hypertension, angina and after a heart attack.',pt:'Betabloqueador beta-1 seletivo para hipertensão, angina e após infarto.'},
+  'Omeprazol':{en:'Reduces stomach acid production. Used for stomach ulcers, reflux disease and H. pylori therapy.',pt:'Reduz a produção de ácido gástrico. Usado em úlceras, doença do refluxo e terapia de H. pylori.'},
+  'Diclofenac':{en:'Anti-inflammatory and pain-relieving. Used for arthritis, sports injuries and back pain.',pt:'Anti-inflamatório e analgésico. Usado em artrite, lesões esportivas e dores nas costas.'},
+  'Metronidazol':{en:'Antibiotic against anaerobic bacteria and parasites. Used for H. pylori infections, trichomoniasis and intestinal infections.',pt:'Antibiótico contra bactérias anaeróbias e parasitas. Usado em infecções por H. pylori, tricomoníase e infecções intestinais.'},
+  'Aspirin':{en:'Painkiller and antiplatelet agent; low-dose for heart attack prevention.',pt:'Analgésico e antiagregante plaquetário; em baixa dose para prevenção de infarto.'},
+  'Cetirizin':{en:'Anti-allergy medication for hay fever, hives and allergic itching. Minimally sedating.',pt:'Antialérgico para rinite alérgica, urticária e coceira alérgica. Pouco sedativo.'},
+  'Salbutamol':{en:'Fast-acting bronchodilator. Used as a rescue medication for acute asthma attacks and COPD exacerbations.',pt:'Broncodilatador de ação rápida. Usado como medicação de resgate em crises de asma e exacerbações de DPOC.'},
+};
+// Liefert die Indikation in der aktiven Sprache (EN/PT falls übersetzt, sonst Deutsch).
+function indFor(name, info) {
+  const t = IND_I18N[name];
+  const lang = (typeof CharacterSystem !== 'undefined' && CharacterSystem.getLang) ? CharacterSystem.getLang() : 'de';
+  if (t && (lang === 'en' || lang === 'pt') && t[lang]) return t[lang];
+  return info ? (info.indication || '') : '';
 }
 
 // Betonungs-Tipp dynamisch & sprachbewusst aus den Silbendaten erzeugen (DE/EN/PT),
@@ -6757,6 +6784,7 @@ const LexikonSystem = (() => {
       const info = MED_INFO[m.name];
       if (info) {
         if ((info.indication || '').toLowerCase().includes(q)) return true;
+      if (indFor(m.name, info).toLowerCase().includes(q)) return true;
         if ((info.drugClass || '').toLowerCase().includes(q)) return true;
       }
       return false;
@@ -6785,7 +6813,7 @@ const LexikonSystem = (() => {
         <div class="lex-card-main" role="button" tabindex="0" onclick="practiceWord('${safe}')" aria-label="${L('Üben','Practice','Praticar')}: ${m.name} (${diffLabel})">
           <div class="lex-card-name">${diffDot} ${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''} <span class="lex-practice-hint">▶</span></div>
           <div class="lex-card-ipa">${m.phonetic || ''}</div>
-          ${info.indication ? `<div class="lex-card-ind">${info.indication}</div>` : ''}
+          ${info.indication ? `<div class="lex-card-ind">${indFor(m.name, info)}</div>` : ''}
         </div>
         <button class="lex-listen" onclick="LexikonSystem.listen('${safe}')" aria-label="${L('Anhören','Listen','Ouvir')}">🔊</button>
       </div>`;
