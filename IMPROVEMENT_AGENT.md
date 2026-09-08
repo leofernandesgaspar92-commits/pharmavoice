@@ -36,7 +36,7 @@ Betriebshandbuch und der lebende Backlog.
 ## Backlog (nach Priorität; oben = als Nächstes)
 
 ### P1 – Lernkern & Sprache
-- [~] Indikationstexte nach EN/PT übersetzen – **34/≈50 erledigt** (`IND_I18N` + `indFor()`), Rest folgt schrittweise.
+- [x] Indikationstexte nach EN/PT übersetzt – **52 Wirkstoffe** (`IND_I18N` + `indFor()`); seltene Wirkstoffe fallen auf Deutsch zurück.
 - [ ] Wirkstoffklassen (`drugClass`) lokalisieren (bounded, ähnlich wie Kategorien).
 - [ ] Optionales sprach-spezifisches Aussprache-Modell (EN/PT-Betonung je Wirkstoff, mit Fallback).
 
