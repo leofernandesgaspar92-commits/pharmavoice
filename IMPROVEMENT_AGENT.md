@@ -37,11 +37,11 @@ Betriebshandbuch und der lebende Backlog.
 
 ### P1 – Lernkern & Sprache
 - [x] Indikationstexte nach EN/PT übersetzt – **52 Wirkstoffe** (`IND_I18N` + `indFor()`); seltene Wirkstoffe fallen auf Deutsch zurück.
-- [ ] Wirkstoffklassen (`drugClass`) lokalisieren (bounded, ähnlich wie Kategorien).
+- [ ] Wirkstoffklassen (`drugClass`) lokalisieren – **zurückgestellt**: 250 distinkte, teils inkonsistente Werte; großer Aufwand, geringer UX-Wert (nur Sekundär-Detail). Später ggf. via Term-Wörterbuch.
 - [ ] Optionales sprach-spezifisches Aussprache-Modell (EN/PT-Betonung je Wirkstoff, mit Fallback).
 
 ### P2 – Engagement & Bindung
-- [ ] „Perfekte Woche"-Belohnung (7/7 Tage Serie) mit Sonder-Feier.
+- [x] „Perfekte Woche"-Belohnung (7/7 Tage Serie) – Sonder-Overlay + Konfetti + 10 💎, einmal je Woche.
 - [ ] Wochen-Rückblick („diese Woche X Wörter gemeistert").
 - [ ] Sanfte Lern-Erinnerung konfigurierbar (Uhrzeit-Hinweis, lokal).
 
