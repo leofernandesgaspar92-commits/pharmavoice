@@ -1319,6 +1319,14 @@
     <button class="levelup-btn" onclick="event.stopPropagation();document.getElementById('levelupOverlay').hidden=true" data-i18n="levelup_ok">Weiter</button>
   </div>
 </div>
+<div class="levelup-overlay" id="perfectWeekOverlay" hidden onclick="this.hidden=true">
+  <div class="levelup-card">
+    <div class="levelup-emoji">🔥</div>
+    <div class="levelup-title" id="pwTitle" style="color:var(--gold)">Perfekte Woche!</div>
+    <div class="levelup-sub" id="pwSub">7/7 · +10 💎</div>
+    <button class="levelup-btn" onclick="event.stopPropagation();document.getElementById('perfectWeekOverlay').hidden=true" data-i18n="levelup_ok">Weiter</button>
+  </div>
+</div>
 
 
 <!-- ══ LEVEL SELECT MODAL ══ -->
@@ -4214,6 +4222,41 @@ function renderStreakReminder() {
     box.innerHTML = '';
   }
 }
+// Aktive Lerntage in der laufenden Woche (Mo–So) zählen
+function activeDaysThisWeek() {
+  let days = [];
+  try { days = JSON.parse(localStorage.getItem('pv_active_days')) || []; } catch {}
+  const set = new Set(days);
+  const now = new Date();
+  const dow = (now.getDay() + 6) % 7;
+  let n = 0;
+  for (let i = 0; i < 7; i++) { const d = new Date(now); d.setDate(now.getDate() - dow + i); if (set.has(_isoDay(d))) n++; }
+  return n;
+}
+// Wochen-Schlüssel = Datum des Montags dieser Woche (einmalige Feier je Woche)
+function _weekKey() {
+  const now = new Date(); const dow = (now.getDay() + 6) % 7;
+  const mon = new Date(now); mon.setDate(now.getDate() - dow);
+  return _isoDay(mon);
+}
+// „Perfekte Woche": alle 7 Tage geübt → einmalige Sonder-Feier + Bonus
+function checkPerfectWeek() {
+  if (activeDaysThisWeek() < 7) return;
+  const wk = _weekKey();
+  let done = null; try { done = localStorage.getItem('pv_perfectweek'); } catch {}
+  if (done === wk) return;
+  try { localStorage.setItem('pv_perfectweek', wk); } catch {}
+  const reward = 10;
+  try { ResourceSystem.addGems(reward); } catch {}
+  const ov = el('perfectWeekOverlay');
+  if (ov) {
+    set('pwTitle', L('Perfekte Woche!','Perfect week!','Semana perfeita!'));
+    set('pwSub', `7/7 · +${reward} 💎`);
+    ov.hidden = false;
+  }
+  if (typeof launchConfetti === 'function') launchConfetti('#FFC93C');
+}
+
 function renderStreakWeek() {
   const box = document.getElementById('homeStreakWeek');
   if (!box) return;
@@ -4773,6 +4816,8 @@ function showResult() {
   recordActiveDay();
   recordDailyGoal();
   save();
+  // „Perfekte Woche" prüfen (nach dem heutigen Lerntag), leicht verzögert für saubere Feier
+  setTimeout(() => { try { checkPerfectWeek(); } catch (e) {} }, 1200);
   const s = Q.correct, t = Q.meds.length;
   let emoji, title;
   if (s === t)   { emoji='🏆'; title=L('Perfekt! Ausgezeichnet!','Perfect! Excellent!','Perfeito! Excelente!'); }
