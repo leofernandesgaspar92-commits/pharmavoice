@@ -53,7 +53,7 @@ Betriebshandbuch und der lebende Backlog.
 ### P4 – Politur & A11y
 - [x] Dark-Theme aufgehellt & wärmer – Basis von Fast-Schwarz (#0A0F1C) auf weiches Slate (#182234) gehoben, Karten/Ränder klarer abgegrenzt (Nutzer-Feedback „zu dunkel"). Screenshot-verifiziert.
 - [x] **Vollständiges helles Theme + Umschalter** – Hell als Standard, System-Präferenz (`prefers-color-scheme`), Toggle im Profil (Hell/Dunkel/System, in `pv_theme`). Farb-Flip über `--fg`-Triple; immersive Stage & farbige Hero-Karten behalten lokal hellen Text. No-Flash-Skript im `<head>`. In beiden Themes screenshot-verifiziert (Home, Lexikon, Profil).
-- [ ] Kontrast-Audit (WCAG AA) der Kernflächen.
+- [x] Kontrast-Audit (WCAG AA) der Kernflächen – Grün als Text auf `--green-ink` (AA-lesbar auf Hell) umgestellt (50 Stellen), `--gray2` je Theme auf AA angehoben (Sektionstitel, Nav-Labels); mit Playwright-Kontrastmesser in Hell & Dunkel geprüft. Dekorative Elemente (Emoji, Schwierigkeits-Punkte, Avatar-Monogramm) sowie Text auf bewusst dunklen Hero-Karten bleiben ausgenommen.
 - [ ] Fokus-Reihenfolge & Screenreader-Durchlauf je Screen.
 
 ### P5 – Store & Wachstum (viele Punkte extern durch den Gründer)
