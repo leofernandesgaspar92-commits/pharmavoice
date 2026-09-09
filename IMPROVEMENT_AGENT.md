@@ -48,7 +48,7 @@ Betriebshandbuch und der lebende Backlog.
 ### P3 – Inhalt
 - [x] Katalog weiter ausbauen – **380 Wirkstoffe** (Runde 7: +8, u.a. Dalteparin, Fondaparinux, Roflumilast, Ciclesonid, Dexketoprofen), kuratiert, keine Dubletten.
 - [ ] Katalog weiter ausbauen (aktuell 380) – kuratiert, keine Dubletten.
-- [ ] Schwierigkeitsstufen/Level-Zuordnung feiner justieren.
+- [x] Level-Zuordnung nach Kategorie justiert – vorher 325/32/23 (85 % in „Basics"), jetzt **137/112/131**, thematisch passend zu den Level-Beschreibungen (L2 Herz/Antibiotika/Magen, L3 Atemwege/Neuro/Onko).
 
 ### P4 – Politur & A11y
 - [ ] Kontrast-Audit (WCAG AA) der Kernflächen.
