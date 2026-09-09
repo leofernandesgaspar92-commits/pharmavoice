@@ -52,7 +52,7 @@ Betriebshandbuch und der lebende Backlog.
 
 ### P4 – Politur & A11y
 - [x] Dark-Theme aufgehellt & wärmer – Basis von Fast-Schwarz (#0A0F1C) auf weiches Slate (#182234) gehoben, Karten/Ränder klarer abgegrenzt (Nutzer-Feedback „zu dunkel"). Screenshot-verifiziert.
-- [ ] **Vollständiges helles Theme + Umschalter** (Standard hell, System-Präferenz, Toggle im Profil) – berührt ~90 Farbstellen inkl. dunkler Hero-Karten; eigener screenshot-geprüfter Durchgang.
+- [x] **Vollständiges helles Theme + Umschalter** – Hell als Standard, System-Präferenz (`prefers-color-scheme`), Toggle im Profil (Hell/Dunkel/System, in `pv_theme`). Farb-Flip über `--fg`-Triple; immersive Stage & farbige Hero-Karten behalten lokal hellen Text. No-Flash-Skript im `<head>`. In beiden Themes screenshot-verifiziert (Home, Lexikon, Profil).
 - [ ] Kontrast-Audit (WCAG AA) der Kernflächen.
 - [ ] Fokus-Reihenfolge & Screenreader-Durchlauf je Screen.
 
