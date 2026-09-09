@@ -46,7 +46,8 @@ Betriebshandbuch und der lebende Backlog.
 - [x] Lern-Erinnerung konfigurierbar – Uhrzeit im Profil, lokaler Hinweis-Banner beim Öffnen (kein Push nötig).
 
 ### P3 – Inhalt
-- [ ] Katalog weiter ausbauen (aktuell 372) – kuratiert, keine Dubletten.
+- [x] Katalog weiter ausbauen – **380 Wirkstoffe** (Runde 7: +8, u.a. Dalteparin, Fondaparinux, Roflumilast, Ciclesonid, Dexketoprofen), kuratiert, keine Dubletten.
+- [ ] Katalog weiter ausbauen (aktuell 380) – kuratiert, keine Dubletten.
 - [ ] Schwierigkeitsstufen/Level-Zuordnung feiner justieren.
 
 ### P4 – Politur & A11y
