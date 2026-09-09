@@ -190,6 +190,12 @@
     .goal-ring { flex:0 0 auto; }
     .goal-title { font-size:14px; font-weight:800; color:var(--text); }
     .goal-sub { font-size:12px; color:var(--text2); margin-top:2px; }
+    .wr-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; margin-bottom:12px; box-shadow:var(--shadow); }
+    .wr-title { font-size:13px; font-weight:800; color:var(--text); margin-bottom:10px; }
+    .wr-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .wr-item { text-align:center; }
+    .wr-val { font-family:'Fredoka','Inter',sans-serif; font-size:20px; font-weight:700; color:var(--green); line-height:1; }
+    .wr-cap { font-size:10.5px; color:var(--text2); margin-top:4px; }
     .streak-week { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; margin-bottom:12px; box-shadow:var(--shadow); }
     .sw-head { display:flex; justify-content:space-between; font-size:12px; font-weight:800; color:var(--text2); margin-bottom:8px; }
     .sw-cells { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
@@ -1560,6 +1566,7 @@
   <!-- Daily challenge -->
   <div id="homeDailyGoal"></div>
   <div id="homeStreakWeek"></div>
+  <div id="homeWeekReview"></div>
   <div id="homeDueCard"></div>
   <div id="homeWordCard"></div>
   <div id="homeSeasonCard"></div>
@@ -3698,6 +3705,8 @@ function renderHomeDashboard() {
   renderDailyGoal();
   // Wochen-Serie (aktive Lerntage)
   renderStreakWeek();
+  // Wochen-Rückblick (Sessions/Trefferquote/XP dieser Woche)
+  renderWeekReview();
   // Fällige Wiederholungen (Spaced Repetition)
   renderDueCard();
   // Wort des Tages (deterministisch pro Kalendertag)
@@ -4239,6 +4248,39 @@ function _weekKey() {
   const mon = new Date(now); mon.setDate(now.getDate() - dow);
   return _isoDay(mon);
 }
+// Wochen-Aggregat (Sessions/richtige/XP) für den Wochen-Rückblick.
+function recordWeekStats(correct, total, xp) {
+  const wk = _weekKey();
+  let w = {}; try { w = JSON.parse(localStorage.getItem('pv_weekstats')) || {}; } catch {}
+  if (w.week !== wk) w = { week: wk, sessions: 0, correct: 0, total: 0, xp: 0 };
+  w.sessions += 1;
+  w.correct += (correct || 0);
+  w.total += (total || 0);
+  w.xp += (xp || 0);
+  try { localStorage.setItem('pv_weekstats', JSON.stringify(w)); } catch {}
+}
+function _weekStats() {
+  let w = {}; try { w = JSON.parse(localStorage.getItem('pv_weekstats')) || {}; } catch {}
+  return (w.week === _weekKey()) ? w : { week: _weekKey(), sessions: 0, correct: 0, total: 0, xp: 0 };
+}
+function renderWeekReview() {
+  const box = document.getElementById('homeWeekReview');
+  if (!box) return;
+  const w = _weekStats();
+  const days = activeDaysThisWeek();
+  if (w.sessions === 0 && days === 0) { box.innerHTML = ''; return; }
+  const acc = w.total ? Math.round(w.correct / w.total * 100) : 0;
+  box.innerHTML = `<div class="wr-card">
+    <div class="wr-title">${L('📅 Deine Woche','📅 Your week','📅 Sua semana')}</div>
+    <div class="wr-grid">
+      <div class="wr-item"><div class="wr-val">${days}/7</div><div class="wr-cap">${L('Tage aktiv','Active days','Dias ativos')}</div></div>
+      <div class="wr-item"><div class="wr-val">${w.sessions}</div><div class="wr-cap">${L('Übungen','Sessions','Sessões')}</div></div>
+      <div class="wr-item"><div class="wr-val">${w.total ? acc + '%' : '–'}</div><div class="wr-cap">${L('Treffer','Accuracy','Precisão')}</div></div>
+      <div class="wr-item"><div class="wr-val">+${w.xp}</div><div class="wr-cap">${L('Punkte','Points','Pontos')}</div></div>
+    </div>
+  </div>`;
+}
+
 // „Perfekte Woche": alle 7 Tage geübt → einmalige Sonder-Feier + Bonus
 function checkPerfectWeek() {
   if (activeDaysThisWeek() < 7) return;
@@ -4815,6 +4857,7 @@ function showResult() {
   }
   recordActiveDay();
   recordDailyGoal();
+  try { recordWeekStats(Q.correct, Q.meds.length, Q.sessionXP); } catch (e) {}
   save();
   // „Perfekte Woche" prüfen (nach dem heutigen Lerntag), leicht verzögert für saubere Feier
   setTimeout(() => { try { checkPerfectWeek(); } catch (e) {} }, 1200);
