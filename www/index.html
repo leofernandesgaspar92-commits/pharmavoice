@@ -190,6 +190,15 @@
     .goal-ring { flex:0 0 auto; }
     .goal-title { font-size:14px; font-weight:800; color:var(--text); }
     .goal-sub { font-size:12px; color:var(--text2); margin-top:2px; }
+    .rem-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:14px; box-shadow:var(--shadow); }
+    .rem-row { display:flex; align-items:center; gap:10px; font-size:14px; font-weight:700; color:var(--text); cursor:pointer; }
+    .rem-row input { width:18px; height:18px; accent-color:var(--green); cursor:pointer; }
+    .rem-time-row { display:flex; align-items:center; justify-content:space-between; margin-top:12px; font-size:13px; color:var(--text2); font-weight:600; }
+    .rem-time-row input[type=time] { background:var(--bg3); color:var(--text); border:1px solid var(--border); border-radius:10px; padding:7px 10px; font-family:inherit; font-size:14px; }
+    .rem-note { font-size:11.5px; color:var(--text2); margin-top:10px; line-height:1.45; opacity:.85; }
+    .reminder-banner { position:fixed; top:0; left:0; right:0; z-index:600; background:var(--green); color:#04211d; font-size:13px; font-weight:800; text-align:center; padding:9px 40px 9px 14px; box-shadow:0 2px 10px rgba(0,0,0,.3); cursor:pointer; }
+    .reminder-banner[hidden] { display:none; }
+    .reminder-x { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#04211d; font-size:15px; font-weight:900; cursor:pointer; }
     .wr-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; margin-bottom:12px; box-shadow:var(--shadow); }
     .wr-title { font-size:13px; font-weight:800; color:var(--text); margin-bottom:10px; }
     .wr-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
@@ -1226,6 +1235,10 @@
 <div id="offlineBar" class="offline-bar" role="status" aria-live="polite" hidden>
   <span data-i18n="offline_note">📴 Offline – du kannst weiterlernen, Fortschritt wird lokal gespeichert.</span>
 </div>
+<div id="reminderBanner" class="reminder-banner" role="status" hidden onclick="ReminderSystem.dismiss()">
+  <span id="reminderText" data-i18n="rem_banner">⏰ Zeit für deine PharmaVoice-Übung heute!</span>
+  <button class="reminder-x" aria-label="OK" onclick="event.stopPropagation();ReminderSystem.dismiss()">✕</button>
+</div>
 
 <!-- ══ ONBOARDING (First Launch) ══ -->
 <div id="onboarding" class="ob-overlay" hidden>
@@ -1718,6 +1731,16 @@
     <button class="lang-btn" data-lang="de" onclick="switchLang('de')" aria-label="Deutsch" lang="de">🇩🇪</button>
     <button class="lang-btn" data-lang="en" onclick="switchLang('en')" aria-label="English" lang="en">🇬🇧</button>
     <button class="lang-btn" data-lang="pt" onclick="switchLang('pt')" aria-label="Português" lang="pt">🇵🇹</button>
+  </div>
+
+  <div class="section-title" style="margin-top:24px" data-i18n="rem_title">⏰ Lern-Erinnerung</div>
+  <div class="rem-card">
+    <label class="rem-row"><input type="checkbox" id="remEnabled" onchange="ReminderSystem.save()"><span data-i18n="rem_enable">Tägliche Erinnerung</span></label>
+    <div class="rem-time-row">
+      <span data-i18n="rem_time">Uhrzeit</span>
+      <input type="time" id="remTime" value="18:00" onchange="ReminderSystem.save()">
+    </div>
+    <div class="rem-note" data-i18n="rem_note">Erinnert dich beim Öffnen der App, wenn du heute noch nicht geübt hast.</div>
   </div>
 
   <div class="section-title" style="margin-top:24px" data-i18n="backup_title">💾 Datensicherung</div>
@@ -3267,6 +3290,11 @@ const UI_I18N = {
   ach_events:    { de:'🗓️ EVENT-ABZEICHEN', en:'🗓️ EVENT BADGES', pt:'🗓️ EMBLEMAS DE EVENTO' },
   lex_search:    { de:'🔍 Wirkstoff, Kategorie oder Anwendung suchen …', en:'🔍 Search drug, category or use …', pt:'🔍 Buscar fármaco, categoria ou uso …' },
   lex_only_unlearned: { de:'Nur ungelernte anzeigen', en:'Show only unlearned', pt:'Mostrar só não aprendidos' },
+  rem_title:     { de:'⏰ Lern-Erinnerung', en:'⏰ Study reminder', pt:'⏰ Lembrete de estudo' },
+  rem_enable:    { de:'Tägliche Erinnerung', en:'Daily reminder', pt:'Lembrete diário' },
+  rem_time:      { de:'Uhrzeit', en:'Time', pt:'Horário' },
+  rem_note:      { de:'Erinnert dich beim Öffnen der App, wenn du heute noch nicht geübt hast.', en:'Reminds you when you open the app if you haven’t practiced today.', pt:'Lembra você ao abrir o app se ainda não praticou hoje.' },
+  rem_banner:    { de:'⏰ Zeit für deine PharmaVoice-Übung heute!', en:'⏰ Time for your PharmaVoice practice today!', pt:'⏰ Hora da sua prática no PharmaVoice hoje!' },
   offline_note:  { de:'📴 Offline – du kannst weiterlernen, Fortschritt wird lokal gespeichert.', en:'📴 Offline – you can keep learning, progress is saved locally.', pt:'📴 Offline – você pode continuar, o progresso é salvo localmente.' },
   lex_sort_cat:  { de:'Kategorie', en:'Category', pt:'Categoria' },
   lex_sort_az:   { de:'A–Z', en:'A–Z', pt:'A–Z' },
@@ -3412,6 +3440,47 @@ function obSetLang(l) {
   switchLang(l);
   try { OnboardingSystem.refresh(); } catch (e) {}
 }
+
+// ══ REMINDER SYSTEM (lokale, tägliche Lern-Erinnerung) ══
+// Ehrlich: reine Web-App → kein Push bei geschlossener App. Zeigt beim Öffnen
+// einen Hinweis, wenn heute noch nicht geübt wurde und die Uhrzeit erreicht ist.
+const ReminderSystem = (() => {
+  const LS = 'pv_reminder';
+  function get() {
+    try { return JSON.parse(localStorage.getItem(LS)) || { enabled: false, time: '18:00' }; }
+    catch { return { enabled: false, time: '18:00' }; }
+  }
+  function render() {
+    const cfg = get();
+    const cb = document.getElementById('remEnabled');
+    const tm = document.getElementById('remTime');
+    if (cb) cb.checked = !!cfg.enabled;
+    if (tm) tm.value = cfg.time || '18:00';
+  }
+  function save() {
+    const cb = document.getElementById('remEnabled');
+    const tm = document.getElementById('remTime');
+    const cfg = { enabled: cb ? cb.checked : false, time: (tm && tm.value) || '18:00' };
+    try { localStorage.setItem(LS, JSON.stringify(cfg)); } catch {}
+    if (typeof toast === 'function') toast(cfg.enabled
+      ? L(`Erinnerung aktiv um ${cfg.time} Uhr.`, `Reminder set for ${cfg.time}.`, `Lembrete às ${cfg.time}.`)
+      : L('Erinnerung aus.', 'Reminder off.', 'Lembrete desligado.'));
+  }
+  function dismiss() { const el2 = document.getElementById('reminderBanner'); if (el2) el2.hidden = true; }
+  function maybeShow() {
+    const cfg = get();
+    if (!cfg.enabled) return;
+    const today = new Date().toDateString();
+    if (S && S.lastPlayed === today) return;            // heute schon geübt
+    const now = new Date();
+    const [h, m] = (cfg.time || '18:00').split(':').map(Number);
+    const due = new Date(now); due.setHours(h || 0, m || 0, 0, 0);
+    if (now < due) return;                               // Uhrzeit noch nicht erreicht
+    const bar = document.getElementById('reminderBanner');
+    if (bar) bar.hidden = false;
+  }
+  return { get, render, save, dismiss, maybeShow };
+})();
 
 function openAudioSettings() {
   const m = document.getElementById('audioSettingsModal');
@@ -3707,6 +3776,8 @@ function renderHomeDashboard() {
   renderStreakWeek();
   // Wochen-Rückblick (Sessions/Trefferquote/XP dieser Woche)
   renderWeekReview();
+  // Erinnerungs-Einstellung spiegeln
+  try { ReminderSystem.render(); } catch (e) {}
   // Fällige Wiederholungen (Spaced Repetition)
   renderDueCard();
   // Wort des Tages (deterministisch pro Kalendertag)
@@ -8393,6 +8464,9 @@ try { if (localStorage.getItem('pv_dev') === '1') document.body.classList.add('d
 
 // Onboarding beim ersten Start zeigen
 try { OnboardingSystem.maybeShow(); } catch (e) {}
+
+// Lokale Lern-Erinnerung ggf. anzeigen
+try { ReminderSystem.maybeShow(); } catch (e) {}
 
 // PWA-Shortcuts (?go=quick|lexikon) aus manifest.json auswerten
 try {
