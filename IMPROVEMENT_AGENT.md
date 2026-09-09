@@ -42,7 +42,7 @@ Betriebshandbuch und der lebende Backlog.
 
 ### P2 – Engagement & Bindung
 - [x] „Perfekte Woche"-Belohnung (7/7 Tage Serie) – Sonder-Overlay + Konfetti + 10 💎, einmal je Woche.
-- [ ] Wochen-Rückblick („diese Woche X Wörter gemeistert").
+- [x] Wochen-Rückblick auf Home – „Deine Woche": Tage aktiv, Übungen, Trefferquote, Punkte (`pv_weekstats`).
 - [ ] Sanfte Lern-Erinnerung konfigurierbar (Uhrzeit-Hinweis, lokal).
 
 ### P3 – Inhalt
