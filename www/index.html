@@ -3808,10 +3808,10 @@ function renderAchievements() {
 function save() { localStorage.setItem('pv2', JSON.stringify(S)); }
 function load() {
   const raw = localStorage.getItem('pv2');
-  if (raw) S = { ...S, ...JSON.parse(raw) };
+  if (raw) { try { S = { ...S, ...JSON.parse(raw) }; } catch (e) {} }
   // migrate old key
   const old = localStorage.getItem('pv');
-  if (old && !raw) { S = { ...S, ...JSON.parse(old) }; save(); }
+  if (old && !raw) { try { S = { ...S, ...JSON.parse(old) }; save(); } catch (e) {} }
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   if (S.lastPlayed && S.lastPlayed !== today && S.lastPlayed !== yesterday) {
@@ -8622,6 +8622,23 @@ class GameDesignerAgent {
 const gameDesigner = new GameDesignerAgent();
 
 // ── BOOT ──
+// Selbstheilung: beschädigte JSON-Werte im localStorage einmalig entfernen,
+// damit ein einziger korrupter Eintrag nicht die ganze App blockiert (Weißbild).
+function sanitizeStorage() {
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      const v = localStorage.getItem(k);
+      if (v == null) continue;
+      const t = v.trim();
+      if (t && (t[0] === '{' || t[0] === '[')) {
+        try { JSON.parse(v); } catch (e) { try { localStorage.removeItem(k); } catch (_) {} }
+      }
+    }
+  } catch (e) {}
+}
+sanitizeStorage();
 document.getElementById('screenHome').classList.add('active');
 load();
 refreshTierUI();
