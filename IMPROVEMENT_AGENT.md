@@ -56,6 +56,7 @@ Betriebshandbuch und der lebende Backlog.
 - [x] Hero-Panel neu: lebendiger Marken-Verlauf (Teal→Grün) mit Glanz statt dunklem Block; weiße Sprechblase, zweifarbiger Schriftzug. Funktioniert in Hell UND Dunkel.
 - [x] Menü-Karten mit weicheren, hochwertigen Schatten (statt harter grauer 3D-Kante) + Hover-Lift.
 - [x] Quiz-Screen: Antwort-Optionen als klare weiße Karten (statt in den Hintergrund verlaufend), Hover-Lift, weiche Schatten – konsistent mit dem neuen Home-Look (Hell & Dunkel geprüft).
+- [x] Sanfter Screen-Eingang bei JEDEM Wechsel (fadeUp auf `.screen.active` statt nur beim ersten Render) – App wirkt lebendig/hochwertig; via `prefers-reduced-motion` neutralisiert.
 - [ ] Weitere Screens (Lektionen/Lexikon/Profil/Ergebnis) auf dasselbe frische Niveau heben.
 
 ### P4 – Politur, A11y & Robustheit
