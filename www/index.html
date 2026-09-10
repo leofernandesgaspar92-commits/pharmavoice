@@ -610,9 +610,13 @@
     .ach-state { font-size:20px; }
 
     /* PROFILE */
-    .prof-avatar { width:82px; height:82px; border-radius:50%; background:var(--green); color:#fff; font-size:30px; font-weight:900; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; box-shadow:0 4px 16px rgba(0,168,107,.3); }
-    .prof-name { text-align:center; font-size:22px; font-weight:800; margin-bottom:4px; color:var(--text); }
-    .prof-role { text-align:center; color:var(--gray); font-size:13px; margin-bottom:28px; }
+    /* Profil-Kopf als Marken-Banner (echoing Home-Hero) */
+    .prof-hero { margin:-32px -20px 22px; padding:34px 20px 22px; background:linear-gradient(135deg,#0FB5A6 0%,#16D9C4 50%,#3BE0A2 100%); border-radius:0 0 28px 28px; box-shadow:0 10px 24px rgba(15,181,166,.28); position:relative; overflow:hidden; }
+    .prof-hero::before { content:''; position:absolute; top:-50px; right:-30px; width:170px; height:170px; background:radial-gradient(circle,rgba(255,255,255,.26),transparent 68%); }
+    .prof-avatar { position:relative; width:82px; height:82px; border-radius:50%; background:#fff; color:var(--green-ink); font-size:30px; font-weight:900; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; box-shadow:0 6px 18px rgba(4,40,36,.22); }
+    .prof-name { position:relative; text-align:center; font-size:22px; font-weight:800; margin-bottom:4px; color:#fff; text-shadow:0 1px 6px rgba(4,40,36,.18); }
+    .prof-role { position:relative; text-align:center; color:rgba(255,255,255,.92); font-size:13px; font-weight:600; margin-bottom:16px; }
+    .prof-hero .tier-badge.free { background:rgba(255,255,255,.92); color:var(--green-ink); border:none; }
     .prof-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
     .prof-stat { background:var(--bg2); border-radius:var(--r); padding:20px; text-align:center; box-shadow:var(--shadow); border:1px solid var(--border); }
     .prof-val  { font-size:28px; font-weight:900; color:var(--green-ink); line-height:1; }
@@ -1760,10 +1764,12 @@
 
 <!-- ══ PROFILE ══ -->
 <div class="screen" id="screenProfile">
-  <div class="prof-avatar">PV</div>
-  <div class="prof-name" data-i18n="prof_name">Lernender</div>
-  <div class="prof-role" data-i18n="prof_role">Apotheker-Lehrling 💊</div>
-  <div style="text-align:center;margin-bottom:20px;"><span id="profTierBadge" class="tier-badge free" style="cursor:pointer" onclick="openUpgrade()">Free – Upgrade</span></div>
+  <div class="prof-hero">
+    <div class="prof-avatar">PV</div>
+    <div class="prof-name" data-i18n="prof_name">Lernender</div>
+    <div class="prof-role" data-i18n="prof_role">Apotheker-Lehrling 💊</div>
+    <div style="text-align:center;"><span id="profTierBadge" class="tier-badge free" style="cursor:pointer" onclick="openUpgrade()">Free – Upgrade</span></div>
+  </div>
 
   <div class="section-title" data-i18n="acc_title">🔐 Mein Konto</div>
   <div id="accountCard" class="account-card"></div>
