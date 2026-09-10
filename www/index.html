@@ -16,12 +16,12 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PharmaVoice" />
   <meta property="og:title" content="PharmaVoice – Wirkstoffnamen richtig aussprechen" />
-  <meta property="og:description" content="300 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen. Spielerisch, offline, in 3 Sprachen." />
+  <meta property="og:description" content="400 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen. Spielerisch, offline, in 3 Sprachen." />
   <meta property="og:image" content="icon-512.png" />
   <meta property="og:locale" content="de_DE" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="PharmaVoice – Wirkstoffnamen richtig aussprechen" />
-  <meta name="twitter:description" content="300 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen." />
+  <meta name="twitter:description" content="400 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen." />
   <style>
     /* Lokal gebündelte Schriften – kein externes CDN (WebView-/offline-fest, Capacitor-ready) */
     @font-face {
@@ -1437,7 +1437,7 @@
         <span class="plan-price" data-i18n="up_pnormal">€4,99 / Monat</span>
       </div>
       <div class="plan-features">
-        <span data-i18n="up_n1">Alle 300+ Wirkstoffe & Level</span>
+        <span data-i18n="up_n1">Alle 400+ Wirkstoffe & Level</span>
         <span data-i18n="up_n2">Dauerhafter Streak & Achievements</span>
         <span data-i18n="up_n3">Indikation, ATC-Code & Chemie sichtbar</span>
       </div>
@@ -2414,7 +2414,28 @@ const MEDS = [
   { lv:3, name:"Imatinib",       phonetic:"/ɪ·ˈmaː·tɪ·nɪb/",           syllables:["I","MA","ti","nib"],            si:1, category:"Onkologie",        tip:'Zweite Silbe "MA" betonen.',          wrong:["IM·a·ti·nib","i·ma·TI·nib","i·ma·ti·NIB"] },
   { lv:3, name:"Capecitabin",    phonetic:"/ka·pɛ·ˈziː·ta·bɪn/",      syllables:["Ca","pe","CI","ta","bin"],      si:2, category:"Onkologie",        tip:'Dritte Silbe "CI" betonen.',          wrong:["CA·pe·ci·ta·bin","ca·PE·ci·ta·bin","ca·pe·ci·ta·BIN"] },
   { lv:3, name:"Tamoxifen",      phonetic:"/ta·ˈmɔk·sɪ·fɛn/",         syllables:["Ta","MOX","i","fen"],           si:1, category:"Onkologie",        tip:'Zweite Silbe "MOX" betonen.',         wrong:["TA·mox·i·fen","ta·mox·I·fen","ta·mox·i·FEN"] },
-  { lv:3, name:"Anastrozol",     phonetic:"/a·ˈnas·tro·zol/",          syllables:["A","NAS","tro","zol"],          si:1, category:"Onkologie",        tip:'Zweite Silbe "NAS" betonen.',         wrong:["AN·as·tro·zol","a·nas·TRO·zol","a·nas·tro·ZOL"] }
+  { lv:3, name:"Anastrozol",     phonetic:"/a·ˈnas·tro·zol/",          syllables:["A","NAS","tro","zol"],          si:1, category:"Onkologie",        tip:'Zweite Silbe "NAS" betonen.',         wrong:["AN·as·tro·zol","a·nas·TRO·zol","a·nas·tro·ZOL"] },
+	{ lv:2, name:"Amlodipin", phonetic:"/am·ˈloː·di·piːn/", syllables:["am","LO","di","pin"], si:1, category:"Kalziumantagonist", tip:'Zweite Silbe "LO" betonen.', wrong:["AM·lo·di·pin","am·lo·DI·pin","am·lo·di·PIN"] },
+	{ lv:2, name:"Felodipin", phonetic:"/fe·ˈloː·di·piːn/", syllables:["fe","LO","di","pin"], si:1, category:"Kalziumantagonist", tip:'Zweite Silbe "LO" betonen.', wrong:["FE·lo·di·pin","fe·lo·DI·pin","fe·lo·di·PIN"] },
+	{ lv:2, name:"Linezolid", phonetic:"/li·ˈneː·zo·lɪd/", syllables:["li","NE","zo","lid"], si:1, category:"Antibiotikum", tip:'Zweite Silbe "NE" betonen.', wrong:["LI·ne·zo·lid","li·ne·ZO·lid","li·ne·zo·LID"] },
+	{ lv:2, name:"Piperacillin", phonetic:"/ˌpiː·pe·ra·ˈtsɪ·liːn/", syllables:["pi","pe","ra","ZIL","lin"], si:3, category:"Antibiotikum", tip:'Vierte Silbe "ZIL" betonen.', wrong:["PI·pe·ra·zil·lin","pi·PE·ra·zil·lin","pi·pe·RA·zil·lin"] },
+	{ lv:2, name:"Meropenem", phonetic:"/me·ro·ˈpeː·nɛm/", syllables:["me","ro","PE","nem"], si:2, category:"Antibiotikum", tip:'Dritte Silbe "PE" betonen.', wrong:["ME·ro·pe·nem","me·RO·pe·nem","me·ro·pe·NEM"] },
+	{ lv:2, name:"Tobramycin", phonetic:"/to·bra·ˈmyː·tsiːn/", syllables:["to","bra","MY","cin"], si:2, category:"Antibiotikum", tip:'Dritte Silbe "MY" betonen.', wrong:["TO·bra·my·cin","to·BRA·my·cin","to·bra·my·CIN"] },
+	{ lv:3, name:"Adalimumab", phonetic:"/a·da·ˈliː·mu·mab/", syllables:["a","da","LI","mu","mab"], si:2, category:"Immunsuppressivum", tip:'Dritte Silbe "LI" betonen.', wrong:["A·da·li·mu·mab","a·DA·li·mu·mab","a·da·li·MU·mab"] },
+	{ lv:3, name:"Etanercept", phonetic:"/e·ta·ˈnɛr·tsɛpt/", syllables:["e","ta","NER","cept"], si:2, category:"Immunsuppressivum", tip:'Dritte Silbe "NER" betonen.', wrong:["E·ta·ner·cept","e·TA·ner·cept","e·ta·ner·CEPT"] },
+	{ lv:3, name:"Infliximab", phonetic:"/ɪn·ˈflɪk·si·mab/", syllables:["in","FLI","xi","mab"], si:1, category:"Immunsuppressivum", tip:'Zweite Silbe "FLI" betonen.', wrong:["IN·fli·xi·mab","in·fli·XI·mab","in·fli·xi·MAB"] },
+	{ lv:2, name:"Irbesartan", phonetic:"/ɪr·be·ˈzar·tan/", syllables:["ir","be","SAR","tan"], si:2, category:"Blutdruck", tip:'Dritte Silbe "SAR" betonen.', wrong:["IR·be·sar·tan","ir·BE·sar·tan","ir·be·sar·TAN"] },
+	{ lv:2, name:"Captopril", phonetic:"/ˈkap·to·pril/", syllables:["KAP","to","pril"], si:0, category:"ACE-Hemmer", tip:'Erste Silbe "KAP" betonen.', wrong:["kap·TO·pril","kap·to·PRIL","kap·TO·PRIL"] },
+	{ lv:2, name:"Fluvastatin", phonetic:"/flu·va·ˈstaː·tiːn/", syllables:["flu","va","STA","tin"], si:2, category:"Cholesterin", tip:'Dritte Silbe "STA" betonen.', wrong:["FLU·va·sta·tin","flu·VA·sta·tin","flu·va·sta·TIN"] },
+	{ lv:2, name:"Phenprocoumon", phonetic:"/feːn·pro·ˈkuː·mɔn/", syllables:["Phen","pro","KU","mon"], si:2, category:"Antikoagulans", tip:'Dritte Silbe "KU" betonen.', wrong:["PHEN·pro·ku·mon","phen·PRO·ku·mon","phen·pro·ku·MON"] },
+	{ lv:1, name:"Alogliptin", phonetic:"/a·lo·ˈɡlɪp·tiːn/", syllables:["a","lo","GLIP","tin"], si:2, category:"Diabetes", tip:'Dritte Silbe "GLIP" betonen.', wrong:["A·lo·glip·tin","a·LO·glip·tin","a·lo·glip·TIN"] },
+	{ lv:1, name:"Ertugliflozin", phonetic:"/ɛr·tu·ɡli·ˈfloː·ziːn/", syllables:["er","tu","gli","FLO","zin"], si:3, category:"Diabetes", tip:'Vierte Silbe "FLO" betonen.', wrong:["ER·tu·gli·flo·zin","er·TU·gli·flo·zin","er·tu·GLI·flo·zin"] },
+	{ lv:3, name:"Indacaterol", phonetic:"/ɪn·da·ˈkaː·te·rɔl/", syllables:["in","da","KA","te","rol"], si:2, category:"Bronchodilatator", tip:'Dritte Silbe "KA" betonen.', wrong:["IN·da·ka·te·rol","in·DA·ka·te·rol","in·da·ka·TE·rol"] },
+	{ lv:3, name:"Glycopyrronium", phonetic:"/ɡly·ko·py·ˈroː·ni·ʊm/", syllables:["gly","co","py","RRO","ni","um"], si:3, category:"Bronchodilatator", tip:'Vierte Silbe "RRO" betonen.', wrong:["GLY·co·py·rro·ni·um","gly·CO·py·rro·ni·um","gly·co·PY·rro·ni·um"] },
+	{ lv:3, name:"Efavirenz", phonetic:"/e·fa·vi·ˈrɛnts/", syllables:["e","fa","vi","RENZ"], si:3, category:"Virostatikum", tip:'Vierte Silbe "RENZ" betonen.', wrong:["E·fa·vi·renz","e·FA·vi·renz","e·fa·VI·renz"] },
+	{ lv:3, name:"Dolutegravir", phonetic:"/do·lu·ˈteː·ɡra·viːr/", syllables:["do","lu","TE","gra","vir"], si:2, category:"Virostatikum", tip:'Dritte Silbe "TE" betonen.', wrong:["DO·lu·te·gra·vir","do·LU·te·gra·vir","do·lu·te·GRA·vir"] },
+	{ lv:3, name:"Isavuconazol", phonetic:"/i·sa·vu·ˈkoː·na·tsɔl/", syllables:["i","sa","vu","KO","na","zol"], si:3, category:"Antimykotikum", tip:'Vierte Silbe "KO" betonen.', wrong:["I·sa·vu·ko·na·zol","i·SA·vu·ko·na·zol","i·sa·VU·ko·na·zol"] }
+
 ];
 
 // ═══════════════════════════════════════════════
@@ -2804,6 +2825,27 @@ const MED_INFO = {
   "Capecitabin":            { indication:"Orales Prodrug von 5-Fluorouracil, das in Tumorzellen aktiviert wird. Eingesetzt bei Brust- und Darmkrebs.",                                drugClass:"Fluoropyrimidin (orales Zytostatikum)",                  formula:"C₁₅H₂₂FN₃O₆",          atcCode:"L01BC06" },
   "Tamoxifen":              { indication:"Blockiert Östrogenrezeptoren in Brustkrebszellen und hemmt deren Wachstum. Eingesetzt bei östrogenrezeptorpositivem Brustkrebs.",            drugClass:"Selektiver Östrogenrezeptormodulator (SERM)",            formula:"C₂₆H₂₉NO",              atcCode:"L02BA01" },
   "Anastrozol":             { indication:"Hemmt die Östrogenproduktion durch Blockade der Aromatase. Eingesetzt bei hormonrezeptorpositivem Brustkrebs bei postmenopausalen Frauen.",  drugClass:"Aromatasehemmer (nicht-steroid)",                        formula:"C₁₇H₁₉N₅",             atcCode:"L02BG03" },
+	"Amlodipin": { indication:"Kalziumantagonist zur Behandlung von Bluthochdruck und Angina pectoris.", drugClass:"Kalziumkanalblocker (Dihydropyridin)", formula:"—", atcCode:"C08CA01" },
+	"Felodipin": { indication:"Kalziumantagonist gegen Bluthochdruck und stabile Angina pectoris.", drugClass:"Kalziumkanalblocker (Dihydropyridin)", formula:"—", atcCode:"C08CA02" },
+	"Linezolid": { indication:"Reserveantibiotikum gegen grampositive Keime, u.a. MRSA und VRE.", drugClass:"Oxazolidinon", formula:"—", atcCode:"J01XX08" },
+	"Piperacillin": { indication:"Breitband-Penicillin, oft kombiniert mit Tazobactam bei schweren Infektionen.", drugClass:"Acylaminopenicillin", formula:"—", atcCode:"J01CA12" },
+	"Meropenem": { indication:"Carbapenem-Reserveantibiotikum für schwere, resistente Infektionen.", drugClass:"Carbapenem", formula:"—", atcCode:"J01DH02" },
+	"Tobramycin": { indication:"Aminoglykosid gegen gramnegative Keime, u.a. bei Mukoviszidose.", drugClass:"Aminoglykosid", formula:"—", atcCode:"J01GB01" },
+	"Adalimumab": { indication:"TNF-alpha-Hemmer bei Rheuma, Morbus Crohn und Psoriasis.", drugClass:"Monoklonaler Antikörper (TNF-Hemmer)", formula:"—", atcCode:"L04AB04" },
+	"Etanercept": { indication:"TNF-alpha-Blocker zur Therapie von rheumatoider Arthritis und Psoriasis.", drugClass:"TNF-Rezeptor-Fusionsprotein", formula:"—", atcCode:"L04AB01" },
+	"Infliximab": { indication:"TNF-alpha-Hemmer bei chronisch-entzündlichen Darm- und Gelenkerkrankungen.", drugClass:"Monoklonaler Antikörper (TNF-Hemmer)", formula:"—", atcCode:"L04AB02" },
+	"Irbesartan": { indication:"AT1-Rezeptorblocker (Sartan) gegen Bluthochdruck und diabetische Nephropathie.", drugClass:"Angiotensin-II-Rezeptorantagonist", formula:"—", atcCode:"C09CA04" },
+	"Captopril": { indication:"ACE-Hemmer zur Behandlung von Bluthochdruck und Herzinsuffizienz.", drugClass:"ACE-Hemmer", formula:"—", atcCode:"C09AA01" },
+	"Fluvastatin": { indication:"Statin zur Senkung erhöhter Cholesterinwerte.", drugClass:"HMG-CoA-Reduktase-Hemmer (Statin)", formula:"—", atcCode:"C10AA04" },
+	"Phenprocoumon": { indication:"Oraler Vitamin-K-Antagonist zur Gerinnungshemmung (Marcumar).", drugClass:"Vitamin-K-Antagonist (Cumarin)", formula:"—", atcCode:"B01AA04" },
+	"Alogliptin": { indication:"DPP-4-Hemmer zur Blutzuckersenkung bei Typ-2-Diabetes.", drugClass:"DPP-4-Hemmer (Gliptin)", formula:"—", atcCode:"A10BH04" },
+	"Ertugliflozin": { indication:"SGLT-2-Hemmer, senkt den Blutzucker über vermehrte Glukoseausscheidung.", drugClass:"SGLT-2-Hemmer (Gliflozin)", formula:"—", atcCode:"A10BK04" },
+	"Indacaterol": { indication:"Langwirksames Beta-2-Sympathomimetikum (LABA) bei COPD.", drugClass:"Beta-2-Sympathomimetikum (LABA)", formula:"—", atcCode:"R03AC18" },
+	"Glycopyrronium": { indication:"Langwirksames Anticholinergikum (LAMA) zur COPD-Erhaltungstherapie.", drugClass:"Anticholinergikum (LAMA)", formula:"—", atcCode:"R03BB06" },
+	"Efavirenz": { indication:"Nicht-nukleosidischer Reverse-Transkriptase-Hemmer in der HIV-Therapie.", drugClass:"NNRTI (HIV)", formula:"—", atcCode:"J05AG03" },
+	"Dolutegravir": { indication:"Integrase-Inhibitor als Bestandteil der HIV-Kombinationstherapie.", drugClass:"Integrase-Inhibitor (HIV)", formula:"—", atcCode:"J05AJ03" },
+	"Isavuconazol": { indication:"Breitband-Antimykotikum gegen invasive Aspergillose und Mukormykose.", drugClass:"Triazol-Antimykotikum", formula:"—", atcCode:"J02AC05" }
+
 };
 
 // ═══════════════════════════════════════════════
@@ -3435,7 +3477,7 @@ const UI_I18N = {
   up_f3:         { de:'Session-Streak (kein Cloud-Speicher)', en:'Session streak (no cloud sync)', pt:'Sequência local (sem nuvem)' },
   up_rec:        { de:'Empfohlen', en:'Recommended', pt:'Recomendado' },
   up_pnormal:    { de:'€4,99 / Monat', en:'€4.99 / month', pt:'€4,99 / mês' },
-  up_n1:         { de:'Alle 300+ Wirkstoffe & Level', en:'All 300+ drugs & levels', pt:'Todos os 300+ fármacos e níveis' },
+  up_n1:         { de:'Alle 400+ Wirkstoffe & Level', en:'All 400+ drugs & levels', pt:'Todos os 400+ fármacos e níveis' },
   up_n2:         { de:'Dauerhafter Streak & Achievements', en:'Permanent streak & achievements', pt:'Sequência permanente e conquistas' },
   up_n3:         { de:'Indikation, ATC-Code & Chemie sichtbar', en:'Indication, ATC code & chemistry shown', pt:'Indicação, código ATC e química visíveis' },
   up_premium:    { de:'Premium (Apotheke)', en:'Premium (Pharmacy)', pt:'Premium (Farmácia)' },
