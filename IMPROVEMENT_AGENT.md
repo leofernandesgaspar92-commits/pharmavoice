@@ -55,7 +55,8 @@ Betriebshandbuch und der lebende Backlog.
 - [x] Hell ist echter Standard (auch auf Dunkelmodus-Geräten) – behebt „mobil zu dunkel".
 - [x] Hero-Panel neu: lebendiger Marken-Verlauf (Teal→Grün) mit Glanz statt dunklem Block; weiße Sprechblase, zweifarbiger Schriftzug. Funktioniert in Hell UND Dunkel.
 - [x] Menü-Karten mit weicheren, hochwertigen Schatten (statt harter grauer 3D-Kante) + Hover-Lift.
-- [ ] Weitere Screens (Lektionen/Quiz/Lexikon/Profil) auf dasselbe frische Niveau heben.
+- [x] Quiz-Screen: Antwort-Optionen als klare weiße Karten (statt in den Hintergrund verlaufend), Hover-Lift, weiche Schatten – konsistent mit dem neuen Home-Look (Hell & Dunkel geprüft).
+- [ ] Weitere Screens (Lektionen/Lexikon/Profil/Ergebnis) auf dasselbe frische Niveau heben.
 
 ### P4 – Politur, A11y & Robustheit
 - [x] Selbstheilender Speicher – `sanitizeStorage()` beim Boot entfernt beschädigte JSON-Werte; `load()` zusätzlich abgesichert. Ein einziger korrupter localStorage-Eintrag blockiert die App nicht mehr (kein Weißbild). Mit injiziertem Korrupt-State getestet.

@@ -497,9 +497,10 @@
     .feedback-box.bad  { background:rgba(229,62,62,.07); border-color:rgba(229,62,62,.3); color:#C0392B; }
     .feedback-box.show { display:block; }
     .options { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:22px; }
-    .opt { position:relative; background:var(--bg); border:2px solid var(--border); border-radius:var(--r); padding:14px 10px; color:var(--text); font-size:12px; font-weight:700; cursor:pointer; transition:.2s; min-height:60px; display:flex; align-items:center; justify-content:center; text-align:center; letter-spacing:.5px; line-height:1.5; word-break:break-word; box-shadow:var(--shadow); font-family:inherit; }
+    .opt { position:relative; background:var(--bg2); border:2px solid var(--border); border-radius:var(--r); padding:14px 10px; color:var(--text); font-size:12px; font-weight:700; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease; min-height:60px; display:flex; align-items:center; justify-content:center; text-align:center; letter-spacing:.5px; line-height:1.5; word-break:break-word; box-shadow:var(--shadow); font-family:inherit; }
     .opt-key { position:absolute; top:5px; left:7px; font-size:10px; font-weight:800; color:var(--text2); opacity:.5; }
-    .opt:hover:not(:disabled) { border-color:var(--green-ink); background:var(--bg3); }
+    .opt:hover:not(:disabled) { border-color:var(--green); transform:translateY(-2px); box-shadow:var(--shadow2); }
+    .opt:active:not(:disabled) { transform:translateY(0); }
     .opt.good { background:rgba(0,168,107,.1); border-color:var(--green-ink); color:var(--green-ink); }
     .opt.bad  { background:rgba(229,62,62,.08); border-color:var(--red); color:#C0392B; }
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
