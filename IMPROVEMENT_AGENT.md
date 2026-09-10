@@ -54,7 +54,7 @@ Betriebshandbuch und der lebende Backlog.
 - [x] Dark-Theme aufgehellt & wärmer – Basis von Fast-Schwarz (#0A0F1C) auf weiches Slate (#182234) gehoben, Karten/Ränder klarer abgegrenzt (Nutzer-Feedback „zu dunkel"). Screenshot-verifiziert.
 - [x] **Vollständiges helles Theme + Umschalter** – Hell als Standard, System-Präferenz (`prefers-color-scheme`), Toggle im Profil (Hell/Dunkel/System, in `pv_theme`). Farb-Flip über `--fg`-Triple; immersive Stage & farbige Hero-Karten behalten lokal hellen Text. No-Flash-Skript im `<head>`. In beiden Themes screenshot-verifiziert (Home, Lexikon, Profil).
 - [x] Kontrast-Audit (WCAG AA) der Kernflächen – Grün als Text auf `--green-ink` (AA-lesbar auf Hell) umgestellt (50 Stellen), `--gray2` je Theme auf AA angehoben (Sektionstitel, Nav-Labels); mit Playwright-Kontrastmesser in Hell & Dunkel geprüft. Dekorative Elemente (Emoji, Schwierigkeits-Punkte, Avatar-Monogramm) sowie Text auf bewusst dunklen Hero-Karten bleiben ausgenommen.
-- [ ] Fokus-Reihenfolge & Screenreader-Durchlauf je Screen.
+- [x] Screenreader-Durchlauf & Landmarks – aktiver Screen als `role="main"` (dynamisch), Fokus wandert bei Navigation dorthin; fehlende Feld-Namen ergänzt (`aria-label` für Suche & Erinnerungs-Uhrzeit, dreisprachig via neuem `data-i18n-aria`); Screen-Titel konsistent als `<h2>`. Playwright-A11y-Audit: keine offenen Namens-/Label-Verstöße (verbleibende Treffer = korrekt umschlossene `<label>`-Checkboxen).
 
 ### P5 – Store & Wachstum (viele Punkte extern durch den Gründer)
 - [ ] Firebase Login + Cloud-Sync (sobald Projekt existiert).

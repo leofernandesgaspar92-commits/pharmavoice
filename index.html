@@ -1573,7 +1573,7 @@
 </div>
 
 <!-- ══ HOME ══ -->
-<div class="screen active" id="screenHome">
+<div class="screen active" id="screenHome" role="main" tabindex="-1">
 
   <!-- Hero: logo + tagline + avatar illustration placeholder -->
   <div class="home-hero-panel">
@@ -1739,7 +1739,7 @@
 
 <!-- ══ ACHIEVEMENTS ══ -->
 <div class="screen" id="screenAchievements">
-  <div class="screen-h" data-i18n="sh_ranking">🏆 Rangliste & Erfolge</div>
+  <h2 class="screen-h" data-i18n="sh_ranking">🏆 Rangliste & Erfolge</h2>
   <div class="section-title" data-i18n="ach_top10">🏅 TOP 10 RUNNER-HIGHSCORES</div>
   <div id="top10List" class="top10-list"></div>
   <div class="section-title" style="margin-top:24px" data-i18n="ach_events">🗓️ EVENT-ABZEICHEN</div>
@@ -1799,7 +1799,7 @@
     <label class="rem-row"><input type="checkbox" id="remEnabled" onchange="ReminderSystem.save()"><span data-i18n="rem_enable">Tägliche Erinnerung</span></label>
     <div class="rem-time-row">
       <span data-i18n="rem_time">Uhrzeit</span>
-      <input type="time" id="remTime" value="18:00" onchange="ReminderSystem.save()">
+      <input type="time" id="remTime" value="18:00" aria-label="Uhrzeit der Erinnerung" data-i18n-aria="aria_remtime" onchange="ReminderSystem.save()">
     </div>
     <div class="rem-note" data-i18n="rem_note">Erinnert dich beim Öffnen der App, wenn du heute noch nicht geübt hast.</div>
   </div>
@@ -1860,7 +1860,7 @@
   <button class="back-btn" onclick="showScreen('Home')" data-i18n="back">← Zurück</button>
   <h2 class="screen-h" data-i18n="sh_lexikon">📚 Wirkstoff-Lexikon</h2>
   <div class="lex-progress" id="lexProgress"></div>
-  <input type="text" class="lex-search" id="lexSearch" placeholder="🔍 Wirkstoff, Kategorie oder Anwendung suchen …" data-i18n-ph="lex_search" oninput="LexikonSystem.render()">
+  <input type="text" class="lex-search" id="lexSearch" aria-label="Wirkstoffe durchsuchen" data-i18n-aria="aria_lexsearch" placeholder="🔍 Wirkstoff, Kategorie oder Anwendung suchen …" data-i18n-ph="lex_search" oninput="LexikonSystem.render()">
   <div class="lex-controls">
     <label class="lex-unlearned"><input type="checkbox" id="lexUnlearned" onchange="LexikonSystem.render()"><span data-i18n="lex_only_unlearned">Nur ungelernte anzeigen</span></label>
     <div class="lex-sort" role="group" aria-label="Sortierung">
@@ -3367,6 +3367,8 @@ const UI_I18N = {
   ach_events:    { de:'🗓️ EVENT-ABZEICHEN', en:'🗓️ EVENT BADGES', pt:'🗓️ EMBLEMAS DE EVENTO' },
   lex_search:    { de:'🔍 Wirkstoff, Kategorie oder Anwendung suchen …', en:'🔍 Search drug, category or use …', pt:'🔍 Buscar fármaco, categoria ou uso …' },
   lex_only_unlearned: { de:'Nur ungelernte anzeigen', en:'Show only unlearned', pt:'Mostrar só não aprendidos' },
+  aria_lexsearch:{ de:'Wirkstoffe durchsuchen', en:'Search drugs', pt:'Pesquisar substâncias' },
+  aria_remtime:  { de:'Uhrzeit der Erinnerung', en:'Reminder time', pt:'Horário do lembrete' },
   theme_title:   { de:'🎨 Darstellung', en:'🎨 Appearance', pt:'🎨 Aparência' },
   theme_light:   { de:'Hell', en:'Light', pt:'Claro' },
   theme_dark:    { de:'Dunkel', en:'Dark', pt:'Escuro' },
@@ -3461,6 +3463,11 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n-ph]').forEach(el => {
     const entry = UI_I18N[el.getAttribute('data-i18n-ph')];
     if (entry) el.setAttribute('placeholder', entry[lang] || entry.de);
+  });
+  // aria-label-Übersetzung (Barrierefreiheit: Namen für Icon-/Feld-Elemente)
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    const entry = UI_I18N[el.getAttribute('data-i18n-aria')];
+    if (entry) el.setAttribute('aria-label', entry[lang] || entry.de);
   });
   document.documentElement.setAttribute('lang', lang);
 }
@@ -4143,9 +4150,14 @@ function renderLevelCards() {
 //  NAVIGATION
 // ═══════════════════════════════════════════════
 function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.removeAttribute('role'); });
   document.querySelectorAll('.nav-item').forEach(n => { n.classList.remove('active'); n.removeAttribute('aria-current'); });
-  el('screen' + name).classList.add('active');
+  const active = el('screen' + name);
+  active.classList.add('active');
+  // Barrierefreiheit: aktiver Screen ist die Haupt-Landmark; Fokus dorthin für Screenreader/Tastatur.
+  active.setAttribute('role', 'main');
+  if (!active.hasAttribute('tabindex')) active.setAttribute('tabindex', '-1');
+  try { active.focus({ preventScroll: true }); } catch (e) {}
   const map = { Home:'navHome', Hub:'navHub', Park:'navHub', Shop:'navHome', Lexikon:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navHub', Result:'navHub', GameDesign:'navGD' };
   if (map[name]) { const n = el(map[name]); n.classList.add('active'); n.setAttribute('aria-current', 'page'); }
   CharacterSystem.showAvatar();
