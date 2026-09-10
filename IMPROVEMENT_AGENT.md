@@ -36,7 +36,7 @@ Betriebshandbuch und der lebende Backlog.
 ## Backlog (nach Priorität; oben = als Nächstes)
 
 ### P1 – Lernkern & Sprache
-- [x] Indikationstexte nach EN/PT übersetzt – **52 Wirkstoffe** (`IND_I18N` + `indFor()`); seltene Wirkstoffe fallen auf Deutsch zurück.
+- [x] Indikationstexte nach EN/PT übersetzt – **92 Wirkstoffe** (`IND_I18N` + `indFor()`); Fokus auf klinisch häufige Wirkstoffe (Statine, Sartane, Betablocker, Antibiotika, Diabetes-Mittel, Antidepressiva, Triptane u.a.). Restliche fallen auf Deutsch zurück – Ziel: alle 400 (echter Fachwert für EN/PT-Markt: Apotheker:innen, PKA/PTA, Pharmareferent:innen, Studierende).
 - [ ] Wirkstoffklassen (`drugClass`) lokalisieren – **zurückgestellt**: 250 distinkte, teils inkonsistente Werte; großer Aufwand, geringer UX-Wert (nur Sekundär-Detail). Später ggf. via Term-Wörterbuch.
 - [ ] Optionales sprach-spezifisches Aussprache-Modell (EN/PT-Betonung je Wirkstoff, mit Fallback).
 
