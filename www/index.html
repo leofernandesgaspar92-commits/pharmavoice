@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <title>PharmaVoice</title>
-  <meta name="description" content="Lerne die korrekte Aussprache von 300 medizinischen Wirkstoffnamen – spielerisch, offline, in Deutsch, Englisch und Portugiesisch." />
+  <meta name="description" content="Lerne die korrekte Aussprache von 400 medizinischen Wirkstoffnamen – spielerisch, offline, in Deutsch, Englisch und Portugiesisch." />
   <meta name="author" content="Leo Fernandes Gaspar" />
   <!-- Open Graph / Link-Vorschau -->
   <meta property="og:type" content="website" />
@@ -1207,7 +1207,7 @@
     .audio-close-btn { width:100%; padding:13px; background:rgba(var(--fg),.08); border:none; border-radius:12px; color:#fff; font-size:15px; font-weight:600; cursor:pointer; margin-top:8px; }
 
     /* ── Onboarding ── */
-    .ob-overlay { position:fixed; inset:0; z-index:1400; background:radial-gradient(ellipse at top, #101A32 0%, var(--bg) 60%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 26px; text-align:center; }
+    .ob-overlay { position:fixed; inset:0; z-index:1400; background:radial-gradient(ellipse at top, var(--bg-grad) 0%, var(--bg) 60%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 26px; text-align:center; }
     .ob-overlay[hidden] { display:none; }
     .ob-skip { position:absolute; top:16px; right:18px; background:none; border:none; color:var(--text2); font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
     .ob-body { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; max-width:340px; }
@@ -1441,7 +1441,7 @@
     <div class="upgrade-modal-header">
       <div class="um-icon">🚀</div>
       <h2 data-i18n="up_title">PharmaVoice upgraden</h2>
-      <p data-i18n="up_sub">Unlock alle 300+ Wirkstoffe & Features</p>
+      <p data-i18n="up_sub">Unlock alle 400+ Wirkstoffe & Features</p>
     </div>
     <div class="plan-card" onclick="PaymentService.subscribe('free')">
       <div class="plan-card-head"><span class="plan-name">Free</span><span class="plan-price" data-i18n="up_free">Kostenlos</span></div>
@@ -3494,7 +3494,7 @@ const UI_I18N = {
   char_title:    { de:'Dein Begleiter', en:'Your companion', pt:'Seu companheiro' },
   char_sub:      { de:'Wähle einen Charakter – er färbt die ganze App ein!', en:'Choose a character – it colors the whole app!', pt:'Escolha um personagem – ele colore o app todo!' },
   up_title:      { de:'PharmaVoice upgraden', en:'Upgrade PharmaVoice', pt:'Fazer upgrade do PharmaVoice' },
-  up_sub:        { de:'Unlock alle 300+ Wirkstoffe & Features', en:'Unlock all 300+ drugs & features', pt:'Desbloqueie 300+ fármacos e recursos' },
+  up_sub:        { de:'Unlock alle 400+ Wirkstoffe & Features', en:'Unlock all 400+ drugs & features', pt:'Desbloqueie 400+ fármacos e recursos' },
   up_free:       { de:'Kostenlos', en:'Free', pt:'Grátis' },
   up_f1:         { de:'~50 Wirkstoffe (Basics Level)', en:'~50 drugs (Basics level)', pt:'~50 fármacos (nível Básico)' },
   up_f2:         { de:'Aussprachetraining mit KI', en:'AI pronunciation training', pt:'Treino de pronúncia com IA' },
@@ -3552,7 +3552,7 @@ const OnboardingSystem = (() => {
   let _i = 0;
   const SLIDES = [
     { emoji:'💊', title:{de:'Willkommen bei PharmaVoice',en:'Welcome to PharmaVoice',pt:'Bem-vindo ao PharmaVoice'},
-      text:{de:'Lerne die korrekte Aussprache von 300 medizinischen Wirkstoffen – spielerisch.',en:'Learn to correctly pronounce 300 medical drug names – the fun way.',pt:'Aprenda a pronunciar corretamente 300 fármacos – de forma divertida.'} },
+      text:{de:'Lerne die korrekte Aussprache von 400 medizinischen Wirkstoffen – spielerisch.',en:'Learn to correctly pronounce 400 medical drug names – the fun way.',pt:'Aprenda a pronunciar corretamente 400 fármacos – de forma divertida.'} },
     { emoji:'🎤', title:{de:'Hören. Nachsprechen. Meistern.',en:'Listen. Repeat. Master.',pt:'Ouça. Repita. Domine.'},
       text:{de:'Hör dir die Aussprache an, sprich sie nach und übe die richtige Betonung – Silbe für Silbe.',en:'Listen to the pronunciation, repeat it and practice the right stress – syllable by syllable.',pt:'Ouça a pronúncia, repita e treine a sílaba tônica correta.'} },
     { emoji:'🔥', title:{de:'Bleib am Ball',en:'Keep your streak',pt:'Mantenha a sequência'},
@@ -5436,7 +5436,7 @@ function refreshTierUI() {
           <div class="ub-icon">🚀</div>
           <div class="ub-text">
             <div class="ub-title">Auf Normal upgraden</div>
-            <div class="ub-sub">300+ Wirkstoffe · Streak · Achievements</div>
+            <div class="ub-sub">400+ Wirkstoffe · Streak · Achievements</div>
           </div>
           <div class="ub-arrow">›</div>
         </div>`;
