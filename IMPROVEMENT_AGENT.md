@@ -51,6 +51,12 @@ Betriebshandbuch und der lebende Backlog.
 - [ ] Katalog weiter ausbauen (aktuell 400) – kuratiert, keine Dubletten.
 - [x] Level-Zuordnung nach Kategorie justiert – vorher 325/32/23 (85 % in „Basics"), jetzt **137/112/131**, thematisch passend zu den Level-Beschreibungen (L2 Herz/Antibiotika/Magen, L3 Atemwege/Neuro/Onko).
 
+### Design (Priorität – „zum Wiederkommen")
+- [x] Hell ist echter Standard (auch auf Dunkelmodus-Geräten) – behebt „mobil zu dunkel".
+- [x] Hero-Panel neu: lebendiger Marken-Verlauf (Teal→Grün) mit Glanz statt dunklem Block; weiße Sprechblase, zweifarbiger Schriftzug. Funktioniert in Hell UND Dunkel.
+- [x] Menü-Karten mit weicheren, hochwertigen Schatten (statt harter grauer 3D-Kante) + Hover-Lift.
+- [ ] Weitere Screens (Lektionen/Quiz/Lexikon/Profil) auf dasselbe frische Niveau heben.
+
 ### P4 – Politur, A11y & Robustheit
 - [x] Selbstheilender Speicher – `sanitizeStorage()` beim Boot entfernt beschädigte JSON-Werte; `load()` zusätzlich abgesichert. Ein einziger korrupter localStorage-Eintrag blockiert die App nicht mehr (kein Weißbild). Mit injiziertem Korrupt-State getestet.
 - [x] Head-/PWA-Politur – `rel="icon"` ergänzt (Tab-Icon + kein `favicon.ico`-404 mehr), statische `theme-color` auf hellen Standard korrigiert (ThemeSystem kippt sie zur Laufzeit).
