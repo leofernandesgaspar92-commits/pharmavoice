@@ -114,8 +114,10 @@
       min-height: 100vh; max-width: 480px; margin: 0 auto;
       position: relative; overflow-x: hidden;
     }
-    .screen { display: none; padding: 32px 20px 116px; min-height: 100vh; animation: fadeUp .25s ease; }
-    .screen.active { display: block; }
+    .screen { display: none; padding: 32px 20px 116px; min-height: 100vh; }
+    /* Sanfter Eingang bei JEDEM Screenwechsel (nicht nur beim ersten Render) –
+       lässt die App lebendig/hochwertig wirken; via prefers-reduced-motion neutralisiert. */
+    .screen.active { display: block; animation: fadeUp .28s cubic-bezier(.22,.61,.36,1); }
 
     /* ── Resource Top Bar (Youth-Pharma-Referenz: Avatar+Level / Coins/Gems/Energy) ── */
     .pv-topbar { position:sticky; top:0; z-index:250; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 14px; background:var(--topbar-bg); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
