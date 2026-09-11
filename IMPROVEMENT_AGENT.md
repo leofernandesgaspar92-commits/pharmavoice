@@ -37,7 +37,7 @@ Betriebshandbuch und der lebende Backlog.
 
 ### P1 – Lernkern & Sprache
 - [x] Indikationstexte nach EN/PT übersetzt – **ALLE 400 Wirkstoffe (100 %)** (`IND_I18N` + `indFor()`). App ist damit vollständig dreisprachig (DE/EN/PT: UI, Tipps, Kategorien UND alle Indikationen) – echter Fachwert für Apotheker:innen, PKA/PTA, Pharmareferent:innen und Studierende in allen drei Märkten.
-- [ ] Wirkstoffklassen (`drugClass`) lokalisieren – **zurückgestellt**: 250 distinkte, teils inkonsistente Werte; großer Aufwand, geringer UX-Wert (nur Sekundär-Detail). Später ggf. via Term-Wörterbuch.
+- [x] Wirkstoffklassen (`drugClass`) EN/PT lokalisiert – Term-Wörterbuch `CLASS_I18N` (265 distinkte Klassen) + `classFor()`; Anzeige im Steckbrief und Lexikon-Suche nutzen es. Damit ist der komplette Wirkstoff-Steckbruck (Indikation + Klasse + Kategorie + Tipp) dreisprachig.
 - [ ] Optionales sprach-spezifisches Aussprache-Modell (EN/PT-Betonung je Wirkstoff, mit Fallback).
 
 ### P2 – Engagement & Bindung
