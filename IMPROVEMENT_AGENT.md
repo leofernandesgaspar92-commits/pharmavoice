@@ -36,7 +36,7 @@ Betriebshandbuch und der lebende Backlog.
 ## Backlog (nach Priorität; oben = als Nächstes)
 
 ### P1 – Lernkern & Sprache
-- [x] Indikationstexte nach EN/PT übersetzt – **361 Wirkstoffe (90 %)** (`IND_I18N` + `indFor()`); Fokus auf klinisch häufige Wirkstoffe (Statine, Sartane, Betablocker, Antibiotika, Diabetes-Mittel, Antidepressiva, Triptane u.a.). Restliche fallen auf Deutsch zurück – Ziel: alle 400 (echter Fachwert für EN/PT-Markt: Apotheker:innen, PKA/PTA, Pharmareferent:innen, Studierende).
+- [x] Indikationstexte nach EN/PT übersetzt – **ALLE 400 Wirkstoffe (100 %)** (`IND_I18N` + `indFor()`). App ist damit vollständig dreisprachig (DE/EN/PT: UI, Tipps, Kategorien UND alle Indikationen) – echter Fachwert für Apotheker:innen, PKA/PTA, Pharmareferent:innen und Studierende in allen drei Märkten.
 - [ ] Wirkstoffklassen (`drugClass`) lokalisieren – **zurückgestellt**: 250 distinkte, teils inkonsistente Werte; großer Aufwand, geringer UX-Wert (nur Sekundär-Detail). Später ggf. via Term-Wörterbuch.
 - [ ] Optionales sprach-spezifisches Aussprache-Modell (EN/PT-Betonung je Wirkstoff, mit Fallback).
 
