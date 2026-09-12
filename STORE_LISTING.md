@@ -184,7 +184,7 @@ Reihenfolge-Empfehlung im Store: **01-home → 02-quiz → 03-lexikon → 04-res
 - [x] Datenschutzerklärung öffentlich unter eigener URL
 - [x] Impressum-/Kontaktangaben (Wohnadresse durch Platzhalter ersetzt)
 - [x] Feature-Grafik + 5 aktuelle Screenshots vorhanden
-- [ ] Play-Entwicklerkonto (Organisation) verifiziert (D-U-N-S nach 24–48 h)
+- [x] Play-Entwicklerkonto (Organisation) verifiziert – D-U-N-S ✓, Zahlung ✓, Website-Inhaberschaft ✓ (Search Console)
 - [ ] Signierter `.aab`-Upload (lokal, siehe CAPACITOR_SETUP.md) + Keystore sicher sichern
 - [ ] Data-Safety-Formular ausgefüllt (siehe oben)
 - [ ] Inhaltseinstufungs-Fragebogen ausgefüllt
