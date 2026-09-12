@@ -1,7 +1,7 @@
 node_modules/
-android/.gradle/
-android/app/build/
-android/build/
+# Generiertes natives Android-Projekt – wird lokal via "npx cap add android" erzeugt
+android/
+ios/
 .DS_Store
 Thumbs.db
 .claude/
