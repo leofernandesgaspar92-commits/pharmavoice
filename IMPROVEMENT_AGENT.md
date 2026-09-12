@@ -73,7 +73,8 @@ Betriebshandbuch und der lebende Backlog.
 ### P5 – Store & Wachstum (viele Punkte extern durch den Gründer)
 - [ ] Firebase Login + Cloud-Sync (sobald Projekt existiert).
 - [ ] Google Play Billing (Freemium-Gate 50/alle).
-- [ ] Capacitor-Build + nativer Speech-Test auf echtem Gerät.
+- [x] Hardware-/Browser-Zurück-Taste: History-Integration (pushState/popstate) – navigiert zum vorherigen Screen statt die App zu schliessen (wichtig fuer native Android-App). Getestet.
+- [ ] Capacitor-Build + nativer Speech-Test auf echtem Geraet.
 
 ---
 
