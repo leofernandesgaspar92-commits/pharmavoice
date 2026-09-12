@@ -4275,7 +4275,16 @@ function showScreen(name) {
   CharacterSystem.showAvatar();
   refreshUI();
   window.scrollTo(0, 0);
+  // History-Integration: Hardware-Zurück (Android/Capacitor) & Browser-Zurück navigieren
+  // zum vorherigen Screen statt die App zu schließen. Nur bei echter Vorwärts-Navigation pushen.
+  try {
+    if (!_navSuppressPush) {
+      const cur = history.state && history.state.pvScreen;
+      if (cur !== name) history.pushState({ pvScreen: name }, '');
+    }
+  } catch (e) {}
 }
+let _navSuppressPush = false;
 
 // Tastatur-Barrierefreiheit: Enter/Leertaste aktiviert role="button"-Elemente
 document.addEventListener('keydown', (e) => {
@@ -9366,6 +9375,13 @@ function sanitizeStorage() {
 }
 sanitizeStorage();
 document.getElementById('screenHome').classList.add('active');
+// Basis-History-Eintrag (Home) + Zurück-Navigation für Hardware-/Browser-Zurück.
+try { history.replaceState({ pvScreen: 'Home' }, ''); } catch (e) {}
+window.addEventListener('popstate', function (e) {
+  const target = (e.state && e.state.pvScreen) ? e.state.pvScreen : 'Home';
+  _navSuppressPush = true;
+  try { showScreen(target); } catch (err) {} finally { _navSuppressPush = false; }
+});
 load();
 refreshTierUI();
 setTimeout(() => gameDesigner.checkForUpdate(), 1500);
