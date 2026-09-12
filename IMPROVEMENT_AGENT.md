@@ -36,6 +36,7 @@ Betriebshandbuch und der lebende Backlog.
 ## Backlog (nach Priorität; oben = als Nächstes)
 
 ### P1 – Lernkern & Sprache
+- [x] Aussprache-Daten-Audit (440): alle IPA mit Betonungsmarker; 18 Silben-Chips an die Namensschreibung angeglichen (z.B. Val·SAR·tan statt Val·ZAR·tan) – IPA behaelt den Lautwert; konsistent & fach-glaubwuerdig.
 - [x] Indikationstexte nach EN/PT übersetzt – **ALLE 400 Wirkstoffe (100 %)** (`IND_I18N` + `indFor()`). App ist damit vollständig dreisprachig (DE/EN/PT: UI, Tipps, Kategorien UND alle Indikationen) – echter Fachwert für Apotheker:innen, PKA/PTA, Pharmareferent:innen und Studierende in allen drei Märkten.
 - [x] Wirkstoffklassen (`drugClass`) EN/PT lokalisiert – Term-Wörterbuch `CLASS_I18N` (265 distinkte Klassen) + `classFor()`; Anzeige im Steckbrief und Lexikon-Suche nutzen es. Damit ist der komplette Wirkstoff-Steckbruck (Indikation + Klasse + Kategorie + Tipp) dreisprachig.
 - [ ] Optionales sprach-spezifisches Aussprache-Modell (EN/PT-Betonung je Wirkstoff, mit Fallback).
