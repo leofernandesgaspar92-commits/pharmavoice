@@ -12,18 +12,18 @@
   <link rel="icon" type="image/png" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <title>PharmaVoice</title>
-  <meta name="description" content="Lerne die korrekte Aussprache von 420 medizinischen Wirkstoffnamen – spielerisch, offline, in Deutsch, Englisch und Portugiesisch." />
+  <meta name="description" content="Lerne die korrekte Aussprache von 440 medizinischen Wirkstoffnamen – spielerisch, offline, in Deutsch, Englisch und Portugiesisch." />
   <meta name="author" content="Leo Fernandes Gaspar" />
   <!-- Open Graph / Link-Vorschau -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PharmaVoice" />
   <meta property="og:title" content="PharmaVoice – Wirkstoffnamen richtig aussprechen" />
-  <meta property="og:description" content="420 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen. Spielerisch, offline, in 3 Sprachen." />
+  <meta property="og:description" content="440 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen. Spielerisch, offline, in 3 Sprachen." />
   <meta property="og:image" content="icon-512.png" />
   <meta property="og:locale" content="de_DE" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="PharmaVoice – Wirkstoffnamen richtig aussprechen" />
-  <meta name="twitter:description" content="420 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen." />
+  <meta name="twitter:description" content="440 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen." />
   <style>
     /* Lokal gebündelte Schriften – kein externes CDN (WebView-/offline-fest, Capacitor-ready) */
     @font-face {
@@ -2480,7 +2480,28 @@ const MEDS = [
   { lv:3, name:"Remdesivir", phonetic:"/rem·ˈdeː·si·vir/", syllables:["rem","DE","si","vir"], si:1, category:"Virostatikum", tip:'Zweite Silbe "DE" betonen.', wrong:["REM·de·si·vir","rem·de·SI·vir","rem·de·si·VIR"] },
   { lv:3, name:"Nirmatrelvir", phonetic:"/nir·ma·ˈtrel·vir/", syllables:["nir","ma","TREL","vir"], si:2, category:"Virostatikum", tip:'Dritte Silbe "TREL" betonen.', wrong:["NIR·ma·trel·vir","nir·MA·trel·vir","nir·ma·trel·VIR"] },
   { lv:3, name:"Rotigotin", phonetic:"/ro·ti·ˈgoː·tin/", syllables:["ro","ti","GO","tin"], si:2, category:"Parkinsonmittel", tip:'Dritte Silbe "GO" betonen.', wrong:["RO·ti·go·tin","ro·TI·go·tin","ro·ti·go·TIN"] },
-  { lv:3, name:"Cabergolin", phonetic:"/ka·ber·go·ˈliːn/", syllables:["ca","ber","go","LIN"], si:3, category:"Parkinsonmittel", tip:'Vierte Silbe "LIN" betonen.', wrong:["CA·ber·go·lin","ca·BER·go·lin","ca·ber·GO·lin"] }
+  { lv:3, name:"Cabergolin", phonetic:"/ka·ber·go·ˈliːn/", syllables:["ca","ber","go","LIN"], si:3, category:"Parkinsonmittel", tip:'Vierte Silbe "LIN" betonen.', wrong:["CA·ber·go·lin","ca·BER·go·lin","ca·ber·GO·lin"] },
+  { lv:2, name:"Alteplase", phonetic:"/al·te·ˈplaː·ze/", syllables:["al","te","PLA","se"], si:2, category:"Antikoagulans", tip:'Dritte Silbe "PLA" betonen.', wrong:["AL·te·pla·se","al·TE·pla·se","al·te·pla·SE"] },
+  { lv:2, name:"Tenecteplase", phonetic:"/te·nɛk·te·ˈplaː·ze/", syllables:["te","nec","te","PLA","se"], si:3, category:"Antikoagulans", tip:'Vierte Silbe "PLA" betonen.', wrong:["TE·nec·te·pla·se","te·NEC·te·pla·se","te·nec·TE·pla·se"] },
+  { lv:2, name:"Tirofiban", phonetic:"/ti·ro·ˈfiː·ban/", syllables:["ti","ro","FI","ban"], si:2, category:"Thrombozytenhemmer", tip:'Dritte Silbe "FI" betonen.', wrong:["TI·ro·fi·ban","ti·RO·fi·ban","ti·ro·fi·BAN"] },
+  { lv:1, name:"Teriparatid", phonetic:"/te·ri·pa·ra·ˈtiːd/", syllables:["te","ri","pa","ra","TID"], si:4, category:"Osteoporosemittel", tip:'Fünfte Silbe "TID" betonen.', wrong:["TE·ri·pa·ra·tid","te·RI·pa·ra·tid","te·ri·PA·ra·tid"] },
+  { lv:1, name:"Romosozumab", phonetic:"/ro·mo·ˈsoː·zu·mab/", syllables:["ro","mo","SO","zu","mab"], si:2, category:"Osteoporosemittel", tip:'Dritte Silbe "SO" betonen.', wrong:["RO·mo·so·zu·mab","ro·MO·so·zu·mab","ro·mo·so·ZU·mab"] },
+  { lv:1, name:"Ranibizumab", phonetic:"/ra·ni·ˈbiː·zu·mab/", syllables:["ra","ni","BI","zu","mab"], si:2, category:"Ophthalmikum", tip:'Dritte Silbe "BI" betonen.', wrong:["RA·ni·bi·zu·mab","ra·NI·bi·zu·mab","ra·ni·bi·ZU·mab"] },
+  { lv:1, name:"Aflibercept", phonetic:"/a·fli·ˈbɛr·tsɛpt/", syllables:["a","fli","BER","cept"], si:2, category:"Ophthalmikum", tip:'Dritte Silbe "BER" betonen.', wrong:["A·fli·ber·cept","a·FLI·ber·cept","a·fli·ber·CEPT"] },
+  { lv:1, name:"Erythropoetin", phonetic:"/e·ryt·ro·po·ˈeː·tin/", syllables:["e","ryt","ro","po","E","tin"], si:4, category:"Hormon", tip:'Fünfte Silbe "E" betonen.', wrong:["E·ryt·ro·po·e·tin","e·RYT·ro·po·e·tin","e·ryt·RO·po·e·tin"] },
+  { lv:3, name:"Filgrastim", phonetic:"/fil·ˈgras·tim/", syllables:["fil","GRAS","tim"], si:1, category:"Onkologie", tip:'Zweite Silbe "GRAS" betonen.', wrong:["FIL·gras·tim","fil·gras·TIM","FIL·gras·TIM"] },
+  { lv:3, name:"Pegfilgrastim", phonetic:"/peg·fil·ˈgras·tim/", syllables:["peg","fil","GRAS","tim"], si:2, category:"Onkologie", tip:'Dritte Silbe "GRAS" betonen.', wrong:["PEG·fil·gras·tim","peg·FIL·gras·tim","peg·fil·gras·TIM"] },
+  { lv:2, name:"Palonosetron", phonetic:"/pa·lo·no·ˈseː·tron/", syllables:["pa","lo","no","SE","tron"], si:3, category:"Antiemetikum", tip:'Vierte Silbe "SE" betonen.', wrong:["PA·lo·no·se·tron","pa·LO·no·se·tron","pa·lo·NO·se·tron"] },
+  { lv:1, name:"Cinacalcet", phonetic:"/ci·na·ˈkal·cet/", syllables:["ci","na","CAL","cet"], si:2, category:"Hormon", tip:'Dritte Silbe "CAL" betonen.', wrong:["CI·na·cal·cet","ci·NA·cal·cet","ci·na·cal·CET"] },
+  { lv:2, name:"Tolvaptan", phonetic:"/tol·ˈvap·tan/", syllables:["tol","VAP","tan"], si:1, category:"Diuretikum", tip:'Zweite Silbe "VAP" betonen.', wrong:["TOL·vap·tan","tol·vap·TAN","TOL·vap·TAN"] },
+  { lv:2, name:"Riociguat", phonetic:"/ri·o·ˈtsiː·gu·at/", syllables:["ri","o","CI","gu","at"], si:2, category:"Herzmittel", tip:'Dritte Silbe "CI" betonen.', wrong:["RI·o·ci·gu·at","ri·O·ci·gu·at","ri·o·ci·GU·at"] },
+  { lv:2, name:"Bosentan", phonetic:"/bo·ˈsɛn·tan/", syllables:["bo","SEN","tan"], si:1, category:"Herzmittel", tip:'Zweite Silbe "SEN" betonen.', wrong:["BO·sen·tan","bo·sen·TAN","BO·sen·TAN"] },
+  { lv:2, name:"Macitentan", phonetic:"/ma·ci·ˈtɛn·tan/", syllables:["ma","ci","TEN","tan"], si:2, category:"Herzmittel", tip:'Dritte Silbe "TEN" betonen.', wrong:["MA·ci·ten·tan","ma·CI·ten·tan","ma·ci·ten·TAN"] },
+  { lv:2, name:"Ambrisentan", phonetic:"/am·bri·ˈsɛn·tan/", syllables:["am","bri","SEN","tan"], si:2, category:"Herzmittel", tip:'Dritte Silbe "SEN" betonen.', wrong:["AM·bri·sen·tan","am·BRI·sen·tan","am·bri·sen·TAN"] },
+  { lv:2, name:"Iloprost", phonetic:"/ˈiː·lo·prost/", syllables:["I","lo","prost"], si:0, category:"Herzmittel", tip:'Erste Silbe "I" betonen.', wrong:["i·LO·prost","i·lo·PROST","i·LO·PROST"] },
+  { lv:2, name:"Sacubitril", phonetic:"/sa·ku·ˈbiː·tril/", syllables:["sa","cu","BI","tril"], si:2, category:"Herzmittel", tip:'Dritte Silbe "BI" betonen.', wrong:["SA·cu·bi·tril","sa·CU·bi·tril","sa·cu·bi·TRIL"] },
+  { lv:2, name:"Selexipag", phonetic:"/se·le·ˈksiː·pag/", syllables:["se","le","XI","pag"], si:2, category:"Herzmittel", tip:'Dritte Silbe "XI" betonen.', wrong:["SE·le·xi·pag","se·LE·xi·pag","se·le·xi·PAG"] }
+
 
 
 
@@ -2912,7 +2933,28 @@ const MED_INFO = {
   "Remdesivir": { indication:"RNA-Polymerase-Hemmer (RdRp) zur Behandlung von COVID-19.", drugClass:"RdRp-Hemmer (Virostatikum)", formula:"—", atcCode:"J05AB16" },
   "Nirmatrelvir": { indication:"SARS-CoV-2-Proteasehemmer zur frühen Behandlung von COVID-19 (mit Ritonavir).", drugClass:"SARS-CoV-2-Proteasehemmer", formula:"—", atcCode:"J05AE30" },
   "Rotigotin": { indication:"Dopaminagonist als Pflaster bei Parkinson und Restless-Legs-Syndrom.", drugClass:"Dopaminagonist", formula:"—", atcCode:"N04BC09" },
-  "Cabergolin": { indication:"Dopaminagonist bei Parkinson und zur Hemmung der Prolaktinausschüttung.", drugClass:"Dopaminagonist", formula:"—", atcCode:"N04BC06" }
+  "Cabergolin": { indication:"Dopaminagonist bei Parkinson und zur Hemmung der Prolaktinausschüttung.", drugClass:"Dopaminagonist", formula:"—", atcCode:"N04BC06" },
+  "Alteplase": { indication:"Fibrinolytikum (t-PA) zur Auflösung von Blutgerinnseln bei Herzinfarkt, Lungenembolie und Schlaganfall.", drugClass:"Fibrinolytikum (t-PA)", formula:"—", atcCode:"B01AD02" },
+  "Tenecteplase": { indication:"Fibrinolytikum (t-PA) als Einmalbolus beim akuten Herzinfarkt.", drugClass:"Fibrinolytikum (t-PA)", formula:"—", atcCode:"B01AD11" },
+  "Tirofiban": { indication:"GP-IIb/IIIa-Hemmer zur Thrombozytenhemmung beim akuten Koronarsyndrom.", drugClass:"GP-IIb/IIIa-Rezeptor-Antagonist", formula:"—", atcCode:"B01AC17" },
+  "Teriparatid": { indication:"Parathormon-Analogon, das den Knochenaufbau anregt. Bei schwerer Osteoporose.", drugClass:"Parathormon-Analogon", formula:"—", atcCode:"H05AA02" },
+  "Romosozumab": { indication:"Sklerostin-Hemmer (monoklonaler Antikörper), fördert Knochenaufbau bei Osteoporose.", drugClass:"Sklerostin-Hemmer (monoklonaler Antikörper)", formula:"—", atcCode:"M05BX06" },
+  "Ranibizumab": { indication:"Anti-VEGF-Antikörper, ins Auge injiziert bei feuchter Makuladegeneration.", drugClass:"Monoklonaler Antikörper (VEGF-Hemmer)", formula:"—", atcCode:"S01LA04" },
+  "Aflibercept": { indication:"VEGF-Hemmer (Fusionsprotein), ins Auge injiziert bei Makuladegeneration und diabetischem Makulaödem.", drugClass:"VEGF-Hemmer (Fusionsprotein)", formula:"—", atcCode:"S01LA05" },
+  "Erythropoetin": { indication:"Erythropoese-stimulierendes Mittel gegen Anämie, u.a. bei Niereninsuffizienz.", drugClass:"Erythropoese-stimulierendes Mittel (ESA)", formula:"—", atcCode:"B03XA01" },
+  "Filgrastim": { indication:"G-CSF, regt die Bildung weißer Blutkörperchen an (bei Neutropenie nach Chemotherapie).", drugClass:"G-CSF (Granulozyten-Wachstumsfaktor)", formula:"—", atcCode:"L03AA02" },
+  "Pegfilgrastim": { indication:"Langwirksames G-CSF zur Vorbeugung der Neutropenie nach Chemotherapie.", drugClass:"G-CSF (Granulozyten-Wachstumsfaktor)", formula:"—", atcCode:"L03AA13" },
+  "Palonosetron": { indication:"Langwirksamer 5-HT3-Antagonist gegen chemotherapiebedingte Übelkeit.", drugClass:"5-HT3-Rezeptor-Antagonist", formula:"—", atcCode:"A04AA05" },
+  "Cinacalcet": { indication:"Calcimimetikum, senkt den Parathormonspiegel bei sekundärem Hyperparathyreoidismus.", drugClass:"Calcimimetikum", formula:"—", atcCode:"H05BX01" },
+  "Tolvaptan": { indication:"Vasopressin-V2-Antagonist bei Hyponatriämie und zystischer Nierenerkrankung (ADPKD).", drugClass:"Vasopressin-V2-Rezeptor-Antagonist", formula:"—", atcCode:"C03XA01" },
+  "Riociguat": { indication:"sGC-Stimulator bei pulmonaler Hypertonie.", drugClass:"sGC-Stimulator", formula:"—", atcCode:"C02KX05" },
+  "Bosentan": { indication:"Endothelin-Rezeptor-Antagonist bei pulmonaler arterieller Hypertonie.", drugClass:"Endothelin-Rezeptor-Antagonist", formula:"—", atcCode:"C02KX01" },
+  "Macitentan": { indication:"Endothelin-Rezeptor-Antagonist zur Langzeittherapie der pulmonalen arteriellen Hypertonie.", drugClass:"Endothelin-Rezeptor-Antagonist", formula:"—", atcCode:"C02KX04" },
+  "Ambrisentan": { indication:"Selektiver Endothelin-A-Rezeptor-Antagonist bei pulmonaler arterieller Hypertonie.", drugClass:"Endothelin-Rezeptor-Antagonist", formula:"—", atcCode:"C02KX02" },
+  "Iloprost": { indication:"Prostacyclin-Analogon zur Gefäßerweiterung bei pulmonaler Hypertonie (inhalativ).", drugClass:"Prostacyclin-Analogon", formula:"—", atcCode:"B01AC11" },
+  "Sacubitril": { indication:"Neprilysin-Inhibitor; in Kombination mit Valsartan bei Herzinsuffizienz.", drugClass:"Neprilysin-Inhibitor", formula:"—", atcCode:"C09DX04" },
+  "Selexipag": { indication:"Oraler Prostacyclin-Rezeptor-Agonist (IP) bei pulmonaler arterieller Hypertonie.", drugClass:"Prostacyclin-Rezeptor-Agonist (IP)", formula:"—", atcCode:"B01AC27" }
+
 
 
 
@@ -3598,7 +3640,7 @@ const OnboardingSystem = (() => {
   let _i = 0;
   const SLIDES = [
     { emoji:'💊', title:{de:'Willkommen bei PharmaVoice',en:'Welcome to PharmaVoice',pt:'Bem-vindo ao PharmaVoice'},
-      text:{de:'Lerne die korrekte Aussprache von 420 medizinischen Wirkstoffen – spielerisch.',en:'Learn to correctly pronounce 400 medical drug names – the fun way.',pt:'Aprenda a pronunciar corretamente 420 fármacos – de forma divertida.'} },
+      text:{de:'Lerne die korrekte Aussprache von 440 medizinischen Wirkstoffen – spielerisch.',en:'Learn to correctly pronounce 400 medical drug names – the fun way.',pt:'Aprenda a pronunciar corretamente 440 fármacos – de forma divertida.'} },
     { emoji:'🎤', title:{de:'Hören. Nachsprechen. Meistern.',en:'Listen. Repeat. Master.',pt:'Ouça. Repita. Domine.'},
       text:{de:'Hör dir die Aussprache an, sprich sie nach und übe die richtige Betonung – Silbe für Silbe.',en:'Listen to the pronunciation, repeat it and practice the right stress – syllable by syllable.',pt:'Ouça a pronúncia, repita e treine a sílaba tônica correta.'} },
     { emoji:'🔥', title:{de:'Bleib am Ball',en:'Keep your streak',pt:'Mantenha a sequência'},
@@ -5003,6 +5045,26 @@ function catLabel(cat) {
 // Indikationstexte lokalisiert (EN/PT) für die häufigsten Wirkstoffe. Separate Map,
 // damit der grosse MED_INFO-Block unangetastet bleibt. Fallback: deutscher Text.
 const IND_I18N = {
+  'Alteplase':{en:'Fibrinolytic (t-PA) to dissolve blood clots in heart attack, pulmonary embolism and stroke.',pt:'Fibrinolítico (t-PA) para dissolver coágulos em infarto, embolia pulmonar e AVC.'},
+  'Tenecteplase':{en:'Fibrinolytic (t-PA) given as a single bolus in acute heart attack.',pt:'Fibrinolítico (t-PA) em bolus único no infarto agudo.'},
+  'Tirofiban':{en:'GP IIb/IIIa inhibitor for platelet inhibition in acute coronary syndrome.',pt:'Inibidor da GP IIb/IIIa para inibição plaquetária na síndrome coronariana aguda.'},
+  'Teriparatid':{en:'Parathyroid hormone analogue that stimulates bone formation. For severe osteoporosis.',pt:'Análogo do paratormônio que estimula a formação óssea. Para osteoporose grave.'},
+  'Romosozumab':{en:'Sclerostin inhibitor (monoclonal antibody) that promotes bone formation in osteoporosis.',pt:'Inibidor da esclerostina (anticorpo monoclonal) que promove a formação óssea na osteoporose.'},
+  'Ranibizumab':{en:'Anti-VEGF antibody injected into the eye for wet macular degeneration.',pt:'Anticorpo anti-VEGF injetado no olho na degeneração macular úmida.'},
+  'Aflibercept':{en:'VEGF inhibitor (fusion protein) injected into the eye for macular degeneration and diabetic macular oedema.',pt:'Inibidor do VEGF (proteína de fusão) injetado no olho na degeneração macular e no edema macular diabético.'},
+  'Erythropoetin':{en:'Erythropoiesis-stimulating agent for anaemia, e.g. in kidney failure.',pt:'Agente estimulador da eritropoiese para anemia, p.ex. na insuficiência renal.'},
+  'Filgrastim':{en:'G-CSF that stimulates white blood cell production (for neutropenia after chemotherapy).',pt:'G-CSF que estimula a produção de glóbulos brancos (na neutropenia após quimioterapia).'},
+  'Pegfilgrastim':{en:'Long-acting G-CSF to prevent neutropenia after chemotherapy.',pt:'G-CSF de longa ação para prevenir a neutropenia após quimioterapia.'},
+  'Palonosetron':{en:'Long-acting 5-HT3 antagonist for chemotherapy-induced nausea.',pt:'Antagonista 5-HT3 de longa ação para náusea induzida por quimioterapia.'},
+  'Cinacalcet':{en:'Calcimimetic that lowers parathyroid hormone in secondary hyperparathyroidism.',pt:'Calcimimético que reduz o paratormônio no hiperparatireoidismo secundário.'},
+  'Tolvaptan':{en:'Vasopressin V2 antagonist for hyponatraemia and polycystic kidney disease (ADPKD).',pt:'Antagonista V2 da vasopressina para hiponatremia e doença renal policística (DRPAD).'},
+  'Riociguat':{en:'sGC stimulator for pulmonary hypertension.',pt:'Estimulador da sGC para hipertensão pulmonar.'},
+  'Bosentan':{en:'Endothelin receptor antagonist for pulmonary arterial hypertension.',pt:'Antagonista do receptor de endotelina para hipertensão arterial pulmonar.'},
+  'Macitentan':{en:'Endothelin receptor antagonist for long-term treatment of pulmonary arterial hypertension.',pt:'Antagonista do receptor de endotelina para tratamento de longo prazo da hipertensão arterial pulmonar.'},
+  'Ambrisentan':{en:'Selective endothelin-A receptor antagonist for pulmonary arterial hypertension.',pt:'Antagonista seletivo do receptor de endotelina A para hipertensão arterial pulmonar.'},
+  'Iloprost':{en:'Prostacyclin analogue for vasodilation in pulmonary hypertension (inhaled).',pt:'Análogo da prostaciclina para vasodilatação na hipertensão pulmonar (inalado).'},
+  'Sacubitril':{en:'Neprilysin inhibitor; combined with valsartan for heart failure.',pt:'Inibidor da neprilisina; combinado com valsartana na insuficiência cardíaca.'},
+  'Selexipag':{en:'Oral prostacyclin (IP) receptor agonist for pulmonary arterial hypertension.',pt:'Agonista oral do receptor de prostaciclina (IP) para hipertensão arterial pulmonar.'},
   'Finerenon':{en:'Non-steroidal mineralocorticoid receptor antagonist protecting heart and kidneys in diabetic kidney disease.',pt:'Antagonista não esteroide do receptor mineralocorticoide para proteger coração e rins na doença renal diabética.'},
   'Vericiguat':{en:'sGC stimulator for the treatment of chronic heart failure.',pt:'Estimulador da sGC para o tratamento da insuficiência cardíaca crônica.'},
   'Upadacitinib':{en:'JAK inhibitor for rheumatoid arthritis, atopic dermatitis and ulcerative colitis.',pt:'Inibidor de JAK para artrite reumatoide, dermatite atópica e colite ulcerativa.'},
@@ -5426,6 +5488,19 @@ const IND_I18N = {
 };
 // Liefert die Indikation in der aktiven Sprache (EN/PT falls übersetzt, sonst Deutsch).
 const CLASS_I18N = {
+  'Fibrinolytikum (t-PA)':{en:'Fibrinolytic (t-PA)',pt:'Fibrinolítico (t-PA)'},
+  'GP-IIb/IIIa-Rezeptor-Antagonist':{en:'GP IIb/IIIa receptor antagonist',pt:'Antagonista do receptor GP IIb/IIIa'},
+  'Parathormon-Analogon':{en:'Parathyroid hormone analogue',pt:'Análogo do paratormônio'},
+  'Sklerostin-Hemmer (monoklonaler Antikörper)':{en:'Sclerostin inhibitor (monoclonal antibody)',pt:'Inibidor da esclerostina (anticorpo monoclonal)'},
+  'VEGF-Hemmer (Fusionsprotein)':{en:'VEGF inhibitor (fusion protein)',pt:'Inibidor do VEGF (proteína de fusão)'},
+  'Erythropoese-stimulierendes Mittel (ESA)':{en:'Erythropoiesis-stimulating agent (ESA)',pt:'Agente estimulador da eritropoiese (AEE)'},
+  'G-CSF (Granulozyten-Wachstumsfaktor)':{en:'G-CSF (granulocyte growth factor)',pt:'G-CSF (fator de crescimento de granulócitos)'},
+  'Calcimimetikum':{en:'Calcimimetic',pt:'Calcimimético'},
+  'Vasopressin-V2-Rezeptor-Antagonist':{en:'Vasopressin V2 receptor antagonist',pt:'Antagonista do receptor V2 da vasopressina'},
+  'Endothelin-Rezeptor-Antagonist':{en:'Endothelin receptor antagonist',pt:'Antagonista do receptor de endotelina'},
+  'Prostacyclin-Analogon':{en:'Prostacyclin analogue',pt:'Análogo da prostaciclina'},
+  'Neprilysin-Inhibitor':{en:'Neprilysin inhibitor',pt:'Inibidor da neprilisina'},
+  'Prostacyclin-Rezeptor-Agonist (IP)':{en:'Prostacyclin (IP) receptor agonist',pt:'Agonista do receptor de prostaciclina (IP)'},
   'Nichtsteroidaler MR-Antagonist':{en:'Non-steroidal MR antagonist',pt:'Antagonista não esteroide do RM'},
   'sGC-Stimulator':{en:'sGC stimulator',pt:'Estimulador da sGC'},
   'Monoklonaler Antikörper (IL-17-Hemmer)':{en:'Monoclonal antibody (IL-17 inhibitor)',pt:'Anticorpo monoclonal (inibidor da IL-17)'},
