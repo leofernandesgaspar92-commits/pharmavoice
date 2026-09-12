@@ -27,15 +27,15 @@ EN: `PharmaVoice: Drug Names` · PT: `PharmaVoice: Fármacos`
 
 **DE** (78)
 ```
-Aussprache von 400 Wirkstoffen lernen – spielerisch, offline, in 3 Sprachen.
+Aussprache von 420 Wirkstoffen lernen – spielerisch, offline, in 3 Sprachen.
 ```
 **EN** (76)
 ```
-Learn to pronounce 400 drug names – gamified, offline, in three languages.
+Learn to pronounce 420 drug names – gamified, offline, in three languages.
 ```
 **PT** (77)
 ```
-Aprenda a pronunciar 400 fármacos – gamificado, offline, em três idiomas.
+Aprenda a pronunciar 420 fármacos – gamificado, offline, em três idiomas.
 ```
 
 ---
@@ -46,10 +46,10 @@ Aprenda a pronunciar 400 fármacos – gamificado, offline, em três idiomas.
 ```
 Sprich medizinische Wirkstoffnamen endlich richtig aus – ohne Stolpern, ohne Unsicherheit.
 
-PharmaVoice bringt dir die korrekte Aussprache von 400 gängigen Wirkstoffen bei: Silbe für Silbe, mit Betonung, Lautschrift und Sprachausgabe zum Nachsprechen. Ideal für PKA-/PTA-Lehrlinge, Apothekenpersonal, Pharmareferent:innen und Pharmazie-Studierende.
+PharmaVoice bringt dir die korrekte Aussprache von 420 gängigen Wirkstoffen bei: Silbe für Silbe, mit Betonung, Lautschrift und Sprachausgabe zum Nachsprechen. Ideal für PKA-/PTA-Lehrlinge, Apothekenpersonal, Pharmareferent:innen und Pharmazie-Studierende.
 
 WARUM PHARMAVOICE?
-• 400 Wirkstoffe mit Silbentrennung, Betonung und Lautschrift (IPA)
+• 420 Wirkstoffe mit Silbentrennung, Betonung und Lautschrift (IPA)
 • Hören & Nachsprechen – die richtige Betonung sitzt Silbe für Silbe
 • Wirkstoff-Lexikon mit Indikation, Wirkstoffklasse und ATC-Code
 • Suchen, filtern und alphabetisch sortieren
@@ -79,10 +79,10 @@ Hinweis: PharmaVoice ist ein Lernwerkzeug und ersetzt keine medizinische oder ph
 ```
 Finally pronounce medical drug names correctly – no stumbling, no doubt.
 
-PharmaVoice teaches you the correct pronunciation of 400 common drug substances: syllable by syllable, with stress marks, phonetic transcription and audio to repeat after. Perfect for pharmacy assistants and technicians, pharmacy staff, pharma reps and pharmacology students.
+PharmaVoice teaches you the correct pronunciation of 420 common drug substances: syllable by syllable, with stress marks, phonetic transcription and audio to repeat after. Perfect for pharmacy assistants and technicians, pharmacy staff, pharma reps and pharmacology students.
 
 WHY PHARMAVOICE?
-• 400 drugs with syllable breakdown, stress and phonetics (IPA)
+• 420 drugs with syllable breakdown, stress and phonetics (IPA)
 • Listen & repeat – nail the right stress, syllable by syllable
 • Drug encyclopedia with indication, drug class and ATC code
 • Search, filter and sort alphabetically
@@ -112,10 +112,10 @@ Note: PharmaVoice is a learning tool and does not replace medical or pharmaceuti
 ```
 Pronuncie corretamente os nomes de fármacos – sem tropeços, sem dúvidas.
 
-O PharmaVoice ensina a pronúncia correta de 400 substâncias comuns: sílaba a sílaba, com sílaba tônica, transcrição fonética e áudio para repetir. Ideal para auxiliares e técnicos de farmácia, equipe de farmácia, representantes farmacêuticos e estudantes de farmácia.
+O PharmaVoice ensina a pronúncia correta de 420 substâncias comuns: sílaba a sílaba, com sílaba tônica, transcrição fonética e áudio para repetir. Ideal para auxiliares e técnicos de farmácia, equipe de farmácia, representantes farmacêuticos e estudantes de farmácia.
 
 POR QUE PHARMAVOICE?
-• 400 fármacos com divisão silábica, tonicidade e fonética (IPA)
+• 420 fármacos com divisão silábica, tonicidade e fonética (IPA)
 • Ouça e repita – acerte a sílaba tônica, sílaba a sílaba
 • Enciclopédia com indicação, classe e código ATC
 • Busque, filtre e ordene em ordem alfabética
@@ -172,7 +172,7 @@ Observação: o PharmaVoice é uma ferramenta de aprendizagem e não substitui a
 | Asset | Vorgabe | Status |
 |---|---|---|
 | App-Icon | 512×512 PNG | vorhanden (`icon-512.png`) |
-| Feature-Grafik | 1024×500 | ✅ `store-assets/feature-graphic.png` (aktualisiert, „400") |
+| Feature-Grafik | 1024×500 | ✅ `store-assets/feature-graphic.png` (aktualisiert, „420") |
 | Screenshots Handy | mind. 2 (empf. 4–8), 9:16 | ✅ `store-assets/screenshots/01-home … 05-profil.png` (1170×2532, aktuelles helles Design) |
 | (optional) Kurzvideo | YouTube-Link | optional |
 

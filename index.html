@@ -11,18 +11,18 @@
   <link rel="icon" type="image/png" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <title>PharmaVoice</title>
-  <meta name="description" content="Lerne die korrekte Aussprache von 400 medizinischen Wirkstoffnamen – spielerisch, offline, in Deutsch, Englisch und Portugiesisch." />
+  <meta name="description" content="Lerne die korrekte Aussprache von 420 medizinischen Wirkstoffnamen – spielerisch, offline, in Deutsch, Englisch und Portugiesisch." />
   <meta name="author" content="Leo Fernandes Gaspar" />
   <!-- Open Graph / Link-Vorschau -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PharmaVoice" />
   <meta property="og:title" content="PharmaVoice – Wirkstoffnamen richtig aussprechen" />
-  <meta property="og:description" content="400 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen. Spielerisch, offline, in 3 Sprachen." />
+  <meta property="og:description" content="420 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen. Spielerisch, offline, in 3 Sprachen." />
   <meta property="og:image" content="icon-512.png" />
   <meta property="og:locale" content="de_DE" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="PharmaVoice – Wirkstoffnamen richtig aussprechen" />
-  <meta name="twitter:description" content="400 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen." />
+  <meta name="twitter:description" content="420 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen." />
   <style>
     /* Lokal gebündelte Schriften – kein externes CDN (WebView-/offline-fest, Capacitor-ready) */
     @font-face {
@@ -2459,7 +2459,28 @@ const MEDS = [
 	{ lv:3, name:"Dolutegravir", phonetic:"/do·lu·ˈteː·ɡra·viːr/", syllables:["do","lu","TE","gra","vir"], si:2, category:"Virostatikum", tip:'Dritte Silbe "TE" betonen.', wrong:["DO·lu·te·gra·vir","do·LU·te·gra·vir","do·lu·te·GRA·vir"] },
 	{ lv:3, name:"Isavuconazol", phonetic:"/i·sa·vu·ˈkoː·na·tsɔl/", syllables:["i","sa","vu","KO","na","zol"], si:3, category:"Antimykotikum", tip:'Vierte Silbe "KO" betonen.', wrong:["I·sa·vu·ko·na·zol","i·SA·vu·ko·na·zol","i·sa·VU·ko·na·zol"] },
   { lv:1, name:"Tirzepatid", phonetic:"/tir·ze·ˈpaː·tɪd/", syllables:["tir","ze","PA","tid"], si:2, category:"Diabetes", tip:'Dritte Silbe "PA" betonen.', wrong:["TIR·ze·pa·tid","tir·ZE·pa·tid","tir·ze·pa·TID"] },
-  { lv:3, name:"Baricitinib", phonetic:"/ba·ri·ˈtsiː·ti·nɪb/", syllables:["ba","ri","CI","ti","nib"], si:2, category:"Immunsuppressivum", tip:'Dritte Silbe "CI" betonen.', wrong:["BA·ri·ci·ti·nib","ba·RI·ci·ti·nib","ba·ri·ci·TI·nib"] }
+  { lv:3, name:"Baricitinib", phonetic:"/ba·ri·ˈtsiː·ti·nɪb/", syllables:["ba","ri","CI","ti","nib"], si:2, category:"Immunsuppressivum", tip:'Dritte Silbe "CI" betonen.', wrong:["BA·ri·ci·ti·nib","ba·RI·ci·ti·nib","ba·ri·ci·TI·nib"] },
+  { lv:2, name:"Finerenon", phonetic:"/fi·ne·ˈreː·non/", syllables:["fi","ne","RE","non"], si:2, category:"Herzmittel", tip:'Dritte Silbe "RE" betonen.', wrong:["FI·ne·re·non","fi·NE·re·non","fi·ne·re·NON"] },
+  { lv:2, name:"Vericiguat", phonetic:"/ve·ri·ˈtsiː·gu·at/", syllables:["ve","ri","CI","gu","at"], si:2, category:"Herzmittel", tip:'Dritte Silbe "CI" betonen.', wrong:["VE·ri·ci·gu·at","ve·RI·ci·gu·at","ve·ri·ci·GU·at"] },
+  { lv:3, name:"Upadacitinib", phonetic:"/u·pa·da·ˈtsiː·ti·nib/", syllables:["u","pa","da","CI","ti","nib"], si:3, category:"Immunsuppressivum", tip:'Vierte Silbe "CI" betonen.', wrong:["U·pa·da·ci·ti·nib","u·PA·da·ci·ti·nib","u·pa·DA·ci·ti·nib"] },
+  { lv:3, name:"Tofacitinib", phonetic:"/to·fa·ˈtsiː·ti·nib/", syllables:["to","fa","CI","ti","nib"], si:2, category:"Immunsuppressivum", tip:'Dritte Silbe "CI" betonen.', wrong:["TO·fa·ci·ti·nib","to·FA·ci·ti·nib","to·fa·ci·TI·nib"] },
+  { lv:3, name:"Apremilast", phonetic:"/a·pre·ˈmiː·last/", syllables:["a","pre","MI","last"], si:2, category:"Immunsuppressivum", tip:'Dritte Silbe "MI" betonen.', wrong:["A·pre·mi·last","a·PRE·mi·last","a·pre·mi·LAST"] },
+  { lv:3, name:"Secukinumab", phonetic:"/se·ku·ˈkiː·nu·mab/", syllables:["se","ku","KI","nu","mab"], si:2, category:"Immunsuppressivum", tip:'Dritte Silbe "KI" betonen.', wrong:["SE·ku·ki·nu·mab","se·KU·ki·nu·mab","se·ku·ki·NU·mab"] },
+  { lv:3, name:"Ustekinumab", phonetic:"/us·te·ˈkiː·nu·mab/", syllables:["us","te","KI","nu","mab"], si:2, category:"Immunsuppressivum", tip:'Dritte Silbe "KI" betonen.', wrong:["US·te·ki·nu·mab","us·TE·ki·nu·mab","us·te·ki·NU·mab"] },
+  { lv:3, name:"Dupilumab", phonetic:"/du·pi·ˈluː·mab/", syllables:["du","pi","LU","mab"], si:2, category:"Immunsuppressivum", tip:'Dritte Silbe "LU" betonen.', wrong:["DU·pi·lu·mab","du·PI·lu·mab","du·pi·lu·MAB"] },
+  { lv:3, name:"Ozanimod", phonetic:"/o·ˈtsaː·ni·mod/", syllables:["o","ZA","ni","mod"], si:1, category:"Immunsuppressivum", tip:'Zweite Silbe "ZA" betonen.', wrong:["O·za·ni·mod","o·za·NI·mod","o·za·ni·MOD"] },
+  { lv:1, name:"Dapoxetin", phonetic:"/da·po·ˈkseː·tin/", syllables:["da","po","XE","tin"], si:2, category:"Urologikum", tip:'Dritte Silbe "XE" betonen.', wrong:["DA·po·xe·tin","da·PO·xe·tin","da·po·xe·TIN"] },
+  { lv:2, name:"Ceftazidim", phonetic:"/tsef·ta·ˈtsiː·dim/", syllables:["cef","ta","ZI","dim"], si:2, category:"Antibiotikum", tip:'Dritte Silbe "ZI" betonen.', wrong:["CEF·ta·zi·dim","cef·TA·zi·dim","cef·ta·zi·DIM"] },
+  { lv:2, name:"Cefepim", phonetic:"/tse·fe·ˈpiːm/", syllables:["ce","fe","PIM"], si:2, category:"Antibiotikum", tip:'Dritte Silbe "PIM" betonen.', wrong:["CE·fe·pim","ce·FE·pim","CE·FE·pim"] },
+  { lv:2, name:"Ertapenem", phonetic:"/er·ta·ˈpeː·nem/", syllables:["er","ta","PE","nem"], si:2, category:"Antibiotikum", tip:'Dritte Silbe "PE" betonen.', wrong:["ER·ta·pe·nem","er·TA·pe·nem","er·ta·pe·NEM"] },
+  { lv:2, name:"Daptomycin", phonetic:"/dap·to·ˈmyː·tsin/", syllables:["dap","to","MY","cin"], si:2, category:"Antibiotikum", tip:'Dritte Silbe "MY" betonen.', wrong:["DAP·to·my·cin","dap·TO·my·cin","dap·to·my·CIN"] },
+  { lv:3, name:"Caspofungin", phonetic:"/kas·po·ˈfun·gin/", syllables:["cas","po","FUN","gin"], si:2, category:"Antimykotikum", tip:'Dritte Silbe "FUN" betonen.', wrong:["CAS·po·fun·gin","cas·PO·fun·gin","cas·po·fun·GIN"] },
+  { lv:3, name:"Micafungin", phonetic:"/mi·ka·ˈfun·gin/", syllables:["mi","ka","FUN","gin"], si:2, category:"Antimykotikum", tip:'Dritte Silbe "FUN" betonen.', wrong:["MI·ka·fun·gin","mi·KA·fun·gin","mi·ka·fun·GIN"] },
+  { lv:3, name:"Remdesivir", phonetic:"/rem·ˈdeː·si·vir/", syllables:["rem","DE","si","vir"], si:1, category:"Virostatikum", tip:'Zweite Silbe "DE" betonen.', wrong:["REM·de·si·vir","rem·de·SI·vir","rem·de·si·VIR"] },
+  { lv:3, name:"Nirmatrelvir", phonetic:"/nir·ma·ˈtrel·vir/", syllables:["nir","ma","TREL","vir"], si:2, category:"Virostatikum", tip:'Dritte Silbe "TREL" betonen.', wrong:["NIR·ma·trel·vir","nir·MA·trel·vir","nir·ma·trel·VIR"] },
+  { lv:3, name:"Rotigotin", phonetic:"/ro·ti·ˈgoː·tin/", syllables:["ro","ti","GO","tin"], si:2, category:"Parkinsonmittel", tip:'Dritte Silbe "GO" betonen.', wrong:["RO·ti·go·tin","ro·TI·go·tin","ro·ti·go·TIN"] },
+  { lv:3, name:"Cabergolin", phonetic:"/ka·ber·go·ˈliːn/", syllables:["ca","ber","go","LIN"], si:3, category:"Parkinsonmittel", tip:'Vierte Silbe "LIN" betonen.', wrong:["CA·ber·go·lin","ca·BER·go·lin","ca·ber·GO·lin"] }
+
 
 
 ];
@@ -2870,7 +2891,28 @@ const MED_INFO = {
 	"Dolutegravir": { indication:"Integrase-Inhibitor als Bestandteil der HIV-Kombinationstherapie.", drugClass:"Integrase-Inhibitor (HIV)", formula:"—", atcCode:"J05AJ03" },
 	"Isavuconazol": { indication:"Breitband-Antimykotikum gegen invasive Aspergillose und Mukormykose.", drugClass:"Triazol-Antimykotikum", formula:"—", atcCode:"J02AC05" },
   "Tirzepatid": { indication:"Dualer GIP/GLP-1-Rezeptoragonist zur Blutzuckersenkung und Gewichtsreduktion bei Typ-2-Diabetes.", drugClass:"GIP/GLP-1-Rezeptoragonist", formula:"—", atcCode:"A10BX16" },
-  "Baricitinib": { indication:"JAK-Hemmer bei rheumatoider Arthritis, atopischer Dermatitis und Alopecia areata.", drugClass:"JAK-Hemmer (Januskinase-Inhibitor)", formula:"—", atcCode:"L04AA37" }
+  "Baricitinib": { indication:"JAK-Hemmer bei rheumatoider Arthritis, atopischer Dermatitis und Alopecia areata.", drugClass:"JAK-Hemmer (Januskinase-Inhibitor)", formula:"—", atcCode:"L04AA37" },
+  "Finerenon": { indication:"Nichtsteroidaler Mineralokortikoid-Rezeptor-Antagonist zum Schutz von Herz und Nieren bei diabetischer Nierenerkrankung.", drugClass:"Nichtsteroidaler MR-Antagonist", formula:"—", atcCode:"C03DA05" },
+  "Vericiguat": { indication:"sGC-Stimulator zur Behandlung der chronischen Herzinsuffizienz.", drugClass:"sGC-Stimulator", formula:"—", atcCode:"C01DX22" },
+  "Upadacitinib": { indication:"JAK-Hemmer bei rheumatoider Arthritis, atopischer Dermatitis und Colitis ulcerosa.", drugClass:"JAK-Hemmer (Januskinase-Inhibitor)", formula:"—", atcCode:"L04AA44" },
+  "Tofacitinib": { indication:"JAK-Hemmer bei rheumatoider Arthritis, Psoriasis-Arthritis und Colitis ulcerosa.", drugClass:"JAK-Hemmer (Januskinase-Inhibitor)", formula:"—", atcCode:"L04AA29" },
+  "Apremilast": { indication:"PDE-4-Hemmer bei Psoriasis und Psoriasis-Arthritis.", drugClass:"PDE-4-Hemmer", formula:"—", atcCode:"L04AA32" },
+  "Secukinumab": { indication:"IL-17A-Hemmer (monoklonaler Antikörper) bei Psoriasis, Psoriasis-Arthritis und Morbus Bechterew.", drugClass:"Monoklonaler Antikörper (IL-17-Hemmer)", formula:"—", atcCode:"L04AC10" },
+  "Ustekinumab": { indication:"IL-12/23-Hemmer (monoklonaler Antikörper) bei Psoriasis und Morbus Crohn.", drugClass:"Monoklonaler Antikörper (IL-12/23-Hemmer)", formula:"—", atcCode:"L04AC05" },
+  "Dupilumab": { indication:"IL-4/13-Hemmer (monoklonaler Antikörper) bei atopischer Dermatitis, Asthma und chronischer Rhinosinusitis.", drugClass:"Monoklonaler Antikörper (IL-4/13-Hemmer)", formula:"—", atcCode:"D11AH05" },
+  "Ozanimod": { indication:"S1P-Rezeptor-Modulator bei schubförmiger Multipler Sklerose und Colitis ulcerosa.", drugClass:"S1P-Rezeptor-Modulator", formula:"—", atcCode:"L04AA38" },
+  "Dapoxetin": { indication:"Kurzwirksamer SSRI zur Behandlung der vorzeitigen Ejakulation.", drugClass:"Selektiver Serotonin-Wiederaufnahmehemmer (SSRI)", formula:"—", atcCode:"G04BX14" },
+  "Ceftazidim": { indication:"Cephalosporin der 3. Generation, wirksam gegen Pseudomonas.", drugClass:"Cephalosporin (3. Generation)", formula:"—", atcCode:"J01DD02" },
+  "Cefepim": { indication:"Cephalosporin der 4. Generation für schwere Infektionen.", drugClass:"Cephalosporin (4. Generation)", formula:"—", atcCode:"J01DE01" },
+  "Ertapenem": { indication:"Carbapenem-Antibiotikum für ambulant erworbene schwere Infektionen.", drugClass:"Carbapenem", formula:"—", atcCode:"J01DH03" },
+  "Daptomycin": { indication:"Lipopeptid-Reserveantibiotikum gegen grampositive Keime, u.a. MRSA.", drugClass:"Lipopeptid-Antibiotikum", formula:"—", atcCode:"J01XX09" },
+  "Caspofungin": { indication:"Echinocandin-Antimykotikum bei invasiver Candidiasis und Aspergillose.", drugClass:"Echinocandin-Antimykotikum", formula:"—", atcCode:"J02AX04" },
+  "Micafungin": { indication:"Echinocandin-Antimykotikum bei invasiven Candida-Infektionen.", drugClass:"Echinocandin-Antimykotikum", formula:"—", atcCode:"J02AX05" },
+  "Remdesivir": { indication:"RNA-Polymerase-Hemmer (RdRp) zur Behandlung von COVID-19.", drugClass:"RdRp-Hemmer (Virostatikum)", formula:"—", atcCode:"J05AB16" },
+  "Nirmatrelvir": { indication:"SARS-CoV-2-Proteasehemmer zur frühen Behandlung von COVID-19 (mit Ritonavir).", drugClass:"SARS-CoV-2-Proteasehemmer", formula:"—", atcCode:"J05AE30" },
+  "Rotigotin": { indication:"Dopaminagonist als Pflaster bei Parkinson und Restless-Legs-Syndrom.", drugClass:"Dopaminagonist", formula:"—", atcCode:"N04BC09" },
+  "Cabergolin": { indication:"Dopaminagonist bei Parkinson und zur Hemmung der Prolaktinausschüttung.", drugClass:"Dopaminagonist", formula:"—", atcCode:"N04BC06" }
+
 
 
 };
@@ -3555,7 +3597,7 @@ const OnboardingSystem = (() => {
   let _i = 0;
   const SLIDES = [
     { emoji:'💊', title:{de:'Willkommen bei PharmaVoice',en:'Welcome to PharmaVoice',pt:'Bem-vindo ao PharmaVoice'},
-      text:{de:'Lerne die korrekte Aussprache von 400 medizinischen Wirkstoffen – spielerisch.',en:'Learn to correctly pronounce 400 medical drug names – the fun way.',pt:'Aprenda a pronunciar corretamente 400 fármacos – de forma divertida.'} },
+      text:{de:'Lerne die korrekte Aussprache von 420 medizinischen Wirkstoffen – spielerisch.',en:'Learn to correctly pronounce 400 medical drug names – the fun way.',pt:'Aprenda a pronunciar corretamente 420 fármacos – de forma divertida.'} },
     { emoji:'🎤', title:{de:'Hören. Nachsprechen. Meistern.',en:'Listen. Repeat. Master.',pt:'Ouça. Repita. Domine.'},
       text:{de:'Hör dir die Aussprache an, sprich sie nach und übe die richtige Betonung – Silbe für Silbe.',en:'Listen to the pronunciation, repeat it and practice the right stress – syllable by syllable.',pt:'Ouça a pronúncia, repita e treine a sílaba tônica correta.'} },
     { emoji:'🔥', title:{de:'Bleib am Ball',en:'Keep your streak',pt:'Mantenha a sequência'},
@@ -4951,6 +4993,26 @@ function catLabel(cat) {
 // Indikationstexte lokalisiert (EN/PT) für die häufigsten Wirkstoffe. Separate Map,
 // damit der grosse MED_INFO-Block unangetastet bleibt. Fallback: deutscher Text.
 const IND_I18N = {
+  'Finerenon':{en:'Non-steroidal mineralocorticoid receptor antagonist protecting heart and kidneys in diabetic kidney disease.',pt:'Antagonista não esteroide do receptor mineralocorticoide para proteger coração e rins na doença renal diabética.'},
+  'Vericiguat':{en:'sGC stimulator for the treatment of chronic heart failure.',pt:'Estimulador da sGC para o tratamento da insuficiência cardíaca crônica.'},
+  'Upadacitinib':{en:'JAK inhibitor for rheumatoid arthritis, atopic dermatitis and ulcerative colitis.',pt:'Inibidor de JAK para artrite reumatoide, dermatite atópica e colite ulcerativa.'},
+  'Tofacitinib':{en:'JAK inhibitor for rheumatoid arthritis, psoriatic arthritis and ulcerative colitis.',pt:'Inibidor de JAK para artrite reumatoide, artrite psoriásica e colite ulcerativa.'},
+  'Apremilast':{en:'PDE-4 inhibitor for psoriasis and psoriatic arthritis.',pt:'Inibidor da PDE-4 para psoríase e artrite psoriásica.'},
+  'Secukinumab':{en:'IL-17A inhibitor (monoclonal antibody) for psoriasis, psoriatic arthritis and ankylosing spondylitis.',pt:'Inibidor da IL-17A (anticorpo monoclonal) para psoríase, artrite psoriásica e espondilite anquilosante.'},
+  'Ustekinumab':{en:'IL-12/23 inhibitor (monoclonal antibody) for psoriasis and Crohn’s disease.',pt:'Inibidor da IL-12/23 (anticorpo monoclonal) para psoríase e doença de Crohn.'},
+  'Dupilumab':{en:'IL-4/13 inhibitor (monoclonal antibody) for atopic dermatitis, asthma and chronic rhinosinusitis.',pt:'Inibidor da IL-4/13 (anticorpo monoclonal) para dermatite atópica, asma e rinossinusite crônica.'},
+  'Ozanimod':{en:'S1P receptor modulator for relapsing multiple sclerosis and ulcerative colitis.',pt:'Modulador do receptor S1P para esclerose múltipla recorrente e colite ulcerativa.'},
+  'Dapoxetin':{en:'Short-acting SSRI for the treatment of premature ejaculation.',pt:'ISRS de ação curta para o tratamento da ejaculação precoce.'},
+  'Ceftazidim':{en:'Third-generation cephalosporin, effective against Pseudomonas.',pt:'Cefalosporina de 3ª geração, eficaz contra Pseudomonas.'},
+  'Cefepim':{en:'Fourth-generation cephalosporin for severe infections.',pt:'Cefalosporina de 4ª geração para infecções graves.'},
+  'Ertapenem':{en:'Carbapenem antibiotic for severe community-acquired infections.',pt:'Antibiótico carbapenêmico para infecções graves adquiridas na comunidade.'},
+  'Daptomycin':{en:'Lipopeptide reserve antibiotic against gram-positive germs, including MRSA.',pt:'Antibiótico lipopeptídeo de reserva contra germes gram-positivos, incluindo MRSA.'},
+  'Caspofungin':{en:'Echinocandin antifungal for invasive candidiasis and aspergillosis.',pt:'Antifúngico equinocandina para candidíase invasiva e aspergilose.'},
+  'Micafungin':{en:'Echinocandin antifungal for invasive Candida infections.',pt:'Antifúngico equinocandina para infecções invasivas por Candida.'},
+  'Remdesivir':{en:'RNA polymerase (RdRp) inhibitor for the treatment of COVID-19.',pt:'Inibidor da RNA polimerase (RdRp) para o tratamento da COVID-19.'},
+  'Nirmatrelvir':{en:'SARS-CoV-2 protease inhibitor for early treatment of COVID-19 (with ritonavir).',pt:'Inibidor da protease do SARS-CoV-2 para tratamento precoce da COVID-19 (com ritonavir).'},
+  'Rotigotin':{en:'Dopamine agonist as a patch for Parkinson’s disease and restless legs syndrome.',pt:'Agonista dopaminérgico em adesivo para doença de Parkinson e síndrome das pernas inquietas.'},
+  'Cabergolin':{en:'Dopamine agonist for Parkinson’s disease and to suppress prolactin release.',pt:'Agonista dopaminérgico para doença de Parkinson e para inibir a liberação de prolactina.'},
   'Tirzepatid':{en:'Dual GIP/GLP-1 receptor agonist to lower blood sugar and body weight in type 2 diabetes.',pt:'Agonista duplo dos receptores GIP/GLP-1 para reduzir a glicemia e o peso no diabetes tipo 2.'},
   'Baricitinib':{en:'JAK inhibitor for rheumatoid arthritis, atopic dermatitis and alopecia areata.',pt:'Inibidor de JAK para artrite reumatoide, dermatite atópica e alopecia areata.'},
   'Mesalazin':{en:'Anti-inflammatory acting directly in the bowel. Used for ulcerative colitis and to maintain remission in Crohn’s disease.',pt:'Anti-inflamatório que age diretamente no intestino. Usado na colite ulcerativa e na manutenção da remissão na doença de Crohn.'},
@@ -5354,6 +5416,17 @@ const IND_I18N = {
 };
 // Liefert die Indikation in der aktiven Sprache (EN/PT falls übersetzt, sonst Deutsch).
 const CLASS_I18N = {
+  'Nichtsteroidaler MR-Antagonist':{en:'Non-steroidal MR antagonist',pt:'Antagonista não esteroide do RM'},
+  'sGC-Stimulator':{en:'sGC stimulator',pt:'Estimulador da sGC'},
+  'Monoklonaler Antikörper (IL-17-Hemmer)':{en:'Monoclonal antibody (IL-17 inhibitor)',pt:'Anticorpo monoclonal (inibidor da IL-17)'},
+  'Monoklonaler Antikörper (IL-12/23-Hemmer)':{en:'Monoclonal antibody (IL-12/23 inhibitor)',pt:'Anticorpo monoclonal (inibidor da IL-12/23)'},
+  'Monoklonaler Antikörper (IL-4/13-Hemmer)':{en:'Monoclonal antibody (IL-4/13 inhibitor)',pt:'Anticorpo monoclonal (inibidor da IL-4/13)'},
+  'S1P-Rezeptor-Modulator':{en:'S1P receptor modulator',pt:'Modulador do receptor S1P'},
+  'Cephalosporin (4. Generation)':{en:'Cephalosporin (4th generation)',pt:'Cefalosporina (4ª geração)'},
+  'Lipopeptid-Antibiotikum':{en:'Lipopeptide antibiotic',pt:'Antibiótico lipopeptídeo'},
+  'Echinocandin-Antimykotikum':{en:'Echinocandin antifungal',pt:'Antifúngico equinocandina'},
+  'RdRp-Hemmer (Virostatikum)':{en:'RdRp inhibitor (antiviral)',pt:'Inibidor da RdRp (antiviral)'},
+  'SARS-CoV-2-Proteasehemmer':{en:'SARS-CoV-2 protease inhibitor',pt:'Inibidor da protease do SARS-CoV-2'},
   'GIP/GLP-1-Rezeptoragonist':{en:'GIP/GLP-1 receptor agonist',pt:'Agonista dos receptores GIP/GLP-1'},
   'JAK-Hemmer (Januskinase-Inhibitor)':{en:'JAK inhibitor (Janus kinase inhibitor)',pt:'Inibidor de JAK (inibidor da Janus quinase)'},
   '5-Alpha-Reduktase-Hemmer':{en:'5-alpha-reductase inhibitor',pt:'Inibidor da 5-alfa-redutase'},
