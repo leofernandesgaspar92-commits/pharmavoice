@@ -4,9 +4,9 @@ Alle Felder unten sind direkt in die Play Console kopierbar. Zeichen-Limits sind
 Kein Heilversprechen – die App ist ein Lernwerkzeug.
 
 **Wichtige URLs (bereits online):**
-- Datenschutz: `https://desgaspar92-commits.github.io/datenschutz.html`
-- Impressum:   `https://desgaspar92-commits.github.io/impressum.html`
-- App/Website: `https://desgaspar92-commits.github.io/`
+- Datenschutz: `https://leofernandesgaspar92-commits.github.io/pharmavoice/datenschutz.html`
+- Impressum:   `https://leofernandesgaspar92-commits.github.io/pharmavoice/impressum.html`
+- App/Website: `https://leofernandesgaspar92-commits.github.io/pharmavoice/`
 
 **Unternehmensdaten (für Konto-Verifizierung):**
 - Rechtlicher Name: Leo Fernandes Gaspar (Einzelunternehmer)
