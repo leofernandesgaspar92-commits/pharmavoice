@@ -50,7 +50,8 @@ Betriebshandbuch und der lebende Backlog.
 - [x] Katalog auf **400 Wirkstoffe** ausgebaut (Runde 12: +20, u.a. Amlodipin, Meropenem, Adalimumab, Phenprocoumon, Dolutegravir) – Level nach Kategorie zugeordnet, Marketing-Texte/Manifest auf 400 aktualisiert.
 - [x] Datenqualität: 2 Schreibweisen-Dubletten (Amlodipine/Quetiapine) entfernt, dafür Tirzepatid & Baricitinib ergänzt – weiterhin 400, keine Dubletten.
 - [x] Katalog auf **420 Wirkstoffe** erweitert (+20 moderne: JAK-Hemmer, Biologika IL-17/23/4-13, Reserve-Antibiotika, Echinocandine, COVID-Virostatika, Herzinsuffizienz-Neuheiten, Parkinson) – voll dreisprachig, keine Dubletten; Marketing/Store/Manifest auf 420.
-- [ ] Katalog weiter ausbauen (aktuell 420) – kuratiert, keine Dubletten.
+- [x] Katalog auf **440 Wirkstoffe** erweitert (+20: Thrombolytika, PAH-Mittel [Endothelin-Antag., sGC, Prostacyclin], Osteoporose-Biologika, Anti-VEGF, Onko-Supportiva, Sacubitril) – voll dreisprachig, keine Dubletten; Marketing/Store/Manifest/Feature-Grafik auf 440.
+- [ ] Katalog weiter ausbauen (aktuell 440) – kuratiert, keine Dubletten.
 - [x] Level-Zuordnung nach Kategorie justiert – vorher 325/32/23 (85 % in „Basics"), jetzt **137/112/131**, thematisch passend zu den Level-Beschreibungen (L2 Herz/Antibiotika/Magen, L3 Atemwege/Neuro/Onko).
 
 ### Design (Priorität – „zum Wiederkommen")
