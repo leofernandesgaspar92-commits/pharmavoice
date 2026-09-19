@@ -3191,13 +3191,30 @@ const TamaSystem = (() => {
   return { load, update, getState, renderBars, getStats: () => ({...stats}) };
 })();
 
+// Avatar-Helper: setzt Bild NUR wenn ein realer Pfad existiert (sonst kein Request,
+// kein 404) und zeigt sonst das Emoji. ch = {emoji, img, name}.
+function pvSetAvatar(imgEl, emoEl, ch) {
+  if (!ch) return;
+  if (ch.img && imgEl) {
+    imgEl.src = ch.img; imgEl.alt = ch.name || ''; imgEl.style.display = '';
+    imgEl.onerror = () => { imgEl.style.display = 'none'; if (emoEl) { emoEl.style.display = ''; emoEl.textContent = ch.emoji; } };
+    if (emoEl) emoEl.style.display = 'none';
+  } else {
+    if (imgEl) { imgEl.onerror = null; imgEl.removeAttribute('src'); imgEl.style.display = 'none'; }
+    if (emoEl) { emoEl.style.display = ''; emoEl.textContent = ch.emoji; }
+  }
+}
+
 // ══ Character System (Tamagotchi edition) ══
 const CharacterSystem = (() => {
   const CHARS = {
-    beatrice: { id:'beatrice', name:'Beatrice', role:'Apothekerin',   emoji:'👩‍⚕️', img:'img/beatrice.png', color:'#2ECC71', glow:'rgba(46,204,113,.38)' },
-    victor:   { id:'victor',   name:'Victor',   role:'PKA-Lehrling',  emoji:'👨‍🎓', img:'img/victor.png',   color:'#FF9800', glow:'rgba(255,152,0,.38)'  },
-    fin:      { id:'fin',      name:'Fin',       role:'Treuer Begleiter', emoji:'🐕', img:'img/fin.png',    color:'#FFC107', glow:'rgba(255,193,7,.38)'  },
-    ari:      { id:'ari',      name:'Ari',       role:'Süße Begleiterin', emoji:'🐶', img:'img/ari.png',   color:'#FF69B4', glow:'rgba(255,105,180,.38)' },
+    // img:'' → Emoji-Avatare (keine Bilddateien im Build). Später echte Charakter-
+    // Illustrationen: img auf einen realen Pfad setzen (z.B. 'img/beatrice.png'),
+    // dann wird das Bild geladen und das Emoji dient als Fallback (pvSetAvatar()).
+    beatrice: { id:'beatrice', name:'Beatrice', role:'Apothekerin',   emoji:'👩‍⚕️', img:'', color:'#2ECC71', glow:'rgba(46,204,113,.38)' },
+    victor:   { id:'victor',   name:'Victor',   role:'PKA-Lehrling',  emoji:'👨‍🎓', img:'', color:'#FF9800', glow:'rgba(255,152,0,.38)'  },
+    fin:      { id:'fin',      name:'Fin',       role:'Treuer Begleiter', emoji:'🐕', img:'', color:'#FFC107', glow:'rgba(255,193,7,.38)'  },
+    ari:      { id:'ari',      name:'Ari',       role:'Süße Begleiterin', emoji:'🐶', img:'', color:'#FF69B4', glow:'rgba(255,105,180,.38)' },
   };
 
   let cur = null, bubTimer = null, idleTimer = null, convoTimer = null;
@@ -3231,8 +3248,7 @@ const CharacterSystem = (() => {
     const emo  = document.getElementById('charHeroBtnEmoji');
     const name = document.getElementById('charHeroBtnName');
     if (!img) return;
-    img.src = ch.img; img.alt = ch.name; img.style.display = '';
-    img.onerror = () => { img.style.display='none'; if(emo){emo.style.display='';emo.textContent=ch.emoji;} };
+    pvSetAvatar(img, emo, ch);
     if (name) name.textContent = ch.name;
   }
 
@@ -3310,9 +3326,9 @@ const CharacterSystem = (() => {
         const b = document.getElementById('charBubble');
         const img = document.getElementById('charAvatarImg');
         if (b)   { b.textContent = `${ch.emoji} ${line.t}`; b.classList.add('show'); }
-        if (img) { img.src = ch.img; }
+        if (img && ch.img) { img.src = ch.img; }
         setTimeout(() => { if (b) b.classList.remove('show'); }, 2600);
-        setTimeout(() => { if (img && cur) img.src = cur.img; }, 2800);
+        setTimeout(() => { if (img && cur && cur.img) img.src = cur.img; }, 2800);
       }, delay);
       delay += 3200;
     });
@@ -3345,7 +3361,7 @@ const CharacterSystem = (() => {
     applyTheme(ch);
     updateHeroBtn(ch);
     const img = document.getElementById('charAvatarImg');
-    if (img) { img.src = ch.img; img.alt = ch.name; }
+    if (img && ch.img) { img.src = ch.img; img.alt = ch.name; }
     AvatarCanvas.setChar(id);
     AvatarCanvas.setEmotion('happy', 1500);
     document.querySelectorAll('.char-card').forEach(c => c.classList.toggle('selected', c.dataset.char === id));
@@ -3365,9 +3381,9 @@ const CharacterSystem = (() => {
       card.className = 'char-card' + (cur?.id === ch.id ? ' selected' : '');
       card.dataset.char = ch.id;
       card.innerHTML = `
-        <img class="char-img" src="${ch.img}" alt="${ch.name}"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-        <span class="char-emoji-fb">${ch.emoji}</span>
+        ${ch.img ? `<img class="char-img" src="${ch.img}" alt="${ch.name}"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">` : ''}
+        <span class="char-emoji-fb"${ch.img ? '' : ' style="display:block"'}>${ch.emoji}</span>
         <div class="char-name">${ch.name}</div>
         <div class="char-role">${ch.role}</div>
         <div class="char-dot" style="background:${ch.color}"></div>`;
@@ -3385,7 +3401,7 @@ const CharacterSystem = (() => {
     applyTheme(cur);
     updateHeroBtn(cur);
     const img = document.getElementById('charAvatarImg');
-    if (img) { img.src = cur.img; img.alt = cur.name; }
+    if (img && cur.img) { img.src = cur.img; img.alt = cur.name; }
     AvatarCanvas.setChar(cur.id);
     AvatarCanvas.init();
     showAvatar();
@@ -4013,7 +4029,7 @@ function renderHomeDashboard() {
   const charId = localStorage.getItem('pv_char') || 'beatrice';
   const CHAR_EMOJI = { beatrice:'👩‍⚕️', victor:'👨‍🎓', fin:'🐕', ari:'🐶' };
   const img = el('homeGreetImg'), emo = el('homeGreetEmoji');
-  if (img) { img.src = `img/${charId}.png`; img.style.display = ''; img.onerror = () => { img.style.display='none'; if(emo){emo.style.display='';emo.textContent=CHAR_EMOJI[charId]||'🐶';} }; }
+  pvSetAvatar(img, emo, { emoji: CHAR_EMOJI[charId] || '🐶', img: '' });
 
   // Recommendation-driven greeting + CTA subtitle
   try {
@@ -7901,7 +7917,7 @@ const ResourceSystem = (() => {
     if (lvlEl) lvlEl.textContent = Math.floor((pv2.xp || 0) / xpPerLevel) + 1;
     const charId = localStorage.getItem('pv_char') || 'beatrice';
     const CHAR_EMOJI = { beatrice:'👩‍⚕️', victor:'👨‍🎓', fin:'🐕', ari:'🐶' };
-    if (imgEl) { imgEl.src = `img/${charId}.png`; imgEl.style.display = ''; imgEl.onerror = () => { imgEl.style.display='none'; if(emoEl){emoEl.style.display='';emoEl.textContent=CHAR_EMOJI[charId]||'🐶';} }; }
+    pvSetAvatar(imgEl, emoEl, { emoji: CHAR_EMOJI[charId] || '🐶', img: '' });
   }
 
   return { getEnergy, spendEnergy, hasEnergy, getGems, addGems, renderTopbar, MAX_ENERGY, SESSION_COST };
