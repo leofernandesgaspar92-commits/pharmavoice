@@ -73,8 +73,10 @@ Betriebshandbuch und der lebende Backlog.
 - [x] Screenreader-Durchlauf & Landmarks – aktiver Screen als `role="main"` (dynamisch), Fokus wandert bei Navigation dorthin; fehlende Feld-Namen ergänzt (`aria-label` für Suche & Erinnerungs-Uhrzeit, dreisprachig via neuem `data-i18n-aria`); Screen-Titel konsistent als `<h2>`. Playwright-A11y-Audit: keine offenen Namens-/Label-Verstöße (verbleibende Treffer = korrekt umschlossene `<label>`-Checkboxen).
 
 ### P5 – Store & Wachstum (viele Punkte extern durch den Gründer)
+- [x] **Launch-sicher: Demo-Bezahlung entfernt (Google-Play-konform)** – Kreditkarten-Formular, Apple/Google Pay, PayPal, SEPA, Klarna sowie das CheckoutSystem komplett entfernt (Fake-Zahlung = Sperr-Risiko). `canAccess()` gibt jetzt immer `true` zurück: **alle 440 Wirkstoffe & Level kostenlos**. Upgrade-Dialog ehrlich zu „Alles freigeschaltet" + Roadmap-Hinweis (Cloud-Sync/Team später) umgebaut, dreisprachig. Kein Upsell-Nagging mehr. Smoke-verifiziert.
+- [ ] `www/img/beatrice.png` fehlt (404 im Charakter-System) – Avatar-Bild ergänzen oder Referenz auf Emoji-Fallback umstellen.
 - [ ] Firebase Login + Cloud-Sync (sobald Projekt existiert).
-- [ ] Google Play Billing (Freemium-Gate 50/alle).
+- [ ] Google Play Billing (echte Bezahlung – erst nach Launch, einziger erlaubter Weg für digitale Käufe).
 - [x] Hardware-/Browser-Zurück-Taste: History-Integration (pushState/popstate) – navigiert zum vorherigen Screen statt die App zu schliessen (wichtig fuer native Android-App). Getestet.
 - [ ] Capacitor-Build + nativer Speech-Test auf echtem Geraet.
 
