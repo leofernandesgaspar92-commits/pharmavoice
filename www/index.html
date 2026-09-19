@@ -4251,16 +4251,20 @@ function renderLevelCards() {
 //  NAVIGATION
 // ═══════════════════════════════════════════════
 function showScreen(name) {
+  // Robustheit: unbekannter Screen-Name (z.B. veralteter History-State nach
+  // einem Update) darf nie zum Weißbild führen – Fallback auf Home.
+  let active = el('screen' + name);
+  if (!active) { name = 'Home'; active = el('screenHome'); }
+  if (!active) return;
   document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.removeAttribute('role'); });
   document.querySelectorAll('.nav-item').forEach(n => { n.classList.remove('active'); n.removeAttribute('aria-current'); });
-  const active = el('screen' + name);
   active.classList.add('active');
   // Barrierefreiheit: aktiver Screen ist die Haupt-Landmark; Fokus dorthin für Screenreader/Tastatur.
   active.setAttribute('role', 'main');
   if (!active.hasAttribute('tabindex')) active.setAttribute('tabindex', '-1');
   try { active.focus({ preventScroll: true }); } catch (e) {}
   const map = { Home:'navHome', Hub:'navHub', Park:'navHub', Shop:'navHome', Lexikon:'navHome', Achievements:'navAch', Profile:'navProf', Learn:'navHub', Result:'navHub', GameDesign:'navGD' };
-  if (map[name]) { const n = el(map[name]); n.classList.add('active'); n.setAttribute('aria-current', 'page'); }
+  if (map[name]) { const n = el(map[name]); if (n) { n.classList.add('active'); n.setAttribute('aria-current', 'page'); } }
   CharacterSystem.showAvatar();
   refreshUI();
   window.scrollTo(0, 0);
