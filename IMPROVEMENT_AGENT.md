@@ -74,7 +74,7 @@ Betriebshandbuch und der lebende Backlog.
 
 ### P5 – Store & Wachstum (viele Punkte extern durch den Gründer)
 - [x] **Launch-sicher: Demo-Bezahlung entfernt (Google-Play-konform)** – Kreditkarten-Formular, Apple/Google Pay, PayPal, SEPA, Klarna sowie das CheckoutSystem komplett entfernt (Fake-Zahlung = Sperr-Risiko). `canAccess()` gibt jetzt immer `true` zurück: **alle 440 Wirkstoffe & Level kostenlos**. Upgrade-Dialog ehrlich zu „Alles freigeschaltet" + Roadmap-Hinweis (Cloud-Sync/Team später) umgebaut, dreisprachig. Kein Upsell-Nagging mehr. Smoke-verifiziert.
-- [ ] `www/img/beatrice.png` fehlt (404 im Charakter-System) – Avatar-Bild ergänzen oder Referenz auf Emoji-Fallback umstellen.
+- [x] Avatar-404 behoben – Charakter-System referenzierte 4 nicht existierende Bilddateien (`img/*.png`), die bei jedem Render einen 404 auslösten. Jetzt emoji-first: neuer `pvSetAvatar()`-Helper setzt `src` nur bei echtem Bildpfad (sonst kein Request), Emoji als sauberer Standard; alle 8 Aufrufstellen + Auswahl-Grid umgestellt. Bilder später nachrüstbar (img-Pfad setzen → Emoji wird Fallback). Smoke: 0 Netzwerkfehler, Emojis überall sichtbar.
 - [ ] Firebase Login + Cloud-Sync (sobald Projekt existiert).
 - [ ] Google Play Billing (echte Bezahlung – erst nach Launch, einziger erlaubter Weg für digitale Käufe).
 - [x] Hardware-/Browser-Zurück-Taste: History-Integration (pushState/popstate) – navigiert zum vorherigen Screen statt die App zu schliessen (wichtig fuer native Android-App). Getestet.
