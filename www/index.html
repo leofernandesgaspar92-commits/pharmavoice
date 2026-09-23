@@ -5989,6 +5989,23 @@ const SpeechEngine = (() => {
 // ═══════════════════════════════════════════════
 const TtsEngine = (() => {
   const SYN = window.speechSynthesis;
+  let _voices = [];
+  function _loadVoices() { try { _voices = SYN ? (SYN.getVoices() || []) : []; } catch (_) { _voices = []; } }
+  if (SYN) {
+    _loadVoices();
+    // Stimmen laden im WebView/Chrome asynchron – auf Änderung reagieren.
+    try { SYN.addEventListener('voiceschanged', _loadVoices); }
+    catch (_) { try { SYN.onvoiceschanged = _loadVoices; } catch (__) {} }
+  }
+  // Beste Stimme für die gewünschte Sprache wählen (exakt → gleiche Basissprache).
+  function _pickVoice(lang) {
+    if (!_voices.length) _loadVoices();
+    if (!_voices.length) return null;
+    const want = (lang || 'de-DE').toLowerCase();
+    const base = want.split('-')[0];
+    return _voices.find(v => (v.lang || '').toLowerCase() === want) ||
+           _voices.find(v => (v.lang || '').toLowerCase().startsWith(base)) || null;
+  }
   function isSupported() { return !!SYN; }
   function speak(text, opts) {
     opts = opts || {};
@@ -6000,7 +6017,11 @@ const TtsEngine = (() => {
       u.rate   = opts.rate   != null ? opts.rate   : 0.9;
       u.pitch  = opts.pitch  != null ? opts.pitch  : 1.0;
       u.volume = opts.volume != null ? opts.volume : 1.0;
+      const v = _pickVoice(u.lang);
+      if (v) u.voice = v;
       SYN.speak(u);
+      // Android-WebView-Fix: Synthese kann „pausiert" starten → aufwecken.
+      try { if (SYN.paused) SYN.resume(); } catch (_) {}
       return true;
     } catch (_) { return false; }
   }
