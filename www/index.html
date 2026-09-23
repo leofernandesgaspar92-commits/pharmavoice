@@ -595,6 +595,16 @@
     /* aktuell vorgesprochene Silbe hervorheben */
     .syl-item.active { background:var(--green); color:#fff; box-shadow:0 3px 10px rgba(0,168,107,.4); transform:scale(1.14); transition:transform .12s ease, background .12s ease; }
     .syl-item.active.stressed { background:var(--gold); color:#3A2200; box-shadow:0 3px 12px rgba(255,193,7,.5); }
+    /* Lexikon Schnell-Ansicht (Aussprache nachschlagen) */
+    .lex-sheet-cat { text-align:center; font-size:11px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:var(--green-ink); margin-bottom:6px; }
+    .lex-sheet-name { text-align:center; font-size:26px; font-weight:900; color:var(--text); line-height:1.15; }
+    .lex-sheet-ipa { text-align:center; font-size:14px; color:var(--gray); font-style:italic; margin-top:3px; }
+    .lex-sheet-actions { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
+    .lex-sheet-actions .med-listen-btn { margin-top:0; margin-left:0; }
+    .lex-sheet-info { margin-top:14px; display:flex; flex-direction:column; gap:8px; }
+    .lex-sheet-info .lsi-row { font-size:13px; line-height:1.45; }
+    .lex-sheet-info .lsi-label { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.3px; color:var(--gray); display:block; margin-bottom:1px; }
+    .lex-sheet-info .lsi-text { color:var(--text); }
     @keyframes medListenPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(23,217,196,.4); } 55%{ box-shadow:0 0 0 8px rgba(23,217,196,0); } }
 
     /* XP POP */
@@ -1481,6 +1491,23 @@
     </div>
     <p style="font-size:13px;color:var(--gray);text-align:center;line-height:1.5;margin:4px 6px 18px" data-i18n="up_roadmap">Bald geplant: Cloud-Synchronisierung deines Fortschritts sowie Team-Funktionen für Apotheken &amp; Schulen.</p>
     <button class="upgrade-close" onclick="closeUpgrade()" data-i18n="up_notnow">Weiter lernen</button>
+  </div>
+</div>
+
+<!-- ══ LEXIKON SCHNELL-ANSICHT (Aussprache nachschlagen, ohne Energie) ══ -->
+<div class="upgrade-modal-bg" id="lexSheetBg" onclick="closeLexSheet(event)">
+  <div class="upgrade-modal" onclick="event.stopPropagation()" style="border-radius:24px 24px 0 0">
+    <div class="lex-sheet-cat" id="lexSheetCat"></div>
+    <div class="lex-sheet-name" id="lexSheetName"></div>
+    <div class="lex-sheet-ipa" id="lexSheetIpa"></div>
+    <div class="syl-row" id="lexSheetSyl" style="justify-content:center;margin:12px 0 6px"></div>
+    <div class="lex-sheet-actions">
+      <button class="med-listen-btn" onclick="lexSheetListen()" data-i18n="learn_listen">🔊 Anhören</button>
+      <button class="med-listen-btn med-syl-btn" onclick="lexSheetSyllables()" data-i18n="learn_syl">🐢 Silbe für Silbe</button>
+    </div>
+    <div class="lex-sheet-info" id="lexSheetInfo"></div>
+    <button class="btn-start" style="margin-top:16px" onclick="lexSheetPractice()"><span data-i18n="lex_start_practice">▶ Diese Übung starten</span></button>
+    <button class="upgrade-close" onclick="closeLexSheet()" data-i18n="close_btn">Schließen</button>
   </div>
 </div>
 
@@ -3504,6 +3531,8 @@ const UI_I18N = {
   offline_note:  { de:'📴 Offline – du kannst weiterlernen, Fortschritt wird lokal gespeichert.', en:'📴 Offline – you can keep learning, progress is saved locally.', pt:'📴 Offline – você pode continuar, o progresso é salvo localmente.' },
   lex_sort_cat:  { de:'Kategorie', en:'Category', pt:'Categoria' },
   lex_sort_az:   { de:'A–Z', en:'A–Z', pt:'A–Z' },
+  lex_start_practice: { de:'▶ Diese Übung starten', en:'▶ Start this practice', pt:'▶ Iniciar esta prática' },
+  close_btn:     { de:'Schließen', en:'Close', pt:'Fechar' },
   levelup_ok:    { de:'Weiter', en:'Continue', pt:'Continuar' },
   legal_title:   { de:'📄 Rechtliches', en:'📄 Legal', pt:'📄 Legal' },
   legal_impressum:{ de:'Impressum', en:'Legal notice', pt:'Informação legal' },
@@ -7927,8 +7956,8 @@ const LexikonSystem = (() => {
       const diffLabel = diff === 'hard' ? L('Schwer','Hard','Difícil') : diff === 'med' ? L('Mittel','Medium','Médio') : L('Leicht','Easy','Fácil');
       const diffDot = `<span class="lex-diff lex-diff-${diff}" title="${diffLabel}" aria-label="${diffLabel}">●</span>`;
       return `<div class="lex-card ${learned ? 'learned' : ''}">
-        <div class="lex-card-main" role="button" tabindex="0" onclick="practiceWord('${safe}')" aria-label="${L('Üben','Practice','Praticar')}: ${m.name} (${diffLabel})">
-          <div class="lex-card-name">${diffDot} ${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''} <span class="lex-practice-hint">▶</span></div>
+        <div class="lex-card-main" role="button" tabindex="0" onclick="openLexSheet('${safe}')" aria-label="${L('Aussprache ansehen','View pronunciation','Ver pronúncia')}: ${m.name} (${diffLabel})">
+          <div class="lex-card-name">${diffDot} ${m.name} ${learned ? '<span class="lex-check">✓</span>' : ''} <span class="lex-practice-hint">›</span></div>
           <div class="lex-card-ipa">${m.phonetic || ''}</div>
           ${info.indication ? `<div class="lex-card-ind">${indFor(m.name, info)}</div>` : ''}
         </div>
@@ -7957,6 +7986,67 @@ const LexikonSystem = (() => {
 
   return { render, listen, setCat, toggleChips, setSort };
 })();
+
+// ══ LEXIKON SCHNELL-ANSICHT – Aussprache nachschlagen (ohne Energie) ══════
+let _lexSheetMed = null, _lexSheetSylTimer = null;
+function openLexSheet(name) {
+  const med = MEDS.find(m => m.name === name);
+  if (!med) return;
+  _lexSheetMed = med;
+  const info = MED_INFO[med.name] || {};
+  set('lexSheetCat', catLabel(med.category));
+  set('lexSheetName', med.name);
+  set('lexSheetIpa', med.phonetic || '');
+  const row = el('lexSheetSyl');
+  if (row) {
+    row.innerHTML = '';
+    (med.syllables || []).forEach((s, i) => {
+      if (i > 0) { const d = document.createElement('span'); d.className = 'syl-sep'; d.textContent = '·'; row.appendChild(d); }
+      const sp = document.createElement('span');
+      sp.className = 'syl-item' + (i === med.si ? ' stressed' : '');
+      sp.textContent = s;
+      row.appendChild(sp);
+    });
+  }
+  let ih = '';
+  const addRow = (label, val) => { if (val && val !== '—') ih += `<div class="lsi-row"><span class="lsi-label">${label}</span><span class="lsi-text">${val}</span></div>`; };
+  addRow(L('Anwendung','Use','Indicação'), info.indication ? indFor(med.name, info) : '');
+  addRow(L('Wirkstoffklasse','Drug class','Classe'), info.drugClass ? classFor(info.drugClass) : '');
+  addRow(L('ATC-Code','ATC code','Código ATC'), info.atcCode);
+  const infoEl = el('lexSheetInfo'); if (infoEl) infoEl.innerHTML = ih;
+  el('lexSheetBg').classList.add('open');
+}
+function _lexSheetStopSyl() {
+  if (_lexSheetSylTimer) { clearTimeout(_lexSheetSylTimer); _lexSheetSylTimer = null; }
+  document.querySelectorAll('#lexSheetSyl .syl-item.active').forEach(x => x.classList.remove('active'));
+}
+function closeLexSheet(e) {
+  if (e && e.target !== el('lexSheetBg')) return;
+  _lexSheetStopSyl();
+  if (el('lexSheetBg')) el('lexSheetBg').classList.remove('open');
+}
+function lexSheetListen() { if (_lexSheetMed) AudioSystem.speakWord(_lexSheetMed.name, CharacterSystem.getLang()); }
+function lexSheetSyllables() {
+  const med = _lexSheetMed;
+  if (!med || !Array.isArray(med.syllables) || !med.syllables.length) return;
+  _lexSheetStopSyl();
+  const items = Array.prototype.slice.call(document.querySelectorAll('#lexSheetSyl .syl-item'));
+  const lang = CharacterSystem.getLang();
+  let i = 0;
+  function step() {
+    if (i >= med.syllables.length) { items.forEach(x => x.classList.remove('active')); AudioSystem.speakWord(med.name, lang); _lexSheetSylTimer = null; return; }
+    items.forEach((x, k) => x.classList.toggle('active', k === i));
+    AudioSystem.speakWord(med.syllables[i], lang);
+    const dur = Math.max(680, med.syllables[i].length * 190);
+    i++; _lexSheetSylTimer = setTimeout(step, dur);
+  }
+  step();
+}
+function lexSheetPractice() {
+  const med = _lexSheetMed;
+  closeLexSheet();
+  if (med) practiceWord(med.name);
+}
 
 // ══ RESOURCE SYSTEM (Youth-Pharma-Referenz: Coins/Gems/Energy HUD) ══════
 const ResourceSystem = (() => {
