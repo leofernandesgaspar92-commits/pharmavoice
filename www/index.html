@@ -18,7 +18,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PharmaVoice" />
   <meta property="og:title" content="PharmaVoice – Wirkstoffnamen richtig aussprechen" />
-  <meta property="og:description" content="440 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen. Spielerisch, offline, in 3 Sprachen." />
+  <meta property="og:description" content="440 Wirkstoffe · Audio-Aussprachetraining mit Silben-Visualisierung & Lautschrift-Guide. Spielerisch, offline, in 3 Sprachen." />
   <meta property="og:url" content="https://leofernandesgaspar92-commits.github.io/pharmavoice/" />
   <meta property="og:image" content="https://leofernandesgaspar92-commits.github.io/pharmavoice/store-assets/feature-graphic.png" />
   <meta property="og:image:width" content="1024" />
@@ -26,7 +26,7 @@
   <meta property="og:locale" content="de_DE" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="PharmaVoice – Wirkstoffnamen richtig aussprechen" />
-  <meta name="twitter:description" content="440 Wirkstoffe · Aussprache üben mit Silbenbetonung, Hören & Sprechen." />
+  <meta name="twitter:description" content="440 Wirkstoffe · Audio-Aussprachetraining mit Silben-Visualisierung & Lautschrift-Guide." />
   <meta name="twitter:image" content="https://leofernandesgaspar92-commits.github.io/pharmavoice/store-assets/feature-graphic.png" />
   <style>
     /* Lokal gebündelte Schriften – kein externes CDN (WebView-/offline-fest, Capacitor-ready) */
@@ -538,6 +538,26 @@
     .mic-btn.active ~ .mic-lbl { color:var(--green-ink); font-weight:700; }
     @keyframes micPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(0,168,107,.4); } 55%{ box-shadow:0 0 0 10px rgba(0,168,107,0); } }
     .mic-result { min-height:20px; font-size:14px; color:var(--text); text-align:center; font-style:italic; opacity:.7; padding:0 8px; line-height:1.4; }
+    /* ── Hören & Nachsprechen – Coach (Listen & Repeat, kein Mikrofon) ── */
+    .repeat-coach { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:20px; }
+    .repeat-btn { display:inline-flex; align-items:center; gap:10px; padding:13px 22px; border:none; border-radius:999px;
+      background:linear-gradient(135deg,#00A86B 0%,#00C97F 100%); color:#fff; font-family:inherit; font-size:15px; font-weight:800;
+      cursor:pointer; box-shadow:0 6px 18px rgba(0,168,107,.32); transition:transform .15s ease, box-shadow .2s ease; }
+    .repeat-btn:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,168,107,.42); }
+    .repeat-btn:active { transform:translateY(0) scale(.98); }
+    .repeat-btn-icon { font-size:20px; line-height:1; }
+    .repeat-btn.listening { animation:repeatPulse 1.1s ease-in-out infinite; }
+    .repeat-btn.repeat { background:linear-gradient(135deg,#FF9800 0%,#FF6B35 100%); box-shadow:0 6px 18px rgba(255,138,61,.4); }
+    @keyframes repeatPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(0,168,107,.45); } 55%{ box-shadow:0 0 0 12px rgba(0,168,107,0); } }
+    .repeat-status { min-height:20px; font-size:13px; font-weight:600; text-align:center; padding:0 8px; line-height:1.4;
+      opacity:0; transform:translateY(4px); transition:opacity .25s ease, transform .25s ease; }
+    .repeat-status.show { opacity:1; transform:translateY(0); }
+    .repeat-status.listen { color:var(--green-ink); }
+    .repeat-status.repeat { color:#C2410C; }
+    .repeat-status.done   { color:var(--green-ink); }
+    /* betonte Silben pulsieren während des Vorsprechens */
+    .syl-row.pulse .syl-item.stressed { animation:sylPulse .7s ease-in-out infinite; }
+    @keyframes sylPulse { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.16); } }
     .btn-next { width:100%; padding:16px; background:var(--green); color:#fff; border:none; border-radius:var(--r); font-size:16px; font-weight:800; cursor:pointer; display:none; transition:.2s; box-shadow:0 4px 14px rgba(0,168,107,.28); font-family:inherit; }
     .btn-next.show { display:block; }
     .btn-next:hover { background:var(--green-d); }
@@ -560,10 +580,9 @@
     #screenLearn .q-label { margin-bottom:8px; font-size:12px; }
     #screenLearn .options { gap:8px; margin-bottom:10px; }
     #screenLearn .opt { min-height:46px; padding:8px 8px; font-size:11px; }
-    #screenLearn .mic-wrap { margin-bottom:8px; gap:4px; }
-    #screenLearn .mic-btn { width:56px; height:56px; }
-    #screenLearn .mic-btn svg { width:24px; height:24px; }
-    #screenLearn .mic-result { min-height:16px; font-size:12px; }
+    #screenLearn .repeat-coach { margin-bottom:8px; gap:6px; }
+    #screenLearn .repeat-btn { padding:11px 18px; font-size:14px; }
+    #screenLearn .repeat-status { min-height:16px; font-size:12px; }
     #screenLearn .btn-next { padding:13px; font-size:15px; }
     /* Zusatzinfos hinter Toggle statt immer sichtbar */
     #screenLearn .med-extra { margin-top:8px; padding-top:8px; gap:6px; display:none; }
@@ -1645,15 +1664,12 @@
   <div class="q-label" data-i18n="learn_q">Welche Silbe wird betont?</div>
   <div class="feedback-box" id="feedbackBox"></div>
   <div class="options" id="optGrid"></div>
-  <div class="mic-wrap">
-    <div class="mic-btn" id="micBtn" role="button" tabindex="0" aria-label="Mikrofon: Aussprache üben" onclick="toggleMic()">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08C16.39 17.43 19 14.53 19 11h-2z"/>
-      </svg>
-    </div>
-    <div class="mic-lbl" id="micLbl">Aussprache üben</div>
-    <div class="mic-result" id="micResult" aria-live="polite"></div>
+  <div class="repeat-coach">
+    <button class="repeat-btn" id="repeatBtn" onclick="practiceRepeat()" aria-label="Hören und nachsprechen">
+      <span class="repeat-btn-icon" id="repeatBtnIcon" aria-hidden="true">🔊</span>
+      <span class="repeat-btn-txt" id="repeatBtnTxt" data-i18n="rep_listen">Hören &amp; Nachsprechen</span>
+    </button>
+    <div class="repeat-status" id="repeatStatus" aria-live="polite"></div>
   </div>
   <button class="btn-next" id="btnNext" onclick="nextQ()" data-i18n="learn_next">Weiter →</button>
 </div>
@@ -3424,6 +3440,7 @@ const UI_I18N = {
   menu_continue: { de:'Weiter lernen',      en:'Keep learning',     pt:'Continuar' },
   menu_lessons:  { de:'Lektionen',          en:'Lessons',           pt:'Lições' },
   menu_practice: { de:'Sprachpraxis',       en:'Speaking practice', pt:'Prática de fala' },
+  rep_listen:    { de:'Hören & Nachsprechen', en:'Listen & repeat', pt:'Ouvir e repetir' },
   menu_quick:    { de:'Schnellübung',       en:'Quick practice',    pt:'Prática rápida' },
   menu_profile:  { de:'Mein Profil',        en:'My profile',        pt:'Meu perfil' },
   menu_shop:     { de:'Shop',               en:'Shop',              pt:'Loja' },
@@ -4756,9 +4773,8 @@ function startWeakWords() {
 }
 
 function renderQ() {
-  stopMic();
+  resetRepeatCoach();
   if (micFeedbackTimer) { clearTimeout(micFeedbackTimer); micFeedbackTimer = null; }
-  el('micResult').textContent = '';
   const med = Q.meds[Q.idx];
   Q.answered = false;
   const total = Q.meds.length;
@@ -5992,51 +6008,61 @@ const TtsEngine = (() => {
   return { isSupported, speak, stop };
 })();
 
-function toggleMic() {
-  if (micActive) { stopMic(); return; }
-  startMic();
+// ═══════════════════════════════════════════════
+//  HÖREN & NACHSPRECHEN – geführtes Aussprache-Coaching
+//  Kein Mikrofon / keine automatische Erkennung: die App spricht den
+//  Wirkstoff vor (Text-to-Speech) und führt klar zum lauten Nachsprechen.
+//  Stabil in jedem WebView (Android-App, iOS, Web) – keine Fehlermeldungen.
+// ═══════════════════════════════════════════════
+let _repeatTimer = null;
+
+function resetRepeatCoach() {
+  if (_repeatTimer) { clearTimeout(_repeatTimer); _repeatTimer = null; }
+  const btn = el('repeatBtn'), icon = el('repeatBtnIcon'), txt = el('repeatBtnTxt'), st = el('repeatStatus');
+  const syl = el('sylRow');
+  if (btn)  btn.classList.remove('listening', 'repeat');
+  if (icon) icon.textContent = '🔊';
+  if (txt)  txt.textContent = L('Hören & Nachsprechen', 'Listen & repeat', 'Ouvir e repetir');
+  if (st)   { st.className = 'repeat-status'; st.textContent = ''; }
+  if (syl)  syl.classList.remove('pulse');
 }
 
-function _micReset() {
-  micActive = false;
-  if (el('micBtn')) el('micBtn').classList.remove('active');
-  if (el('micLbl')) el('micLbl').textContent = L('Aussprache üben','Practice pronunciation','Praticar pronúncia');
-}
+// Kompatibilitäts-Alias für bestehende Aufrufer (goHome/renderQ).
+function stopMic() { resetRepeatCoach(); }
 
-function startMic() {
-  const LANG_MAP = { de:'de-DE', en:'en-US', pt:'pt-BR' };
-  SpeechEngine.start({
-    lang: LANG_MAP[CharacterSystem.getLang()] || 'de-DE',
-    onUnsupported: () => {
-      // Graceful fallback: in Umgebungen ohne Erkennung (iOS-WebView, alte
-      // Browser) die korrekte Aussprache vorsprechen statt einfach zu blockieren.
-      el('micResult').textContent = L(
-        '⚠️ Spracherkennung hier nicht verfügbar – hör dir die Aussprache an und sprich sie nach.',
-        '⚠️ Speech recognition unavailable here – listen and repeat instead.',
-        '⚠️ Reconhecimento de voz indisponível – ouça e repita.');
-      if (typeof playMedWord === 'function') playMedWord();
-    },
-    onStart: () => {
-      micActive = true;
-      if (el('micBtn')) el('micBtn').classList.add('active');
-      if (el('micLbl')) el('micLbl').textContent = L('Höre zu …','Listening …','Ouvindo …');
-      if (el('micResult')) el('micResult').textContent = '';
-    },
-    onResult: (r) => {
-      if (el('micResult')) el('micResult').textContent = r.final || r.interim;
-      if (r.final) checkPronunciation(r.final, r.alternatives);
-    },
-    onEnd: _micReset,
-    onError: (err) => {
-      _micReset();
-      if (err !== 'no-speech' && el('micResult')) el('micResult').textContent = '⚠️ ' + err;
-    },
-  });
-}
+function practiceRepeat() {
+  const med = Q.meds[Q.idx];
+  if (!med) return;
+  const btn = el('repeatBtn'), icon = el('repeatBtnIcon'), txt = el('repeatBtnTxt'), st = el('repeatStatus');
+  const syl = el('sylRow');
+  if (_repeatTimer) { clearTimeout(_repeatTimer); _repeatTimer = null; }
 
-function stopMic() {
-  SpeechEngine.stop();
-  _micReset();
+  // Phase 1 – HÖREN: Wirkstoff sauber vorsprechen, Silben visuell hervorheben
+  AudioSystem.speakWord(med.name, CharacterSystem.getLang());
+  if (btn)  { btn.classList.remove('repeat'); btn.classList.add('listening'); }
+  if (icon) icon.textContent = '🔊';
+  if (txt)  txt.textContent = L('Hör gut zu …', 'Listen closely …', 'Ouça com atenção …');
+  if (st)   { st.className = 'repeat-status listen show'; st.textContent = L('Achte auf die betonte Silbe.', 'Notice the stressed syllable.', 'Observe a sílaba tônica.'); }
+  if (syl)  syl.classList.add('pulse');
+
+  // Phase 2 – NACHSPRECHEN: klare, positive Aufforderung nach dem Vorsprechen
+  const dur = Math.max(1500, med.name.length * 150);
+  _repeatTimer = setTimeout(() => {
+    if (btn)  { btn.classList.remove('listening'); btn.classList.add('repeat'); }
+    if (icon) icon.textContent = '🗣️';
+    if (txt)  txt.textContent = L('Jetzt laut nachsprechen!', 'Now say it out loud!', 'Agora repita em voz alta!');
+    if (st)   { st.className = 'repeat-status repeat show'; st.textContent = L('💪 Sprich Silbe für Silbe – betone die markierte Silbe.', '💪 Say it syllable by syllable – stress the highlighted one.', '💪 Fale sílaba por sílaba – enfatize a destacada.'); }
+    if (syl)  syl.classList.remove('pulse');
+
+    // Phase 3 – WIEDERHOLEN anbieten (positiv, kein Zwang)
+    _repeatTimer = setTimeout(() => {
+      if (btn)  btn.classList.remove('repeat');
+      if (icon) icon.textContent = '🔁';
+      if (txt)  txt.textContent = L('Nochmal hören', 'Listen again', 'Ouvir de novo');
+      if (st)   { st.className = 'repeat-status done show'; st.textContent = L('✅ Gut gemacht! Wiederhole so oft du magst.', '✅ Well done! Repeat as often as you like.', '✅ Muito bem! Repita quantas vezes quiser.'); }
+      _repeatTimer = null;
+    }, 3200);
+  }, dur);
 }
 
 // ═══════════════════════════════════════════════
@@ -6710,9 +6736,17 @@ function rnSpawnMilestones() {
 function rnStartMic(word) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) {
-    rnEl('rnMicHint').textContent = '⚠️ Spracherkennung nicht verfügbar';
+    // Kein Spracherkennung im WebView → ehrlicher „Hören & Nachsprechen"-Modus:
+    // Wort vorsprechen, positiver Hinweis, kein Zeitdruck; Tippen läuft weiter.
+    RG.noRecog = true;
+    clearTimeout(RG.timer);
+    clearInterval(RG.tempoInt);
+    if (typeof AudioSystem !== 'undefined') AudioSystem.speakWord(word, CharacterSystem.getLang());
+    const hint = rnEl('rnMicHint');
+    if (hint) hint.textContent = L('🔊 Hör zu & sprich nach – tippen zum Weiterlaufen', '🔊 Listen & repeat – tap to continue', '🔊 Ouça e repita – toque para continuar');
     return;
   }
+  RG.noRecog = false;
   if (RG.recog) { try { RG.recog.stop(); } catch(_){} }
 
   const r = new SR();
@@ -6794,8 +6828,10 @@ function rnStopMic() {
 
 function rnToggleMic() {
   if (!RG.active || RG.paused) return;
-  if (RG.listening) { rnStopMic(); return; }
   const curWord = RG.wordQueue[RG.curIdx - 1];
+  // Listen&Repeat-Modus (kein Spracherkennung): Tippen = „gesagt" → weiterlaufen.
+  if (RG.noRecog) { if (curWord) rnCorrectAnswer(curWord); return; }
+  if (RG.listening) { rnStopMic(); return; }
   if (curWord) rnStartMic(curWord);
 }
 
@@ -7047,7 +7083,7 @@ const AvatarQ = (() => {
         replies:['Tipp: Bei langen Wörtern immer die 2. Silbe betonen. Zum Beispiel: me-TFOR-min!','Okay! Du schaffst das auch so! 💪'] },
       { id:'mode', text:'Wie lernst du am liebsten?',
         opts:['👂 Zuhören','🗣️ Sprechen','📝 Lesen'],
-        replies:['Perfekt! Der Runner-Modus ist ideal für dich!','Fantastisch! Spracherkennung ist dein Superpower!','Toll! Die Karten-Methode hilft dir beim Einprägen!'] },
+        replies:['Perfekt! Der Runner-Modus ist ideal für dich!','Fantastisch! Hören & Nachsprechen ist dein Superpower!','Toll! Die Karten-Methode hilft dir beim Einprägen!'] },
       { id:'challenge', text:'Willst du dich heute herausfordern?',
         opts:['Ja! 🔥','Lieber easy'],
         replies:['Respekt! Versuch Stufe 3 ohne Fehler!','Smart! Qualität vor Geschwindigkeit. 😊'] },
@@ -7061,7 +7097,7 @@ const AvatarQ = (() => {
         replies:['Tip: Stress the 2nd syllable in compound words. Example: me-FOR-min!','Okay! You\'ll do great anyway! 💪'] },
       { id:'mode', text:'How do you prefer to learn?',
         opts:['👂 Listening','🗣️ Speaking','📝 Reading'],
-        replies:['Perfect! Runner mode is ideal for you!','Fantastic! Speech recognition is your superpower!','Great! Flashcards help you remember!'] },
+        replies:['Perfect! Runner mode is ideal for you!','Fantastic! Listen & repeat is your superpower!','Great! Flashcards help you remember!'] },
       { id:'challenge', text:'Want to challenge yourself today?',
         opts:['Yes! 🔥','Easy mode'],
         replies:['Respect! Try level 3 without mistakes!','Smart! Quality over speed. 😊'] },
@@ -7075,7 +7111,7 @@ const AvatarQ = (() => {
         replies:['Dica: Enfatize sempre a 2ª sílaba em palavras compostas. Ex: me-FOR-mi-na!','Ok! Você vai se sair bem assim mesmo! 💪'] },
       { id:'mode', text:'Como você prefere aprender?',
         opts:['👂 Ouvindo','🗣️ Falando','📝 Lendo'],
-        replies:['Perfeito! O modo Runner é ideal para você!','Fantástico! O reconhecimento de voz é seu superpoder!','Ótimo! Os cartões te ajudam a memorizar!'] },
+        replies:['Perfeito! O modo Runner é ideal para você!','Fantástico! Ouvir e repetir é seu superpoder!','Ótimo! Os cartões te ajudam a memorizar!'] },
       { id:'challenge', text:'Quer se desafiar hoje?',
         opts:['Sim! 🔥','Modo fácil'],
         replies:['Respeito! Tente o nível 3 sem erros!','Esperto! Qualidade antes de velocidade. 😊'] },
