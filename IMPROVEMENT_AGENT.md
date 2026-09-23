@@ -45,6 +45,8 @@ Betriebshandbuch und der lebende Backlog.
 - [ ] Optionales sprach-spezifisches Aussprache-Modell (EN/PT-Betonung je Wirkstoff, mit Fallback).
 
 ### P2 – Engagement & Bindung
+- [x] Merkliste/Favoriten – Wirkstoffe im Schnell-Ansicht-Sheet „☆ Merken" (→ „★ Gemerkt"), Karten-Stern im Lexikon, Filter „★ Nur Merkliste" (neben „Nur ungelernte"), eigener Leer-Zustand. Lokal in `pv_favs`, dreisprachig. Ideal für gezieltes Lernen & Prüfungsvorbereitung. Fav-Test + QA grün.
+- [x] Datenqualitäts-Audit (440): Struktur (Silben, Betonungsindex, 3 eindeutige Distraktoren) 0 Probleme; Laufzeit-Check 440/440 mit MED_INFO + Indikation + Phonetik, keine Dublettennamen. Launch-Absicherung fürs neue Lexikon-Sheet.
 - [x] „Perfekte Woche"-Belohnung (7/7 Tage Serie) – Sonder-Overlay + Konfetti + 10 💎, einmal je Woche.
 - [x] Wochen-Rückblick auf Home – „Deine Woche": Tage aktiv, Übungen, Trefferquote, Punkte (`pv_weekstats`).
 - [x] Lern-Erinnerung konfigurierbar – Uhrzeit im Profil, lokaler Hinweis-Banner beim Öffnen (kein Push nötig).
