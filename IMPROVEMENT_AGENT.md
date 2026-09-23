@@ -50,6 +50,7 @@ Betriebshandbuch und der lebende Backlog.
 - [x] Lern-Erinnerung konfigurierbar – Uhrzeit im Profil, lokaler Hinweis-Banner beim Öffnen (kein Push nötig).
 
 ### P3 – Inhalt
+- [x] Lexikon-Schnellansicht (Aussprache nachschlagen) – Wirkstoff antippen öffnet ein Bottom-Sheet mit Silben (Betonung), Lautschrift, „🔊 Anhören", „🐢 Silbe für Silbe", Indikation/Klasse/ATC – **ohne Energie zu verbrauchen** (vorher startete jeder Tap sofort eine Energie-kostende Übung). „▶ Übung starten" beginnt bewusst die volle Session. Reiner Nachschlage-Use-Case (Apotheken-Alltag) jetzt frictionless. Sheet-Test + QA grün.
 - [x] Katalog weiter ausbauen – **380 Wirkstoffe** (Runde 7: +8, u.a. Dalteparin, Fondaparinux, Roflumilast, Ciclesonid, Dexketoprofen), kuratiert, keine Dubletten.
 - [x] Katalog auf **400 Wirkstoffe** ausgebaut (Runde 12: +20, u.a. Amlodipin, Meropenem, Adalimumab, Phenprocoumon, Dolutegravir) – Level nach Kategorie zugeordnet, Marketing-Texte/Manifest auf 400 aktualisiert.
 - [x] Datenqualität: 2 Schreibweisen-Dubletten (Amlodipine/Quetiapine) entfernt, dafür Tirzepatid & Baricitinib ergänzt – weiterhin 400, keine Dubletten.
