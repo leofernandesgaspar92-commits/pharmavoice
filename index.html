@@ -591,6 +591,10 @@
     .med-listen-btn { background:rgba(23,217,196,.12); border:1px solid var(--green); border-radius:20px; padding:7px 18px; font-size:13px; font-weight:800; color:var(--green-ink); cursor:pointer; font-family:inherit; margin-top:12px; transition:.15s; }
     .med-listen-btn:active { transform:scale(.95); }
     .med-listen-btn.playing { animation:medListenPulse .6s ease-in-out infinite; }
+    .med-syl-btn { margin-left:8px; background:rgba(124,77,255,.12); border-color:#7C4DFF; color:#5B3FCC; }
+    /* aktuell vorgesprochene Silbe hervorheben */
+    .syl-item.active { background:var(--green); color:#fff; box-shadow:0 3px 10px rgba(0,168,107,.4); transform:scale(1.14); transition:transform .12s ease, background .12s ease; }
+    .syl-item.active.stressed { background:var(--gold); color:#3A2200; box-shadow:0 3px 12px rgba(255,193,7,.5); }
     @keyframes medListenPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(23,217,196,.4); } 55%{ box-shadow:0 0 0 8px rgba(23,217,196,0); } }
 
     /* XP POP */
@@ -1658,6 +1662,7 @@
     <div class="phonetic" id="medPhonetic">/phonetik/</div>
     <div class="syl-row" id="sylRow"></div>
     <button class="med-listen-btn" id="medListenBtn" onclick="playMedWord()" data-i18n="learn_listen">🔊 Anhören</button>
+    <button class="med-listen-btn med-syl-btn" id="medSylBtn" onclick="playSyllables()" data-i18n="learn_syl">🐢 Silbe für Silbe</button>
     <button class="med-extra-toggle" id="medExtraToggle" onclick="toggleMedExtra()">ℹ️ Details anzeigen</button>
     <div class="med-extra" id="medExtra"></div>
   </div>
@@ -3519,6 +3524,7 @@ const UI_I18N = {
   learn_streak:  { de:'SERIE', en:'STREAK', pt:'SÉRIE' },
   learn_hint:    { de:'💡 Hinweis', en:'💡 Hint', pt:'💡 Dica' },
   learn_listen:  { de:'🔊 Anhören', en:'🔊 Listen', pt:'🔊 Ouvir' },
+  learn_syl:     { de:'🐢 Silbe für Silbe', en:'🐢 Syllable by syllable', pt:'🐢 Sílaba por sílaba' },
   learn_q:       { de:'Welche Silbe wird betont?', en:'Which syllable is stressed?', pt:'Qual sílaba é acentuada?' },
   learn_next:    { de:'Weiter →', en:'Next →', pt:'Próximo →' },
   res_correct:   { de:'Richtige Antworten', en:'Correct answers', pt:'Respostas certas' },
@@ -4928,6 +4934,41 @@ function playMedWord() {
   if (btn) { btn.classList.add('playing'); setTimeout(() => btn.classList.remove('playing'), 1200); }
 }
 
+// Silbe für Silbe: spricht jede Silbe einzeln vor und hebt sie hervor,
+// am Ende das ganze Wort. Rein audio-visuell (kein Mikrofon), stabil.
+let _sylTimer = null;
+function stopSyllables() {
+  if (_sylTimer) { clearTimeout(_sylTimer); _sylTimer = null; }
+  document.querySelectorAll('#sylRow .syl-item.active').forEach(el => el.classList.remove('active'));
+  const b = el('medSylBtn'); if (b) b.classList.remove('playing');
+}
+function playSyllables() {
+  const med = Q.meds[Q.idx];
+  if (!med || !Array.isArray(med.syllables) || !med.syllables.length) return;
+  stopSyllables();
+  const items = Array.prototype.slice.call(document.querySelectorAll('#sylRow .syl-item'));
+  const lang  = CharacterSystem.getLang();
+  const btn   = el('medSylBtn');
+  if (btn) btn.classList.add('playing');
+  let i = 0;
+  function step() {
+    if (i >= med.syllables.length) {
+      items.forEach(el2 => el2.classList.remove('active'));
+      if (btn) btn.classList.remove('playing');
+      AudioSystem.speakWord(med.name, lang); // Abschluss: ganzes Wort
+      _sylTimer = null;
+      return;
+    }
+    items.forEach((el2, k) => el2.classList.toggle('active', k === i));
+    const syl = med.syllables[i];
+    AudioSystem.speakWord(syl, lang);
+    const dur = Math.max(680, syl.length * 190);
+    i++;
+    _sylTimer = setTimeout(step, dur);
+  }
+  step();
+}
+
 // Wirkstoff-Kategorien lokalisiert (DE-Schlüssel → EN/PT). Für EN/PT-Nutzer werden
 // so Quiz-Label, Lexikon-Überschriften und Filter-Chips übersetzt angezeigt.
 const CATEGORY_I18N = {
@@ -6038,6 +6079,7 @@ const TtsEngine = (() => {
 let _repeatTimer = null;
 
 function resetRepeatCoach() {
+  if (typeof stopSyllables === 'function') stopSyllables();
   if (_repeatTimer) { clearTimeout(_repeatTimer); _repeatTimer = null; }
   const btn = el('repeatBtn'), icon = el('repeatBtnIcon'), txt = el('repeatBtnTxt'), st = el('repeatStatus');
   const syl = el('sylRow');

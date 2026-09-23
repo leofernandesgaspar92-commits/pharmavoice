@@ -41,6 +41,7 @@ Betriebshandbuch und der lebende Backlog.
 - [x] Indikationstexte nach EN/PT übersetzt – **ALLE 400 Wirkstoffe (100 %)** (`IND_I18N` + `indFor()`). App ist damit vollständig dreisprachig (DE/EN/PT: UI, Tipps, Kategorien UND alle Indikationen) – echter Fachwert für Apotheker:innen, PKA/PTA, Pharmareferent:innen und Studierende in allen drei Märkten.
 - [x] Wirkstoffklassen (`drugClass`) EN/PT lokalisiert – Term-Wörterbuch `CLASS_I18N` (265 distinkte Klassen) + `classFor()`; Anzeige im Steckbrief und Lexikon-Suche nutzen es. Damit ist der komplette Wirkstoff-Steckbruck (Indikation + Klasse + Kategorie + Tipp) dreisprachig.
 - [x] TTS-Engine gehärtet (Kern „Vorsprechen") – passende Stimme je Sprache wählen (exakt → Basissprache de/en/pt), asynchrones `voiceschanged`-Laden abgefangen, Android-WebView-„Pause"-Bug via `resume()` behoben. Macht das jetzt zentrale Hören & Nachsprechen zuverlässig. No-Throw-Test (DE/EN/PT) + QA grün.
+- [x] „Silbe für Silbe"-Modus – neuer Button spricht jede Silbe einzeln vor und hebt sie visuell hervor (aktive Silbe grün, betonte Silbe gold), am Ende das ganze Wort. Rein audio-visuell (kein Mikrofon), sauber zurückgesetzt bei Fragenwechsel/Verlassen. Test + QA grün.
 - [ ] Optionales sprach-spezifisches Aussprache-Modell (EN/PT-Betonung je Wirkstoff, mit Fallback).
 
 ### P2 – Engagement & Bindung
