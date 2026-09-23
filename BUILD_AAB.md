@@ -81,7 +81,18 @@ In Android Studio:
 
 ## Version (aktuell)
 - `applicationId`: `com.pharmavoice.app`
-- `versionCode 1` · `versionName "1.0"` · App-Label: **PharmaVoice**
+- App-Label: **PharmaVoice**
+
+### ⚠️ Für den Release am 01.10.2026 – Version auf 1.1 erhöhen (Pflicht!)
+Google lehnt einen Upload mit gleichem `versionCode` ab. Vor dem Build in
+`android/app/build.gradle` anpassen:
+```
+versionCode 2
+versionName "1.1"
+```
+*(Der erste interne Test war `versionCode 1` / `"1.0"`.)* Danach wie gewohnt
+`npx cap sync` → in Android Studio das signierte `.aab` bauen (**denselben
+Keystore** wie beim ersten Mal verwenden!) → hochladen.
 
 Validiert: `npm install`, `npx cap add android`, `npx cap sync` laufen im Repo fehlerfrei durch.
 Der finale Gradle-Build (`.aab`) läuft in Android Studio auf deinem Rechner.

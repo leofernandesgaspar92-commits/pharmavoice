@@ -49,8 +49,8 @@ Sprich medizinische Wirkstoffnamen endlich richtig aus – ohne Stolpern, ohne U
 PharmaVoice bringt dir die korrekte Aussprache von 440 gängigen Wirkstoffen bei: Silbe für Silbe, mit Betonung, Lautschrift und Sprachausgabe zum Nachsprechen. Ideal für PKA-/PTA-Lehrlinge, Apothekenpersonal, Pharmareferent:innen und Pharmazie-Studierende.
 
 WARUM PHARMAVOICE?
-• 440 Wirkstoffe mit Silbentrennung, Betonung und Lautschrift (IPA)
-• Hören & Nachsprechen – die richtige Betonung sitzt Silbe für Silbe
+• 440 Wirkstoffe mit Silben-Visualisierung, Betonung und Lautschrift-Guide (IPA)
+• Audio-Vorsprechen + geführtes Nachsprechen (Hören & Nachsprechen, kein Mikrofon nötig)
 • Wirkstoff-Lexikon mit Indikation, Wirkstoffklasse und ATC-Code
 • Suchen, filtern und alphabetisch sortieren
 
@@ -82,8 +82,8 @@ Finally pronounce medical drug names correctly – no stumbling, no doubt.
 PharmaVoice teaches you the correct pronunciation of 440 common drug substances: syllable by syllable, with stress marks, phonetic transcription and audio to repeat after. Perfect for pharmacy assistants and technicians, pharmacy staff, pharma reps and pharmacology students.
 
 WHY PHARMAVOICE?
-• 440 drugs with syllable breakdown, stress and phonetics (IPA)
-• Listen & repeat – nail the right stress, syllable by syllable
+• 440 drugs with syllable visualization, stress and a phonetic guide (IPA)
+• Audio playback + guided listen & repeat (no microphone required)
 • Drug encyclopedia with indication, drug class and ATC code
 • Search, filter and sort alphabetically
 
@@ -115,8 +115,8 @@ Pronuncie corretamente os nomes de fármacos – sem tropeços, sem dúvidas.
 O PharmaVoice ensina a pronúncia correta de 440 substâncias comuns: sílaba a sílaba, com sílaba tônica, transcrição fonética e áudio para repetir. Ideal para auxiliares e técnicos de farmácia, equipe de farmácia, representantes farmacêuticos e estudantes de farmácia.
 
 POR QUE PHARMAVOICE?
-• 440 fármacos com divisão silábica, tonicidade e fonética (IPA)
-• Ouça e repita – acerte a sílaba tônica, sílaba a sílaba
+• 440 fármacos com visualização silábica, tonicidade e guia fonético (IPA)
+• Áudio de pronúncia + ouça e repita guiado (sem necessidade de microfone)
 • Enciclopédia com indicação, classe e código ATC
 • Busque, filtre e ordene em ordem alfabética
 
