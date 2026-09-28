@@ -1882,6 +1882,7 @@
     <span><span class="lex-diff lex-diff-med">●</span> <span data-i18n="diff_med">Mittel</span></span>
     <span><span class="lex-diff lex-diff-hard">●</span> <span data-i18n="diff_hard">Schwer</span></span>
   </div>
+  <button class="btn-start" id="lexFavPractice" style="display:none;margin:2px 0 12px" onclick="practiceFavorites()"></button>
   <div id="lexList"></div>
 </div>
 
@@ -4789,8 +4790,25 @@ function practiceWord(name) {
     Q.xpMult = 2;
     setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Punkte!', 3000), 900);
   }
+  showScreen('Learn');
+  renderQ();
+}
+
+function practiceFavorites() {
+  const favs = favGet();
+  const meds = MEDS.filter(m => favs.indexOf(m.name) !== -1);
+  if (meds.length < 1) {
+    CharacterSystem.showBubble(L('Deine Merkliste ist leer – tippe „☆ Merken".', 'Your saved list is empty – tap "☆ Save".', 'Sua lista está vazia – toque "☆ Salvar".'), 3000);
+    return;
+  }
+  const session = meds.slice().sort(() => Math.random() - 0.5).slice(0, 10);
+  Q = { meds: session, idx: 0, correct: 0, sessionXP: 0, streak: 0, answered: false, lvId: 1, xpMult: 1 };
+  if (ShopSystem.consumeDoubleXp()) {
+    Q.xpMult = 2;
+    setTimeout(() => CharacterSystem.showBubble('✨ Double-XP aktiv – doppelte Punkte!', 3000), 900);
+  }
   ResourceSystem.spendEnergy();
-  el('learnChip').textContent = `🎯  ${med.name}`;
+  el('learnChip').textContent = `⭐  ${L('Merkliste', 'Saved list', 'Lista salva')} (${session.length})`;
   showScreen('Learn');
   renderQ();
 }
@@ -7943,6 +7961,13 @@ const LexikonSystem = (() => {
     };
     const onlyUnlearned = !!document.getElementById('lexUnlearned')?.checked;
     const onlyFavs = !!document.getElementById('lexFavsOnly')?.checked;
+    // „Merkliste üben"-Button je nach Anzahl gemerkter Wirkstoffe zeigen/beschriften
+    const favCount = favGet().length;
+    const favBtn = document.getElementById('lexFavPractice');
+    if (favBtn) {
+      favBtn.style.display = favCount ? 'block' : 'none';
+      favBtn.textContent = `⭐ ${L('Merkliste üben','Practice saved list','Praticar lista salva')} (${favCount})`;
+    }
     const filtered = MEDS.filter(m =>
       (!_activeCat || (m.category || 'Sonstige') === _activeCat) && matches(m) &&
       (!onlyUnlearned || !_isLearned(m.name)) &&
