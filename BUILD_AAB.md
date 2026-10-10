@@ -83,16 +83,20 @@ In Android Studio:
 - `applicationId`: `com.pharmavoice.app`
 - App-Label: **PharmaVoice**
 
-### ⚠️ Für den Release am 01.10.2026 – Version auf 1.1 erhöhen (Pflicht!)
-Google lehnt einen Upload mit gleichem `versionCode` ab. Vor dem Build in
+### ⚠️ Für das Update – Version erhöhen (Pflicht!)
+Google lehnt einen Upload mit bereits verwendetem `versionCode` ab. Vor dem Build in
 `android/app/build.gradle` anpassen:
 ```
-versionCode 2
-versionName "1.1"
+versionCode 3
+versionName "1.2"
 ```
-*(Der erste interne Test war `versionCode 1` / `"1.0"`.)* Danach wie gewohnt
-`npx cap sync` → in Android Studio das signierte `.aab` bauen (**denselben
-Keystore** wie beim ersten Mal verwenden!) → hochladen.
+*(versionCode 1 = v1.0, versionCode 2 = v1.1-Entwurf (bereits hochgeladen, daher verbraucht) → neuer Build = versionCode 3 / "1.2".)*
+Danach wie gewohnt `npx cap sync` → in Android Studio das signierte `.aab` bauen
+(**denselben neuen Keystore** `upload-keystore.jks` verwenden!) → hochladen.
+
+> **v1.2 bringt die native Sprachausgabe** (`@capacitor-community/text-to-speech`):
+> `npm install` installiert das Plugin automatisch, `npx cap sync` bindet es nativ ein –
+> damit läuft das Vorsprechen zuverlässig über die Android-Sprachausgabe statt über den WebView.
 
 Validiert: `npm install`, `npx cap add android`, `npx cap sync` laufen im Repo fehlerfrei durch.
 Der finale Gradle-Build (`.aab`) läuft in Android Studio auf deinem Rechner.
