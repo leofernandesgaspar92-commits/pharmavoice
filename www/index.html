@@ -6091,6 +6091,16 @@ const TtsEngine = (() => {
     try { SYN.addEventListener('voiceschanged', _loadVoices); }
     catch (_) { try { SYN.onvoiceschanged = _loadVoices; } catch (__) {} }
   }
+  // Natives Capacitor-TTS-Plugin (zuverlässiger Ton in der Android-App).
+  // In der nativen App wird darüber gesprochen; im Browser/PWA bleibt der Web-Zweig.
+  function _native() {
+    try {
+      const C = window.Capacitor;
+      if (C && typeof C.isNativePlatform === 'function' && C.isNativePlatform() &&
+          C.Plugins && C.Plugins.TextToSpeech) return C.Plugins.TextToSpeech;
+    } catch (_) {}
+    return null;
+  }
   // Beste Stimme für die gewünschte Sprache wählen (exakt → gleiche Basissprache).
   function _pickVoice(lang) {
     if (!_voices.length) _loadVoices();
@@ -6100,10 +6110,29 @@ const TtsEngine = (() => {
     return _voices.find(v => (v.lang || '').toLowerCase() === want) ||
            _voices.find(v => (v.lang || '').toLowerCase().startsWith(base)) || null;
   }
-  function isSupported() { return !!SYN; }
+  function isSupported() { return !!SYN || !!_native(); }
   function speak(text, opts) {
     opts = opts || {};
-    if (!SYN || !text) return false;
+    if (!text) return false;
+    // 1) Native Sprachausgabe (Android/iOS App) – zuverlässig.
+    const NT = _native();
+    if (NT) {
+      try {
+        if (NT.stop) { try { const p = NT.stop(); if (p && p.catch) p.catch(() => {}); } catch (_) {} }
+        const r = NT.speak({
+          text: text,
+          lang: opts.lang || 'de-DE',
+          rate: opts.rate != null ? opts.rate : 0.9,
+          pitch: opts.pitch != null ? opts.pitch : 1.0,
+          volume: opts.volume != null ? opts.volume : 1.0,
+          category: 'playback'
+        });
+        if (r && r.catch) r.catch(() => {});
+        return true;
+      } catch (_) { /* Fallback auf Web-Synthese */ }
+    }
+    // 2) Web-Sprachausgabe (Browser/PWA).
+    if (!SYN) return false;
     try {
       SYN.cancel();
       const u = new SpeechSynthesisUtterance(text);
@@ -6119,7 +6148,11 @@ const TtsEngine = (() => {
       return true;
     } catch (_) { return false; }
   }
-  function stop() { if (SYN) { try { SYN.cancel(); } catch (_) {} } }
+  function stop() {
+    const NT = _native();
+    if (NT && NT.stop) { try { const p = NT.stop(); if (p && p.catch) p.catch(() => {}); } catch (_) {} }
+    if (SYN) { try { SYN.cancel(); } catch (_) {} }
+  }
   return { isSupported, speak, stop };
 })();
 
