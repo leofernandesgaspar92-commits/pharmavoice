@@ -679,16 +679,26 @@
 
     /* ACHIEVEMENTS */
     .screen-h { font-size:24px; font-weight:900; margin-bottom:24px; color:var(--text); }
-    .ach-list  { display:flex; flex-direction:column; gap:12px; }
-    .ach-item  { background:var(--bg2); border-radius:var(--r); padding:16px 18px; display:flex; align-items:center; gap:16px; box-shadow:var(--shadow); border:1px solid var(--border); }
-    .ach-item.locked { opacity:.45; }
-    .ach-icon  { width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; }
-    .ach-icon.on  { background:rgba(0,168,107,.12); }
-    .ach-icon.off { background:var(--border); }
-    .ach-info  { flex:1; }
-    .ach-name  { font-size:15px; font-weight:700; color:var(--text); margin-bottom:3px; }
-    .ach-desc  { font-size:12px; color:var(--gray); }
-    .ach-state { font-size:20px; }
+    /* Abzeichen-Raster (statt langer Liste) */
+    .ach-list  { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .ach-name, .ach-desc { -webkit-hyphens:auto; hyphens:auto; overflow-wrap:break-word; }
+    .ach-item  { position:relative; background:var(--bg2); border-radius:16px; padding:14px 8px 12px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:7px; box-shadow:var(--shadow); border:1.5px solid var(--border); }
+    .ach-item:not(.locked) { border-color:rgba(245,158,11,.55); background:linear-gradient(180deg,rgba(255,193,7,.10),var(--bg2) 60%); }
+    .ach-icon  { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; }
+    .ach-icon.on  { background:linear-gradient(135deg,#FFD54F,#FFB300); box-shadow:0 4px 12px rgba(255,179,0,.35); }
+    .ach-icon.off { background:rgba(var(--fg),.07); filter:grayscale(1); opacity:.55; }
+    .ach-info  { min-width:0; width:100%; }
+    .ach-name  { font-size:12px; font-weight:800; color:var(--text); line-height:1.2; margin-bottom:3px; }
+    .ach-item.locked .ach-name { color:var(--gray); }
+    .ach-desc  { font-size:10.5px; color:var(--gray); line-height:1.3; }
+    .ach-state { position:absolute; top:7px; right:8px; font-size:12px; opacity:.7; }
+    .ach-summary { display:flex; align-items:center; gap:14px; background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:14px 16px; margin-bottom:12px; box-shadow:var(--shadow); }
+    .ach-summary-num { font-family:'FredokaLocal','Fredoka',sans-serif; font-size:26px; font-weight:700; color:var(--green-ink); line-height:1; white-space:nowrap; }
+    .ach-summary-num small { font-size:15px; color:var(--gray); font-weight:600; }
+    .ach-summary-body { flex:1; min-width:0; }
+    .ach-summary-lbl { font-size:12.5px; font-weight:700; color:var(--text2); margin-bottom:6px; }
+    .ach-summary-bar { height:8px; border-radius:6px; background:rgba(var(--fg),.08); overflow:hidden; }
+    .ach-summary-fill { height:100%; border-radius:6px; background:linear-gradient(90deg,var(--green),#FFB300); transition:width .5s ease; }
 
     /* PROFILE */
     /* Profil-Kopf als Marken-Banner (echoing Home-Hero) */
@@ -1800,6 +1810,7 @@
   <div class="section-title" style="margin-top:24px" data-i18n="ach_events">EVENT-ABZEICHEN</div>
   <div id="seasonBadges"></div>
   <div class="section-title" style="margin-top:24px" data-i18n="ach_section">ERFOLGE</div>
+  <div id="achSummary"></div>
   <div class="ach-list" id="achList"></div>
 </div>
 
@@ -3904,13 +3915,13 @@ const ACHIEVEMENTS = [
   { id:'terms20',   icon:'📗', name:'Erste 20',          desc:'20 Fragen beantwortet',                check: () => S.learned >= 20 },
   { id:'terms50',   icon:'💊', name:'50 Begriffe',       desc:'50 Fragen beantwortet',                check: () => S.learned >= 50 },
   { id:'terms150',  icon:'📚', name:'Bücherwurm',        desc:'150 Fragen beantwortet',               check: () => S.learned >= 150 },
-  { id:'xp200',     icon:'🧬', name:'Fortgeschrittener', desc:'200 Punkte – Level 2 freigeschaltet',  check: () => S.xp >= 200 },
+  { id:'xp200',     icon:'🧬', name:'Fortge\u00ADschrittener', desc:'200 Punkte – Level 2 freigeschaltet',  check: () => S.xp >= 200 },
   { id:'xp400',     icon:'🔬', name:'Profi-Aussprecher', desc:'400 Punkte gesammelt',                 check: () => S.xp >= 400 },
   { id:'xp600',     icon:'🏆', name:'Pharma-Legende',    desc:'600 Punkte gesammelt',                 check: () => S.xp >= 600 },
   { id:'runner',    icon:'🏃', name:'Auf die Piste!',    desc:'Pharma Runner gespielt',               check: () => parseInt(localStorage.getItem('pv_runner_total')||'0') > 0 },
   { id:'runner500', icon:'⚡', name:'Speed Freak',       desc:'Highscore 500+ im Runner',             check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 500 },
   { id:'runner1k',  icon:'👑', name:'Runner Champion',   desc:'Highscore 1000+ im Runner',            check: () => parseInt(localStorage.getItem('pv_runner_hs')||'0') >= 1000 },
-  { id:'sm2_10',    icon:'🧠', name:'Gedächtniskünstler',desc:'10 Begriffe mit Spaced Repetition',    check: () => Object.keys(SM2).length >= 10 },
+  { id:'sm2_10',    icon:'🧠', name:'Gedächtnis\u00ADkünstler',desc:'10 Begriffe mit Spaced Repetition',    check: () => Object.keys(SM2).length >= 10 },
   { id:'words30',   icon:'🔬', name:'Wirkstoff-Kenner',  desc:'30 verschiedene Wirkstoffe geübt',     check: () => Object.keys(SM2).length >= 30 },
   { id:'xp1000',    icon:'💎', name:'Punkte-Millionär',  desc:'1000 Punkte gesammelt',                check: () => S.xp >= 1000 },
 ];
@@ -3955,8 +3966,9 @@ function renderAchievements() {
   if (!list) return;
   list.innerHTML = '';
   let unlocked = 0;
-  ACHIEVEMENTS.forEach(a => {
-    const done = a.check();
+  const rows = ACHIEVEMENTS.map(a => ({ a, done: !!a.check() }));
+  rows.sort((x, y) => (y.done ? 1 : 0) - (x.done ? 1 : 0));  // freigeschaltete zuerst
+  rows.forEach(({ a, done }) => {
     if (done) unlocked++;
     const div = document.createElement('div');
     div.className = 'ach-item' + (done ? '' : ' locked');
@@ -3966,12 +3978,21 @@ function renderAchievements() {
         <div class="ach-name">${_achTr(a).name}</div>
         <div class="ach-desc">${_achTr(a).desc}</div>
       </div>
-      <div class="ach-state">${done ? '✅' : '🔒'}</div>`;
+      ${done ? '' : '<div class="ach-state" aria-hidden="true">🔒</div>'}`;
+    div.setAttribute('aria-label', `${_achTr(a).name}: ${done ? L('freigeschaltet','unlocked','desbloqueado') : L('gesperrt','locked','bloqueado')}`);
     list.appendChild(div);
   });
-  // Show progress header
-  const hdr = document.querySelector('#screenAchievements .screen-h');
-  if (hdr) hdr.textContent = `🏆 ${L('Erfolge','Awards','Conquistas')} – ${unlocked}/${ACHIEVEMENTS.length}`;
+  // Fortschritts-Karte (statt Titel-Ueberschreibung, die i18n wieder verwarf)
+  const sum = el('achSummary');
+  if (sum) {
+    const tot = ACHIEVEMENTS.length, pct = tot ? Math.round(unlocked / tot * 100) : 0;
+    sum.innerHTML = `<div class="ach-summary">
+      <div class="ach-summary-num">${unlocked}<small>/${tot}</small></div>
+      <div class="ach-summary-body">
+        <div class="ach-summary-lbl">${L('Erfolge freigeschaltet','achievements unlocked','conquistas desbloqueadas')}</div>
+        <div class="ach-summary-bar"><div class="ach-summary-fill" style="width:${pct}%"></div></div>
+      </div></div>`;
+  }
 }
 
 function save() { localStorage.setItem('pv2', JSON.stringify(S)); }
