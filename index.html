@@ -329,7 +329,23 @@
     /* ── Result Wort-Übersicht ── */
     .res-review { margin:20px 0 4px; text-align:left; }
     .res-review-title { font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--gray2); text-transform:uppercase; margin-bottom:8px; }
-    .res-review-row { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:9px 12px; margin-bottom:6px; }
+    .res-review-row { display:flex; align-items:center; gap:7px; background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:7px 9px; margin:0; min-width:0; }
+    /* Kompaktes 2-Spalten-Raster statt langer Zeilen */
+    #resReview { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    #resReview .res-review-title { grid-column:1/-1; margin-bottom:2px; }
+    #resReview .res-review-row > span:first-child { font-size:13px; flex-shrink:0; }
+    #resReview .res-review-name { font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+    #resReview .res-review-listen { font-size:15px; }
+    /* Klare Aktions-Hierarchie */
+    .res-actions { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+    .res-actions #resChestArea:empty { display:none; }
+    .res-actions .res-chest-btn { margin-bottom:0; }
+    .res-retry-btn { width:100%; padding:14px; background:rgba(255,138,61,.08); color:#C2410C; border:2px solid rgba(255,138,61,.55); border-radius:var(--r); font-size:15px; font-weight:800; cursor:pointer; font-family:inherit; transition:transform .08s ease; }
+    .res-retry-btn:active { transform:scale(.98); }
+    :root[data-theme=dark] .res-retry-btn { color:#FFA36B; }
+    @media (prefers-color-scheme:dark) { :root:not([data-theme=light]) .res-retry-btn { color:#FFA36B; } }
+    .res-actions-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .res-actions-row .btn-ghost { margin-top:0; padding:13px 8px; font-size:13.5px; }
     .res-review-row.bad { border-color:rgba(255,59,92,.35); }
     .res-review-name { font-size:13.5px; font-weight:700; color:var(--text); }
     .res-review-listen { margin-left:auto; flex:0 0 auto; background:transparent; border:none; font-size:17px; cursor:pointer; padding:2px 4px; line-height:1; }
@@ -1740,11 +1756,15 @@
     <div class="res-stat"><div class="res-val" id="resTotal">0</div><div class="res-lbl" data-i18n="res_total">Gesamt Punkte</div></div>
   </div>
   <div id="resReview" class="res-review"></div>
-  <button class="btn-start" id="resRetryBtn" style="display:none;background:linear-gradient(135deg,#FF9800,#FF6B35);box-shadow:0 4px 14px rgba(255,152,0,.3)" onclick="retryWrongWords()"></button>
-  <div id="resChestArea"></div>
-  <button class="btn-ghost" id="resShareBtn" onclick="shareResult()" data-i18n="res_share">📤 &nbsp;Ergebnis teilen</button>
-  <button class="btn-start" onclick="openModal()" data-i18n="res_again">🔄 &nbsp;Nochmal spielen</button>
-  <button class="btn-ghost" onclick="goHome()" data-i18n="res_home">🏠 &nbsp;Zur Startseite</button>
+  <div class="res-actions">
+    <div id="resChestArea"></div>
+    <button class="btn-start" onclick="openModal()" data-i18n="res_again">🔄 &nbsp;Nochmal spielen</button>
+    <button class="res-retry-btn" id="resRetryBtn" style="display:none" onclick="retryWrongWords()"></button>
+    <div class="res-actions-row">
+      <button class="btn-ghost" id="resShareBtn" onclick="shareResult()" data-i18n="res_share">📤 &nbsp;Ergebnis teilen</button>
+      <button class="btn-ghost" onclick="goHome()" data-i18n="res_home">🏠 &nbsp;Zur Startseite</button>
+    </div>
+  </div>
 </div>
 
 <!-- ══ BELOHNUNGS-TRUHE MODAL ══ -->
