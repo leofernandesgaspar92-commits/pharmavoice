@@ -350,6 +350,13 @@
     :root[data-theme=dark] .res-retry-btn { color:#FFA36B; }
     @media (prefers-color-scheme:dark) { :root:not([data-theme=light]) .res-retry-btn { color:#FFA36B; } }
     .res-actions-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .res-actions #resRateArea:empty { display:none; }
+    .rate-card { display:flex; align-items:center; gap:12px; padding:14px; border-radius:var(--r); background:var(--bg2); border:1.5px solid rgba(245,158,11,.45); box-shadow:var(--shadow); text-align:left; }
+    .rate-stars { font-size:22px; letter-spacing:-2px; flex-shrink:0; }
+    .rate-text { flex:1; min-width:0; font-size:13px; line-height:1.35; color:var(--text); font-weight:600; }
+    .rate-btns { display:flex; flex-direction:column; gap:6px; flex-shrink:0; }
+    .rate-go { padding:9px 14px; border:none; border-radius:10px; background:linear-gradient(135deg,#FFC107,#FF9800); color:#3a2500; font-weight:900; font-size:13px; cursor:pointer; font-family:inherit; }
+    .rate-later { padding:4px 6px; border:none; background:none; color:var(--gray); font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
     .res-actions-row .btn-ghost { margin-top:0; padding:13px 8px; font-size:13.5px; }
     .res-review-row.bad { border-color:rgba(255,59,92,.35); }
     .res-review-name { font-size:13.5px; font-weight:700; color:var(--text); }
@@ -1763,6 +1770,7 @@
   <div id="resReview" class="res-review"></div>
   <div class="res-actions">
     <div id="resChestArea"></div>
+    <div id="resRateArea"></div>
     <button class="btn-start" onclick="openModal()" data-i18n="res_again">🔄 &nbsp;Nochmal spielen</button>
     <button class="res-retry-btn" id="resRetryBtn" style="display:none" onclick="retryWrongWords()"></button>
     <div class="res-actions-row">
@@ -6060,6 +6068,7 @@ function showResult() {
       chestArea.innerHTML = `<button class="res-chest-btn" onclick="ChestSystem.openModal()">🎁 &nbsp;${earned > 1 ? earned + ' Belohnungs-Truhen' : 'Belohnungs-Truhe'} öffnen</button>`;
     }
   }
+  try { RatePrompt.maybeShow(Q.correct, Q.meds.length); } catch (e) {}
   showScreen('Result');
 }
 
@@ -6463,6 +6472,48 @@ const ResearchAgent = (() => {
   }
 
   return { run, showAustrianTop };
+})();
+
+// ══ BEWERTUNGS-AUFFORDERUNG (Play Store) ════════════════════════════════
+// Regeln (Google Play): keine Belohnung fuer Bewertungen, keine Vorab-Filterfrage.
+// Selten & respektvoll: ab 3. abgeschlossener Uebung, nur nach gutem Ergebnis (>=80%),
+// nach „Spaeter" 14 Tage Pause, nach „Bewerten" nie wieder.
+const RatePrompt = (() => {
+  const LS = 'pv_rate';
+  const PKG = 'com.pharmavoice.app';
+  function _get() { try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch (_) { return {}; } }
+  function _set(o) { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (_) {} }
+  function maybeShow(correct, total) {
+    const area = document.getElementById('resRateArea');
+    if (!area) return;
+    area.innerHTML = '';
+    const st = _get();
+    st.sessions = (st.sessions || 0) + 1;
+    _set(st);
+    if (st.done) return;
+    if (st.sessions < 3) return;
+    if (!total || correct / total < 0.8) return;
+    if (st.later && Date.now() - st.later < 14 * 86400000) return;
+    area.innerHTML = `
+      <div class="rate-card" role="group" aria-label="${L('App bewerten','Rate the app','Avaliar o app')}">
+        <div class="rate-stars" aria-hidden="true">⭐⭐⭐</div>
+        <div class="rate-text">${L('Hilf anderen, PharmaVoice zu finden – mit deiner Bewertung im Play Store.','Help others find PharmaVoice – with your rating on the Play Store.','Ajude outras pessoas a encontrar o PharmaVoice – com a sua avaliação na Play Store.')}</div>
+        <div class="rate-btns">
+          <button class="rate-go" onclick="RatePrompt.rate()">${L('Bewerten','Rate','Avaliar')}</button>
+          <button class="rate-later" onclick="RatePrompt.later()">${L('Später','Later','Depois')}</button>
+        </div>
+      </div>`;
+  }
+  function _hide() { const a = document.getElementById('resRateArea'); if (a) a.innerHTML = ''; }
+  function rate() {
+    const st = _get(); st.done = true; _set(st); _hide();
+    let native = false;
+    try { native = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); } catch (_) {}
+    if (native) { window.location.href = 'market://details?id=' + PKG; }
+    else { try { window.open('https://play.google.com/store/apps/details?id=' + PKG, '_blank', 'noopener'); } catch (_) {} }
+  }
+  function later() { const st = _get(); st.later = Date.now(); _set(st); _hide(); }
+  return { maybeShow, rate, later };
 })();
 
 // ═══════════════════════════════════════════════
