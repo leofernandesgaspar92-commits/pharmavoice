@@ -749,16 +749,27 @@
     .home-hero-title span { color:#053A34; }
     .home-hero-tagline { font-size:12.5px; color:rgba(255,255,255,.92); margin-bottom:16px; letter-spacing:.03em; font-weight:600; }
     .home-menu { display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
-    .home-menu-item { display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:14px 16px; cursor:pointer; font-family:inherit; color:var(--text); box-shadow:var(--shadow); transition:transform .12s ease, box-shadow .12s ease; }
+    .home-menu-item { display:flex; align-items:center; gap:13px; width:100%; text-align:left; background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:12px 14px; cursor:pointer; font-family:inherit; color:var(--text); box-shadow:var(--shadow); transition:transform .12s ease, box-shadow .12s ease; position:relative; }
     .home-menu-item:hover { transform:translateY(-2px); box-shadow:var(--shadow2); }
     .home-menu-item:active { transform:translateY(1px); box-shadow:var(--shadow); }
+    /* Chevron-Affordanz (klar antippbar) – nicht bei primary/premium */
+    .home-menu-item:not(.primary):not(.premium-cta)::after { content:'›'; margin-left:auto; font-size:21px; font-weight:800; color:var(--gray); opacity:.45; padding-right:2px; }
     .home-menu-item.primary { background:linear-gradient(135deg,var(--green),var(--green-d)); border-color:transparent; box-shadow:0 5px 0 var(--green-d), 0 6px 16px rgba(23,217,196,.3); }
     .home-menu-item.primary:active { transform:translateY(5px); box-shadow:0 0 0 var(--green-d), 0 3px 10px rgba(23,217,196,.25); }
     .home-menu-item.primary .home-menu-label,
     .home-menu-item.primary .home-menu-sub { color:#04211d; }
-    .home-menu-icon { font-size:18px; flex-shrink:0; }
-    .home-menu-label { font-size:14px; font-weight:800; letter-spacing:.02em; }
-    .home-menu-sub { font-size:11px; font-weight:600; margin-top:2px; opacity:.85; }
+    /* Einheitliche farbige Icon-Kacheln (statt nackter Emojis) */
+    .home-menu-icon { width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:22px; line-height:1; flex-shrink:0; background:var(--mi-bg, rgba(0,168,107,.14)); box-shadow:inset 0 0 0 1.5px var(--mi-br, rgba(0,168,107,.22)); }
+    .home-menu-item.primary .home-menu-icon { background:rgba(255,255,255,.28); box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.45); }
+    .home-menu-item.premium-cta .home-menu-icon { background:rgba(255,255,255,.3); box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5); }
+    .mi-1 .home-menu-icon { --mi-bg:rgba(43,127,255,.14);  --mi-br:rgba(43,127,255,.28); }
+    .mi-2 .home-menu-icon { --mi-bg:rgba(0,168,107,.14);   --mi-br:rgba(0,168,107,.28); }
+    .mi-3 .home-menu-icon { --mi-bg:rgba(255,138,61,.16);  --mi-br:rgba(255,138,61,.32); }
+    .mi-4 .home-menu-icon { --mi-bg:rgba(124,77,255,.14);  --mi-br:rgba(124,77,255,.28); }
+    .mi-5 .home-menu-icon { --mi-bg:rgba(255,90,140,.14);  --mi-br:rgba(255,90,140,.3); }
+    .mi-6 .home-menu-icon { --mi-bg:rgba(245,158,11,.16);  --mi-br:rgba(245,158,11,.32); }
+    .home-menu-label { font-size:15px; font-weight:800; letter-spacing:.01em; }
+    .home-menu-sub { font-size:11.5px; font-weight:600; margin-top:2px; opacity:.85; }
     .home-lang-row { display:flex; justify-content:center; gap:8px; margin-top:20px; }
 
     /* DEV PANEL */
@@ -1608,25 +1619,25 @@
         <div class="home-menu-sub" id="homeCtaSub">🔥 Bereit für deine nächste Session</div>
       </div>
     </button>
-    <button class="home-menu-item" onclick="showScreen('Hub');HubSystem.render()">
+    <button class="home-menu-item mi-1" onclick="showScreen('Hub');HubSystem.render()">
       <span class="home-menu-icon">📖</span><div class="home-menu-label" data-i18n="menu_lessons">Lektionen</div>
     </button>
-    <button class="home-menu-item" onclick="openModal()">
+    <button class="home-menu-item mi-2" onclick="openModal()">
       <span class="home-menu-icon">🎤</span><div class="home-menu-label" data-i18n="menu_practice">Sprachpraxis</div>
     </button>
-    <button class="home-menu-item" onclick="startQuickPractice()">
+    <button class="home-menu-item mi-3" onclick="startQuickPractice()">
       <span class="home-menu-icon">🎲</span><div class="home-menu-label" data-i18n="menu_quick">Schnellübung</div>
     </button>
-    <button class="home-menu-item" onclick="showScreen('Profile')">
+    <button class="home-menu-item mi-4" onclick="showScreen('Profile')">
       <span class="home-menu-icon">👤</span><div class="home-menu-label" data-i18n="menu_profile">Mein Profil</div>
     </button>
-    <button class="home-menu-item" onclick="showScreen('Shop');ShopSystem.render()">
+    <button class="home-menu-item mi-5" onclick="showScreen('Shop');ShopSystem.render()">
       <span class="home-menu-icon">🛒</span><div class="home-menu-label" data-i18n="menu_shop">Shop</div>
     </button>
-    <button class="home-menu-item" onclick="showScreen('Achievements')">
+    <button class="home-menu-item mi-6" onclick="showScreen('Achievements')">
       <span class="home-menu-icon">🏆</span><div class="home-menu-label" data-i18n="menu_ranking">Rangliste</div>
     </button>
-    <button class="home-menu-item" onclick="showScreen('Lexikon');LexikonSystem.render()">
+    <button class="home-menu-item mi-1" onclick="showScreen('Lexikon');LexikonSystem.render()">
       <span class="home-menu-icon">📚</span><div class="home-menu-label" data-i18n="menu_lexikon">Wirkstoff-Lexikon</div>
     </button>
   </div>
