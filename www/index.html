@@ -294,6 +294,11 @@
     .acc-btn { display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 4px; border:1px solid var(--border); border-radius:12px; background:var(--bg); color:var(--text); font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; }
     .acc-btn span { font-size:20px; }
     .acc-btn:active { transform:scale(.96); }
+    .acc-name-row { display:flex; gap:8px; margin:8px 0 10px; }
+    .acc-name-input { flex:1; min-width:0; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px; background:var(--bg); color:var(--text); font-size:15px; font-family:inherit; }
+    .acc-name-input:focus { outline:none; border-color:var(--green); box-shadow:0 0 0 3px rgba(0,168,107,.15); }
+    .acc-name-save { padding:12px 16px; border:none; border-radius:12px; background:var(--green); color:#fff; font-weight:800; font-size:14px; cursor:pointer; font-family:inherit; box-shadow:0 3px 0 var(--green-d); }
+    .acc-name-save:active { transform:translateY(2px); box-shadow:none; }
     .acc-signedin { display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .acc-ident { display:flex; align-items:center; gap:10px; min-width:0; }
     .acc-prov-icon { font-size:26px; flex:0 0 auto; }
@@ -1799,7 +1804,7 @@
     <div style="text-align:center;"><span id="profTierBadge" class="tier-badge free" style="cursor:pointer" onclick="openUpgrade()">Free – Upgrade</span></div>
   </div>
 
-  <div class="section-title" data-i18n="acc_title">🔐 Mein Konto</div>
+  <div class="section-title" data-i18n="acc_title">Dein Name</div>
   <div id="accountCard" class="account-card"></div>
 
   <div class="prof-grid">
@@ -1815,20 +1820,20 @@
     <div class="lvl-xp-row"><span id="profProgTxt">0 / 200 Punkte</span><span id="profProgPct">0%</span></div>
   </div>
 
-  <div class="section-title" style="margin-top:24px" data-i18n="prof_stats">📈 Deine Statistik</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="prof_stats">Deine Statistik</div>
   <div id="profStats" class="prof-stats-card"></div>
 
-  <div class="section-title" style="margin-top:24px" data-i18n="prof_team">👥 Mein Team</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="prof_team">Mein Team</div>
   <div id="profTeamGrid"></div>
 
-  <div class="section-title" style="margin-top:24px" data-i18n="prof_lang">🌐 Sprache</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="prof_lang">Sprache</div>
   <div class="home-lang-row" role="group" aria-label="Sprache">
     <button class="lang-btn" data-lang="de" onclick="switchLang('de')" aria-label="Deutsch" lang="de">🇩🇪</button>
     <button class="lang-btn" data-lang="en" onclick="switchLang('en')" aria-label="English" lang="en">🇬🇧</button>
     <button class="lang-btn" data-lang="pt" onclick="switchLang('pt')" aria-label="Português" lang="pt">🇵🇹</button>
   </div>
 
-  <div class="section-title" style="margin-top:24px" data-i18n="theme_title">🎨 Darstellung</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="theme_title">Darstellung</div>
   <div class="rem-card">
     <div class="theme-seg" role="group" aria-label="Theme">
       <button type="button" class="theme-opt" data-theme-val="light" onclick="ThemeSystem.set('light')"><span aria-hidden="true">☀️</span> <span data-i18n="theme_light">Hell</span></button>
@@ -1838,7 +1843,7 @@
     <div class="rem-note" data-i18n="theme_note">Wähle helles oder dunkles Design – „System" folgt deiner Geräteeinstellung.</div>
   </div>
 
-  <div class="section-title" style="margin-top:24px" data-i18n="rem_title">⏰ Lern-Erinnerung</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="rem_title">Lern-Erinnerung</div>
   <div class="rem-card">
     <label class="rem-row"><input type="checkbox" id="remEnabled" onchange="ReminderSystem.save()"><span data-i18n="rem_enable">Tägliche Erinnerung</span></label>
     <div class="rem-time-row">
@@ -1848,7 +1853,7 @@
     <div class="rem-note" data-i18n="rem_note">Erinnert dich beim Öffnen der App, wenn du heute noch nicht geübt hast.</div>
   </div>
 
-  <div class="section-title" style="margin-top:24px" data-i18n="backup_title">💾 Datensicherung</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="backup_title">Datensicherung</div>
   <div class="backup-card">
     <div class="backup-note" data-i18n="backup_note">Dein Fortschritt liegt nur auf diesem Gerät. Sichere ihn als Datei oder stelle ihn wieder her.</div>
     <div class="backup-actions">
@@ -1858,7 +1863,7 @@
     </div>
   </div>
 
-  <div class="section-title" style="margin-top:24px" data-i18n="legal_title">📄 Rechtliches</div>
+  <div class="section-title" style="margin-top:24px" data-i18n="legal_title">Rechtliches</div>
   <div class="legal-links">
     <button class="legal-link" onclick="openLegal('impressum')"><span data-i18n="legal_impressum">Impressum</span><span>›</span></button>
     <button class="legal-link" onclick="openLegal('datenschutz')"><span data-i18n="legal_privacy">Datenschutzerklärung</span><span>›</span></button>
@@ -3552,9 +3557,9 @@ const UI_I18N = {
   prof_learned:  { de:'Begriffe gelernt', en:'Terms learned', pt:'Termos aprendidos' },
   prof_level:    { de:'Aktuelles Level', en:'Current level', pt:'Nível atual' },
   prof_nextlvl:  { de:'Nächstes Level', en:'Next level', pt:'Próximo nível' },
-  prof_team:     { de:'👥 Mein Team', en:'👥 My team', pt:'👥 Minha equipe' },
-  prof_lang:     { de:'🌐 Sprache', en:'🌐 Language', pt:'🌐 Idioma' },
-  prof_stats:    { de:'📈 Deine Statistik', en:'📈 Your stats', pt:'📈 Suas estatísticas' },
+  prof_team:     { de:'Mein Team', en:'My team', pt:'Minha equipe' },
+  prof_lang:     { de:'Sprache', en:'Language', pt:'Idioma' },
+  prof_stats:    { de:'Deine Statistik', en:'Your stats', pt:'Suas estatísticas' },
   ach_top10:     { de:'TOP 10 RUNNER-HIGHSCORES', en:'TOP 10 RUNNER HIGHSCORES', pt:'TOP 10 RECORDES DO RUNNER' },
   ach_section:   { de:'ERFOLGE', en:'ACHIEVEMENTS', pt:'CONQUISTAS' },
   ach_events:    { de:'EVENT-ABZEICHEN', en:'EVENT BADGES', pt:'EMBLEMAS DE EVENTO' },
@@ -3563,12 +3568,12 @@ const UI_I18N = {
   lex_only_favs: { de:'★ Nur Merkliste', en:'★ Saved only', pt:'★ Só salvos' },
   aria_lexsearch:{ de:'Wirkstoffe durchsuchen', en:'Search drugs', pt:'Pesquisar substâncias' },
   aria_remtime:  { de:'Uhrzeit der Erinnerung', en:'Reminder time', pt:'Horário do lembrete' },
-  theme_title:   { de:'🎨 Darstellung', en:'🎨 Appearance', pt:'🎨 Aparência' },
+  theme_title:   { de:'Darstellung', en:'Appearance', pt:'Aparência' },
   theme_light:   { de:'Hell', en:'Light', pt:'Claro' },
   theme_dark:    { de:'Dunkel', en:'Dark', pt:'Escuro' },
   theme_system:  { de:'System', en:'System', pt:'Sistema' },
   theme_note:    { de:'Wähle helles oder dunkles Design – „System" folgt deiner Geräteeinstellung.', en:'Choose light or dark – “System” follows your device setting.', pt:'Escolha claro ou escuro – “Sistema” segue a configuração do dispositivo.' },
-  rem_title:     { de:'⏰ Lern-Erinnerung', en:'⏰ Study reminder', pt:'⏰ Lembrete de estudo' },
+  rem_title:     { de:'Lern-Erinnerung', en:'Study reminder', pt:'Lembrete de estudo' },
   rem_enable:    { de:'Tägliche Erinnerung', en:'Daily reminder', pt:'Lembrete diário' },
   rem_time:      { de:'Uhrzeit', en:'Time', pt:'Horário' },
   rem_note:      { de:'Erinnert dich beim Öffnen der App, wenn du heute noch nicht geübt hast.', en:'Reminds you when you open the app if you haven’t practiced today.', pt:'Lembra você ao abrir o app se ainda não praticou hoje.' },
@@ -3579,18 +3584,18 @@ const UI_I18N = {
   lex_start_practice: { de:'▶ Diese Übung starten', en:'▶ Start this practice', pt:'▶ Iniciar esta prática' },
   close_btn:     { de:'Schließen', en:'Close', pt:'Fechar' },
   levelup_ok:    { de:'Weiter', en:'Continue', pt:'Continuar' },
-  legal_title:   { de:'📄 Rechtliches', en:'📄 Legal', pt:'📄 Legal' },
+  legal_title:   { de:'Rechtliches', en:'Legal', pt:'Legal' },
   legal_impressum:{ de:'Impressum', en:'Legal notice', pt:'Informação legal' },
   legal_privacy: { de:'Datenschutzerklärung', en:'Privacy policy', pt:'Política de privacidade' },
   legal_terms:   { de:'AGB & Widerruf', en:'Terms & withdrawal', pt:'Termos e revogação' },
   diff_easy:     { de:'Leicht', en:'Easy', pt:'Fácil' },
   diff_med:      { de:'Mittel', en:'Medium', pt:'Médio' },
   diff_hard:     { de:'Schwer', en:'Hard', pt:'Difícil' },
-  acc_title:     { de:'🔐 Mein Konto', en:'🔐 My account', pt:'🔐 Minha conta' },
-  acc_hint:      { de:'Melde dich an, um deinen Fortschritt zu sichern:', en:'Sign in to secure your progress:', pt:'Entre para salvar seu progresso:' },
-  acc_signout:   { de:'Abmelden', en:'Sign out', pt:'Sair' },
-  acc_note_local:{ de:'🔒 Nur auf diesem Gerät gespeichert – keine Datenübertragung.', en:'🔒 Stored on this device only – no data leaves it.', pt:'🔒 Salvo só neste dispositivo – nenhum dado é enviado.' },
-  backup_title:  { de:'💾 Datensicherung', en:'💾 Data backup', pt:'💾 Backup de dados' },
+  acc_title:     { de:'Dein Name', en:'Your name', pt:'Seu nome' },
+  acc_hint:      { de:'Wie sollen wir dich nennen? (optional)', en:'What should we call you? (optional)', pt:'Como devemos te chamar? (opcional)' },
+  acc_signout:   { de:'Ändern', en:'Change', pt:'Alterar' },
+  acc_note_local:{ de:'🔒 Bleibt nur auf diesem Gerät. Zum Sichern deines Fortschritts nutze unten „Datensicherung“.', en:'🔒 Stays on this device only. To back up your progress, use “Data backup” below.', pt:'🔒 Fica só neste dispositivo. Para salvar seu progresso, use “Backup de dados” abaixo.' },
+  backup_title:  { de:'Datensicherung', en:'Data backup', pt:'Backup de dados' },
   backup_note:   { de:'Dein Fortschritt liegt nur auf diesem Gerät. Sichere ihn als Datei oder stelle ihn wieder her.', en:'Your progress is stored on this device only. Save it as a file or restore it.', pt:'Seu progresso está só neste dispositivo. Salve como arquivo ou restaure.' },
   backup_export: { de:'⬇️ Sicherung exportieren', en:'⬇️ Export backup', pt:'⬇️ Exportar backup' },
   backup_import: { de:'⬆️ Sicherung importieren', en:'⬆️ Import backup', pt:'⬆️ Importar backup' },
@@ -4145,69 +4150,58 @@ function renderHomeDashboard() {
 // OAuth-Login und KEINE Datenübertragung – das bräuchte einen Server. Das Konto
 // verknüpft den lokalen Fortschritt mit einer selbstgewählten Identität.
 const AccountSystem = (() => {
+  // Ehrlich: kein Login/Server. Nur ein optionaler Anzeigename, lokal gespeichert
+  // (fuer die persoenliche Begruessung). Fortschritt sichern -> BackupSystem.
   const LS = 'pv_account';
-  const PROVIDERS = [
-    { id:'email',     label:'E-Mail',     icon:'✉️', ask:{ de:'Deine E-Mail-Adresse:', en:'Your email address:', pt:'Seu e-mail:' } },
-    { id:'google',    label:'Google',     icon:'🅶', ask:{ de:'Google-Konto (E-Mail):', en:'Google account (email):', pt:'Conta Google (e-mail):' } },
-    { id:'facebook',  label:'Facebook',   icon:'📘', ask:{ de:'Facebook-Name oder E-Mail:', en:'Facebook name or email:', pt:'Nome ou e-mail do Facebook:' } },
-    { id:'instagram', label:'Instagram',  icon:'📷', ask:{ de:'Instagram-Handle (@name):', en:'Instagram handle (@name):', pt:'Usuário do Instagram (@nome):' } },
-    { id:'tiktok',    label:'TikTok',     icon:'🎵', ask:{ de:'TikTok-Handle (@name):', en:'TikTok handle (@name):', pt:'Usuário do TikTok (@nome):' } },
-    { id:'snapchat',  label:'Snapchat',   icon:'👻', ask:{ de:'Snapchat-Name:', en:'Snapchat username:', pt:'Usuário do Snapchat:' } },
-  ];
   function get() { try { return JSON.parse(localStorage.getItem(LS)) || null; } catch { return null; } }
-  // Anzeigename aus dem Konto ableiten: E-Mail → Teil vor @, Handles bleiben wie sie sind
   function displayName() {
     const acc = get();
     if (!acc || !acc.id) return '';
-    if (acc.method === 'email' || acc.id.includes('@') && acc.id.includes('.')) {
-      return acc.id.split('@')[0] || acc.id;
-    }
+    // Altdaten (frueher E-Mail) -> nur Teil vor @ zeigen
+    if (acc.id.includes('@')) return acc.id.split('@')[0] || '';
     return acc.id;
   }
-  function _save(acc) { localStorage.setItem(LS, JSON.stringify(acc)); }
-  function signIn(providerId) {
-    const prov = PROVIDERS.find(p => p.id === providerId);
-    if (!prov) return;
-    const id = (prompt(L(prov.ask.de, prov.ask.en, prov.ask.pt)) || '').trim();
-    if (!id) return;
-    if (prov.id === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(id)) {
-      alert(L('Bitte eine gültige E-Mail-Adresse eingeben.','Please enter a valid email address.','Digite um e-mail válido.'));
-      return;
-    }
-    _save({ method: prov.id, id, since: Date.now() });
+  function _esc(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function save() {
+    const inp = document.getElementById('accNameInput');
+    const v = ((inp && inp.value) || '').trim().slice(0, 24);
+    if (!v) return;
+    localStorage.setItem(LS, JSON.stringify({ method: 'name', id: v, since: Date.now() }));
     if (typeof refreshUI === 'function') refreshUI(); else render();
-    if (typeof toast === 'function') toast(L('Angemeldet – dein Fortschritt ist gespeichert.','Signed in – your progress is saved.','Conectado – seu progresso foi salvo.'));
+    if (typeof toast === 'function') toast(L('Gespeichert – hallo ' + v + '!', 'Saved – hi ' + v + '!', 'Salvo – olá ' + v + '!'));
   }
-  function signOut() {
-    if (!confirm(L('Wirklich abmelden? Dein Lernfortschritt bleibt auf dem Gerät erhalten.','Really sign out? Your progress stays on this device.','Sair mesmo? Seu progresso continua no dispositivo.'))) return;
+  function signOut() {  // „Ändern“: Namen entfernen und Eingabe wieder zeigen
     localStorage.removeItem(LS);
     if (typeof refreshUI === 'function') refreshUI(); else render();
   }
   function render() {
     const box = document.getElementById('accountCard');
     if (!box) return;
-    const acc = get();
-    if (acc) {
-      const prov = PROVIDERS.find(p => p.id === acc.method) || { icon:'👤', label:acc.method };
+    const name = displayName();
+    if (name) {
       box.innerHTML = `
         <div class="acc-signedin">
-          <div class="acc-ident"><span class="acc-prov-icon">${prov.icon}</span>
-            <div><div class="acc-id">${acc.id}</div>
-            <div class="acc-via">${L('angemeldet über','signed in via','conectado via')} ${prov.label}</div></div>
+          <div class="acc-ident"><span class="acc-prov-icon">👋</span>
+            <div><div class="acc-id">${_esc(name)}</div></div>
           </div>
-          <button class="acc-signout" onclick="AccountSystem.signOut()" data-i18n="acc_signout">Abmelden</button>
+          <button class="acc-signout" onclick="AccountSystem.signOut()" data-i18n="acc_signout">Ändern</button>
         </div>
-        <div class="acc-note" data-i18n="acc_note_local">🔒 Nur auf diesem Gerät gespeichert – keine Datenübertragung.</div>`;
+        <div class="acc-note" data-i18n="acc_note_local">🔒</div>`;
     } else {
       box.innerHTML = `
-        <div class="acc-hint" data-i18n="acc_hint">Melde dich an, um deinen Fortschritt zu sichern:</div>
-        <div class="acc-providers">${PROVIDERS.map(p =>
-          `<button class="acc-btn acc-${p.id}" onclick="AccountSystem.signIn('${p.id}')"><span>${p.icon}</span>${p.label}</button>`).join('')}</div>
-        <div class="acc-note" data-i18n="acc_note_local">🔒 Nur auf diesem Gerät gespeichert – keine Datenübertragung.</div>`;
+        <div class="acc-hint" data-i18n="acc_hint">Wie sollen wir dich nennen?</div>
+        <div class="acc-name-row">
+          <input id="accNameInput" class="acc-name-input" type="text" maxlength="24" autocomplete="nickname"
+                 placeholder="${L('Dein Vorname','Your first name','Seu primeiro nome')}"
+                 aria-label="${L('Dein Name','Your name','Seu nome')}"
+                 onkeydown="if(event.key==='Enter')AccountSystem.save()">
+          <button class="acc-name-save" onclick="AccountSystem.save()">${L('Speichern','Save','Salvar')}</button>
+        </div>
+        <div class="acc-note" data-i18n="acc_note_local">🔒</div>`;
     }
     if (typeof applyI18n === 'function') applyI18n();
   }
-  return { get, signIn, signOut, render, displayName };
+  return { get, save, signOut, render, displayName };
 })();
 
 // ══ BACKUP SYSTEM (Fortschritt als Datei sichern/wiederherstellen) ═══════════
