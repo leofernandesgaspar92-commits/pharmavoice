@@ -1143,8 +1143,13 @@
     .hub-sub    { font-size:13px; color:var(--gray); margin-top:2px; }
     .hub-xp-pill { background:var(--green); color:#fff; border-radius:20px; padding:5px 14px; font-size:13px; font-weight:700; }
     /* World section */
-    .hub-world { margin-bottom:28px; }
-    .hub-world-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .hub-world { margin-bottom:10px; background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:12px 14px; box-shadow:var(--shadow); }
+    .hub-world-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .hub-world-header > div:nth-child(2) { flex:1; min-width:0; }
+    .hub-world-chev { font-size:20px; font-weight:800; color:var(--gray); opacity:.6; transition:transform .2s ease; }
+    .hub-world.open .hub-world-chev { transform:rotate(90deg); }
+    .hub-world:not(.open) .hub-levels { display:none; }
+    .hub-world.open .hub-levels { margin-top:14px; }
     .hub-world-icon { font-size:28px; }
     .hub-world-name { font-size:16px; font-weight:800; color:var(--text); }
     .hub-world-prog { font-size:12px; color:var(--gray); margin-top:2px; }
@@ -1179,7 +1184,7 @@
     .hub-connector { width:2px; height:12px; background:var(--border); margin:0 auto 0 29px; }
 
     /* ── Hub World-Map Path + Detail Panel (Youth-Pharma-Referenz) ── */
-    .hub-map-panel { background:linear-gradient(160deg,#0F1B33 0%,#0A1220 100%); border:1px solid var(--border); border-radius:20px; padding:20px 16px; margin-bottom:14px; }
+    .hub-map-panel { background:linear-gradient(160deg,#0c352e 0%,#0f2236 100%); border:1.5px solid rgba(0,201,127,.3); border-radius:20px; padding:20px 16px; margin-bottom:14px; }
     .hub-map-world-name { font-size:13px; font-weight:800; color:#fff; letter-spacing:.03em; margin-bottom:16px; }
     .hub-path { display:flex; flex-direction:column; align-items:center; }
     .hub-path-item { display:flex; flex-direction:column; align-items:center; width:100%; }
@@ -1194,7 +1199,7 @@
     .hub-path-node-num { font-size:18px; font-weight:900; color:#04211d; }
     .node-locked .hub-path-node-num { color:var(--gray2); }
     @keyframes hubNodePulse { 0%,100%{ box-shadow:0 0 12px rgba(0,217,255,.4);} 50%{ box-shadow:0 0 22px rgba(0,217,255,.7);} }
-    .hub-path-node-label { font-size:10.5px; font-weight:700; color:var(--text2); margin:6px 0 4px; text-align:center; max-width:100px; }
+    .hub-path-node-label { font-size:11px; font-weight:700; color:rgba(255,255,255,.82); margin:6px 0 4px; text-align:center; max-width:110px; }
     .hub-detail-panel { background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:18px; margin-bottom:14px; }
     .hub-detail-label { font-size:10px; font-weight:800; letter-spacing:.08em; color:var(--green-ink); margin-bottom:6px; }
     .hub-detail-title { font-size:17px; font-weight:900; color:var(--text); margin-bottom:6px; }
@@ -8956,7 +8961,7 @@ const HubSystem = (() => {
     let html = `
       <div class="hub-header">
         <div>
-          <div class="hub-title">${L('🌍 Lernwelten','🌍 Learning worlds','🌍 Mundos de aprendizado')}</div>
+          <div class="hub-title">${L('Lernwelten','Learning worlds','Mundos de aprendizado')}</div>
           <div class="hub-sub">${L(`${doneLevels} von ${totalLevels} Level abgeschlossen`,`${doneLevels} of ${totalLevels} levels completed`,`${doneLevels} de ${totalLevels} níveis concluídos`)}</div>
         </div>
       </div>
@@ -8973,18 +8978,22 @@ const HubSystem = (() => {
       <div class="section-title" style="margin-top:8px">${L('ALLE WELTEN','ALL WORLDS','TODOS OS MUNDOS')}</div>
     `;
 
-    for (const world of WORLDS) {
+    const curIdx = Math.max(0, WORLDS.indexOf(currentWorld));
+    WORLDS.forEach((world, wi) => {
       const worldDone = world.levels.filter(l => state[l.id]?.done).length;
+      const isOpen = _openWorlds ? _openWorlds.has(wi) : wi === curIdx;
       const pct = Math.round(worldDone / world.levels.length * 100);
 
       html += `
-        <div class="hub-world">
-          <div class="hub-world-header">
+        <div class="hub-world${isOpen ? ' open' : ''}">
+          <div class="hub-world-header" role="button" tabindex="0" aria-expanded="${isOpen}"
+               onclick="HubSystem.toggleWorld(${wi})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();HubSystem.toggleWorld(${wi})}">
             <div class="hub-world-icon">${world.icon}</div>
             <div>
               <div class="hub-world-name">${world.name}</div>
               <div class="hub-world-prog">${worldDone}/${world.levels.length} ${L('Level','levels','níveis')} · ${pct}%</div>
             </div>
+            <div class="hub-world-chev" aria-hidden="true">›</div>
           </div>
           <div class="hub-world-bar"><div class="hub-world-fill" style="width:${pct}%"></div></div>
           <div class="hub-levels">`;
@@ -9011,9 +9020,21 @@ const HubSystem = (() => {
       });
 
       html += `</div></div>`;
-    }
+    });
 
     el.innerHTML = html;
+  }
+
+  // Welten auf-/zuklappen (Standard: nur die aktuelle Welt offen)
+  let _openWorlds = null;
+  function toggleWorld(wi) {
+    if (!_openWorlds) {
+      const st = _load(); const nx = _nextLevel(st);
+      const cw = nx ? WORLDS.find(w => w.levels.some(l => l.id === nx.level.id)) : WORLDS[WORLDS.length-1];
+      _openWorlds = new Set([Math.max(0, WORLDS.indexOf(cw))]);
+    }
+    if (_openWorlds.has(wi)) _openWorlds.delete(wi); else _openWorlds.add(wi);
+    const y = window.scrollY; render(); window.scrollTo(0, y);
   }
 
   function _launchById(id) {
@@ -9064,7 +9085,7 @@ const HubSystem = (() => {
     return { world: last, done: last.levels.length, total: last.levels.length, pct: 100 };
   }
 
-  return { render, playNext, completeLevel, _launchById, _hookRunnerEnd, _hookLearnEnd, getCurrentWorldSummary, WORLDS };
+  return { render, toggleWorld, playNext, completeLevel, _launchById, _hookRunnerEnd, _hookLearnEnd, getCurrentWorldSummary, WORLDS };
 })();
 
 // ══ UNIFIED LEARNING HUB (top-level orchestrator) ══════════════════════
