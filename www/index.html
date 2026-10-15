@@ -397,13 +397,16 @@
 
     /* ── Shop & Top-10 ── */
     .shop-item { display:flex; align-items:center; gap:12px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:10px; }
-    .shop-item-icon { font-size:28px; flex-shrink:0; }
+    .shop-item-icon { flex-shrink:0; }
     .shop-item-info { flex:1; min-width:0; }
     .shop-item-name { font-size:14px; font-weight:800; color:var(--text); }
     .shop-owned { font-size:11px; font-weight:700; color:var(--green-ink); }
     .shop-item-desc { font-size:11.5px; color:var(--gray); margin-top:2px; line-height:1.4; }
     .shop-buy-btn { background:linear-gradient(135deg,var(--green),var(--green-d)); border:none; border-radius:10px; padding:9px 14px; font-size:13px; font-weight:900; color:#04211d; cursor:pointer; font-family:inherit; white-space:nowrap; }
     .shop-buy-btn:active { transform:scale(.95); }
+    .shop-buy-col { display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; }
+    .shop-buy-btn.cant { background:rgba(var(--fg),.08); color:var(--gray); box-shadow:none; }
+    .shop-missing { font-size:10.5px; font-weight:700; color:var(--gray); white-space:nowrap; }
     /* Premium-CTA: hervorgehobene Gold-Karte (aspirational, Monetarisierung) */
     .home-menu-item.premium-cta { background:linear-gradient(135deg,#FFB020 0%,#FF8A3D 100%); border:none; color:#3A2200; box-shadow:0 8px 20px rgba(255,138,61,.34); }
     .home-menu-item.premium-cta .home-menu-label { color:#3A2200; }
@@ -7760,11 +7763,22 @@ const MusicSystem = (() => {
 // ══ SHOP SYSTEM (Power-Ups kaufen mit Punkte/Gems) ══════════════════════
 const ShopSystem = (() => {
   const ITEMS = [
-    { id:'shield',  icon:'🛡️', name:'Streak-Schild',      desc:'Schützt deinen Streak, wenn du einen Tag verpasst.', cost:200, currency:'coins' },
-    { id:'energy',  icon:'⚡', name:'Energie-Auffüllung', desc:'Füllt deine Energie sofort auf 100 auf.',            cost:5,   currency:'gems'  },
-    { id:'dblxp',   icon:'✨', name:'Double-XP',           desc:'Nächste Lern-Session bringt doppelte Punkte.',       cost:150, currency:'coins' },
+    { id:'shield',  icon:'🛡️', tint:'mi-1', cost:200, currency:'coins',
+      name:{ de:'Streak-Schild', en:'Streak shield', pt:'Escudo de sequência' },
+      desc:{ de:'Schützt deinen Streak, wenn du einen Tag verpasst.', en:'Protects your streak if you miss a day.', pt:'Protege sua sequência se você perder um dia.' } },
+    { id:'energy',  icon:'⚡', tint:'mi-3', cost:5, currency:'gems',
+      name:{ de:'Energie-Auffüllung', en:'Energy refill', pt:'Recarga de energia' },
+      desc:{ de:'Füllt deine Energie sofort auf 100 auf.', en:'Instantly refills your energy to 100.', pt:'Recarrega sua energia para 100 na hora.' } },
+    { id:'dblxp',   icon:'✨', tint:'mi-6', cost:150, currency:'coins',
+      name:{ de:'Double-XP', en:'Double XP', pt:'XP em dobro' },
+      desc:{ de:'Nächste Lern-Session bringt doppelte Punkte.', en:'Your next learning session earns double points.', pt:'A próxima sessão de estudo dá pontos em dobro.' } },
   ];
 
+  const _t = o => L(o.de, o.en, o.pt);
+  function _have(item) {
+    if (item.currency === 'coins') { let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch {} return pv2.xp || 0; }
+    return ResourceSystem.getGems();
+  }
   function _getCount(id) { return parseInt(localStorage.getItem('pv_shop_' + id)) || 0; }
   function _setCount(id, n) { localStorage.setItem('pv_shop_' + id, n); }
 
@@ -7787,7 +7801,7 @@ const ShopSystem = (() => {
       _setCount(id, _getCount(id) + 1);
     }
     AudioSystem.playLevelUp(CharacterSystem.getLang());
-    CharacterSystem.showBubble(`${item.icon} ${item.name} gekauft!`, 2500);
+    CharacterSystem.showBubble(`${item.icon} ${_t(item.name)} ${L('gekauft!','bought!','comprado!')}`, 2500);
     refreshUI();
     render();
   }
@@ -7812,13 +7826,18 @@ const ShopSystem = (() => {
     c.innerHTML = ITEMS.map(item => {
       const owned = item.id === 'energy' ? null : _getCount(item.id);
       const curIcon = item.currency === 'coins' ? '🪙' : '💎';
-      return `<div class="shop-item">
-        <div class="shop-item-icon">${item.icon}</div>
+      const missing = Math.max(0, item.cost - _have(item));
+      return `<div class="shop-item ${item.tint}">
+        <div class="shop-item-icon home-menu-icon" aria-hidden="true">${item.icon}</div>
         <div class="shop-item-info">
-          <div class="shop-item-name">${item.name}${owned ? ` <span class="shop-owned">×${owned}</span>` : ''}</div>
-          <div class="shop-item-desc">${item.desc}</div>
+          <div class="shop-item-name">${_t(item.name)}${owned ? ` <span class="shop-owned">×${owned}</span>` : ''}</div>
+          <div class="shop-item-desc">${_t(item.desc)}</div>
         </div>
-        <button class="shop-buy-btn" onclick="ShopSystem.buy('${item.id}')">${curIcon} ${item.cost}</button>
+        <div class="shop-buy-col">
+          <button class="shop-buy-btn${missing ? ' cant' : ''}" onclick="ShopSystem.buy('${item.id}')"
+            aria-label="${_t(item.name)}: ${item.cost} ${item.currency === 'coins' ? L('Punkte','Points','Pontos') : 'Gems'}">${curIcon} ${item.cost}</button>
+          ${missing ? `<div class="shop-missing">${L('noch','need','faltam')} ${missing} ${curIcon}</div>` : ''}
+        </div>
       </div>`;
     }).join('');
   }
@@ -8298,6 +8317,8 @@ const ResourceSystem = (() => {
     let pv2 = {}; try { pv2 = JSON.parse(localStorage.getItem('pv2') || '{}'); } catch {}
     coinsEl.textContent = (pv2.xp || 0).toLocaleString('de-DE');
     gemsEl.textContent  = getGems();
+    // Shop live mitziehen (z. B. wenn der Tagesbonus kommt, waehrend der Shop offen ist)
+    try { const sh = document.getElementById('screenShop'); if (sh && sh.classList.contains('active') && typeof ShopSystem !== 'undefined') ShopSystem.render(); } catch (e) {}
     const energy = getEnergy();
     enEl.textContent = energy;
     if (fillEl) fillEl.style.width = energy + '%';
