@@ -752,7 +752,13 @@
     .home-hero-title { font-size:23px; font-weight:900; color:#fff; letter-spacing:.02em; text-shadow:0 1px 6px rgba(4,40,36,.18); }
     .home-hero-title span { color:#053A34; }
     .home-hero-tagline { font-size:12.5px; color:rgba(255,255,255,.92); margin-bottom:16px; letter-spacing:.03em; font-weight:600; }
-    .home-menu { display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
+    .home-menu { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:18px; }
+    /* Kompaktes Kachel-Raster (statt langer Liste) – primary bleibt volle Breite */
+    .home-menu .home-menu-item.primary { grid-column:1/-1; }
+    .home-menu .home-menu-item:not(.primary) { flex-direction:column; justify-content:center; text-align:center; gap:8px; padding:14px 6px 12px; min-height:96px; }
+    .home-menu .home-menu-item:not(.primary)::after { display:none; }
+    .home-menu .home-menu-item:not(.primary) .home-menu-label { font-size:12.5px; line-height:1.2; letter-spacing:0; }
+    .home-menu .home-menu-item:not(.primary) .home-menu-icon { width:48px; height:48px; font-size:24px; border-radius:15px; }
     .home-menu-item { display:flex; align-items:center; gap:13px; width:100%; text-align:left; background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:12px 14px; cursor:pointer; font-family:inherit; color:var(--text); box-shadow:var(--shadow); transition:transform .12s ease, box-shadow .12s ease; position:relative; }
     .home-menu-item:hover { transform:translateY(-2px); box-shadow:var(--shadow2); }
     .home-menu-item:active { transform:translateY(1px); box-shadow:var(--shadow); }
@@ -1632,9 +1638,6 @@
     <button class="home-menu-item mi-3" onclick="startQuickPractice()">
       <span class="home-menu-icon">🎲</span><div class="home-menu-label" data-i18n="menu_quick">Schnellübung</div>
     </button>
-    <button class="home-menu-item mi-4" onclick="showScreen('Profile')">
-      <span class="home-menu-icon">👤</span><div class="home-menu-label" data-i18n="menu_profile">Mein Profil</div>
-    </button>
     <button class="home-menu-item mi-5" onclick="showScreen('Shop');ShopSystem.render()">
       <span class="home-menu-icon">🛒</span><div class="home-menu-label" data-i18n="menu_shop">Shop</div>
     </button>
@@ -1642,7 +1645,7 @@
       <span class="home-menu-icon">🏆</span><div class="home-menu-label" data-i18n="menu_ranking">Rangliste</div>
     </button>
     <button class="home-menu-item mi-1" onclick="showScreen('Lexikon');LexikonSystem.render()">
-      <span class="home-menu-icon">📚</span><div class="home-menu-label" data-i18n="menu_lexikon">Wirkstoff-Lexikon</div>
+      <span class="home-menu-icon">📚</span><div class="home-menu-label" data-i18n="menu_lexikon">Lexikon</div>
     </button>
   </div>
 
@@ -3498,7 +3501,7 @@ const UI_I18N = {
   menu_profile:  { de:'Mein Profil',        en:'My profile',        pt:'Meu perfil' },
   menu_shop:     { de:'Shop',               en:'Shop',              pt:'Loja' },
   menu_ranking:  { de:'Rangliste',          en:'Leaderboard',       pt:'Ranking' },
-  menu_lexikon:  { de:'Wirkstoff-Lexikon',  en:'Drug dictionary',   pt:'Dicionário de fármacos' },
+  menu_lexikon:  { de:'Lexikon',  en:'Dictionary',   pt:'Dicionário' },
   tagline:       { de:'Lerne. Verstehe. Sprich. Heile.', en:'Learn. Understand. Speak. Heal.', pt:'Aprenda. Entenda. Fale. Cure.' },
   sec_progress:  { de:'DEIN FORTSCHRITT', en:'YOUR PROGRESS',  pt:'SEU PROGRESSO' },
   sec_world:     { de:'WELT-FORTSCHRITT', en:'WORLD PROGRESS', pt:'PROGRESSO DO MUNDO' },
