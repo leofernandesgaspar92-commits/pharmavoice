@@ -630,6 +630,10 @@
     /* aktuell vorgesprochene Silbe hervorheben */
     .syl-item.active { background:var(--green); color:#fff; box-shadow:0 3px 10px rgba(0,168,107,.4); transform:scale(1.14); transition:transform .12s ease, background .12s ease; }
     .syl-item.active.stressed { background:var(--gold); color:#3A2200; box-shadow:0 3px 12px rgba(255,193,7,.5); }
+    .syl-item.reveal { animation:stressReveal .55s cubic-bezier(.3,1.6,.5,1); }
+    @keyframes stressReveal { 0%{ transform:scale(.85); } 55%{ transform:scale(1.28); } 100%{ transform:scale(1); } }
+    .opt.eliminated { opacity:.28; text-decoration:line-through; pointer-events:none; }
+    @media (prefers-reduced-motion: reduce) { .syl-item.reveal { animation:none; } }
     /* Lexikon Schnell-Ansicht (Aussprache nachschlagen) */
     .lex-sheet-cat { text-align:center; font-size:11px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:var(--green-ink); margin-bottom:6px; }
     .lex-sheet-name { text-align:center; font-size:26px; font-weight:900; color:var(--text); line-height:1.15; }
@@ -4919,14 +4923,17 @@ function renderQ() {
   const nameEl = el('medName');
   nameEl.textContent = med.name;
   nameEl.style.fontSize = med.name.length > 22 ? '18px' : med.name.length > 15 ? '24px' : '';
-  set('medPhonetic', med.phonetic);
+  Q.hinted = false;
+  // Betonung erst NACH der Antwort zeigen (sonst steht die Loesung schon da)
+  set('medPhonetic', String(med.phonetic || '').replace(/[\u02C8']/g, ''));
   // Syllables
   const sylRow = el('sylRow');
   sylRow.innerHTML = '';
   med.syllables.forEach((s, i) => {
     if (i > 0) { const d = document.createElement('span'); d.className='syl-sep'; d.textContent='·'; sylRow.appendChild(d); }
     const sp = document.createElement('span');
-    sp.className = 'syl-item' + (i === med.si ? ' stressed' : '');
+    sp.className = 'syl-item';
+    if (i === med.si) sp.dataset.si = '1';
     sp.textContent = s;
     sylRow.appendChild(sp);
   });
@@ -4968,13 +4975,21 @@ function renderQ() {
 }
 
 // Gemeinsame Bewertungslogik – genutzt von Antwort-Button UND Mikrofon-Aussprache
+function revealStress(med) {
+  document.querySelectorAll('#sylRow .syl-item[data-si="1"]').forEach(sp => sp.classList.add('stressed', 'reveal'));
+  set('medPhonetic', med.phonetic);
+  // Richtige Aussprache direkt nach der Antwort hoeren (festigt das Gelernte)
+  try { if (!AudioSystem.isSpeechOn || AudioSystem.isSpeechOn()) setTimeout(() => AudioSystem.speakWord(med.name, CharacterSystem.getLang()), 450); } catch (e) {}
+}
+
 function scoreAnswer(good, med) {
   Q.answered = true;
+  try { revealStress(med); } catch (e) {}
   document.querySelectorAll('.opt').forEach(b => b.disabled = true);
   // Wort-Ergebnis für die Result-Übersicht merken
   (Q.results = Q.results || []).push({ name: med.name, good });
   if (good) {
-    const gain = 10 * (Q.xpMult || 1);
+    const gain = (Q.hinted ? 5 : 10) * (Q.xpMult || 1);  // mit Hinweis halbe Punkte
     Q.correct++; Q.sessionXP += gain; S.xp += gain;
     Q.streak = (Q.streak || 0) + 1;
     popXP();
@@ -5942,15 +5957,23 @@ function tipFor(med) {
   );
 }
 
+// Fairer Hinweis: streicht EINE falsche Antwort und spricht das Wort vor
+// (einmal pro Frage, richtige Antwort gibt dann halbe Punkte).
 function showLearnHint() {
   const med = Q.meds[Q.idx];
-  if (!med) return;
-  const syl = med.syllables[med.si];
-  CharacterSystem.showBubble(L(
-    `💡 Tipp: Die betonte Silbe ist „${syl}"!`,
-    `💡 Hint: The stressed syllable is “${syl}”!`,
-    `💡 Dica: A sílaba tônica é “${syl}”!`
-  ), 3200);
+  if (!med || Q.answered) return;
+  if (Q.hinted) {
+    CharacterSystem.showBubble(L('💡 Hinweis schon genutzt – hör genau hin!','💡 Hint already used – listen closely!','💡 Dica já usada – ouça com atenção!'), 2400);
+    try { AudioSystem.speakWord(med.name, CharacterSystem.getLang()); } catch (e) {}
+    return;
+  }
+  const wrong = [...document.querySelectorAll('#optGrid .opt')].filter(b => b.dataset.correct !== 'true' && !b.disabled);
+  if (!wrong.length) return;
+  const out = wrong[Math.floor(Math.random() * wrong.length)];
+  out.disabled = true; out.classList.add('eliminated');
+  Q.hinted = true;
+  try { AudioSystem.speakWord(med.name, CharacterSystem.getLang()); } catch (e) {}
+  CharacterSystem.showBubble(L('💡 Eine falsche Antwort ist weg – hör genau hin! (halbe Punkte)','💡 One wrong answer removed – listen closely! (half points)','💡 Uma resposta errada foi removida – ouça com atenção! (metade dos pontos)'), 3000);
 }
 
 function showFeedback(ok, html) {
@@ -6261,7 +6284,7 @@ function practiceRepeat() {
   if (btn)  { btn.classList.remove('repeat'); btn.classList.add('listening'); }
   if (icon) icon.textContent = '🔊';
   if (txt)  txt.textContent = L('Hör gut zu …', 'Listen closely …', 'Ouça com atenção …');
-  if (st)   { st.className = 'repeat-status listen show'; st.textContent = L('Achte auf die betonte Silbe.', 'Notice the stressed syllable.', 'Observe a sílaba tônica.'); }
+  if (st)   { st.className = 'repeat-status listen show'; st.textContent = L('Hör genau hin: Welche Silbe klingt lauter und länger?', 'Listen closely: which syllable sounds louder and longer?', 'Ouça com atenção: qual sílaba soa mais forte e longa?'); }
   if (syl)  syl.classList.add('pulse');
 
   // Phase 2 – NACHSPRECHEN: klare, positive Aufforderung nach dem Vorsprechen
@@ -6270,7 +6293,7 @@ function practiceRepeat() {
     if (btn)  { btn.classList.remove('listening'); btn.classList.add('repeat'); }
     if (icon) icon.textContent = '🗣️';
     if (txt)  txt.textContent = L('Jetzt laut nachsprechen!', 'Now say it out loud!', 'Agora repita em voz alta!');
-    if (st)   { st.className = 'repeat-status repeat show'; st.textContent = L('💪 Sprich Silbe für Silbe – betone die markierte Silbe.', '💪 Say it syllable by syllable – stress the highlighted one.', '💪 Fale sílaba por sílaba – enfatize a destacada.'); }
+    if (st)   { st.className = 'repeat-status repeat show'; st.textContent = L('💪 Sprich Silbe für Silbe – betone die Silbe, die du gehört hast.', '💪 Say it syllable by syllable – stress the syllable you heard.', '💪 Fale sílaba por sílaba – enfatize a sílaba que você ouviu.'); }
     if (syl)  syl.classList.remove('pulse');
 
     // Phase 3 – WIEDERHOLEN anbieten (positiv, kein Zwang)
