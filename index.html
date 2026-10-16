@@ -3878,6 +3878,13 @@ function sm2Save() {
   localStorage.setItem('pv_sm2', JSON.stringify(SM2));
 }
 
+// Echte Zahl gelernter Begriffe: verschiedene Wirkstoffe, die zuletzt richtig
+// beantwortet wurden (gleiche Definition wie das Lexikon). S.learned zaehlt
+// dagegen alle Antworten (fuer Erfolge "X Fragen beantwortet").
+function learnedWordsCount() {
+  try { return MEDS.filter(m => SM2[m.name] && SM2[m.name].reps > 0).length; } catch (e) { return 0; }
+}
+
 function sm2Update(name, correct) {
   const today = new Date().toISOString().slice(0,10);
   const d = SM2[name] || { ef:2.5, interval:1, reps:0, nextReview:today };
@@ -4086,13 +4093,13 @@ function refreshUI() {
   // Hero
   if (el('heroXp'))      el('heroXp').textContent      = S.xp;
   if (el('heroStreak'))  el('heroStreak').textContent   = S.streak;
-  if (el('heroLearned')) el('heroLearned').textContent  = S.learned;
+  if (el('heroLearned')) el('heroLearned').textContent  = learnedWordsCount();
   const due = sm2DueCount(MEDS);
   if (el('heroDue'))      el('heroDue').style.display  = due > 0 ? '' : 'none';
   if (el('heroDueCount')) el('heroDueCount').textContent = due;
   set('profXp',      S.xp);
   set('profStreak',  `${S.streak} 🔥`);
-  set('profLearned', S.learned);
+  set('profLearned', learnedWordsCount());
   set('profLevel',   lvl);
   el('profProgFill').style.width = pct + '%';
   set('profProgTxt', `${inLvl} / ${xpPerLevel} Punkte`);
@@ -4430,7 +4437,7 @@ function openModal() {
   c.className = 'modal-lvl-grid';
   c.innerHTML = '';
   const totalMeds = MEDS.length;
-  const learnedCount = Math.min(S.learned || 0, totalMeds);
+  const learnedCount = Math.min(learnedWordsCount(), totalMeds);
   // Schwache-Wörter-Kachel oben, wenn es Fehlerwörter gibt
   const weakCount = getWeakWords(10).length;
   if (weakCount >= 1) {
