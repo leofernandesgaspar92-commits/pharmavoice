@@ -3720,7 +3720,7 @@ const OnboardingSystem = (() => {
   let _i = 0;
   const SLIDES = [
     { emoji:'💊', title:{de:'Willkommen bei PharmaVoice',en:'Welcome to PharmaVoice',pt:'Bem-vindo ao PharmaVoice'},
-      text:{de:'Lerne die korrekte Aussprache von 440 medizinischen Wirkstoffen – spielerisch.',en:'Learn to correctly pronounce 400 medical drug names – the fun way.',pt:'Aprenda a pronunciar corretamente 440 fármacos – de forma divertida.'} },
+      text:{de:'Lerne die korrekte Aussprache von 440 medizinischen Wirkstoffen – spielerisch.',en:'Learn to correctly pronounce 440 medical drug names – the fun way.',pt:'Aprenda a pronunciar corretamente 440 fármacos – de forma divertida.'} },
     { emoji:'🎤', title:{de:'Hören. Nachsprechen. Meistern.',en:'Listen. Repeat. Master.',pt:'Ouça. Repita. Domine.'},
       text:{de:'Hör dir die Aussprache an, sprich sie nach und übe die richtige Betonung – Silbe für Silbe.',en:'Listen to the pronunciation, repeat it and practice the right stress – syllable by syllable.',pt:'Ouça a pronúncia, repita e treine a sílaba tônica correta.'} },
     { emoji:'🔥', title:{de:'Bleib am Ball',en:'Keep your streak',pt:'Mantenha a sequência'},
@@ -3749,11 +3749,24 @@ const OnboardingSystem = (() => {
   }
   function next() {
     if (_i < SLIDES.length - 1) { _i++; _render(); }
-    else finish();
+    else finish(true);   // „Los geht's" -> direkt die erste Uebung (Aha-Moment)
   }
-  function finish() {
+  function finish(startNow) {
     try { localStorage.setItem(LS, '1'); } catch {}
     if (el('onboarding')) el('onboarding').hidden = true;
+    if (startNow === true) {
+      setTimeout(() => {
+        try {
+          // Erste Lektion des Lernpfads direkt starten (zaehlt fuer den Hub-Fortschritt)
+          const lv = HubSystem.WORLDS[0].levels[0];
+          if (lv && lv.type === 'speak') {
+            sessionStorage.setItem('hub_speak_level', lv.id);
+            sessionStorage.setItem('hub_speak_goal', lv.goal);
+            startLearn(1);
+          } else { unifiedHub.startLearning(); }
+        } catch (e) { try { unifiedHub.startLearning(); } catch (_) {} }
+      }, 250);
+    }
   }
   return { maybeShow, next, finish, refresh: _render };
 })();
