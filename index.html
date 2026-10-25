@@ -1095,6 +1095,16 @@
       color:#fff; transition:background .2s;
     }
     .lang-btn.active { background:rgba(var(--fg),.25); border-color:var(--char-primary,var(--teal)); }
+    .lang-btn.lang-pick { width:auto; display:inline-flex; align-items:center; gap:8px; padding:0 14px; font-size:15px; font-weight:700; color:var(--text,inherit); }
+    .lang-pick .lang-cur-flag { font-size:20px; }
+    .lang-pick .lang-pick-globe { font-size:13px; opacity:.6; }
+    .pv-lang-ov { position:fixed; inset:0; z-index:9000; background:rgba(0,0,0,.45); display:flex; align-items:flex-end; justify-content:center; }
+    .pv-lang-sheet { width:100%; max-width:480px; background:var(--bg2,#fff); color:var(--text,#111); border-radius:22px 22px 0 0; padding:18px 16px 26px; box-shadow:0 -10px 40px rgba(0,0,0,.25); max-height:80vh; overflow:auto; }
+    .pv-lang-sheet h3 { margin:0 0 12px; font-size:17px; }
+    .pv-lang-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+    .pv-lang-opt { display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 6px; border-radius:14px; border:2px solid var(--border,#ddd); background:transparent; color:inherit; font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+    .pv-lang-opt span { font-size:26px; line-height:1; }
+    .pv-lang-opt.active { border-color:var(--green-ink,#0a8); background:rgba(23,217,196,.12); }
     .lang-btn:hover  { background:rgba(var(--fg),.18); }
 
 
@@ -1337,8 +1347,8 @@
     @keyframes pop { 0%{transform:scale(.6);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
     .ob-title { font-family:'Fredoka','Inter',sans-serif; font-size:26px; font-weight:700; color:var(--text); margin-bottom:12px; line-height:1.2; }
     .ob-text { font-size:15px; color:var(--text2); line-height:1.55; }
-    .ob-langs { display:flex; gap:10px; margin-bottom:18px; }
-    .ob-lang { width:46px; height:46px; border-radius:14px; border:2px solid var(--border); background:var(--bg2); font-size:22px; cursor:pointer; transition:.15s; line-height:1; }
+    .ob-langs { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:18px; }
+    .ob-lang { width:42px; height:42px; border-radius:14px; border:2px solid var(--border); background:var(--bg2); font-size:22px; cursor:pointer; transition:.15s; line-height:1; }
     .ob-lang.active { border-color:var(--green-ink); background:rgba(23,217,196,.12); transform:scale(1.05); }
     .ob-dots { display:flex; gap:8px; margin-bottom:20px; }
     .ob-dot { width:9px; height:9px; border-radius:50%; background:var(--bg3); transition:.2s; }
@@ -1446,6 +1456,12 @@
     <button class="ob-lang" data-lang="de" onclick="obSetLang('de')" aria-label="Deutsch" lang="de">🇩🇪</button>
     <button class="ob-lang" data-lang="en" onclick="obSetLang('en')" aria-label="English" lang="en">🇬🇧</button>
     <button class="ob-lang" data-lang="pt" onclick="obSetLang('pt')" aria-label="Português" lang="pt">🇵🇹</button>
+    <button class="ob-lang" data-lang="es" onclick="obSetLang('es')" aria-label="Español" lang="es">🇪🇸</button>
+    <button class="ob-lang" data-lang="fr" onclick="obSetLang('fr')" aria-label="Français" lang="fr">🇫🇷</button>
+    <button class="ob-lang" data-lang="it" onclick="obSetLang('it')" aria-label="Italiano" lang="it">🇮🇹</button>
+    <button class="ob-lang" data-lang="tr" onclick="obSetLang('tr')" aria-label="Türkçe" lang="tr">🇹🇷</button>
+    <button class="ob-lang" data-lang="pl" onclick="obSetLang('pl')" aria-label="Polski" lang="pl">🇵🇱</button>
+    <button class="ob-lang" data-lang="ru" onclick="obSetLang('ru')" aria-label="Русский" lang="ru">🇷🇺</button>
   </div>
   <div class="ob-dots" id="obDots"></div>
   <button class="btn-start ob-next" onclick="OnboardingSystem.next()" id="obNext"></button>
@@ -1522,7 +1538,7 @@
     <button class="audio-close-btn" onclick="closeAudioSettings()" data-i18n="close">Schließen</button>
   </div>
 </div>
-<div class="xp-pop" id="xpPop">+10 Punkte 🪙</div>
+<div class="xp-pop" id="xpPop"></div>
 <div class="combo-pop" id="comboPop" aria-hidden="true"></div>
 <div class="levelup-overlay" id="levelupOverlay" hidden onclick="this.hidden=true">
   <div class="levelup-card">
@@ -1735,9 +1751,7 @@
   <div id="homeWorldCard"></div>
 
   <div class="home-lang-row" role="group" aria-label="Sprache und Audio">
-    <button class="lang-btn active" data-lang="de" onclick="switchLang('de')" aria-label="Deutsch" lang="de">🇩🇪</button>
-    <button class="lang-btn" data-lang="en" onclick="switchLang('en')" aria-label="English" lang="en">🇬🇧</button>
-    <button class="lang-btn" data-lang="pt" onclick="switchLang('pt')" aria-label="Português" lang="pt">🇵🇹</button>
+    <button class="lang-btn lang-pick" onclick="openLangPicker()" aria-label="Sprache wählen / Choose language"><span class="lang-cur-flag">🇩🇪</span><span class="lang-cur-name">Deutsch</span><span class="lang-pick-globe">🌐</span></button>
     <button class="lang-btn" onclick="openAudioSettings()" title="Audio-Einstellungen" aria-label="Audio-Einstellungen öffnen">🔊</button>
   </div>
 </div>
@@ -1848,7 +1862,7 @@
   <div id="accountCard" class="account-card"></div>
 
   <div class="prof-grid">
-    <div class="prof-stat"><div class="prof-val" id="profXp">0</div><div class="prof-lbl">🪙 Punkte</div></div>
+    <div class="prof-stat"><div class="prof-val" id="profXp">0</div><div class="prof-lbl" data-i18n="lbl_points">🪙 Punkte</div></div>
     <div class="prof-stat"><div class="prof-val" id="profStreak">0 🔥</div><div class="prof-lbl" data-i18n="prof_streak">Tage Streak</div></div>
     <div class="prof-stat"><div class="prof-val" id="profLearned">0</div><div class="prof-lbl" data-i18n="prof_learned">Begriffe gelernt</div></div>
     <div class="prof-stat"><div class="prof-val" id="profLevel">1</div><div class="prof-lbl" data-i18n="prof_level">Aktuelles Level</div></div>
@@ -1868,9 +1882,7 @@
 
   <div class="section-title" style="margin-top:24px" data-i18n="prof_lang">Sprache</div>
   <div class="home-lang-row" role="group" aria-label="Sprache">
-    <button class="lang-btn" data-lang="de" onclick="switchLang('de')" aria-label="Deutsch" lang="de">🇩🇪</button>
-    <button class="lang-btn" data-lang="en" onclick="switchLang('en')" aria-label="English" lang="en">🇬🇧</button>
-    <button class="lang-btn" data-lang="pt" onclick="switchLang('pt')" aria-label="Português" lang="pt">🇵🇹</button>
+    <button class="lang-btn lang-pick" onclick="openLangPicker()" aria-label="Sprache wählen / Choose language"><span class="lang-cur-flag">🇩🇪</span><span class="lang-cur-name">Deutsch</span><span class="lang-pick-globe">🌐</span></button>
   </div>
 
   <div class="section-title" style="margin-top:24px" data-i18n="theme_title">Darstellung</div>
@@ -3047,6 +3059,73 @@ let micFeedbackTimer = null;
 //  CHARACTER SYSTEM
 // ═══════════════════════════════════════════════
 // ══ i18n messages ══
+// ══ WELTSPRACHEN (ES/FR/IT/TR/PL/RU) ══
+// Die App-Logik läuft für Zusatzsprachen auf Englisch als Basis; dieser Layer
+// übersetzt jeden englischen Text (exakt oder per Zahlen-/Platzhalter-Muster)
+// in die gewählte Sprache – im DOM, in L() und in der Sprachausgabe.
+const PV_LANGS = [
+  { id:'de', flag:'🇩🇪', name:'Deutsch',    loc:'de-DE' },
+  { id:'en', flag:'🇬🇧', name:'English',    loc:'en-US' },
+  { id:'pt', flag:'🇵🇹', name:'Português',  loc:'pt-BR' },
+  { id:'es', flag:'🇪🇸', name:'Español',    loc:'es-ES' },
+  { id:'fr', flag:'🇫🇷', name:'Français',   loc:'fr-FR' },
+  { id:'it', flag:'🇮🇹', name:'Italiano',   loc:'it-IT' },
+  { id:'tr', flag:'🇹🇷', name:'Türkçe',     loc:'tr-TR' },
+  { id:'pl', flag:'🇵🇱', name:'Polski',     loc:'pl-PL' },
+  { id:'ru', flag:'🇷🇺', name:'Русский',    loc:'ru-RU' },
+];
+const PV_XL_DATA = /*PV_XL_DATA*/{}/*END_PV_XL*/;
+const PvI18n = (() => {
+  let ui = 'de', map = null, pats = [];
+  const EDGE = /^([^\p{L}\p{N}{]*)([\s\S]*?)([^\p{L}\p{N}}).)%?]*)$/u;
+  function _compile() {
+    map = null; pats = [];
+    const d = PV_XL_DATA[ui]; if (!d) return;
+    map = new Map(Object.entries(d));
+    for (const [k, v] of map) if (/\{\d\}/.test(k)) {
+      const esc = k.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\{(\d)\}/g, '(.+?)');
+      try { pats.push([new RegExp('^' + esc + '$'), k.match(/\{\d\}/g).map(x => +x[1]), v]); } catch (e) {}
+    }
+  }
+  function _fill(re, idx, v, s) { const m = s.match(re); if (!m) return null; let out = v; idx.forEach((n, i) => { out = out.split('{' + n + '}').join(m[i + 1]); }); return out; }
+  function tr(s) {
+    if (!map || typeof s !== 'string' || !s.trim()) return s;
+    let r = map.get(s); if (r !== undefined) return r;
+    const t = s.trim(); r = map.get(t); if (r !== undefined) return s.replace(t, r);
+    const m = t.match(EDGE);
+    if (m && m[2] && (m[1] || m[3])) { r = map.get(m[2]); if (r !== undefined) return s.replace(m[2], r); }
+    for (const [re, idx, v] of pats) { r = _fill(re, idx, v, t); if (r !== null) return s.replace(t, r); }
+    // Zahlen als Platzhalter (z. B. "12 words" ↔ "{0} words")
+    const nums = []; const k = t.replace(/\d+(?:[.,]\d+)*/g, x => '{' + (nums.push(x) - 1) + '}');
+    if (nums.length) { r = map.get(k); if (r !== undefined) { nums.forEach((x, i) => { r = r.split('{' + i + '}').join(x); }); return s.replace(t, r); } }
+    return s;
+  }
+  function _walk(root) {
+    if (!map || !root) return;
+    if (root.nodeType === 3) { const v = tr(root.nodeValue); if (v !== root.nodeValue) root.nodeValue = v; return; }
+    if (root.nodeType !== 1 || root.tagName === 'SCRIPT' || root.tagName === 'STYLE') return;
+    for (const a of ['placeholder', 'aria-label', 'title']) if (root.hasAttribute && root.hasAttribute(a)) { const o = root.getAttribute(a), v = tr(o); if (v !== o) root.setAttribute(a, v); }
+    if (root.tagName === 'INPUT' || root.tagName === 'TEXTAREA') return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+    let n; while ((n = w.nextNode())) { if (n.nodeType === 3) { const pe = n.parentNode; if (pe && (pe.tagName === 'SCRIPT' || pe.tagName === 'STYLE')) continue; const v = tr(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; } else for (const a of ['placeholder', 'aria-label', 'title']) if (n.hasAttribute(a)) { const o = n.getAttribute(a), v = tr(o); if (v !== o) n.setAttribute(a, v); } }
+  }
+  let obs = null;
+  function _observe() {
+    if (obs || !window.MutationObserver || !document.body) return;
+    obs = new MutationObserver(list => { if (!map) return; for (const m of list) { if (m.type === 'characterData') _walk(m.target); else if (m.type === 'attributes') _walk(m.target); else m.addedNodes.forEach(_walk); } });
+    obs.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['placeholder', 'aria-label', 'title'] });
+  }
+  function set(l) { ui = l; _compile(); if (map) { _observe(); _walk(document.body); } }
+  const info = id => PV_LANGS.find(x => x.id === id) || PV_LANGS[0];
+  return {
+    set, tr, ui: () => ui, isExtra: () => !!PV_XL_DATA[ui] && !['de','en','pt'].includes(ui),
+    base: l => (['de','en','pt'].includes(l) ? l : 'en'),
+    info, locale: fallback => (['de','en','pt'].includes(ui) ? info(fallback || ui).loc : info(ui).loc),
+    has: l => ['de','en','pt'].includes(l) || !!PV_XL_DATA[l],
+    refresh: () => { if (map) _walk(document.body); },
+  };
+})();
+
 const I18N = {
   de: {
     beatrice: {
@@ -3366,10 +3445,17 @@ const CharacterSystem = (() => {
 
   function getLang() { return lang; }
   function setLang(l) {
-    if (!I18N[l]) return;
-    lang = l;
+    if (!PvI18n.has(l)) return;
+    lang = PvI18n.base(l);
     localStorage.setItem('pv_lang', l);
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+    PvI18n.set(l);
+    _syncLangUi(l);
+  }
+  function _syncLangUi(l) {
+    const inf = PvI18n.info(l);
+    document.querySelectorAll('.lang-btn[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+    document.querySelectorAll('.lang-cur-flag').forEach(e => { e.textContent = inf.flag; });
+    document.querySelectorAll('.lang-cur-name').forEach(e => { e.textContent = inf.name; });
   }
 
   function randFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -3529,7 +3615,7 @@ const CharacterSystem = (() => {
              onerror="this.style.display='none';this.nextElementSibling.style.display='block'">` : ''}
         <span class="char-emoji-fb"${ch.img ? '' : ' style="display:block"'}>${ch.emoji}</span>
         <div class="char-name">${ch.name}</div>
-        <div class="char-role">${ch.role}</div>
+        <div class="char-role">${roleFor(ch.role)}</div>
         <div class="char-dot" style="background:${ch.color}"></div>`;
       card.onclick = () => select(ch.id);
       grid.appendChild(card);
@@ -3537,8 +3623,10 @@ const CharacterSystem = (() => {
   }
 
   function init() {
-    lang = localStorage.getItem('pv_lang') || 'de';
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    { let saved = localStorage.getItem('pv_lang');
+      if (!saved) { const nav = ((navigator.language || 'de') + '').slice(0, 2).toLowerCase(); saved = PvI18n.has(nav) ? nav : 'de'; }
+      if (!PvI18n.has(saved)) saved = 'de';
+      lang = PvI18n.base(saved); PvI18n.set(saved); _syncLangUi(saved); }
     TamaSystem.load();
     const saved = localStorage.getItem('pv_char') || 'beatrice';
     cur = CHARS[saved] || CHARS.beatrice;
@@ -3565,6 +3653,8 @@ const CharacterSystem = (() => {
 // Erweiterbar: neue Strings taggen + hier ergänzen. Untaggte Elemente bleiben
 // unverändert, sodass eine Teil-Übersetzung nichts kaputtmacht.
 const UI_I18N = {
+  ob_skip:       { de:'Überspringen', en:'Skip', pt:'Saltar' },
+  lbl_points:    { de:'🪙 Punkte', en:'🪙 Points', pt:'🪙 Pontos' },
   menu_continue: { de:'Weiter lernen',      en:'Keep learning',     pt:'Continuar' },
   menu_lessons:  { de:'Lektionen',          en:'Lessons',           pt:'Lições' },
   menu_practice: { de:'Sprachpraxis',       en:'Speaking practice', pt:'Prática de fala' },
@@ -3719,15 +3809,30 @@ function applyI18n() {
     const entry = UI_I18N[el.getAttribute('data-i18n-aria')];
     if (entry) el.setAttribute('aria-label', entry[lang] || entry.de);
   });
-  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.setAttribute('lang', PvI18n.ui());
+  PvI18n.refresh();
 }
 
 // Kleiner Helfer für dynamisch zusammengesetzte Strings (mit Zahlen etc.)
+function _escHtml(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const ROLE_I18N = { 'Apothekerin':['Pharmacist','Farmacêutica'], 'PKA-Lehrling':['Pharmacy apprentice','Aprendiz de farmácia'], 'Treuer Begleiter':['Loyal companion','Companheiro fiel'], 'Süße Begleiterin':['Sweet companion','Companheira doce'] };
+function roleFor(r) { const t = ROLE_I18N[r]; return t ? L(r, t[0], t[1]) : r; }
 function L(de, en, pt) {
   const lang = CharacterSystem.getLang();
+  if (PvI18n.isExtra()) return PvI18n.tr(en);
   return lang === 'en' ? en : lang === 'pt' ? pt : de;
 }
 
+function openLangPicker() {
+  const cur = PvI18n.ui();
+  const ov = document.createElement('div');
+  ov.className = 'pv-lang-ov';
+  ov.onclick = e => { if (e.target === ov) ov.remove(); };
+  ov.innerHTML = `<div class="pv-lang-sheet" role="dialog" aria-label="Language"><h3>🌐 ${L('Sprache wählen','Choose language','Escolher idioma')}</h3><div class="pv-lang-grid">` +
+    PV_LANGS.filter(x => PvI18n.has(x.id)).map(x => `<button class="pv-lang-opt ${x.id === cur ? 'active' : ''}" lang="${x.id}" data-pick="${x.id}"><span>${x.flag}</span>${x.name}</button>`).join('') + `</div></div>`;
+  ov.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => { switchLang(b.dataset.pick); ov.remove(); });
+  document.body.appendChild(ov);
+}
 function switchLang(l) { CharacterSystem.setLang(l); applyI18n(); refreshUI(); renderAchievements(); }
 
 // ══ ONBOARDING SYSTEM (First-Launch-Willkommen, einmalig) ══
@@ -3753,7 +3858,7 @@ const OnboardingSystem = (() => {
     if (el('obNext')) el('obNext').textContent = last ? L('Los geht’s! 🚀','Let’s go! 🚀','Vamos! 🚀') : L('Weiter','Next','Próximo');
     // aktive Sprache markieren
     const lang = (CharacterSystem.getLang && CharacterSystem.getLang()) || 'de';
-    document.querySelectorAll('#obLangs .ob-lang').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+    document.querySelectorAll('#obLangs .ob-lang').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === PvI18n.ui()));
     // Re-animate emoji
     if (el('obEmoji')) { el('obEmoji').style.animation = 'none'; void el('obEmoji').offsetWidth; el('obEmoji').style.animation = ''; }
   }
@@ -4101,8 +4206,8 @@ function checkDailyBonus() {
   toast.id = 'dailyBonusToast';
   toast.className = 'daily-bonus-toast';
   toast.innerHTML = `<div class="db-icon">🎁</div>
-    <div class="db-body"><div class="db-title">Täglicher Bonus!</div>
-    <div class="db-sub">+${coins} 🪙 &nbsp;·&nbsp; +${gems} 💎 &nbsp;·&nbsp; Tag ${streak} 🔥</div></div>`;
+    <div class="db-body"><div class="db-title">${L('Täglicher Bonus!','Daily bonus!','Bónus diário!')}</div>
+    <div class="db-sub">+${coins} 🪙 &nbsp;·&nbsp; +${gems} 💎 &nbsp;·&nbsp; ${L('Tag','Day','Dia')} ${streak} 🔥</div></div>`;
   document.body.appendChild(toast);
   setTimeout(() => toast.classList.add('show'), 50);
   setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4200);
@@ -4131,7 +4236,7 @@ function refreshUI() {
   set('profLearned', learnedWordsCount());
   set('profLevel',   lvl);
   el('profProgFill').style.width = pct + '%';
-  set('profProgTxt', `${inLvl} / ${xpPerLevel} Punkte`);
+  set('profProgTxt', `${inLvl} / ${xpPerLevel} ${L('Punkte','Points','Pontos')}`);
   set('profProgPct', pct + '%');
   set('profProgLabel', L(
     `Level ${lvl+1} benötigt ${(lvl)*xpPerLevel} Punkte`,
@@ -4216,9 +4321,10 @@ function renderHomeDashboard() {
     const analysis       = gameDesigner.analyzePlayerState(playerData);
     const recommendation = gameDesigner.recommendMode(analysis);
     const name = getPlayerName();
-    const modeLbl = { learn:'Lern-Modus', daily_mission:'Tägliche Mission', runner:'Runner-Belohnung', world:'Weltreise', smart_learn:'Smart Learn (5-10 min)' }[recommendation.mode] || 'Smart Learn';
-    if (el('homeGreetBubble')) el('homeGreetBubble').innerHTML = `${name ? 'Hallo ' + name + '! ' : 'Hallo! '}${recommendation.reason}`;
-    if (el('homeCtaSub')) el('homeCtaSub').textContent = `🔥 Empfohlen: ${modeLbl.toUpperCase()}`;
+    const modeLbl = { learn:L('Lern-Modus','Learning mode','Modo de aprendizagem'), daily_mission:L('Tägliche Mission','Daily mission','Missão diária'), runner:L('Runner-Belohnung','Runner reward','Recompensa Runner'), world:L('Weltreise','World tour','Volta ao mundo'), smart_learn:'Smart Learn (5-10 min)' }[recommendation.mode] || 'Smart Learn';
+    const _hi = name ? L('Hallo','Hello','Olá') + ' ' + _escHtml(name) + '! ' : L('Hallo!','Hello!','Olá!') + ' ';
+    if (el('homeGreetBubble')) el('homeGreetBubble').innerHTML = _hi + recommendation.reason;
+    if (el('homeCtaSub')) el('homeCtaSub').textContent = `🔥 ${L('Empfohlen','Recommended','Recomendado')}: ${modeLbl.toUpperCase()}`;
   } catch (e) { /* gameDesigner/unifiedHub not yet initialized on first paint */ }
 }
 
@@ -4401,7 +4507,7 @@ function renderLevelCards() {
     let badge;
     if (status === true)        badge = `<div class="lvl-badge on">Aktiv</div>`;
     else if (status === 'upgrade') badge = `<div class="lvl-badge off">🚀 Upgrade</div>`;
-    else                        badge = `<div class="lvl-badge off">🔒 ${lv.xpReq} Punkte</div>`;
+    else                        badge = `<div class="lvl-badge off">🔒 ${lv.xpReq} ${L('Punkte','Points','Pontos')}</div>`;
     div.innerHTML = `
       <div class="lvl-icon ${lv.color}">${lv.icon}</div>
       <div class="lvl-info">
@@ -4948,7 +5054,7 @@ function renderQ() {
   const total = Q.meds.length;
   const cur   = Q.idx + 1;
   set('progText', L(`Frage ${cur} von ${total}`, `Question ${cur} of ${total}`, `Pergunta ${cur} de ${total}`));
-  set('progXp',   `${Q.sessionXP} Punkte`);
+  set('progXp',   `${Q.sessionXP} ${L('Punkte','Points','Pontos')}`);
   el('progFill').style.width = ((cur - 1) / total * 100) + '%';
   const dotsEl = el('progDots');
   if (dotsEl) dotsEl.innerHTML = Q.meds.map((_, i) => `<span class="q-dot ${i < cur-1 ? 'done' : i === cur-1 ? 'current' : ''}"></span>`).join('');
@@ -5028,7 +5134,7 @@ function scoreAnswer(good, med) {
     const gain = (Q.hinted ? 5 : 10) * (Q.xpMult || 1);  // mit Hinweis halbe Punkte
     Q.correct++; Q.sessionXP += gain; S.xp += gain;
     Q.streak = (Q.streak || 0) + 1;
-    popXP();
+    popXP(gain);
     // Kombo-Bonus ab 3 richtigen in Folge
     if (Q.streak >= 3) {
       const bonus = 5;
@@ -5050,7 +5156,7 @@ function scoreAnswer(good, med) {
   else      { AudioSystem.playWrong(lang); avatarAnimate('anim-shake'); }
   CharacterSystem.react(comboType);
   S.learned = Math.min(S.learned + 1, 9999);
-  set('progXp', `${Q.sessionXP} Punkte`);
+  set('progXp', `${Q.sessionXP} ${L('Punkte','Points','Pontos')}`);
   checkLevelUp();
   save();
   refreshUI();
@@ -6024,8 +6130,9 @@ function nextQ() {
   else renderQ();
 }
 
-function popXP() {
+function popXP(gain) {
   const p = el('xpPop');
+  p.textContent = `+${gain || 10} ${L('Punkte','Points','Pontos')} 🪙`;
   p.className = 'xp-pop';
   void p.offsetWidth;
   p.className = 'xp-pop go';
@@ -7125,7 +7232,7 @@ function rnStartMic(word) {
 
   const r = new SR();
   const RN_LANG = { de:'de-DE', en:'en-US', pt:'pt-BR' };
-  r.lang = RN_LANG[CharacterSystem.getLang()] || 'de-DE';
+  r.lang = PvI18n.locale(CharacterSystem.getLang());
   r.continuous = false;
   r.interimResults = true;
   r.maxAlternatives = 3;
@@ -7702,8 +7809,8 @@ const AudioSystem = (() => {
     const pool = (PHRASES[key] || {})[lang] || (PHRASES[key] || {})['de'] || [];
     if (!pool.length) return;
     window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(pool[Math.floor(Math.random() * pool.length)]);
-    utt.lang = lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-BR' : 'de-DE';
+    const utt = new SpeechSynthesisUtterance(PvI18n.tr(pool[Math.floor(Math.random() * pool.length)]));
+    utt.lang = PvI18n.locale(lang);
     utt.rate = 1.0; utt.pitch = 1.05; utt.volume = _speechVol;
     window.speechSynthesis.speak(utt);
   }
@@ -7731,7 +7838,7 @@ const AudioSystem = (() => {
   // Nutzt die Sprachausgabe unabhängig vom Speech-Feedback-Schalter, da es eine
   // bewusst angeforderte Lernhilfe ist.
   function speakWord(text, lang) {
-    const l = lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-BR' : 'de-DE';
+    const l = PvI18n.locale(lang);
     return TtsEngine.speak(text, { lang: l, rate: 0.75, pitch: 1.0, volume: Math.max(_speechVol, 0.6) });
   }
 
@@ -8482,7 +8589,7 @@ const TeamSystem = (() => {
       return `<div class="team-card">
         <div class="team-emoji">${m.emoji}</div>
         <div class="team-name">${m.name}</div>
-        <div class="team-role">${m.role}</div>
+        <div class="team-role">${roleFor(m.role)}</div>
         <div class="team-lvl">Lv. ${lvl}</div>
         <div class="team-bar"><div class="team-bar-fill" style="width:${pct}%"></div></div>
         <div class="team-xp-txt">${inLvl}/${XP_PER_MEMBER_LEVEL}</div>
@@ -9652,9 +9759,9 @@ class GameDesignerAgent {
 
   getPendingGoals(playerData) {
     const goals = [];
-    if (playerData.streak > 0 && playerData.streak < 3)  goals.push(`Noch ${3 - playerData.streak} Tage bis zum 3-Tage-Streak-Abzeichen`);
-    if (playerData.streak >= 3 && playerData.streak < 7) goals.push(`Noch ${7 - playerData.streak} Tage bis zum 7-Tage-Streak-Abzeichen`);
-    if (playerData.xp < 200) goals.push(`Noch ${200 - playerData.xp} Punkte bis Level 2`);
+    if (playerData.streak > 0 && playerData.streak < 3)  goals.push(L(`Noch ${3 - playerData.streak} Tage bis zum 3-Tage-Streak-Abzeichen`,`${3 - playerData.streak} days to the 3-day streak badge`,`Faltam ${3 - playerData.streak} dias para o selo de 3 dias`));
+    if (playerData.streak >= 3 && playerData.streak < 7) goals.push(L(`Noch ${7 - playerData.streak} Tage bis zum 7-Tage-Streak-Abzeichen`,`${7 - playerData.streak} days to the 7-day streak badge`,`Faltam ${7 - playerData.streak} dias para o selo de 7 dias`));
+    if (playerData.xp < 200) goals.push(L(`Noch ${200 - playerData.xp} Punkte bis Level 2`,`${200 - playerData.xp} Points to level 2`,`Faltam ${200 - playerData.xp} Pontos para o nível 2`));
     return goals;
   }
 
@@ -9667,27 +9774,27 @@ class GameDesignerAgent {
   recommendMode(analysis) {
     // NEUER Nutzer → Learn Modus mit Grundlagen
     if (analysis.isNew) {
-      return { mode:'learn', reason:'Erste Schritte – lerne die Grundlagen', words:5, difficulty:'easy' };
+      return { mode:'learn', reason:L('Erste Schritte – lerne die Grundlagen',"First steps – learn the basics",'Primeiros passos – aprende o básico'), words:5, difficulty:'easy' };
     }
     // NOCH NICHT HEUTE GELERNT → Daily Mission
     if (!analysis.hasLearnedToday) {
-      return { mode:'daily_mission', reason:'Starte deine tägliche Mission!', mission: this.dailyMission.currentStep() };
+      return { mode:'daily_mission', reason:L('Starte deine tägliche Mission!',"Start your daily mission!",'Começa a tua missão diária!'), mission: this.dailyMission.currentStep() };
     }
     // HOHE FEHLERQUOTE → Learn Modus, Fokus auf schwache Wörter
     if (analysis.errorRate > 0.3) {
-      return { mode:'learn', reason:'Üben, Üben, Üben – du schaffst das!', focus: analysis.weakWords, words:10 };
+      return { mode:'learn', reason:L('Üben, Üben, Üben – du schaffst das!',"Practice, practice, practice – you've got this!",'Pratica, pratica, pratica – tu consegues!'), focus: analysis.weakWords, words:10 };
     }
     // NIEDRIGE FEHLERQUOTE, noch kein Runner heute → Belohnung
     if (analysis.errorRate < 0.1 && analysis.runnerPlayedToday === false) {
-      return { mode:'runner', reason:'Du bist heute richtig gut! Belohnung: Runner!', difficulty:'medium' };
+      return { mode:'runner', reason:L('Du bist heute richtig gut! Belohnung: Runner!',"You're on fire today! Reward: Runner!",'Estás em grande hoje! Recompensa: Runner!'), difficulty:'medium' };
     }
     // Fortgeschrittener Nutzer → Welt-Fortschritt
     if (analysis.level > 3) {
       const world = this.getCurrentWorld(analysis.level);
-      return { mode:'world', reason:`Setze deine Reise in ${world.name} fort!`, world, level: analysis.level };
+      return { mode:'world', reason:L(`Setze deine Reise in ${world.name} fort!`,`Continue your journey in ${world.name}!`,`Continua a tua viagem em ${world.name}!`), world, level: analysis.level };
     }
     // STANDARD: kombinierte Sequenz
-    return { mode:'smart_learn', reason:'Personalisiertes Lernen für dich', sequence: this.generateSequence(analysis), estimatedTime:'5-10 min' };
+    return { mode:'smart_learn', reason:L('Personalisiertes Lernen für dich',"Personalised learning for you",'Aprendizagem personalizada para ti'), sequence: this.generateSequence(analysis), estimatedTime:'5-10 min' };
   }
 
   generateSequence(analysis) {
