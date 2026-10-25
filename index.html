@@ -1114,7 +1114,7 @@
     .pairs-start > span:first-child { font-size:26px; }
     .pairs-start b { display:block; font-size:15px; }
     .pairs-start small { display:block; font-size:12px; opacity:.8; margin-top:2px; }
-    .pairs-ov { position:fixed; inset:0; z-index:8500; background:var(--bg,#f4f7f8); display:flex; flex-direction:column; padding:16px 16px 24px; overflow:auto; }
+    .pairs-ov { position:fixed; inset:0; z-index:8500; background:var(--bg,#f4f7f8); display:flex; flex-direction:column; padding:max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); overflow:auto; }
     .pairs-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
     .pairs-top button { border:0; background:transparent; font:inherit; font-size:15px; color:var(--text); cursor:pointer; padding:6px 0; }
     .pairs-time { font-weight:800; font-variant-numeric:tabular-nums; color:var(--green-ink,#0a8); }
@@ -3953,9 +3953,13 @@ const PairsGame = (() => {
     }
     return out;
   }
-  function close() { clearInterval(tick); if (ov) ov.remove(); ov = null; }
+  function close(fromBack) {
+    clearInterval(tick);
+    const was = !!ov; if (ov) ov.remove(); ov = null;
+    if (was && !fromBack && history.state && history.state.pvOverlay) { try { history.back(); } catch (e) {} }
+  }
   function start() {
-    close();
+    clearInterval(tick); if (ov) ov.remove(); ov = null;
     const meds = _pick(); left = meds.length; misses = 0; sel = null; t0 = Date.now();
     ov = document.createElement('div');
     ov.className = 'pairs-ov';
@@ -3969,6 +3973,7 @@ const PairsGame = (() => {
     ov.querySelector('[data-x]').onclick = close;
     ov.querySelectorAll('.pair-card').forEach(b => b.onclick = () => _tap(b));
     document.body.appendChild(ov);
+    if (!(history.state && history.state.pvOverlay)) { try { history.pushState({ pvScreen: (history.state && history.state.pvScreen) || 'Home', pvOverlay: 1 }, ''); } catch (e) {} }
     tick = setInterval(() => { const e = ov && ov.querySelector('#pairsTime'); if (e) e.textContent = ((Date.now() - t0) / 1000).toFixed(1).replace('.', ',') + ' s'; }, 100);
   }
   function _tap(b) {
@@ -10155,6 +10160,9 @@ document.getElementById('screenHome').classList.add('active');
 // Basis-History-Eintrag (Home) + Zurück-Navigation für Hardware-/Browser-Zurück.
 try { history.replaceState({ pvScreen: 'Home' }, ''); } catch (e) {}
 window.addEventListener('popstate', function (e) {
+  // Hardware-Zurück schließt zuerst offene Overlays (Paare-Spiel, Sprachwahl)
+  const ovl = document.querySelector('.pairs-ov, .pv-lang-ov');
+  if (ovl) { if (ovl.classList.contains('pairs-ov')) PairsGame.close(true); else ovl.remove(); return; }
   const target = (e.state && e.state.pvScreen) ? e.state.pvScreen : 'Home';
   _navSuppressPush = true;
   try { showScreen(target); } catch (err) {} finally { _navSuppressPush = false; }
