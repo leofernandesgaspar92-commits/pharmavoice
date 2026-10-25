@@ -27,15 +27,15 @@ EN: `PharmaVoice: Drug Names` · PT: `PharmaVoice: Fármacos`
 
 **DE** (78)
 ```
-Aussprache von 440 Wirkstoffen lernen – als Spiel, offline, in 9 Sprachen.
+Aussprache von 440 Wirkstoffen lernen – als Spiel, offline, in 12 Sprachen.
 ```
 **EN** (76)
 ```
-Learn to pronounce 440 drug names – as a game, offline, in 9 languages.
+Learn to pronounce 440 drug names – as a game, offline, in 12 languages.
 ```
 **PT** (77)
 ```
-Aprenda a pronunciar 440 fármacos – como um jogo, offline, em 9 idiomas.
+Aprenda a pronunciar 440 fármacos – como um jogo, offline, em 12 idiomas.
 ```
 
 ---
@@ -70,8 +70,8 @@ DEINE DATEN BLEIBEN BEI DIR
 • Funktioniert offline
 • Kein Tracking, keine Werbung
 
-9 SPRACHEN
-Deutsch, Englisch, Portugiesisch, Spanisch, Französisch, Italienisch, Türkisch, Polnisch und Russisch – Oberfläche und Fachtexte.
+12 SPRACHEN
+Deutsch, Englisch, Portugiesisch, Spanisch, Französisch, Italienisch, Türkisch, Polnisch, Russisch, Arabisch, Hindi und Chinesisch – Oberfläche und Fachtexte.
 
 Hinweis: PharmaVoice ist ein Lernwerkzeug und ersetzt keine medizinische oder pharmazeutische Beratung.
 ```
@@ -104,8 +104,8 @@ YOUR DATA STAYS WITH YOU
 • Works offline
 • No tracking, no ads
 
-9 LANGUAGES
-German, English, Portuguese, Spanish, French, Italian, Turkish, Polish and Russian – interface and content.
+12 LANGUAGES
+German, English, Portuguese, Spanish, French, Italian, Turkish, Polish, Russian, Arabic, Hindi and Chinese – interface and content.
 
 Note: PharmaVoice is a learning tool and does not replace medical or pharmaceutical advice.
 ```
@@ -137,8 +137,8 @@ SEUS DADOS FICAM COM VOCÊ
 • Funciona offline
 • Sem rastreamento, sem anúncios
 
-9 IDIOMAS
-Alemão, inglês, português, espanhol, francês, italiano, turco, polaco e russo – interface e conteúdo.
+12 IDIOMAS
+Alemão, inglês, português, espanhol, francês, italiano, turco, polaco, russo, árabe, hindi e chinês – interface e conteúdo.
 
 Observação: o PharmaVoice é uma ferramenta de aprendizagem e não substitui aconselhamento médico ou farmacêutico.
 ```
@@ -152,7 +152,7 @@ In der Play Console: **Store-Präsenz → Haupt-Store-Eintrag → Übersetzungen
 
 ### Español (es-ES)
 **Nombre:** `PharmaVoice: Fármacos`
-**Breve (≤80):** `Aprende a pronunciar 440 fármacos jugando – sin conexión, en 9 idiomas.`
+**Breve (≤80):** `Aprende a pronunciar 440 fármacos jugando – sin conexión, en 12 idiomas.`
 ```
 Pronuncia por fin los nombres de los fármacos correctamente – sin dudas.
 
@@ -164,14 +164,14 @@ PharmaVoice te enseña la pronunciación correcta de 440 principios activos: sí
 • Aprende jugando: objetivo diario, niveles, rachas y repaso espaciado
 • Runner por carriles: escucha la palabra y elige la sílaba tónica correcta
 • Funciona sin conexión, sin anuncios, sin seguimiento
-• 9 idiomas
+• 12 idiomas
 
 Nota: PharmaVoice es una herramienta de aprendizaje y no sustituye el consejo médico o farmacéutico.
 ```
 
 ### Français (fr-FR)
 **Nom :** `PharmaVoice : Médicaments`
-**Courte (≤80) :** `Apprends à prononcer 440 médicaments en jouant – hors ligne, en 9 langues.`
+**Courte (≤80) :** `Apprends à prononcer 440 médicaments en jouant – hors ligne, en 12 langues.`
 ```
 Prononce enfin correctement les noms des médicaments – sans hésiter.
 
@@ -183,14 +183,14 @@ PharmaVoice t'apprend la bonne prononciation de 440 substances actives : syllabe
 • Apprendre en jouant : objectif quotidien, niveaux, séries et répétition espacée
 • Runner à couloirs : écoute le mot et choisis la bonne syllabe accentuée
 • Hors ligne, sans publicité, sans suivi
-• 9 langues
+• 12 langues
 
 Remarque : PharmaVoice est un outil d'apprentissage et ne remplace pas un avis médical ou pharmaceutique.
 ```
 
 ### Italiano (it-IT)
 **Nome:** `PharmaVoice: Farmaci`
-**Breve (≤80):** `Impara a pronunciare 440 farmaci giocando – offline, in 9 lingue.`
+**Breve (≤80):** `Impara a pronunciare 440 farmaci giocando – offline, in 12 lingue.`
 ```
 Pronuncia finalmente i nomi dei farmaci in modo corretto – senza esitazioni.
 
@@ -202,14 +202,14 @@ PharmaVoice ti insegna la pronuncia corretta di 440 principi attivi: sillaba per
 • Impara giocando: obiettivo giornaliero, livelli, serie e ripasso dilazionato
 • Runner a corsie: ascolta la parola e scegli la sillaba accentata giusta
 • Offline, senza pubblicità, senza tracciamento
-• 9 lingue
+• 12 lingue
 
 Nota: PharmaVoice è uno strumento di apprendimento e non sostituisce il parere medico o farmaceutico.
 ```
 
 ### Türkçe (tr-TR)
 **Ad:** `PharmaVoice: İlaç Adları`
-**Kısa (≤80):** `440 ilaç adının telaffuzunu oyunla öğren – çevrimdışı, 9 dilde.`
+**Kısa (≤80):** `440 ilaç adının telaffuzunu oyunla öğren – çevrimdışı, 12 dilde.`
 ```
 İlaç etken madde adlarını artık doğru telaffuz et – tereddüt etmeden.
 
@@ -221,14 +221,14 @@ PharmaVoice sana 440 yaygın etken maddenin doğru telaffuzunu öğretir: hece h
 • Oynayarak öğren: günlük hedef, seviyeler, seriler ve aralıklı tekrar
 • Şeritli koşu oyunu: kelimeyi dinle, doğru vurguyu seç
 • Çevrimdışı, reklamsız, takipsiz
-• 9 dil
+• 12 dil
 
 Not: PharmaVoice bir öğrenme aracıdır; tıbbi veya eczacılık danışmanlığının yerini tutmaz.
 ```
 
 ### Polski (pl-PL)
 **Nazwa:** `PharmaVoice: Nazwy leków`
-**Krótki (≤80):** `Naucz się wymowy 440 leków przez zabawę – offline, w 9 językach.`
+**Krótki (≤80):** `Naucz się wymowy 440 leków przez zabawę – offline, w 12 językach.`
 ```
 Wymawiaj nazwy substancji czynnych poprawnie – bez wahania.
 
@@ -240,14 +240,14 @@ PharmaVoice uczy poprawnej wymowy 440 popularnych substancji czynnych: sylaba po
 • Nauka przez zabawę: cel dzienny, poziomy, serie i powtórki rozłożone w czasie
 • Runner na torach: posłuchaj słowa i wybierz właściwy akcent
 • Offline, bez reklam, bez śledzenia
-• 9 języków
+• 12 języków
 
 Uwaga: PharmaVoice jest narzędziem do nauki i nie zastępuje porady lekarza ani farmaceuty.
 ```
 
 ### Русский (ru-RU)
 **Название:** `PharmaVoice: Названия ЛС`
-**Кратко (≤80):** `Учись произносить 440 названий лекарств в игре – офлайн, на 9 языках.`
+**Кратко (≤80):** `Учись произносить 440 названий лекарств в игре – офлайн, на 12 языках.`
 ```
 Произноси названия действующих веществ правильно – без запинок.
 
@@ -259,9 +259,67 @@ PharmaVoice научит правильному произношению 440 р�
 • Учёба в игре: цель дня, уровни, серии и интервальное повторение
 • Раннер по дорожкам: послушай слово и выбери верное ударение
 • Офлайн, без рекламы, без отслеживания
-• 9 языков
+• 12 языков
 
 Примечание: PharmaVoice – учебный инструмент и не заменяет консультацию врача или фармацевта.
+```
+
+
+### العربية (ar)
+**الاسم:** `PharmaVoice: أسماء الأدوية`
+**وصف قصير (≤80):** `تعلّم نطق 440 اسم دواء باللعب – دون إنترنت، بـ12 لغة.`
+```
+انطق أسماء المواد الفعالة بشكل صحيح – بلا تردد.
+
+يعلّمك PharmaVoice النطق الصحيح لـ440 مادة فعالة شائعة: مقطعًا بمقطع، مع النبر والكتابة الصوتية (IPA) وصوت لتكراره. مثالي لموظفي الصيدليات والمندوبين الطبيين والطلاب.
+
+• 440 دواءً مع المقاطع والنبر ودليل صوتي
+• استماع وتمرين "استمع وكرّر"
+• قاموس مع دواعي الاستعمال والفئة الدوائية ورمز ATC
+• تعلّم باللعب: هدف يومي، مستويات، سلاسل وتكرار متباعد
+• جولة خاطفة ولعبة الأزواج ولعبة الجري بين المسارات
+• يعمل دون إنترنت، بلا إعلانات، بلا تتبع
+• 12 لغة
+
+ملاحظة: PharmaVoice أداة تعليمية ولا تغني عن استشارة الطبيب أو الصيدلي.
+```
+
+### हिन्दी (hi-IN)
+**नाम:** `PharmaVoice: दवाओं के नाम`
+**छोटा विवरण (≤80):** `खेल-खेल में 440 दवाओं के नाम बोलना सीखो – ऑफ़लाइन, 12 भाषाओं में।`
+```
+दवाओं के सक्रिय घटकों के नाम अब सही बोलो – बिना झिझक।
+
+PharmaVoice तुम्हें 440 आम सक्रिय घटकों का सही उच्चारण सिखाता है: शब्दांश दर शब्दांश, ज़ोर, ध्वन्यात्मक लिपि (IPA) और दोहराने के लिए ऑडियो के साथ। फ़ार्मेसी स्टाफ़, मेडिकल रिप्रेज़ेंटेटिव और छात्रों के लिए बढ़िया।
+
+• शब्दांश, ज़ोर और उच्चारण गाइड के साथ 440 दवाएँ
+• ऑडियो और "सुनो और दोहराओ" अभ्यास
+• उपयोग, दवा वर्ग और ATC कोड वाला शब्दकोश
+• खेलते हुए सीखो: दैनिक लक्ष्य, लेवल, स्ट्रीक और स्पेस्ड रिपीटिशन
+• ब्लिट्ज़ राउंड, जोड़े मिलाओ और लेन रनर गेम
+• ऑफ़लाइन, बिना विज्ञापन, बिना ट्रैकिंग
+• 12 भाषाएँ
+
+नोट: PharmaVoice एक सीखने का साधन है और डॉक्टर या फ़ार्मासिस्ट की सलाह का विकल्प नहीं है।
+```
+
+### 中文 (zh-CN)
+**名称：** `PharmaVoice：药名发音`
+**简短说明（≤80）：** `玩着学会 440 个药物名称的正确发音——离线可用，支持 12 种语言。`
+```
+准确说出药物活性成分的名称——不再犹豫。
+
+PharmaVoice 教你 440 种常用活性成分的正确发音：逐个音节，标出重音、国际音标（IPA），并提供可跟读的语音。适合药店员工、医药代表和医药专业学生。
+
+• 440 种药物：音节、重音和发音指南
+• 语音播放与"听一听、跟着读"练习
+• 药物词典：适应症、药物类别和 ATC 编码
+• 边玩边学：每日目标、等级、连续打卡和间隔重复
+• 闪电赛、配对游戏和跑道跑酷
+• 离线使用，无广告，无追踪
+• 12 种语言
+
+提示：PharmaVoice 是学习工具，不能替代医生或药师的专业建议。
 ```
 
 ---
