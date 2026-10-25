@@ -45,6 +45,9 @@ Betriebshandbuch und der lebende Backlog.
 - [x] „Silbe für Silbe"-Modus – neuer Button spricht jede Silbe einzeln vor und hebt sie visuell hervor (aktive Silbe grün, betonte Silbe gold), am Ende das ganze Wort. Rein audio-visuell (kein Mikrofon), sauber zurückgesetzt bei Fragenwechsel/Verlassen. Test + QA grün.
 - [ ] Optionales sprach-spezifisches Aussprache-Modell (EN/PT-Betonung je Wirkstoff, mit Fallback).
 
+- [ ] **International: Schreibweise & Aussprache je Land.** Wirkstoffnamen, Silben und IPA folgen derzeit der deutschen Form (z. B. „Morphin“ /mɔʁˈfiːn/). Für EN/ES/FR … sollten die landesüblichen INN-Schreibweisen (Morphine, Morfina …) und eine passende Lautschrift hinterlegt werden – pro Sprache eine geprüfte Datentabelle, kein Automatismus.
+- [ ] Übersetzungen (ES/FR/IT/TR/PL/RU/AR/HI/ZH) von Muttersprachlern gegenlesen lassen, v. a. Fachbegriffe.
+
 ### P2 – Engagement & Bindung
 - [x] Merkliste/Favoriten – Wirkstoffe im Schnell-Ansicht-Sheet „☆ Merken" (→ „★ Gemerkt"), Karten-Stern im Lexikon, Filter „★ Nur Merkliste" (neben „Nur ungelernte"), eigener Leer-Zustand. Lokal in `pv_favs`, dreisprachig. Ideal für gezieltes Lernen & Prüfungsvorbereitung. Fav-Test + QA grün.
 - [x] „Merkliste üben" – Button im Lexikon (erscheint mit ≥1 Favorit, zeigt Anzahl) startet eine Übung mit genau den gemerkten Wirkstoffen (max. 10, gemischt). Schließt den Lern-Kreis um die Merkliste. Test + QA grün.
@@ -92,6 +95,7 @@ Betriebshandbuch und der lebende Backlog.
 ---
 
 ## Erledigt (Auszug, chronologisch jüngste zuerst)
+- 12 Sprachen inkl. RTL (Arabisch), Sprachwähler, Geräte-Spracherkennung, Landesstimmen; Spuren-Runner, Blitzrunde, Paare-Spiel, neue Erfolge; Store-Texte in 12 Sprachen (v1.3)
 - Kategorien dreisprachig (#149) · Betonungs-Tipps dreisprachig (#148)
 - Content 300→372 (mehrere PRs) · Aussprache-Matching robuster (#137)
 - PWA-Manifest+Shortcuts (#136) · Meta/OG-Tags (#135) · Währung „Punkte" (#134)
