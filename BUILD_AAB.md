@@ -87,16 +87,27 @@ In Android Studio:
 Google lehnt einen Upload mit bereits verwendetem `versionCode` ab. Vor dem Build in
 `android/app/build.gradle` anpassen:
 ```
-versionCode 3
-versionName "1.2"
+versionCode 4
+versionName "1.3"
 ```
-*(versionCode 1 = v1.0, versionCode 2 = v1.1-Entwurf (bereits hochgeladen, daher verbraucht) → neuer Build = versionCode 3 / "1.2".)*
+*(versionCode 1 = v1.0, 2 = v1.1-Entwurf, 3 = v1.2 (live) → neuer Build = versionCode 4 / "1.3".)*
 Danach wie gewohnt `npx cap sync` → in Android Studio das signierte `.aab` bauen
-(**denselben neuen Keystore** `upload-keystore.jks` verwenden!) → hochladen.
+(**denselben Keystore** `upload-keystore.jks`, Alias `upload`) → in der Play Console unter
+**Produktion → Neuen Release erstellen** hochladen.
 
-> **v1.2 bringt die native Sprachausgabe** (`@capacitor-community/text-to-speech`):
-> `npm install` installiert das Plugin automatisch, `npx cap sync` bindet es nativ ein –
-> damit läuft das Vorsprechen zuverlässig über die Android-Sprachausgabe statt über den WebView.
+**Release-Notes v1.3 (Vorschlag, DE/EN):**
+```
+<de-DE>
+• 12 Sprachen – u. a. Spanisch, Französisch, Türkisch, Arabisch, Hindi, Chinesisch
+• Neu: Blitzrunde, Paare-Spiel und Spuren-Runner
+• Frisches Design, fairere Quizfragen, schnellerer Einstieg
+</de-DE>
+<en-US>
+• 12 languages – incl. Spanish, French, Turkish, Arabic, Hindi, Chinese
+• New: Blitz round, Match pairs and Lane runner
+• Fresh design, fairer quiz questions, faster start
+</en-US>
+```
 
 Validiert: `npm install`, `npx cap add android`, `npx cap sync` laufen im Repo fehlerfrei durch.
 Der finale Gradle-Build (`.aab`) läuft in Android Studio auf deinem Rechner.
