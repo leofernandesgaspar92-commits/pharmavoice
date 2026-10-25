@@ -20,9 +20,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Schnellübung",
-      "short_name": "Üben",
-      "description": "7 zufällige Wirkstoffe sofort üben",
+      "name": "Blitzrunde",
+      "short_name": "Blitz",
+      "description": "10 Fragen auf Zeit – mit Tempo-Bonus",
       "url": "./index.html?go=quick",
       "icons": [{ "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
