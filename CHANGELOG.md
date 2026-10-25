@@ -1,3 +1,10 @@
+## v1.3 (in Vorbereitung)
+- 12 Sprachen: DE, EN, PT + ES, FR, IT, TR, PL, RU, AR (rechts-nach-links), HI, ZH; Gerätesprache wird beim ersten Start erkannt; ein Sprach-Button statt Flaggenreihe
+- Sprachausgabe mit passender Landesstimme
+- Neue Spielmodi: Spuren-Runner (Betonung hören, Spur wählen), Blitzrunde (10 × 10 s, Tempo-Bonus), Paare-Spiel (Wirkstoff ↔ Anwendungsgebiet)
+- Neues Design auf allen Screens, ehrliches Profil, Bewertungs-Hinweis, fairere Quizfragen, schnellerer Einstieg
+- Store-Texte in 12 Sprachen (STORE_LISTING.md)
+
 - Wirkstoff-Datenbank: 7 Herz-Kreislauf-Wirkstoffe ergänzt (Carvedilol, Nebivolol, Verapamil, Diltiazem, Amiodaron, Digoxin, Ticagrelor) mit IPA/Silben & MED_INFO — jetzt 146 Wirkstoffe (Runner 153), alle validiert
 
 - Lexikon Schwierigkeits-Indikator: farbiger Punkt pro Wirkstoff (grün=leicht ≤3 Silben, gelb=mittel 4-5, rot=schwer 6+) — Lernende erkennen knifflige Wörter auf einen Blick; barrierefrei (aria-label) & dreisprachig
